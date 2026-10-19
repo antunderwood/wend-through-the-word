@@ -130,6 +130,6 @@ def load(b):
             # Each TIPNR key as the Theographic People it matches; a key none matches stays a key.
             ids = [matched.get(k, {k}) for k in tipnr[key][field]]
             if not theo or not ids:
-                continue  # one side names no one: a gap, not a disagreement (decision 71)
+                continue  # one side names no one: a gap, not a disagreement (decision 75)
             if not all(i & theo for i in ids) or not theo <= set().union(*ids):
                 report(e, key, field, theo, set().union(*ids))

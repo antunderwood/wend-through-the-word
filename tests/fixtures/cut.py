@@ -4,11 +4,13 @@
 
 Keeps only the chapters below. Strips KJV text from Theographic verses (decision 42).
 Adds one synthetic BSB line, 3 John 1:15, to test a BSB verse with no Theographic key.
+Keeps the OpenBible cross-references that touch a kept verse, with two synthetic rows.
 """
 
 import json
 import re
 import sys
+import zipfile
 from pathlib import Path
 
 CHAPTERS = {"Gen": {11, 16, 25, 26, 36}, "Matt": {17}, "3John": {1}}
@@ -40,7 +42,33 @@ for r in json.loads((src / "verses.json").read_text()):
     if keep(book, int(ch), int(vs)):
         r["fields"] = {k: v for k, v in r["fields"].items() if k not in KJV_FIELDS}
         verses.append(r)
-dump("verses.json", verses)
+
+# Cross-references with an end in a kept verse. Every other end must be outside the fixture
+# books, so it adds no Verse to the build; the Theographic records of those ends are kept with
+# only their osisRef and verseID.
+zipped = zipfile.ZipFile(src / "cross-references.zip")
+header, *rows = zipped.read("cross_references.txt").decode().splitlines()
+kept_refs = {r["fields"]["osisRef"] for r in verses} | {"3John.1.15"}
+crossrefs, outside = [header], set()
+for row in rows:
+    a, b, _ = row.split("\t")
+    refs = {a, *b.split("-")}
+    if refs & kept_refs and all(r in kept_refs or r.split(".")[0] not in CHAPTERS for r in refs):
+        crossrefs.append(row)
+        outside |= refs - kept_refs
+crossrefs += [
+    "Matt.17.20\t3John.1.15\t3",  # synthetic: a cross-reference to 3John.1.15
+    "Gen.11.1\tGen.11.33\t1",  # synthetic: Genesis 11 has 32 verses, so no Verse Key
+]
+info = zipfile.ZipInfo("cross_references.txt", date_time=(1980, 1, 1, 0, 0, 0))
+with zipfile.ZipFile(dest / "cross-references.zip", "w", zipfile.ZIP_DEFLATED) as z:
+    z.writestr(info, "\n".join(crossrefs) + "\n", zipfile.ZIP_DEFLATED)
+ends = [
+    {"id": r["id"], "fields": {k: r["fields"][k] for k in ("osisRef", "verseID")}}
+    for r in json.loads((src / "verses.json").read_text())
+    if r["fields"]["osisRef"] in outside
+]
+dump("verses.json", verses + ends)
 
 lines = []
 for line in (src / "bsb.txt").read_text(encoding="utf-8-sig").splitlines():
