@@ -70,6 +70,9 @@
   button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.16); }
   button:disabled { opacity: 0.35; cursor: default; }
   button.on { border-color: var(--accent); color: var(--accent); }
+  button.more { font-size: 12px; padding: 1px 8px; margin: 2px 0 4px; border-radius: 999px; color: var(--muted); }
+  button.more.on { color: var(--accent); }
+  button.more .caret { display: inline-block; width: 0.8em; }
   .btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
   ul.list, ol.list { margin: 4px 0 8px; padding-left: 20px; font-size: 13px; }
   ul.list a, ol.list a { color: var(--text); }
@@ -689,7 +692,7 @@ function renderList() {
     h += `<div class="small" style="margin-top:6px"><b>${TYPE_NAME[ty]}</b> <span class="muted">(${list.length})</span></div>
       ${(() => { const key = `${id}|${ty}`, open = expanded.has(key), shown = open ? list : list.slice(0, state.filters.k);
         return `<ol class="list">${shown.map(l => item(l.id, FocusModel.relation(l, data.genderOf).text)).join("")}</ol>
-      ${more > 0 ? `<a href="#" class="small" data-act="expand" data-v="${esc(key)}">${open ? "show fewer" : `and ${more} more`}</a>` : ""}`; })()}`;
+      ${more > 0 ? `<button class="more ${open ? "on" : ""}" aria-expanded="${open}" data-act="expand" data-v="${esc(key)}"><span class="caret">${open ? "&#9662;" : "&#9656;"}</span> ${open ? "Show top " + state.filters.k : `${more} more`}</button>` : ""}`; })()}`;
   }
   return h;
 }
