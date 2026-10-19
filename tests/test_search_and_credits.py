@@ -31,6 +31,14 @@ def test_aliases_from_theographic_are_searchable(export):
     assert "person:israel_682" in search(index, "Israel")  # Jacob, alsoCalled "Israel"
 
 
+def test_place_aliases_and_kjv_names_are_searchable(export):
+    index = search_index(export)
+    assert search(index, "Promised Land") == ["place:canaan_272"]  # aliases
+    assert search(index, "Ur") == ["place:ur_1189"]  # kjvName; the name is "Ur of the Chaldees"
+    gerar = next(e for e in index["entities"] if e["id"] == "place:valley_of_gerar_1203")
+    assert gerar["aliases"] == []  # kjvName "valley of Gerar" differs only in case
+
+
 def test_index_lists_each_entity_with_its_type_and_label(export):
     entities = {e["id"]: e for e in search_index(export)["entities"]}
     assert entities["event:53"] == {
