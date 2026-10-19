@@ -3,7 +3,7 @@
 Adds `cross_references` (Ring 1) to each Verse in the book range: one Neighbour for each Verse
 that a cross-reference links it to, in either direction, so a link is kept when its other end is
 outside the range (spec, story 44). A Neighbour has the shape of an Entity Neighbour (#6), with
-the higher Votes as its weight (decision 71). Sets `b.ring2`: for each Verse in some Ring 1, its
+the higher Votes as its weight (decision 74). Sets `b.ring2`: for each Verse in some Ring 1, its
 top 10 cross-referenced Verses as ID and weight.
 """
 
