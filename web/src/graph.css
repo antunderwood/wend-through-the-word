@@ -1,0 +1,29 @@
+.labels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+.nl {
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 12px;
+  margin-top: 9px;
+  padding: 0 3px;
+  text-shadow: 0 0 3px #000, 0 0 6px #000;
+  user-select: none;
+}
+.nl.focus {
+  font-size: 17px;
+  font-weight: 650;
+  color: #ffd27a;
+  margin-top: 22px;
+}
+.nl.overflow {
+  color: #9aa0b4;
+  font-style: italic;
+}
+.nl.selected {
+  text-decoration: underline;
+}
