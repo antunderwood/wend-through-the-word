@@ -176,7 +176,7 @@ corrections.csv    id,field,was,value,evidence,note,reviewed,request
 
 ### Half siblings
 
-- HALF_SIBLING_OF ships only when Theographic gives it explicitly (decision 36). The build does not derive it from shared parents. The first build task is to check whether Theographic has such a field. If it does not, every sibling shows as brother or sister, and the owner removes "half-brother" and "half-sister" from PRD 10.4.
+- HALF_SIBLING_OF ships only when Theographic gives it explicitly (decision 36). The build does not derive it from shared parents. Theographic has the fields `halfSiblingsSameFather` and `halfSiblingsSameMother` (checked 2026-10-19). HALF_SIBLING_OF comes from these fields only.
 
 ### Coordinates
 

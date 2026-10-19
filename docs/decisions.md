@@ -42,7 +42,7 @@ Each entry has a date and a reason. Terms follow `GLOSSARY.md`.
 ## 2026-10-19: Spec for the Genesis data build
 
 35. **`corrections.csv` gets a `was` column.** It holds the upstream value that a fix replaces (Anah's gender: F). Reason: without it, the build cannot tell when upstream has changed the value under a fix, so "no longer matches" (PRD 10.5 rule 5) would only catch missing IDs.
-36. **HALF_SIBLING_OF ships only when Theographic gives it.** The build does not derive it from shared parents. Reason: Theographic decides identity and family links (decision 7). Derived links would depend on how complete its parent data is. If Theographic has no such field, "half-brother" and "half-sister" leave PRD 10.4.
+36. **HALF_SIBLING_OF ships only when Theographic gives it.** The build does not derive it from shared parents. Reason: Theographic decides identity and family links (decision 7). Derived links would depend on how complete its parent data is. If Theographic has no such field, "half-brother" and "half-sister" leave PRD 10.4. Checked 2026-10-19: Theographic has `halfSiblingsSameFather` (111 people) and `halfSiblingsSameMother` (3 people), so HALF_SIBLING_OF ships from those fields and "half-brother" and "half-sister" stay.
 37. **The static export moves from M3 to M2, and the build has one test seam.** Tests run the build command on fixture sources and check only the static export and the reports. Reason: the export is the contract with the front end. Tests on internal modules or the SQLite store would break when internals change. Spec: `docs/specs/genesis-data-build.md`.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
