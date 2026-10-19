@@ -10,7 +10,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from pipeline import coordinates, crossrefs, curation, edges, entities, export, verses
+from pipeline import coordinates, crossrefs, curation, edges, entities, export, tipnr, verses
 from pipeline.common import Build
 
 # Each step reads what earlier steps set on the Build. Add new steps here, before export.
@@ -22,6 +22,7 @@ STEPS = [
     edges.load,
     crossrefs.load,
     curation.report_aliases,  # after every step that adds Entities
+    tipnr.load,  # reads the shipped family links, so it runs after edges
     export.write,
 ]
 

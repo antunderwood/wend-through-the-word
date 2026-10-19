@@ -1,12 +1,14 @@
 """Slow acceptance run on the real downloaded sources. Skipped when they are missing (CI)."""
 
 import os
+import re
 from collections import Counter
 from pathlib import Path
 
 import pytest
-from conftest import REAL_CURATED, VERSION, read_json, read_tsv, run_build
+from conftest import FIXTURES, REAL_CURATED, VERSION, read_json, read_tsv, run_build
 from test_coordinates import openstreetmap_shipped, shipped_points
+from test_tipnr import TIPNR
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -166,3 +168,25 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
     assert not read_tsv(genesis / "reports" / "split_or_trimmed.tsv")
     rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
     assert not [r for r in rows if "cross-reference" in r["cause"]]
+
+
+def test_genesis_tipnr_check_reports_46_disagreements(genesis):
+    rows = read_tsv(genesis / "reports" / "tipnr_disagreements.tsv")
+    assert len(rows) == 46
+    # Theographic has three Anahs where TIPNR has one; Theographic decides (decision 7).
+    assert {r["person"] for r in rows if r["tipnr_person"].startswith("Anah@")} == {
+        "person:anah_247",
+        "person:anah_248",
+        "person:anah_249",
+    }
+
+
+def test_no_genesis_file_holds_a_tipnr_record_key(genesis):
+    key = re.compile(r"\w@[1-3A-Z][a-z]{2}\.\d+\.\d+")  # "Abraham@Gen.11.26-1Pe"
+    assert not [p for p in (genesis / "data").rglob("*.json") if key.search(p.read_text())]
+
+
+def test_the_tipnr_fixture_holds_no_line_of_the_real_file():
+    real = set((SOURCES / TIPNR).read_text(encoding="utf-8").splitlines())
+    fixture = (FIXTURES / TIPNR).read_text(encoding="utf-8").splitlines()
+    assert not [line for line in fixture if line in real and not line.startswith("$==")]

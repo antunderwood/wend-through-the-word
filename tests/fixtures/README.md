@@ -11,6 +11,7 @@ Small slices of the real sources, cut by `cut.py` from a full download. Each sli
 | `sources/pleiades-locations-latest.csv.gz` | Pleiades locations dump, atlantides.org/downloads/pleiades/dumps (downloaded 2026-10-19) | CC BY 3.0 |
 | `sources/wikidata-coords.json` | Wikidata SPARQL result, query.wikidata.org (query in `pipeline/download.py`, run 2026-10-19) | CC0 1.0 |
 | `sources/??.zip`, `sources/no-country.zip` | GeoNames dump files, download.geonames.org/export/dump (downloaded 2026-10-19) | CC BY 4.0 |
+| `sources/TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt` | Synthetic, written by hand in the TIPNR format (github.com/STEPBible/STEPBible-Data). Holds no real TIPNR rows | Our own test data, MIT |
 
 Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 17:20 to 22; 3 John 1.
 
@@ -37,5 +38,6 @@ Changes from the sources:
 ## Curated tables
 
 `curated/partners.csv`, `curated/possibly_same.csv`, and `curated/corrections.csv` are written by hand, not cut. They are this project's data (CC BY-SA 4.0, `LICENSE-DATA`). Rows copied from `pipeline/curated` keep their real values. Rows whose note starts with "Synthetic" are made up to test one case each: the `partner` relation (Esau and Basemath), an unreviewed row, an ID that is not in Theographic, a redundant correction (Beeri), a correction where Theographic holds neither value (Ur), and alias corrections on two stubs (Lot's daughters). Every Evidence Verse is in the kept chapters.
+The TIPNR fixture is not cut by `cut.py`. It is written by hand (licences.md, section 5, rule 4), with CRLF line ends like the real file. It has three synthetic People, Peleg, Reu, and Serug, whose references are Genesis 11 verses, and one Place record that the check skips. Each record says "Synthetic TIPNR record, written for tests" and has a made-up Strong's number (`HX001` to `HX004`). Reu agrees with Theographic. Serug names Peleg, not Reu, as his father, to test the disagreement report. Peleg has one reference with a letter suffix and one LXX reference.
 
 Rules for later fixtures are in `docs/licences.md`, section 5. In short: the TIPNR fixture is synthetic, and OpenStreetMap records use made-up coordinates.
