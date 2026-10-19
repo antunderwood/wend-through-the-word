@@ -20,7 +20,7 @@ def write(b):
         ring1 = {n["id"] for v in verses for n in v["cross_references"]}
         ring2 = {key: list(b.ring2[key]) for key in ring1}
         sources = {("OpenBible.info", b.licence("crossrefs"))} if ring1 else set()
-        # Every Entity a Verse mentions is in its Ring 1 too (decision 80).
+        # Every Entity a Verse mentions is in its Ring 1 too (decision 93).
         for entity_id in {m["id"] for v in verses for m in v["mentions"]}:
             ring2[entity_id] = b.top[entity_id]
             sources |= {
@@ -30,7 +30,7 @@ def write(b):
             }
         path = version / "chapter" / book / f"{ch}.ring2.json"
         sidecar = {"book": book, "chapter": ch, **ranking.joined(sources), "ring2": ring2}
-        # Trim only cross-references: Votes and cosine scores are not compared (decision 77).
+        # Trim only cross-references: Votes and cosine scores are not compared (decision 90).
         crossrefs.fit(b, path, sidecar, [ring2[key] for key in ring1])
         write_json(path, sidecar)
     for entity in b.entities.values():

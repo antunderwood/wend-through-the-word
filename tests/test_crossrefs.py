@@ -91,7 +91,7 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
         {"id": "44017026", "weight": 2},  # Acts.17.26
     ]
     ring1 = read_json(chapter / "11.json")["verses"]
-    verse_keys = {k for k in ring2 if ":" not in k}  # the rest are Entities (decision 80)
+    verse_keys = {k for k in ring2 if ":" not in k}  # the rest are Entities (decision 93)
     assert {n["id"] for v in ring1 for n in v["cross_references"]} == verse_keys
     assert all(e.keys() == {"id", "weight"} for entries in ring2.values() for e in entries)
 
@@ -123,7 +123,7 @@ def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(export
     path = f"data/{VERSION}/chapter/Gen/26.ring2.json"
     assert (small / path).stat().st_size < limit
     # The trimmed chapter file has fewer Ring 1 Verses, so compare only the ones it keeps.
-    # Entity entries are never trimmed (decision 80).
+    # Entity entries are never trimmed (decision 93).
     nodes = {k for k in read_json(small / path)["ring2"] if ":" not in k}
 
     def entries(out):

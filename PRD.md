@@ -152,7 +152,7 @@ Event years follow the chronology of Floyd Nolen Jones. The interface shows them
 
 Edges with a missing or unclear source are not loaded.
 
-CO_MENTION links two Entities that share at least one verse through MENTIONS or FILED_UNDER. Its weight is the cosine score: shared verses divided by the square root of (verses of A times verses of B), counted across the whole Bible (decision 79). Raw counts make God (8,587 verses) the top neighbour of almost everyone. With cosine, Abraham's top neighbours are Isaac, Sarah, Heth, Abimelech, Nahor, and Lot (checked on Theographic data, 2026-10-18).
+CO_MENTION links two Entities that share at least one verse through MENTIONS or FILED_UNDER. Its weight is the cosine score: shared verses divided by the square root of (verses of A times verses of B), counted across the whole Bible (decision 92). Raw counts make God (8,587 verses) the top neighbour of almost everyone. With cosine, Abraham's top neighbours are Isaac, Sarah, Heth, Abimelech, Nahor, and Lot (checked on Theographic data, 2026-10-18).
 
 ## 8. Architecture
 
@@ -358,7 +358,7 @@ Decisions:
 Rules:
 
 1. Show the top K neighbours of each type. The default K is 6. Tune K in M3.
-2. The weight is the cross-reference vote score for verse to verse links, and the CO_MENTION cosine score for entity to entity links. Neighbours of one type rank by weight alone. An explicit edge (for example PARENT_OF) is a label, not a priority (decision 78). For an entity focus, verse neighbours rank by the number of other entities in the verse. This is a heuristic.
+2. The weight is the cross-reference vote score for verse to verse links, and the CO_MENTION cosine score for entity to entity links. Neighbours of one type rank by weight alone. An explicit edge (for example PARENT_OF) is a label, not a priority (decision 91). For an entity focus, verse neighbours rank by the number of other entities in the verse. This is a heuristic.
 3. Put the remaining neighbours of one type into one Overflow Node, for example "+42 places". A click on it lists those neighbours in the detail panel. It never adds nodes to the scene. A click on a list item selects it. A double click makes it the focus.
 4. A hover over a ring 2 node shows its label and its path to the focus node. The node returns to faint when the pointer leaves.
 5. When a node becomes the new focus, the old focus joins your path. The old ring 1 fades out. New nodes grow out of the clicked node.
@@ -476,7 +476,7 @@ The Genesis prototype is complete when all of these are true.
 12. The deploy has no Worker script. The graph, the reader panel, the detail panel, and search all work from static files.
 13. Genesis themes from Nave's load as FILED_UNDER links. No theme has the name of a Theographic person or place. The report lists the removed headings.
 14. The search index file is below the size limit. A search for "Abraham" returns the correct entity.
-15. A focus view of one Genesis person shows the focus node, up to K neighbours of each type in ring 1, and faint ring 2 nodes. The remaining neighbours appear as Overflow Nodes. At the default K of 6, God is in the top 6 People of at most 10% of Genesis People (19 of 352 on 2026-10-19), and Abraham's top 6 People are Isaac, Sarah, Heth, Abimelech, Nahor, and Lot (decision 81).
+15. A focus view of one Genesis person shows the focus node, up to K neighbours of each type in ring 1, and faint ring 2 nodes. The remaining neighbours appear as Overflow Nodes. At the default K of 6, God is in the top 6 People of at most 10% of Genesis People (19 of 352 on 2026-10-19), and Abraham's top 6 People are Isaac, Sarah, Heth, Abimelech, Nahor, and Lot (decision 94).
 16. A click on a node shows it in the detail panel and does not change the scene. A double click replaces the view, adds the old focus to your path in the scene, and keeps the pinned nodes. Prev and Next read along your path without moving the focus.
 17. The TIPNR check report lists Genesis people where TIPNR and Theographic disagree on identity or family links.
 18. The detail panel has "Suggest a correction" links. Each link opens the issue form with the node IDs, the current value, the data version, and the page URL filled in.

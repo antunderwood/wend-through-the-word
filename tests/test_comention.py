@@ -82,7 +82,7 @@ def test_a_pair_with_an_explicit_edge_and_a_co_mention_is_one_neighbour(export):
     sarah = neighbour(export, "person:abraham_58", "person:sarah_2473")
     assert [(i["edge"], i["direction"]) for i in sarah["edges"]] == [
         ("CO_MENTION", "both"),
-        ("PARTNER_OF", "both"),
+        ("SPOUSE_OF", "both"),  # curated (#7)
     ]
 
 
@@ -123,9 +123,10 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
             top = files[node]["neighbours"][:10]
             assert sidecar["ring2"][node] == [{"id": n["id"], "weight": n["weight"]} for n in top]
     gen11 = read_json(export / "data" / VERSION / "chapter" / "Gen" / "11.ring2.json")
-    # Cross-references come from OpenBible.info, Entity Neighbours from Theographic.
+    # Cross-references come from OpenBible.info; Entity Neighbours from Theographic and the
+    # curated tables (Abraham and Sarah's SPOUSE_OF).
     assert (gen11["source"], gen11["licence"]) == (
-        "OpenBible.info; Theographic",
+        "Curated; OpenBible.info; Theographic",
         "CC BY 4.0; CC BY-SA 4.0",
     )
 

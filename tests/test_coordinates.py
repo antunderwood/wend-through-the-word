@@ -1,3 +1,5 @@
+import csv
+import gzip
 import json
 
 from conftest import FIXTURES, VERSION, read_json, read_tsv
@@ -31,8 +33,8 @@ def export_text(export):
 
 def test_commercial_point_and_its_custom_lonlat_are_not_shipped(export):
     # The fixture gives Esek's modern record a made-up custom_lonlat "5.555555,6.666666".
-    assert "lat" not in place(export, "esek_409")
-    assert no_coordinate(export)["place:esek_409"] == "OpenBible point dropped: commercial"
+    # Esek is then re-sourced from the Wikidata item its record cites (test_resourcing.py).
+    assert place(export, "esek_409")["coord_source"] != "OpenBible"
     assert "5.555555" not in export_text(export)
     assert "6.666666" not in export_text(export)
 
@@ -45,15 +47,14 @@ def test_google_sourced_point_is_dropped(export):
 
 def test_point_on_openstreetmap_geometry_is_dropped_whatever_its_source(export):
     # Ur's modern record, Tell el Muqayyar, is sourced from Wikidata but has OSM geometry.
-    assert "lat" not in place(export, "ur_1189")
-    cause = "OpenBible point dropped: OpenStreetMap geometry"
-    assert no_coordinate(export)["place:ur_1189"] == cause
+    # Ur is then re-sourced (test_resourcing.py), so its point is not OpenBible's.
+    assert place(export, "ur_1189")["coord_source"] != "OpenBible"
 
 
 def test_point_with_no_source_of_its_own_is_checked_through_its_root(export):
     # The fixture removes coordinates_source from Shur's record and roots it on Kadesh's OSM record.
-    assert "lat" not in place(export, "shur_1090")
-    assert no_coordinate(export)["place:shur_1090"] == "OpenBible point dropped: OpenStreetMap"
+    # Shur is then re-sourced from the GeoNames ID its own record cites (test_resourcing.py).
+    assert place(export, "shur_1090")["coord_source"] != "OpenBible"
 
 
 def test_place_linked_to_two_openbible_records_gets_no_point_and_is_reported(export):
@@ -76,22 +77,43 @@ def shipped_points(export):
 
 
 def openstreetmap_points(sources):
-    """Every point in the OpenBible modern records whose source or geometry is OpenStreetMap."""
-    points = set()
+    """Coordinate source -> its points that come from OpenStreetMap: OpenBible modern records
+    whose source or geometry is OpenStreetMap, Pleiades OpenStreetMap locations, and Wikidata
+    coordinates whose reference cites OpenStreetMap. GeoNames has none."""
+    points = {"OpenBible": set(), "Pleiades": set(), "Wikidata": set(), "GeoNames": set()}
     for line in (sources / "modern.jsonl").read_text().splitlines():
         rec = json.loads(line)
         if rec.get("coordinates_source", {}).get("type") == "osm" or "geometry_credit" in rec:
             lon, lat = map(float, rec["lonlat"].split(","))
-            points.add((lat, lon))
+            points["OpenBible"].add((lat, lon))
+    csv.field_size_limit(10**9)
+    with gzip.open(sources / "pleiades-locations-latest.csv.gz", "rt", encoding="utf-8") as f:
+        for loc in csv.DictReader(f):
+            text = f"{loc['id']} {loc['title']} {loc['description']}".lower()
+            if loc["reprLat"] and ("osm" in text or "openstreetmap" in text):
+                points["Pleiades"].add((float(loc["reprLat"]), float(loc["reprLong"])))
+    for row in read_json(sources / "wikidata-coords.json")["results"]["bindings"]:
+        ref = row.get("refVal", {}).get("value", "")
+        if ref.endswith("/entity/Q936") or "openstreetmap" in ref.lower():
+            points["Wikidata"].add((float(row["lat"]["value"]), float(row["lon"]["value"])))
     return points
+
+
+def openstreetmap_shipped(export, sources):
+    """Shipped points that equal an OpenStreetMap point of the source they claim. (OpenBible
+    copies some Wikidata and Pleiades points, so the same value can be in two sources.)"""
+    osm = openstreetmap_points(sources)
+    return [p for p in shipped_points(export) if (p["lat"], p["lon"]) in osm[p["coord_source"]]]
 
 
 def test_no_shipped_coordinate_has_an_openstreetmap_source(export):
     shipped = shipped_points(export)
-    assert sorted(p["id"].split(":")[1] for p in shipped) == [
+    assert {p["coord_source"] for p in shipped} <= {"OpenBible", "Pleiades", "Wikidata", "GeoNames"}
+    assert not openstreetmap_shipped(export, FIXTURES)
+    openbible = [p for p in shipped if p["coord_source"] == "OpenBible"]
+    assert sorted(p["id"].split(":")[1] for p in openbible) == [
         "avith_122",
         "beer-lahai-roi_167",
-        "canaan_272",
         "dinhabah_337",
         "galilee_433",
         "gerar_459",
@@ -101,5 +123,3 @@ def test_no_shipped_coordinate_has_an_openstreetmap_source(export):
         "rehoboth_991",
         "valley_of_gerar_1203",
     ]
-    assert {p["coord_source"] for p in shipped} == {"OpenBible"}
-    assert not {(p["lat"], p["lon"]) for p in shipped} & openstreetmap_points(FIXTURES)

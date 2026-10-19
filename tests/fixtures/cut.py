@@ -7,6 +7,9 @@ Adds one synthetic BSB line, 3 John 1:15, to test a BSB verse with no Theographi
 Keeps the OpenBible cross-references that touch a kept verse, with two synthetic rows.
 """
 
+import csv
+import gzip
+import io
 import json
 import re
 import sys
@@ -112,7 +115,7 @@ mentioned = {
     if in_range & set(r["fields"].get("verses") or [])
 }
 # A mentioned record also keeps its links to the kept verses outside the fixture books, so its
-# whole-Bible Verse set (decision 79) holds more than its Verses in range.
+# whole-Bible Verse set (decision 92) holds more than its Verses in range.
 for r in (r for rows in records.values() for r in rows):
     keep_ids = in_range | outside_ids if r["id"] in mentioned else in_range
     r["fields"]["verses"] = [v for v in r["fields"].get("verses") or [] if v in keep_ids]
@@ -215,3 +218,77 @@ for r in ancient:
                 res["lonlat"] = modern[res["modern_basis_id"]]["lonlat"]
 for name, rows in (("ancient.jsonl", ancient), ("modern.jsonl", modern.values())):
     (dest / name).write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+
+# Lookups (#11): the Wikidata, Pleiades, and GeoNames records the kept modern records cite.
+refs = [
+    r
+    for m in modern.values()
+    for r in [m.get("coordinates_source", {})] + m.get("secondary_sources", [])
+]
+cited = {
+    t: {r["id"] for r in refs if r.get("type") == t} for t in ("wikidata", "pleiades", "geonames")
+}
+wikidata = json.loads((src / "wikidata-coords.json").read_text())
+
+
+def cites_osm(row):
+    value = row.get("refVal", {}).get("value", "")
+    return value.endswith("/entity/Q936") or "openstreetmap" in value.lower()
+
+
+# Canaan's statement is made to cite OpenStreetMap, to test decision 58 on a kept point.
+canaan = next(r for r in wikidata["results"]["bindings"] if r["item"]["value"].endswith("/Q163329"))
+OSM_REF = {
+    "refProp": "http://www.wikidata.org/prop/reference/P248",
+    "refVal": "http://www.wikidata.org/entity/Q936",
+}
+wikidata["results"]["bindings"].append(
+    canaan | {k: {"type": "uri", "value": v} for k, v in OSM_REF.items()}
+)
+rows = {}  # size: keep references only when they cite OpenStreetMap
+for r in wikidata["results"]["bindings"]:
+    if link_id(r["item"]["value"]) in cited["wikidata"]:
+        if not cites_osm(r):
+            r = {k: v for k, v in r.items() if k not in ("refProp", "refVal")}
+        rows[json.dumps(r, sort_keys=True)] = r
+osm_statements = {r["st"]["value"] for r in rows.values() if cites_osm(r)}
+for r in rows.values():
+    if r.get("st", {}).get("value") in osm_statements:  # decision 44
+        r["lat"]["value"], r["lon"]["value"] = "3.333333", "4.444444"
+    cited["pleiades"].add(r.get("pleiades", {}).get("value"))
+    cited["geonames"].add(r.get("geonames", {}).get("value"))
+wikidata["results"]["bindings"] = sorted(rows.values(), key=lambda r: json.dumps(r, sort_keys=True))
+(dest / "wikidata-coords.json").write_text(json.dumps(wikidata, indent=1, sort_keys=True) + "\n")
+
+PLEIADES = "pleiades-locations-latest.csv.gz"
+csv.field_size_limit(10**9)
+with gzip.open(src / PLEIADES, "rt", encoding="utf-8", newline="") as f:
+    reader = csv.DictReader(f)
+    header = reader.fieldnames
+    locations = [r for r in reader if r["pid"].rsplit("/", 1)[1] in cited["pleiades"]]
+out = io.StringIO()
+writer = csv.DictWriter(out, header, lineterminator="\n")
+writer.writeheader()
+for r in locations:
+    r.update(geometry="", bbox="")  # coordinates the build does not read
+    if (
+        r["id"].startswith("osm")
+        or re.search(r"\bOSM\b", r["title"], re.IGNORECASE)
+        or ("openstreetmap" in r["description"].lower())
+    ):  # decision 44
+        r.update(reprLat="7.777777", reprLong="8.888888", reprLatLong="7.777777,8.888888")
+    writer.writerow(r)
+(dest / PLEIADES).write_bytes(gzip.compress(out.getvalue().encode(), mtime=0))
+
+for zip_path in sorted(src.glob("*.zip")):
+    if zip_path.name == "cross-references.zip":
+        continue
+    txt = zip_path.stem + ".txt"
+    with zipfile.ZipFile(zip_path) as z:
+        lines = [
+            x
+            for x in z.read(txt).decode().splitlines(True)
+            if x.split("\t")[0] in cited["geonames"]
+        ]
+    with zipfile.ZipFile(dest / zip_path.name, "w") as z:
+        z.writestr(zipfile.ZipInfo(txt, date_time=(1980, 1, 1, 0, 0, 0)), "".join(lines))

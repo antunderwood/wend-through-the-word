@@ -124,11 +124,11 @@ def test_every_edge_reads_the_same_from_both_ends(export):
     assert seen > 100
 
 
-def test_every_theographic_partner_pair_ships_as_partner_of_and_is_reported_uncurated(export):
-    assert edge_types(export, "person:abraham_58", "person:sarah_2473") == [("PARTNER_OF", "both")]
-    assert edge_types(export, "person:sarah_2473", "person:abraham_58") == [("PARTNER_OF", "both")]
+def test_a_theographic_partner_pair_with_no_curated_row_ships_as_partner_of(export):
+    # Pairs with a curated row: tests/test_curated.py (#7).
+    assert edge_types(export, "person:isaac_616", "person:rebekah_2401") == [("PARTNER_OF", "both")]
+    assert edge_types(export, "person:rebekah_2401", "person:isaac_616") == [("PARTNER_OF", "both")]
     rows = read_tsv(export / "reports" / "uncurated_partners.tsv")
-    assert {"man_id": "person:abraham_58", "woman_id": "person:sarah_2473"} in rows
     assert {"man_id": "person:isaac_616", "woman_id": "person:rebekah_2401"} in rows
     assert len(rows) == len({(r["man_id"], r["woman_id"]) for r in rows})
 

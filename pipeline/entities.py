@@ -66,7 +66,7 @@ def load(b):
             in_range = [b.verse_recs[v] for v in f.get("verses") or [] if b.verse_recs.get(v)]
             if not in_range:
                 continue
-            # Whole-Bible Verse set for the Co-mention weight (decision 79). Themes (#12) add
+            # Whole-Bible Verse set for the Co-mention weight (decision 92). Themes (#12) add
             # their Filed Under Verses here.
             b.verse_sets[entity_id] = {b.rec_keys[v] for v in f["verses"] if v in b.rec_keys}
             theographic = {"source": "Theographic", "licence": b.licence(source)}

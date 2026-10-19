@@ -42,7 +42,11 @@ def test_each_person_has_a_gender_and_no_year(export):
 
 def test_people_with_the_same_name_stay_separate_entities(export):
     anahs = [entity(export, "person", n) for n in ("anah_247", "anah_248", "anah_249")]
-    assert [a["gender"] for a in anahs] == ["Female", "Male", "Male"]
+    assert [(a["id"], a["name"]) for a in anahs] == [
+        ("person:anah_247", "Anah"),
+        ("person:anah_248", "Anah"),
+        ("person:anah_249", "Anah"),
+    ]
 
 
 def test_event_year_is_the_astronomical_year_from_theographic(export):

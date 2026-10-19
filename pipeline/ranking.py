@@ -1,7 +1,7 @@
 """CO_MENTION edges between Entities that share a Verse, weighted by the cosine score, then the
 Neighbour ranking, Overflow counts, and Ring 2 of each Entity (PRD 10.4).
 
-The Verse set of an Entity is `b.verse_sets`, across the whole Bible (decision 79), so weights
+The Verse set of an Entity is `b.verse_sets`, across the whole Bible (decision 92), so weights
 do not change when the book range grows. A pair needs a shared Verse in the book range, and
 `shared_verses` counts only those.
 """
@@ -56,7 +56,7 @@ def load(b):
             found["weight"] = weight
             found["edges"] = sorted(found["edges"] + [item], key=lambda i: i["edge"])
 
-    # Rank by weight alone, then ID. An explicit edge is a label, not a priority (decision 78).
+    # Rank by weight alone, then ID. An explicit edge is a label, not a priority (decision 91).
     for e in b.entities.values():
         e["neighbours"].sort(key=lambda n: (-n["weight"], n["id"]))
         types = Counter(n["type"] for n in e["neighbours"]) + Counter(verse=len(e["verses"]))
@@ -64,7 +64,7 @@ def load(b):
 
     # Ring 2: the top Neighbours of each Ring 1 node, as ID and weight. An Entity's come from
     # its Entity Neighbours, a Verse's from its cross-references, so that no list ranks weights
-    # of two scales together (decision 77). `b.top` also feeds the chapter Ring 2 (decision 80).
+    # of two scales together (decision 90). `b.top` also feeds the chapter Ring 2 (decision 93).
     b.top = {
         e["id"]: [{"id": n["id"], "weight": n["weight"]} for n in e["neighbours"][:RING2_TOP]]
         for e in b.entities.values()

@@ -1,12 +1,14 @@
 """Slow acceptance run on the real downloaded sources. Skipped when they are missing (CI)."""
 
 import os
+import re
 from collections import Counter
 from pathlib import Path
 
 import pytest
-from conftest import VERSION, read_json, read_tsv, run_build
-from test_coordinates import openstreetmap_points, shipped_points
+from conftest import FIXTURES, REAL_CURATED, VERSION, read_json, read_tsv, run_build
+from test_coordinates import openstreetmap_shipped, shipped_points
+from test_tipnr import TIPNR
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -17,7 +19,12 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def genesis(tmp_path_factory):
-    return run_build(tmp_path_factory.mktemp("genesis") / "out", sources=SOURCES, books=["Gen"])
+    return run_build(
+        tmp_path_factory.mktemp("genesis") / "out",
+        sources=SOURCES,
+        books=["Gen"],
+        curated=REAL_CURATED,
+    )
 
 
 def chapter_files(genesis):
@@ -80,8 +87,34 @@ def test_genesis_drops_only_edges_to_places_and_events_outside_the_range(genesis
     assert all("outside the book range" in r["cause"] for r in rows)
 
 
-def test_genesis_lists_23_uncurated_partner_pairs(genesis):
-    assert len(read_tsv(genesis / "reports" / "uncurated_partners.tsv")) == 23
+def test_genesis_curates_21_of_its_23_partner_pairs(genesis):
+    # The other 2 have one end outside Genesis: Maachah and Machir, Abiah and Hezron.
+    assert read_tsv(genesis / "reports" / "uncurated_partners.tsv") == [
+        {"man_id": "person:hezron_1520", "woman_id": "person:abiah_16"},
+        {"man_id": "person:machir_1877", "woman_id": "person:maachah_1843"},
+    ]
+
+
+def test_genesis_ships_the_real_curated_tables(genesis):
+    entity = genesis / "data" / VERSION / "entity" / "person"
+
+    def edges(a, b):
+        n = [n for n in read_json(entity / f"{a}.json")["neighbours"] if n["id"] == f"person:{b}"]
+        explicit = [e for e in n[0]["edges"] if e["edge"] != "CO_MENTION"]
+        return [(e["edge"], [v["label"] for v in e.get("evidence", [])]) for e in explicit]
+
+    assert edges("abraham_58", "sarah_2473") == [("SPOUSE_OF", ["Gen.11.29"])]
+    both = ["Gen.16.3", "Gen.25.6"]
+    assert edges("abraham_58", "hagar_1348") == [("CONCUBINE_OF", both), ("SPOUSE_OF", both)]
+    assert edges("anah_247", "beeri_432") == [
+        ("POSSIBLY_SAME_AS", ["Gen.26.34", "Gen.36.2", "Gen.36.24"])
+    ]
+    anah = read_json(entity / "anah_247.json")
+    assert (anah["gender"], anah["corrections"][0]["was"]) == ("Male", "Female")
+    for name in ("redundant", "no_longer_matches"):
+        assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
+    unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
+    assert [r["ids"] for r in unreviewed] == ["place:mount_of_olives_828 aliases"]
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
@@ -113,12 +146,19 @@ def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
 
 def test_every_genesis_place_has_a_cc_by_point_or_is_in_the_no_coordinate_report(genesis):
     shipped = shipped_points(genesis)
-    assert not {(p["lat"], p["lon"]) for p in shipped} & openstreetmap_points(SOURCES)
+    assert not openstreetmap_shipped(genesis, SOURCES)
     report = {r["place"]: r["cause"] for r in read_tsv(genesis / "reports" / "no_coordinate.tsv")}
-    assert (len(shipped), len(report)) == (64, 55)  # 47 of the 55 are on OSM geometry (dec. 57)
+    assert (len(shipped), len(report)) == (111, 8)
     assert report["place:galeed_432"] == "no OpenBible link"
     assert report["place:eden_354"] == "OpenBible gives no point"
-    assert report["place:euphrates_421"] == "OpenBible point dropped: OpenStreetMap geometry"
+
+
+def test_every_dropped_genesis_point_is_re_sourced(genesis):
+    # 47 OpenBible points are on OpenStreetMap geometry (decision 57); all are looked up again.
+    sources = Counter(p["coord_source"] for p in shipped_points(genesis))
+    assert sources == {"OpenBible": 64, "Pleiades": 17, "Wikidata": 28, "GeoNames": 2}
+    euphrates = read_json(genesis / "data" / VERSION / "entity" / "place" / "euphrates_421.json")
+    assert euphrates["coord_source"] == "Pleiades"
 
 
 def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesis):
@@ -140,7 +180,7 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
     people = [read_json(p) for p in (entity / "person").glob("*.json")]
     people = [e for e in people if e["verses"]]  # the 352 in Genesis, not the stubs
     # God is in more Verses than anyone; cosine over whole-Bible Verse sets demotes him
-    # (decisions 20 and 79). Owner's expected result: about 19 of 352.
+    # (decisions 20 and 92). Owner's expected result: about 19 of 352.
     with_god = [e["id"] for e in people if "person:god_1324" in top_people(e)]
     assert len(with_god) <= len(people) // 10
     abraham = read_json(entity / "person" / "abraham_58.json")
@@ -152,3 +192,25 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
         "person:nahor_2143",
         "person:lot_1830",
     ]
+
+
+def test_genesis_tipnr_check_reports_43_disagreements(genesis):
+    rows = read_tsv(genesis / "reports" / "tipnr_disagreements.tsv")
+    assert len(rows) == 43  # 46 without the curated partners, which settle 3 "partners" rows
+    # Theographic has three Anahs where TIPNR has one; Theographic decides (decision 7).
+    assert {r["person"] for r in rows if r["tipnr_person"].startswith("Anah@")} == {
+        "person:anah_247",
+        "person:anah_248",
+        "person:anah_249",
+    }
+
+
+def test_no_genesis_file_holds_a_tipnr_record_key(genesis):
+    key = re.compile(r"\w@[1-3A-Z][a-z]{2}\.\d+\.\d+")  # "Abraham@Gen.11.26-1Pe"
+    assert not [p for p in (genesis / "data").rglob("*.json") if key.search(p.read_text())]
+
+
+def test_the_tipnr_fixture_holds_no_line_of_the_real_file():
+    real = set((SOURCES / TIPNR).read_text(encoding="utf-8").splitlines())
+    fixture = (FIXTURES / TIPNR).read_text(encoding="utf-8").splitlines()
+    assert not [line for line in fixture if line in real and not line.startswith("$==")]

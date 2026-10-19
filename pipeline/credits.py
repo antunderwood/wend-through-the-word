@@ -33,6 +33,22 @@ CREDITS = {
         "credit": "Place locations from OpenBible.info.",
         "link": "https://github.com/openbibleinfo/Bible-Geocoding-Data",
     },
+    # Lookups for Places whose OpenBible point is dropped (licences.md 3.6 to 3.8).
+    "pleiades": {
+        "name": "Pleiades",
+        "credit": "Place locations from Pleiades: A Gazetteer of Past Places, by its contributors.",
+        "link": "https://pleiades.stoa.org/",
+    },
+    "wikidata": {
+        "name": "Wikidata",
+        "credit": "Place locations from Wikidata.",
+        "link": "https://www.wikidata.org/",
+    },
+    "geonames": {
+        "name": "GeoNames",
+        "credit": "Place locations from GeoNames.",
+        "link": "https://www.geonames.org/",
+    },
     "tipnr": {
         "name": "STEP Bible: TIPNR",
         "credit": "Used to check the data; nothing from it is included.",  # decision 46
@@ -55,6 +71,7 @@ EASTONS = {  # comes inside Theographic's dictText; credited when a Dictionary E
 }
 LICENCE_LINKS = {
     "CC0 1.0": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "CC BY 3.0": "https://creativecommons.org/licenses/by/3.0/",
     "CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/",
     "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
 }
