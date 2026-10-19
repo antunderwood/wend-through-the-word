@@ -28,7 +28,7 @@ def facts(kind, f):
             "licence": "Public domain (1897)",  # decision 38
         }
     if kind in ("person", "place"):
-        out["name"] = f["displayTitle"]  # disambiguated: "Jacob (Israel)" (decision 56)
+        out["name"] = f["displayTitle"]  # disambiguated: "Jacob (Israel)" (decision 62)
     if kind == "group":
         out["name"] = f["groupName"]
     if kind == "person":

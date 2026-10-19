@@ -82,7 +82,21 @@ From the source notes written for tickets #4 to #13.
 ## 2026-10-19: Entities and Mentions (#4)
 
 55. **Links in a Dictionary Entry become plain text.** Theographic's `dictText` holds Markdown links such as `[Gen. 11:27](/gen#Gen.11.27)`; the export keeps only "Gen. 11:27". Reason: the links point at paths on Theographic's own site, and the prototype did the same. Other Markdown (paragraph breaks) is kept. Turning the references into verse links in the app is a later choice.
-56. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
+
+## 2026-10-19: Coordinates and themes
+
+Numbers start at 56, because ticket #4 records decision 55.
+
+56. **A Theographic place joins its OpenBible record through Theographic's `geo/bible-places.geojson`.** The build uses only each feature's `links` (OpenBible, Pleiades, and Wikidata IDs). The geometry never ships (decision 41). This is a new source from the Theographic repository (CC BY-SA 4.0), added to `download` and `docs/licences.md` by ticket #10. Reason: it links 1,255 of 1,298 places, while a name and verse match leaves 36 unmatched and 15 ties.
+57. **OpenBible points computed from OpenStreetMap geometry are dropped and re-sourced.** These are points whose record has `geometry_credit` "osm", even when `coordinates_source` is not "osm" (45 Genesis places, such as the Euphrates and Ur). Reason: the OpenStreetMap record already rejects converted or shifted OpenStreetMap values as still derived. A point computed from the geometry is the same case.
+58. **The decision 43 check also applies to OpenBible points that come from Wikidata.** A point whose Wikidata coordinate cites OpenStreetMap is dropped and re-sourced. Reason: CC0 on Wikidata does not clean ODbL data, whoever looks it up.
+59. **Nave's references to a whole chapter are skipped and reported.** Reason: a chapter is weak evidence that every verse in it is about the topic. FILED_UNDER stays verse precise (8,267 Genesis links).
+60. **OpenBible confidence is `score.time_total` of the identification that gives the point.** Reason: the readme uses it to sort identifications. It is a number from 0 to 1,000; the front end can bucket it.
+61. **A Nave's heading with only "See" lines is not a Theme.** Reason: it has no Verses, so it would have no Neighbours.
+
+## 2026-10-19: Entity names (#4)
+
+62. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
