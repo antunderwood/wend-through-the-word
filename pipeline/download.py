@@ -30,6 +30,8 @@ SOURCES = {
         f"theo-{t}": (f"{THEO}/{t}.json", "CC BY-SA 4.0")
         for t in ("books", "verses", "people", "places", "events", "peopleGroups", "easton")
     },
+    # Links only: joins a Theographic place to its OpenBible record (decision 56).
+    "theo-geo": (f"{THEO.removesuffix('/json')}/geo/bible-places.geojson", "CC BY-SA 4.0"),
     **{f"geo-{t}": (f"{GEO}/{t}.jsonl", "CC BY 4.0") for t in ("ancient", "modern", "source")},
     "tipnr": (f"{STEP}/{TIPNR.replace(' ', '%20')}", "CC BY 4.0"),
     "naves": (

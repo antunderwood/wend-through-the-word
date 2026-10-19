@@ -104,6 +104,11 @@ Numbers start at 56, because ticket #4 records decision 55.
 64. **The build stops when it reads a source that has no credit in `pipeline/credits.py`.** Easton's is credited as its own source whenever a Dictionary Entry ships. Reason: the credits file must list every source the build read (PRD 5, rule 6), so a new source cannot ship without its credit wording and link.
 65. **A Place's `aliases` are Theographic's `aliases`, its `kjvName`, and the `displayTitle` of each of its `otherNames` places.** An alias that equals the Place's name, ignoring case, is left out. Reason: the owner wants a search for "Luz" to find Bethel. Luz is not in Bethel's `aliases` or `kjvName`; Theographic links the two only through `otherNames` (181 places, 257 links). Luz stays its own Place (decision 7). Some upstream aliases are poor (Mount of Olives `mount_of_olives_828` has `4b is just "mount" or "mountain"`); fix them through the curated tables, not in code.
 
+## 2026-10-19: OpenBible coordinates (#10)
+
+65. **A Place that Theographic links to more than one OpenBible record gets no OpenBible point.** The no-coordinate report lists it with both records. Reason: 3 places link to two records (`ether_418`, `kartan_672`, `kiriathaim_696`; none in Genesis), and nothing in the data says which one is meant. Picking one would choose an identification, not just a source.
+66. **Confidence ships as OpenBible gives it, negative values included.** Decision 60 calls `score.time_total` a number from 0 to 1,000, but it can be below 0: Dinhabah (`dinhabah_337`) has -77. Reason: a negative value means current scholarship leans against the identification. The front end can bucket it with the rest.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

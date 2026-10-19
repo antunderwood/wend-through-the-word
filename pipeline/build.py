@@ -10,13 +10,14 @@ import sys
 import tomllib
 from pathlib import Path
 
-from pipeline import entities, export, verses
+from pipeline import coordinates, entities, export, verses
 from pipeline.common import Build
 
 # Each step reads what earlier steps set on the Build. Add new steps here, before export.
 STEPS = [
     verses.load,
     entities.load,
+    coordinates.load,
     export.write,
 ]
 

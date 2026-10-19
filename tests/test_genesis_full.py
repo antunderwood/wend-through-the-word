@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from conftest import VERSION, read_json, read_tsv, run_build
+from test_coordinates import openstreetmap_points, shipped_points
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -60,3 +61,13 @@ def test_a_search_for_luz_finds_bethel(genesis):
 def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
     event = read_json(genesis / "data" / VERSION / "entity" / "event" / "1.json")
     assert event["event_year"] == -4003
+
+
+def test_every_genesis_place_has_a_cc_by_point_or_is_in_the_no_coordinate_report(genesis):
+    shipped = shipped_points(genesis)
+    assert not {(p["lat"], p["lon"]) for p in shipped} & openstreetmap_points(SOURCES)
+    report = {r["place"]: r["cause"] for r in read_tsv(genesis / "reports" / "no_coordinate.tsv")}
+    assert (len(shipped), len(report)) == (64, 55)  # 47 of the 55 are on OSM geometry (dec. 57)
+    assert report["place:galeed_432"] == "no OpenBible link"
+    assert report["place:eden_354"] == "OpenBible gives no point"
+    assert report["place:euphrates_421"] == "OpenBible point dropped: OpenStreetMap geometry"

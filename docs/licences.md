@@ -13,7 +13,7 @@ Quotes are copied from the upstream text on the date checked. Where we could not
 | Source | What we use | Licence as stated | Ships in the dataset | Checked |
 |---|---|---|---|---|
 | Berean Standard Bible (BSB) | Verse text | Dedicated to the public domain, linked to CC0 1.0 | Yes | 2026-10-19 |
-| Theographic Bible Metadata | People, places, events, people groups, verse links, family links, Easton's text | CC BY-SA 4.0 | Yes | 2026-10-19 |
+| Theographic Bible Metadata | People, places, events, people groups, verse links, family links, Easton's text, links from places to OpenBible.info records | CC BY-SA 4.0 | Yes | 2026-10-19 |
 | Easton's Bible Dictionary (through Theographic) | Dictionary Entry text | Not stated by Theographic. CCEL marks it "Public Domain". See notes. | Yes | 2026-10-19 |
 | OpenBible.info cross-references | Verse to verse edges and votes | CC BY 4.0 (page links to the 4.0 licence) | Yes | 2026-10-19 |
 | OpenBible.info geocoding | Place coordinates and confidence | CC BY 4.0; OpenStreetMap data is ODbL 1.0 | Yes, CC BY points only | 2026-10-19 |
@@ -85,6 +85,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 
 - URL: https://github.com/robertrouse/theographic-bible-metadata (branch `master`, commit `52e049e`, 2026-10-14).
 - Use: people, places, events, people groups, verse links, family links, and Easton's text (`dictText`). Theographic decides entity identity.
+- Also `geo/bible-places.geojson` (Linked Places Format, same repository and licence, checked 2026-10-19). The build reads only each feature's `links`, to join a Theographic place to its OpenBible.info record (decision 56). The feature's `geometry` is a Theographic coordinate and never ships (decision 41); the fixture copy has `geometry` set to null.
 - Licence as stated: CC BY-SA 4.0.
 - Where stated:
   - `LICENSE` file: the full text of "Attribution-ShareAlike 4.0 International".
@@ -252,6 +253,8 @@ The mapping from the licence statement to fields is our reading of the field doc
 
 - It drops every coordinate in the ODbL group and the commercial group (decision 39). It does not use `custom_lonlat`.
 - It drops the 6 points whose source type is "google_maps" or "google_earth_community" (decision 40). Google's terms restrict copying map data, whatever the readme says.
+- It drops points whose location has OpenStreetMap geometry (`geometry_credit` "osm"), whatever its `coordinates_source` (decision 57). The point may be computed from that geometry.
+- A location with no `coordinates_source` takes its point from its `root` location, so the build checks the root by the same rules.
 - It ships points only. No geometry files ship.
 - It looks up dropped places in Pleiades, then Wikidata, then GeoNames. Each coordinate records `coord_source`.
 - A test fails if any shipped coordinate has an OpenStreetMap source (spec, user story 49).
