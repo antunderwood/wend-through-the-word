@@ -191,6 +191,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 112. **A reader can write a note on each step of Your Path and download the journey.** Notes stay in the browser (no accounts, no server), so version 1 stays static files only (decision 5). This amends PRD section 3, which ruled out notes. Each Focus on Your Path can carry a note; the download lists the steps in order with their notes, verse references, and links back into the app, plus the data credits (CC BY-SA 4.0). The file format, and what happens to notes when Your Path is cleared, are set in the M4 spec. Notes are built in M4, not in the navigation prototype. Reason: the owner wants a reader to capture what they learned on a journey and keep it. Browser storage can be lost when site data is cleared and does not move between devices, so the download is how a reader keeps notes.
 
+## 2026-10-19: Public prototype for the ABC test
+
+113. **The navigation prototype and its Genesis data snapshot are public at https://wend-nav-prototype.email2ants.workers.dev for the ABC test.** It is served as Workers static assets, deployed by `prototypes/navigation/deploy.sh` on the `prototype/navigation` branch. The repository stays private until M5 (decision 47). The site shows the data licence, every source credit, and the curated tables as the record of our changes (decision 45). This amends decision 47 for the data only. Reason: testers outside the owner's machine need a link, and the owner chose a public link over Cloudflare Access.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
