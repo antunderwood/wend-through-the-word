@@ -55,7 +55,7 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 
 ### Owner: Entities and links (M1)
 
-23. As the owner, I want People, Places, Events, and People Groups loaded from Theographic with prefixed IDs (for example `person:abel_1`), so that every Entity has one stable ID.
+23. As the owner, I want People, Places, Events, and People Groups loaded from Theographic with prefixed IDs (for example `person:abel_13`), so that every Entity has one stable ID.
 24. As the owner, I want Theographic to stay the identity authority, so that the build never merges two Entities.
 25. As the owner, I want the Dictionary Entry taken from `dictText` and never from `dictionaryText`, so that no broken characters ship.
 26. As the owner, I want Event Years converted with care from astronomical numbering (4004 BC is -4003), so that no year is off by one.

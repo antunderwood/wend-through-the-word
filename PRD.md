@@ -100,7 +100,7 @@ None in version 1. The NLT display is phase 2 (section 6.2). The application mus
 
 - Verse key: an integer in the form `BBCCCVVV`. Example: `01001001` is Genesis 1:1. It is Theographic's `verseID`.
 - Verse label: OSIS form. Example: `Gen.1.1`.
-- Entity ID: the Theographic ID, with a prefix for the type. Example: `person:abel_1`.
+- Entity ID: the Theographic ID, with a prefix for the type. Example: `person:abel_13`.
 - Strong's number: the join key for lexicon data in phase 2.
 - Wikidata QID: an optional attribute.
 

@@ -69,6 +69,16 @@ Source: `docs/licences.md`.
 48. **The build has no SQLite store until a step needs graph queries.** It works in memory for now. This defers the "SQLite internally" part of the spec. Reason: the Verse export needs no queries, and tests never read the store, so adding it later changes nothing they check. Add it when CO_MENTION or ranking (#8) needs it.
 49. **`index.json` sits outside the versioned folder.** Every other data file is under `data/<data version>/`. Reason: the front end loads `index.json` first to learn the current data version, so it cannot be inside that version.
 
+## 2026-10-19: Source details for the Genesis build
+
+From the source notes written for tickets #4 to #13.
+
+50. **Gender uses Theographic's values, `Male` and `Female`, everywhere.** `corrections.csv` uses them too (Anah: was `Female`, value `Male`). Reason: `was` must match the upstream value exactly (decision 35), with no mapping in between.
+51. **Entities outside the book range ship as stubs when an explicit edge links them to an Entity in range.** A stub file holds the Entity's facts and its Neighbours in range. Reason: 14 People Groups (including Genealogy of Jesus, decision 30) and 75 children have no Genesis verse but belong to Genesis People. Cross-references already keep ends outside the range (spec, user story 44).
+52. **A cross-reference to a range is one edge to the first verse, with `to_end_key`.** Reason: 88,150 OpenBible rows target a range. One edge per row keeps Votes unrepeated, and the end key lets the front end show "Gen 1:1-3".
+53. **Cross-references with zero or negative Votes are kept.** The front end's default filter hides them (PRD 12.4). Reason: the data stays complete, and trimming for size already drops the lowest Votes first.
+54. **People Group IDs are `group:` plus the group name in lower case, with spaces as underscores.** Reason: Theographic gives groups no ID field. The prototype used the same rule.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
