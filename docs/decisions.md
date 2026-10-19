@@ -98,6 +98,11 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 62. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
 
+## 2026-10-19: Search index and credits (#5)
+
+63. **Search index entries carry no `source` or `licence`.** Each entry is a label (ID, type, name, aliases) for an Entity whose file already carries them, so the provenance test skips `search-index.json`. Reason: repeating them on every entry adds size to the file the front end loads first, and the index is not a node or an edge.
+64. **The build stops when it reads a source that has no credit in `pipeline/credits.py`.** Easton's is credited as its own source whenever a Dictionary Entry ships. Reason: the credits file must list every source the build read (PRD 5, rule 6), so a new source cannot ship without its credit wording and link.
+
 ## 2026-10-19: OpenBible coordinates (#10)
 
 65. **A Place that Theographic links to more than one OpenBible record gets no OpenBible point.** The no-coordinate report lists it with both records. Reason: 3 places link to two records (`ether_418`, `kartan_672`, `kiriathaim_696`; none in Genesis), and nothing in the data says which one is meant. Picking one would choose an identification, not just a source.
