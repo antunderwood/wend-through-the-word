@@ -1,0 +1,55 @@
+[
+ {
+  "id": "recIFusdNl6d8dj3L",
+  "createdTime": "2018-05-13T17:19:17.000Z",
+  "fields": {
+   "osisName": "Gen",
+   "bookOrder": 1,
+   "bookName": "Genesis",
+   "bookDiv": "Pentateuch",
+   "testament": "Old Testament",
+   "shortName": "Ge",
+   "slug": "gen",
+   "chapterCount": 50,
+   "verseCount": 1533,
+   "peopleCount": 1082,
+   "placeCount": 267
+  }
+ },
+ {
+  "id": "recEJId5B98HV0x6D",
+  "createdTime": "2018-05-22T19:36:23.000Z",
+  "fields": {
+   "osisName": "Matt",
+   "bookOrder": 40,
+   "bookName": "Matthew",
+   "bookDiv": "Gospels",
+   "testament": "New Testament",
+   "shortName": "Mt",
+   "slug": "matt",
+   "yearWritten": "50",
+   "chapterCount": 28,
+   "verseCount": 1071,
+   "peopleCount": 431,
+   "placeCount": 69,
+   "modified": "2026-01-05T10:59:36.000Z"
+  }
+ },
+ {
+  "id": "recMApftYXBHE8lV5",
+  "createdTime": "2018-05-22T19:36:23.000Z",
+  "fields": {
+   "osisName": "3John",
+   "bookOrder": 64,
+   "bookName": "3 John",
+   "bookDiv": "General Epistles",
+   "testament": "New Testament",
+   "shortName": "3Jn",
+   "slug": "3john",
+   "chapterCount": 1,
+   "verseCount": 14,
+   "peopleCount": 4,
+   "placeCount": 0
+  }
+ }
+]

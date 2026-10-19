@@ -1,0 +1,6 @@
+# Config for `python -m pipeline.build build.toml`. Run `python -m pipeline.download` first.
+books = ["Gen"]
+sources = "sources"
+out = "out"
+build_date = "2026-10-19"
+data_version = "2026-10-19"

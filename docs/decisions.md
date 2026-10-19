@@ -64,6 +64,11 @@ Source: `docs/licences.md`.
 
 47. **The repository stays private until the M5 launch.** This amends decision 29, which made it public at M0. Reason: no licence requires a public repository. CC BY-SA 4.0 binds the data we hand out, and the site hands it out with credits and the modification notice. Only three things need the repository public: readers opening Correction Requests, the credits link to the curated tables, and transparency. None is needed before launch. "Suggest a correction" links are tested in M4 as a collaborator.
 
+## 2026-10-19: Tracer build (#3)
+
+48. **The build has no SQLite store until a step needs graph queries.** It works in memory for now. This defers the "SQLite internally" part of the spec. Reason: the Verse export needs no queries, and tests never read the store, so adding it later changes nothing they check. Add it when CO_MENTION or ranking (#8) needs it.
+49. **`index.json` sits outside the versioned folder.** Every other data file is under `data/<data version>/`. Reason: the front end loads `index.json` first to learn the current data version, so it cannot be inside that version.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

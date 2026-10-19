@@ -1,0 +1,4533 @@
+[
+ {
+  "id": "recLJMCOtNOhHq9Rq",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.1",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "1",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011001",
+   "modified": "2026-10-13T03:36:07.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "recZfLrAXGCa0H8uJ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.2",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "2",
+   "peopleCount": 0,
+   "places": [
+    "rechl3VIoaKFb2C9f"
+   ],
+   "placesCount": 1,
+   "yearNum": -2246,
+   "verseID": "01011002",
+   "modified": "2026-10-13T03:41:24.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "recYYRNNzPmGVhLTY",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.3",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "3",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011003",
+   "modified": "2026-10-13T03:41:01.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "rec0YZ1KYoASvvVdc",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.4",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "4",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011004",
+   "modified": "2026-10-13T03:28:27.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "rec4jHwU9G7mJO5Gc",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.5",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "5",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011005",
+   "modified": "2026-10-13T03:30:00.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "reczWTm8IF3RW2RSI",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.6",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "6",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011006",
+   "modified": "2026-10-13T03:50:21.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "recjKomlAk9rI3en4",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.7",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "7",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011007",
+   "modified": "2026-10-13T03:44:48.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "recS6fO8Zcm4ThbSh",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.8",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "8",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011008",
+   "modified": "2026-10-13T03:38:34.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "recM1AOXTSKtM4cFr",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.9",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "9",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recO7At5WvGRe0Xsu"
+   ],
+   "placesCount": 1,
+   "yearNum": -2246,
+   "verseID": "01011009",
+   "modified": "2026-10-13T03:36:24.000Z",
+   "event": [
+    "recy4o2BxavybTuX6"
+   ]
+  }
+ },
+ {
+  "id": "recf8B2rRDQocOCUd",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.10",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "10",
+   "people": [
+    "recOCbR2kuXoxyvkq",
+    "recDncefA67SnXVsu"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2345,
+   "verseID": "01011010",
+   "modified": "2026-10-13T03:43:20.000Z",
+   "event": [
+    "recxg4gEuXG5R6PUZ",
+    "rec7uQ8Nhf6h5zdfj"
+   ]
+  }
+ },
+ {
+  "id": "recbvpTzRQ5suZz0S",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.11",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "11",
+   "people": [
+    "recOCbR2kuXoxyvkq",
+    "recDncefA67SnXVsu"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1845,
+   "verseID": "01011011",
+   "modified": "2026-10-13T03:42:13.000Z",
+   "event": [
+    "recxg4gEuXG5R6PUZ",
+    "recTZ4anILXT9AMbx"
+   ]
+  }
+ },
+ {
+  "id": "recHcYV8A7aqySYjg",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.12",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "12",
+   "people": [
+    "recDncefA67SnXVsu",
+    "recMoCCDPVw5IzYq8"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2310,
+   "verseID": "01011012",
+   "modified": "2026-10-13T03:34:49.000Z",
+   "event": [
+    "recQDMfXnyQKhXj01",
+    "recN97j5QCkdCwVOC"
+   ]
+  }
+ },
+ {
+  "id": "reco0pi1TPgqhAmEY",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.13",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "13",
+   "people": [
+    "recDncefA67SnXVsu",
+    "recMoCCDPVw5IzYq8"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1907,
+   "verseID": "01011013",
+   "modified": "2026-10-13T03:46:23.000Z",
+   "event": [
+    "recQDMfXnyQKhXj01",
+    "reciSatPkxfnd664i"
+   ]
+  }
+ },
+ {
+  "id": "recgEXHdSBPj6sGT8",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.14",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "14",
+   "people": [
+    "recMoCCDPVw5IzYq8",
+    "recRO35quNb37mHVy"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2280,
+   "verseID": "01011014",
+   "modified": "2026-10-13T03:43:43.000Z",
+   "event": [
+    "rectmsC3P5l7oRNpD",
+    "rec1JFgGFGfK07blt"
+   ]
+  }
+ },
+ {
+  "id": "recCL2kJz5UKBnIR7",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.15",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "15",
+   "people": [
+    "recMoCCDPVw5IzYq8",
+    "recRO35quNb37mHVy"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1877,
+   "verseID": "01011015",
+   "modified": "2026-10-13T03:32:46.000Z",
+   "event": [
+    "rectmsC3P5l7oRNpD",
+    "recefHHfdDlITHHsH"
+   ]
+  }
+ },
+ {
+  "id": "recZPXNOJmOJvUAgg",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.16",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "16",
+   "people": [
+    "recRO35quNb37mHVy",
+    "recIkDyjqErbTqdt0"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2246,
+   "verseID": "01011016",
+   "modified": "2026-10-13T03:41:19.000Z",
+   "event": [
+    "rec3cw1D7e1QItoGc",
+    "recsQpAQgJcwaSk9l"
+   ]
+  }
+ },
+ {
+  "id": "recL4AgRX5TOXgQrV",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.17",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "17",
+   "people": [
+    "recRO35quNb37mHVy",
+    "recIkDyjqErbTqdt0"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1816,
+   "verseID": "01011017",
+   "modified": "2026-10-13T03:36:01.000Z",
+   "event": [
+    "rec3cw1D7e1QItoGc",
+    "rec6BqgiWIs1ADP6z"
+   ]
+  }
+ },
+ {
+  "id": "recDyjfZrrWS53nKD",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.18",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "18",
+   "people": [
+    "recIkDyjqErbTqdt0",
+    "recmCYRmiSdCy63Fc"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2216,
+   "verseID": "01011018",
+   "modified": "2026-10-13T03:33:24.000Z",
+   "event": [
+    "recFXC4GpemMuhURF",
+    "recO9NRftpoIMlYmr"
+   ]
+  }
+ },
+ {
+  "id": "recZIwkbdM7Db3BUo",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.19",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "19",
+   "people": [
+    "recIkDyjqErbTqdt0",
+    "recmCYRmiSdCy63Fc"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2007,
+   "verseID": "01011019",
+   "modified": "2026-10-13T03:41:17.000Z",
+   "event": [
+    "recFXC4GpemMuhURF",
+    "recyn98EnxpfPAaEq"
+   ]
+  }
+ },
+ {
+  "id": "rec4jlRgJz9BK5DOB",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.20",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "20",
+   "people": [
+    "recmCYRmiSdCy63Fc",
+    "rec5I7GZ9sLwh0hI2"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2184,
+   "verseID": "01011020",
+   "modified": "2026-10-13T03:30:00.000Z",
+   "event": [
+    "recZegzr6mX3DH8vc",
+    "recfX4yWDQUMG8Oqh"
+   ]
+  }
+ },
+ {
+  "id": "rec8bHkNLK6SPQRbp",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.21",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "21",
+   "people": [
+    "recmCYRmiSdCy63Fc",
+    "rec5I7GZ9sLwh0hI2"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1977,
+   "verseID": "01011021",
+   "modified": "2026-10-13T03:31:24.000Z",
+   "event": [
+    "recZegzr6mX3DH8vc",
+    "rec8LzDmLtoQ5PD6q"
+   ]
+  }
+ },
+ {
+  "id": "recA05ZgcwcTQiJHT",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.22",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "22",
+   "people": [
+    "rec5I7GZ9sLwh0hI2",
+    "recyVuQvM4Ue7gOd4"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2154,
+   "verseID": "01011022",
+   "modified": "2026-10-13T03:31:53.000Z",
+   "event": [
+    "recLx9SIvsFEIJgVo",
+    "rec1LWfxUiRxxCrbn"
+   ]
+  }
+ },
+ {
+  "id": "rec8luMTcPmLc3az3",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.23",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "23",
+   "people": [
+    "rec5I7GZ9sLwh0hI2",
+    "recyVuQvM4Ue7gOd4"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1954,
+   "verseID": "01011023",
+   "modified": "2026-10-13T03:31:29.000Z",
+   "event": [
+    "recLx9SIvsFEIJgVo",
+    "rechmkETHJXlw66eb"
+   ]
+  }
+ },
+ {
+  "id": "recM4Un6cMI93tzl2",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.24",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "24",
+   "people": [
+    "recyVuQvM4Ue7gOd4",
+    "recXBYSWubfkpqNQm"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2125,
+   "verseID": "01011024",
+   "modified": "2026-10-13T03:36:25.000Z",
+   "event": [
+    "recIfpeMJFEOdSQhh",
+    "recePREjv2zZ8Esoo"
+   ]
+  }
+ },
+ {
+  "id": "recGnIv3oR4SzTzJb",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.25",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "25",
+   "people": [
+    "recyVuQvM4Ue7gOd4",
+    "recXBYSWubfkpqNQm"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -2006,
+   "verseID": "01011025",
+   "modified": "2026-10-13T03:34:30.000Z",
+   "event": [
+    "recIfpeMJFEOdSQhh",
+    "rec118tvZQItG2hEI"
+   ]
+  }
+ },
+ {
+  "id": "rec4ayUcZnUN9fhUl",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.26",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "26",
+   "people": [
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "recAZ1svRqs8DDACR"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": -2055,
+   "verseID": "01011026",
+   "modified": "2026-10-13T03:29:58.000Z",
+   "event": [
+    "recB5Rg7JlgsMcPyq",
+    "recXveJRjCtPNMLqs"
+   ]
+  }
+ },
+ {
+  "id": "recuJqyP43vbWJbzj",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.27",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "27",
+   "people": [
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "recAZ1svRqs8DDACR",
+    "recH5aFqTzpwfDSRi"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1995,
+   "verseID": "01011027",
+   "modified": "2026-10-13T03:48:34.000Z",
+   "event": [
+    "recB5Rg7JlgsMcPyq",
+    "recXveJRjCtPNMLqs"
+   ]
+  }
+ },
+ {
+  "id": "recBtcagpUh0WBQFF",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.28",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "28",
+   "people": [
+    "recAZ1svRqs8DDACR",
+    "recXBYSWubfkpqNQm"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recgQtoCtBjbsPwAw"
+   ],
+   "placesCount": 1,
+   "yearNum": -1995,
+   "verseID": "01011028",
+   "modified": "2026-10-13T03:32:36.000Z",
+   "event": [
+    "recB5Rg7JlgsMcPyq"
+   ]
+  }
+ },
+ {
+  "id": "recAkP0TQxz9e25bl",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.29",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "29",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "rechda7WMDuW1jBTq",
+    "recu1NkHTdTZhdbo7",
+    "recAZ1svRqs8DDACR",
+    "recTm23wkG8napV5L"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1995,
+   "verseID": "01011029",
+   "modified": "2026-10-13T03:32:11.000Z"
+  }
+ },
+ {
+  "id": "rec1s0iSKVXYdXamd",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.30",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "30",
+   "people": [
+    "rechda7WMDuW1jBTq"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1995,
+   "verseID": "01011030",
+   "modified": "2026-10-13T03:28:55.000Z"
+  }
+ },
+ {
+  "id": "rec6WN4WoQ5d67omJ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.31",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "31",
+   "people": [
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "recH5aFqTzpwfDSRi",
+    "recAZ1svRqs8DDACR",
+    "rechda7WMDuW1jBTq",
+    "recGc4mBQC3rOkQ8m"
+   ],
+   "peopleCount": 6,
+   "places": [
+    "recyuzIRhPm1IFEu0",
+    "recgQtoCtBjbsPwAw",
+    "recRxBBePxyyV6TFO"
+   ],
+   "placesCount": 3,
+   "yearNum": -1925,
+   "verseID": "01011031",
+   "modified": "2026-10-13T03:30:40.000Z",
+   "event": [
+    "rechJv1ksZ00ye38i"
+   ]
+  }
+ },
+ {
+  "id": "rec4248MQbeZWPPQk",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.11.32",
+   "status": "publish",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recInMECEitwZTHM0"
+   ],
+   "verseNum": "32",
+   "people": [
+    "recXBYSWubfkpqNQm"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recyuzIRhPm1IFEu0"
+   ],
+   "placesCount": 1,
+   "yearNum": -1920,
+   "verseID": "01011032",
+   "modified": "2026-10-13T03:29:45.000Z",
+   "event": [
+    "recYgh6yAIxRItDC9",
+    "rechJv1ksZ00ye38i"
+   ]
+  }
+ },
+ {
+  "id": "recCdmpkKJp3mpK70",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.1",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "1",
+   "people": [
+    "rechda7WMDuW1jBTq",
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1911,
+   "verseID": "01016001",
+   "modified": "2026-10-13T03:32:53.000Z"
+  }
+ },
+ {
+  "id": "recoEVd9glIcL8jo2",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.2",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "2",
+   "people": [
+    "rechda7WMDuW1jBTq",
+    "reccdFYIq50NyxNej",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1911,
+   "verseID": "01016002",
+   "modified": "2026-10-13T03:46:28.000Z"
+  }
+ },
+ {
+  "id": "rec40N0VRxv1rfoq6",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.3",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "3",
+   "people": [
+    "rechda7WMDuW1jBTq",
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG",
+    "recGc4mBQC3rOkQ8m"
+   ],
+   "peopleCount": 4,
+   "places": [
+    "recRxBBePxyyV6TFO"
+   ],
+   "placesCount": 1,
+   "yearNum": -1910,
+   "verseID": "01016003",
+   "modified": "2026-10-13T03:29:44.000Z"
+  }
+ },
+ {
+  "id": "recu87ctmwBDM8S1J",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.4",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "4",
+   "people": [
+    "recL1zd3NT68owBAG"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016004",
+   "modified": "2026-10-13T03:48:30.000Z"
+  }
+ },
+ {
+  "id": "recWLqEf5OOHqYoXj",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.5",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "5",
+   "people": [
+    "rechda7WMDuW1jBTq",
+    "reccdFYIq50NyxNej",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016005",
+   "modified": "2026-10-13T03:40:12.000Z"
+  }
+ },
+ {
+  "id": "recNgCd4ZZzGZWPGi",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.6",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "6",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "rechda7WMDuW1jBTq"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016006",
+   "modified": "2026-10-13T03:36:59.000Z"
+  }
+ },
+ {
+  "id": "recsSK02sVdfmlJqk",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.7",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "7",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recKc1ulr0DPuFTnO"
+   ],
+   "placesCount": 1,
+   "yearNum": -1910,
+   "verseID": "01016007",
+   "modified": "2026-10-13T03:47:58.000Z"
+  }
+ },
+ {
+  "id": "recMzhbWygCBCsFIf",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.8",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "8",
+   "people": [
+    "recL1zd3NT68owBAG",
+    "rechda7WMDuW1jBTq"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016008",
+   "modified": "2026-10-13T03:36:45.000Z"
+  }
+ },
+ {
+  "id": "recDxuku5DaEIIcRm",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.9",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "9",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016009",
+   "modified": "2026-10-13T03:33:24.000Z"
+  }
+ },
+ {
+  "id": "recwVo8pQPABZlbgC",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.10",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "10",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016010",
+   "modified": "2026-10-13T03:49:20.000Z"
+  }
+ },
+ {
+  "id": "recCXzbMY6GO8Z3Pk",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.11",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "11",
+   "people": [
+    "recvV3hxT3VINGuwx",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016011",
+   "modified": "2026-10-13T03:32:50.000Z",
+   "event": [
+    "rechXJhZerr2X4BnE"
+   ]
+  }
+ },
+ {
+  "id": "rec0SJgVZUTB8EpMx",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.12",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "12",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016012",
+   "modified": "2026-10-13T03:28:25.000Z",
+   "event": [
+    "rechXJhZerr2X4BnE"
+   ]
+  }
+ },
+ {
+  "id": "reccsgpPTh2wJ5mEr",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.13",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "13",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1910,
+   "verseID": "01016013",
+   "modified": "2026-10-13T03:42:33.000Z",
+   "event": [
+    "rechXJhZerr2X4BnE"
+   ]
+  }
+ },
+ {
+  "id": "recl8TB570m5tewgL",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.14",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "14",
+   "peopleCount": 0,
+   "places": [
+    "recbFkcAeBmrPDZvG",
+    "recrLh8m0GOwaWHsf"
+   ],
+   "placesCount": 2,
+   "yearNum": -1910,
+   "verseID": "01016014",
+   "modified": "2026-10-13T03:45:25.000Z",
+   "event": [
+    "rechXJhZerr2X4BnE"
+   ]
+  }
+ },
+ {
+  "id": "rec4UYC9gJdbLPP9t",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.15",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "15",
+   "people": [
+    "recL1zd3NT68owBAG",
+    "reccdFYIq50NyxNej",
+    "recvV3hxT3VINGuwx"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1909,
+   "verseID": "01016015",
+   "modified": "2026-10-13T03:29:56.000Z",
+   "event": [
+    "rechXJhZerr2X4BnE"
+   ]
+  }
+ },
+ {
+  "id": "recd9JbWH8ezrDBMH",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.16.16",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recwo9DIOSmMQDB6z"
+   ],
+   "verseNum": "16",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG",
+    "recvV3hxT3VINGuwx"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1909,
+   "verseID": "01016016",
+   "modified": "2026-10-13T03:42:39.000Z",
+   "event": [
+    "rechXJhZerr2X4BnE",
+    "rec1CnwQbgxnwGiRS"
+   ]
+  }
+ },
+ {
+  "id": "recIrbQVTdfJc0cBM",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.1",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "1",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recr0xWgepJBPsiGH"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1852,
+   "verseID": "01025001",
+   "modified": "2026-10-13T03:35:15.000Z"
+  }
+ },
+ {
+  "id": "recD653dcCCe7tlL5",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.2",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "2",
+   "people": [
+    "recv6Ey5CaBdmfKa2",
+    "recmpdfUzrmaZA843",
+    "recYnS78qsArMZfh5",
+    "recuAalSpGhVahIhx",
+    "recYca3Z27jXAn2tE",
+    "recqSyeC1xpLiN4R3"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1851,
+   "verseID": "01025002",
+   "modified": "2026-10-13T03:33:03.000Z"
+  }
+ },
+ {
+  "id": "rec1kNAE5GK2YJBvl",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.3",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "3",
+   "people": [
+    "recmpdfUzrmaZA843",
+    "recrNqWaSpudQRdXr",
+    "recYupIiXa7PA5gPu",
+    "recTiCxbWkZzNPX1G",
+    "rec5v097gx13gXQQ9",
+    "recw2CJc0eh7yP7e5"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1823,
+   "verseID": "01025003",
+   "modified": "2026-10-13T03:28:54.000Z"
+  }
+ },
+ {
+  "id": "recM0DIc9X9mQEoFC",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.4",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "4",
+   "people": [
+    "recuAalSpGhVahIhx",
+    "reciFr5Nog65vd2iV",
+    "recDjTCLi8owVWATN",
+    "recYTG3U5CU6c3muU",
+    "recwnmrA2RgNyubcH",
+    "recfxnvrTNNrBxoB1",
+    "recr0xWgepJBPsiGH"
+   ],
+   "peopleCount": 7,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01025004",
+   "modified": "2026-10-13T03:36:24.000Z"
+  }
+ },
+ {
+  "id": "recpbybp2PfpNnxLm",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.5",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "5",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1828,
+   "verseID": "01025005",
+   "modified": "2026-10-13T03:46:58.000Z"
+  }
+ },
+ {
+  "id": "recPwtsljxiFCSFKO",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.6",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "6",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1828,
+   "verseID": "01025006",
+   "modified": "2026-10-13T03:37:49.000Z"
+  }
+ },
+ {
+  "id": "recIVXkKlPw1Jvuul",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.7",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "7",
+   "people": [
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025007",
+   "modified": "2026-10-13T03:35:08.000Z",
+   "event": [
+    "recfnatCOLEHFYeLB",
+    "recJYhotncnfEqGcN"
+   ]
+  }
+ },
+ {
+  "id": "recEpjIweIdGcHYS0",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.8",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "8",
+   "people": [
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025008",
+   "modified": "2026-10-13T03:33:45.000Z"
+  }
+ },
+ {
+  "id": "rec4UNf1YyzBuC4Z0",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.9",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "9",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "recvV3hxT3VINGuwx",
+    "recJphRu1f6lh8d1e",
+    "recbTT2FXmIFIAmgo"
+   ],
+   "peopleCount": 4,
+   "places": [
+    "recmEify6uZYLj26E",
+    "recQea8xEa8yZBFdt"
+   ],
+   "placesCount": 2,
+   "yearNum": -1820,
+   "verseID": "01025009",
+   "modified": "2026-10-13T03:29:56.000Z"
+  }
+ },
+ {
+  "id": "recpKWNZMIaN4qlz4",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.10",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "10",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recQj11G0vIoqJYid",
+    "rechda7WMDuW1jBTq"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025010",
+   "modified": "2026-10-13T03:46:52.000Z"
+  }
+ },
+ {
+  "id": "recm7R7lvRF7ofNlt",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.11",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "11",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recqIoG1fkaNWJ1y0",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "rec1QA8OE0IHg2OPf"
+   ],
+   "placesCount": 1,
+   "yearNum": -1820,
+   "verseID": "01025011",
+   "modified": "2026-10-13T03:45:44.000Z"
+  }
+ },
+ {
+  "id": "recGNeqHzuwpVVw6I",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.12",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "12",
+   "people": [
+    "recvV3hxT3VINGuwx",
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG",
+    "rechda7WMDuW1jBTq"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025012",
+   "modified": "2026-10-13T03:34:19.000Z"
+  }
+ },
+ {
+  "id": "recjDiiGthJPp0Gvs",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.13",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "13",
+   "people": [
+    "recvV3hxT3VINGuwx",
+    "rec0H7E1EvEF1hJyF",
+    "recgAScrne6IJlIRY",
+    "recIEzV6TtXbcF6vd",
+    "recYfLSV4b1jyqTKY"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025013",
+   "modified": "2026-10-13T03:44:45.000Z"
+  }
+ },
+ {
+  "id": "recm2HHxZ8DAWypIG",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.14",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "14",
+   "people": [
+    "recErdHXLUXtgKBIj",
+    "reciTOiofEcluMAI4",
+    "recTEgvUjPVObU3LE"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025014",
+   "modified": "2026-10-13T03:45:43.000Z"
+  }
+ },
+ {
+  "id": "recMqBLUvolEpSPkB",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.15",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "15",
+   "people": [
+    "recbwSV1MGyOdVFN7",
+    "recHljmiNa6MyPKAU",
+    "recDv2v3mcDXIZBHE",
+    "recy6haWtOCY2voEu",
+    "reczuSIAf5WkR8rr2"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025015",
+   "modified": "2026-10-13T03:36:41.000Z"
+  }
+ },
+ {
+  "id": "recl8umv7anWBPO4d",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.16",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "16",
+   "people": [
+    "recvV3hxT3VINGuwx"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1820,
+   "verseID": "01025016",
+   "modified": "2026-10-13T03:45:25.000Z"
+  }
+ },
+ {
+  "id": "rec8W0QGsomNEfq8r",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.17",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "17",
+   "people": [
+    "recvV3hxT3VINGuwx"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1772,
+   "verseID": "01025017",
+   "modified": "2026-10-13T03:31:22.000Z",
+   "event": [
+    "recOWUvuVc8kC9Q1C",
+    "rec1CnwQbgxnwGiRS"
+   ]
+  }
+ },
+ {
+  "id": "reczuNzPbgCGGmbku",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.18",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "18",
+   "peopleCount": 0,
+   "places": [
+    "recfrXyxhuYOczKTm",
+    "recIJFRcqI6KbKgXb",
+    "recMe4umBdnB2gLyD",
+    "recKc1ulr0DPuFTnO"
+   ],
+   "placesCount": 4,
+   "yearNum": -1772,
+   "verseID": "01025018",
+   "modified": "2026-10-13T03:50:30.000Z"
+  }
+ },
+ {
+  "id": "recTcjbCxYrmypGEI",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.19",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "19",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1895,
+   "verseID": "01025019",
+   "modified": "2026-10-13T03:39:17.000Z"
+  }
+ },
+ {
+  "id": "recVuwRiQHi5hwRca",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.20",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "20",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "recZb9e7YIG9qh2qX",
+    "reccN1xlFTOq0eIxu",
+    "rec4gpLE6cs55ADcI"
+   ],
+   "peopleCount": 4,
+   "places": [
+    "recrEteYtMZW1c46t"
+   ],
+   "placesCount": 1,
+   "yearNum": -1855,
+   "verseID": "01025020",
+   "modified": "2026-10-13T03:40:02.000Z",
+   "event": [
+    "recSDGDMwUBAMUgur"
+   ]
+  }
+ },
+ {
+  "id": "recq3JBxbAFFkEwOz",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.21",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "21",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "recZb9e7YIG9qh2qX",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1836,
+   "verseID": "01025021",
+   "modified": "2026-10-13T03:47:05.000Z"
+  }
+ },
+ {
+  "id": "recPmeEcyE3PaPPUC",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.22",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "22",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025022",
+   "modified": "2026-10-13T03:37:46.000Z"
+  }
+ },
+ {
+  "id": "recNmmx3sR0ZZo7d4",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.23",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "23",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025023",
+   "modified": "2026-10-13T03:37:01.000Z"
+  }
+ },
+ {
+  "id": "recCw0IUCy0TfKTkS",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.24",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "24",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025024",
+   "modified": "2026-10-13T03:33:00.000Z",
+   "event": [
+    "recd4mOzI2nL66vR5",
+    "recTkocSMI0NxpIrw"
+   ]
+  }
+ },
+ {
+  "id": "recqg3HN6jy8k4vT0",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.25",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "25",
+   "people": [
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025025",
+   "modified": "2026-10-13T03:47:21.000Z",
+   "event": [
+    "recd4mOzI2nL66vR5",
+    "recTkocSMI0NxpIrw"
+   ]
+  }
+ },
+ {
+  "id": "recF0awhZCSb06TMf",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.26",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "26",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI",
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025026",
+   "modified": "2026-10-13T03:33:48.000Z",
+   "event": [
+    "recd4mOzI2nL66vR5",
+    "recTkocSMI0NxpIrw"
+   ]
+  }
+ },
+ {
+  "id": "rechD78qPckcyj3rm",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.27",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "27",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025027",
+   "modified": "2026-10-13T03:44:03.000Z"
+  }
+ },
+ {
+  "id": "recyHLff3vm8tg5Rn",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.28",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "28",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "recUQWSZuOecG4z1Q",
+    "recZb9e7YIG9qh2qX",
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": -1835,
+   "verseID": "01025028",
+   "modified": "2026-10-13T03:49:55.000Z"
+  }
+ },
+ {
+  "id": "recIFC4iJjpcCJI49",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.29",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "29",
+   "people": [
+    "recsU2ZSdzBvDqzgI",
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1804,
+   "verseID": "01025029",
+   "modified": "2026-10-13T03:35:03.000Z"
+  }
+ },
+ {
+  "id": "recCGvTcvTTYifiSm",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.30",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "30",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1804,
+   "verseID": "01025030",
+   "modified": "2026-10-13T03:32:44.000Z"
+  }
+ },
+ {
+  "id": "recKGLoZNwgNdY10B",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.31",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "31",
+   "people": [
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1804,
+   "verseID": "01025031",
+   "modified": "2026-10-13T03:35:45.000Z"
+  }
+ },
+ {
+  "id": "rectjdcr6Yew2R42b",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.32",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "32",
+   "people": [
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1804,
+   "verseID": "01025032",
+   "modified": "2026-10-13T03:48:21.000Z"
+  }
+ },
+ {
+  "id": "recKN0KeTi11uxzud",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.33",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "33",
+   "people": [
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1804,
+   "verseID": "01025033",
+   "modified": "2026-10-13T03:35:47.000Z"
+  }
+ },
+ {
+  "id": "recmY4BRLoklAYX3N",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.25.34",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recxDsXio9dxdVwHB"
+   ],
+   "verseNum": "34",
+   "people": [
+    "recsU2ZSdzBvDqzgI",
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1804,
+   "verseID": "01025034",
+   "modified": "2026-10-13T03:45:53.000Z"
+  }
+ },
+ {
+  "id": "recFlMDSrdSOh9Yez",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.1",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "1",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recqIoG1fkaNWJ1y0",
+    "recT2bBHUbJYLIUdu"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recNwG4bBkZyEhAT4"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026001",
+   "modified": "2026-10-13T03:34:06.000Z"
+  }
+ },
+ {
+  "id": "recSZhu9gurNV6ASs",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.2",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "2",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recfrXyxhuYOczKTm"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026002",
+   "modified": "2026-10-13T03:38:54.000Z"
+  }
+ },
+ {
+  "id": "recGQAyVuOuW8iVRX",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.3",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "3",
+   "people": [
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026003",
+   "modified": "2026-10-13T03:34:20.000Z"
+  }
+ },
+ {
+  "id": "recAenBTcpL2E1IQC",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.4",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "4",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026004",
+   "modified": "2026-10-13T03:32:09.000Z"
+  }
+ },
+ {
+  "id": "recHuGb9CqzJA4JkB",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.5",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "5",
+   "people": [
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026005",
+   "modified": "2026-10-13T03:34:56.000Z"
+  }
+ },
+ {
+  "id": "recEOEbZRLpLe1wVA",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.6",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "6",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recNwG4bBkZyEhAT4"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026006",
+   "modified": "2026-10-13T03:33:34.000Z"
+  }
+ },
+ {
+  "id": "recLtvkyktwUbhqbO",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.7",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "7",
+   "people": [
+    "recZb9e7YIG9qh2qX"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026007",
+   "modified": "2026-10-13T03:36:22.000Z"
+  }
+ },
+ {
+  "id": "recCql1Rug3srs32H",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.8",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "8",
+   "people": [
+    "recT2bBHUbJYLIUdu",
+    "recqIoG1fkaNWJ1y0",
+    "recZb9e7YIG9qh2qX"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026008",
+   "modified": "2026-10-13T03:32:59.000Z"
+  }
+ },
+ {
+  "id": "recygcioLZipTtmrq",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.9",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "9",
+   "people": [
+    "recT2bBHUbJYLIUdu",
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026009",
+   "modified": "2026-10-13T03:50:03.000Z"
+  }
+ },
+ {
+  "id": "recEslQofE8KQyaBz",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.10",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "10",
+   "people": [
+    "recT2bBHUbJYLIUdu"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026010",
+   "modified": "2026-10-13T03:33:46.000Z"
+  }
+ },
+ {
+  "id": "recaiJgigZJkCs8HL",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.11",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "11",
+   "people": [
+    "recT2bBHUbJYLIUdu"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026011",
+   "modified": "2026-10-13T03:41:45.000Z"
+  }
+ },
+ {
+  "id": "recHzy6AK2b9WZQDm",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.12",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "12",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026012",
+   "modified": "2026-10-13T03:34:58.000Z"
+  }
+ },
+ {
+  "id": "recfDtHqIAJ0YBvki",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.13",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "13",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026013",
+   "modified": "2026-10-13T03:43:22.000Z"
+  }
+ },
+ {
+  "id": "rec7TnwDcI4dnGGtN",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.14",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "14",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026014",
+   "modified": "2026-10-13T03:31:02.000Z"
+  }
+ },
+ {
+  "id": "recqKRXl1SFEBbRCQ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.15",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "15",
+   "people": [
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026015",
+   "modified": "2026-10-13T03:47:11.000Z"
+  }
+ },
+ {
+  "id": "recd3thLPTCrfpzgR",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.16",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "16",
+   "people": [
+    "recT2bBHUbJYLIUdu",
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026016",
+   "modified": "2026-10-13T03:42:37.000Z"
+  }
+ },
+ {
+  "id": "recXjSHKMNMKhDDKY",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.17",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "17",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recvDlppuKNnN5srC"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026017",
+   "modified": "2026-10-13T03:40:41.000Z"
+  }
+ },
+ {
+  "id": "recQqgIEfdUh7aZVZ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.18",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "18",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "reccdFYIq50NyxNej"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026018",
+   "modified": "2026-10-13T03:38:09.000Z"
+  }
+ },
+ {
+  "id": "recKERBZ21doFW4TF",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.19",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "19",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026019",
+   "modified": "2026-10-13T03:35:44.000Z"
+  }
+ },
+ {
+  "id": "recc61hwAMSLHLmpu",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.20",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "20",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recNwG4bBkZyEhAT4",
+    "rec1tleh7fR8tsqKa"
+   ],
+   "placesCount": 2,
+   "yearNum": -1803,
+   "verseID": "01026020",
+   "modified": "2026-10-13T03:42:16.000Z"
+  }
+ },
+ {
+  "id": "recpnwWfs8FMFurbC",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.21",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "21",
+   "peopleCount": 0,
+   "places": [
+    "recDNxYH4BhZWW7rS"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026021",
+   "modified": "2026-10-13T03:47:02.000Z"
+  }
+ },
+ {
+  "id": "recrozrjlihdxYmIi",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.22",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "22",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recoBlOCXvzVsT1pS"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026022",
+   "modified": "2026-10-13T03:47:45.000Z"
+  }
+ },
+ {
+  "id": "recftCmriomIvLFN6",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.23",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "23",
+   "peopleCount": 0,
+   "places": [
+    "rectrAkGtrZH5LMp8"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026023",
+   "modified": "2026-10-13T03:43:36.000Z"
+  }
+ },
+ {
+  "id": "recBt5W9kVMB5yCD1",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.24",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "24",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026024",
+   "modified": "2026-10-13T03:32:35.000Z"
+  }
+ },
+ {
+  "id": "recO4tmJJ7hdS373C",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.25",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "25",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026025",
+   "modified": "2026-10-13T03:37:08.000Z"
+  }
+ },
+ {
+  "id": "recS44zXTQneX4Dyp",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.26",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "26",
+   "people": [
+    "recT2bBHUbJYLIUdu",
+    "recqPPtGENoWYRpIv",
+    "recjWMggmneBxkOCQ"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recNwG4bBkZyEhAT4"
+   ],
+   "placesCount": 1,
+   "yearNum": -1803,
+   "verseID": "01026026",
+   "modified": "2026-10-13T03:38:34.000Z"
+  }
+ },
+ {
+  "id": "recEk4Nxuj2S31ugV",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.27",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "27",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026027",
+   "modified": "2026-10-13T03:33:43.000Z"
+  }
+ },
+ {
+  "id": "rec2ASXGrIzewJJqk",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.28",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "28",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026028",
+   "modified": "2026-10-13T03:29:02.000Z"
+  }
+ },
+ {
+  "id": "recCVryjHHZk0iDw9",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.29",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "29",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026029",
+   "modified": "2026-10-13T03:32:50.000Z"
+  }
+ },
+ {
+  "id": "recFQK8eoEeEJs7oa",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.30",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "30",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026030",
+   "modified": "2026-10-13T03:33:57.000Z"
+  }
+ },
+ {
+  "id": "recdXTbwp9iyRjfHa",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.31",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "31",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026031",
+   "modified": "2026-10-13T03:42:45.000Z"
+  }
+ },
+ {
+  "id": "recFZYOeb8X9pyBZE",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.32",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "32",
+   "people": [
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1803,
+   "verseID": "01026032",
+   "modified": "2026-10-13T03:34:00.000Z"
+  }
+ },
+ {
+  "id": "recyCHNla6LI7Ob4x",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.33",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "33",
+   "peopleCount": 0,
+   "places": [
+    "recVHSiFLmbUrZHLJ",
+    "rectrAkGtrZH5LMp8"
+   ],
+   "placesCount": 2,
+   "yearNum": -1803,
+   "verseID": "01026033",
+   "modified": "2026-10-13T03:49:53.000Z"
+  }
+ },
+ {
+  "id": "recX3xFKz6TN5YIUE",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.34",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "34",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recpvQCt0PY7dySM7",
+    "recXt9GL2JnxTUDe0",
+    "recaIkMXdattSy58r",
+    "recOdG4WjJKYqAMug"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1795,
+   "verseID": "01026034",
+   "modified": "2026-10-13T03:40:27.000Z"
+  }
+ },
+ {
+  "id": "recJm3VY7ct1oYvLL",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.26.35",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recnP1NhXroEtZCXx"
+   ],
+   "verseNum": "35",
+   "people": [
+    "recqIoG1fkaNWJ1y0",
+    "recZb9e7YIG9qh2qX"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1795,
+   "verseID": "01026035",
+   "modified": "2026-10-13T03:35:32.000Z"
+  }
+ },
+ {
+  "id": "recIUG5hZ3Ux2eFcj",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.1",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "1",
+   "people": [
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1795,
+   "verseID": "01036001",
+   "modified": "2026-10-13T03:35:08.000Z"
+  }
+ },
+ {
+  "id": "recEpdYayiot5coZb",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.2",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "2",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recGc4mBQC3rOkQ8m",
+    "recaIkMXdattSy58r",
+    "recOdG4WjJKYqAMug",
+    "recpvQCt0PY7dySM7",
+    "recgTlJx28QdBDEsl",
+    "recsCvIS5fxl25zU6",
+    "rec10srs5ydaLS7CM"
+   ],
+   "peopleCount": 8,
+   "placesCount": 0,
+   "yearNum": -1795,
+   "verseID": "01036002",
+   "modified": "2026-10-13T03:33:45.000Z"
+  }
+ },
+ {
+  "id": "recNKzc1Y2jI89AJZ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.3",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "3",
+   "people": [
+    "receS32JnSfTDEwQR",
+    "recvV3hxT3VINGuwx",
+    "rec0H7E1EvEF1hJyF"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1795,
+   "verseID": "01036003",
+   "modified": "2026-10-13T03:36:52.000Z"
+  }
+ },
+ {
+  "id": "recfu2sjH6uD7oY9k",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.4",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "4",
+   "people": [
+    "recaIkMXdattSy58r",
+    "recUQWSZuOecG4z1Q",
+    "rec5NX8uW1K4csGEj",
+    "receS32JnSfTDEwQR",
+    "recCBlNIAf0HhjdVO"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1795,
+   "verseID": "01036004",
+   "modified": "2026-10-13T03:43:37.000Z"
+  }
+ },
+ {
+  "id": "recWQErWiiWeDSibn",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.5",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "5",
+   "people": [
+    "recpvQCt0PY7dySM7",
+    "recxV95afGg2VYad3",
+    "recX3YCieD7ibQY5r",
+    "recjhebCIVeqCKJXN",
+    "recUQWSZuOecG4z1Q",
+    "recGc4mBQC3rOkQ8m"
+   ],
+   "peopleCount": 6,
+   "places": [
+    "recRxBBePxyyV6TFO"
+   ],
+   "placesCount": 1,
+   "yearNum": -1795,
+   "verseID": "01036005",
+   "modified": "2026-10-13T03:40:14.000Z"
+  }
+ },
+ {
+  "id": "rec2ZdatdM3U9Y06g",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.6",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "6",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recGc4mBQC3rOkQ8m",
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recRxBBePxyyV6TFO"
+   ],
+   "placesCount": 1,
+   "yearNum": -1739,
+   "verseID": "01036006",
+   "modified": "2026-10-13T03:29:11.000Z"
+  }
+ },
+ {
+  "id": "rec5HHtrMja15WZ8D",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.7",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "7",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -1739,
+   "verseID": "01036007",
+   "modified": "2026-10-13T03:30:12.000Z"
+  }
+ },
+ {
+  "id": "recqKGh9HtL5vaovB",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.8",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "8",
+   "people": [
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "rec9FmVbRkqnkXn8n"
+   ],
+   "placesCount": 1,
+   "yearNum": -1739,
+   "verseID": "01036008",
+   "modified": "2026-10-13T03:47:11.000Z"
+  }
+ },
+ {
+  "id": "recDveIxGbT3hsn3z",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.9",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "9",
+   "people": [
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "rec9FmVbRkqnkXn8n"
+   ],
+   "placesCount": 1,
+   "yearNum": -1739,
+   "verseID": "01036009",
+   "modified": "2026-10-13T03:33:24.000Z"
+  }
+ },
+ {
+  "id": "recnYAR18aDiYFdxY",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.10",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "10",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "rec5NX8uW1K4csGEj",
+    "recaIkMXdattSy58r",
+    "recCBlNIAf0HhjdVO",
+    "receS32JnSfTDEwQR"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1773,
+   "verseID": "01036010",
+   "modified": "2026-10-13T03:46:14.000Z"
+  }
+ },
+ {
+  "id": "recJelx2tu0J23pmr",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.11",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "11",
+   "people": [
+    "rec5NX8uW1K4csGEj",
+    "recDAmjcERkBwkg8Q",
+    "rec0Ctdb2a8sMOozt",
+    "recaDgdGwgUR3ViVq",
+    "reciDbbigGBXYc63b",
+    "receOOCNOnHaHsINB"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1733,
+   "verseID": "01036011",
+   "modified": "2026-10-13T03:35:30.000Z"
+  }
+ },
+ {
+  "id": "recKVWDulm9S6ak8B",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.12",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "12",
+   "people": [
+    "rec5NX8uW1K4csGEj",
+    "recUQWSZuOecG4z1Q",
+    "recp3sTywycVRJFZt",
+    "recaIkMXdattSy58r",
+    "recxozyu7lEjszRf6"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1733,
+   "verseID": "01036012",
+   "modified": "2026-10-13T03:35:50.000Z"
+  }
+ },
+ {
+  "id": "recf4XEC37dQ056G2",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.13",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "13",
+   "people": [
+    "recCBlNIAf0HhjdVO",
+    "recqJ7AbYRj6GkX6P",
+    "recUOUgjss2Lc3e4W",
+    "rece9TeCKxfJI5Tbl",
+    "recnc5Kni1UvfLx6u",
+    "receS32JnSfTDEwQR",
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 7,
+   "placesCount": 0,
+   "yearNum": -1733,
+   "verseID": "01036013",
+   "modified": "2026-10-13T03:43:19.000Z"
+  }
+ },
+ {
+  "id": "recpiIYpZ1nLHBzDZ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.14",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "14",
+   "people": [
+    "recpvQCt0PY7dySM7",
+    "recgTlJx28QdBDEsl",
+    "recsCvIS5fxl25zU6",
+    "recUQWSZuOecG4z1Q",
+    "recxV95afGg2VYad3",
+    "recX3YCieD7ibQY5r",
+    "recjhebCIVeqCKJXN"
+   ],
+   "peopleCount": 7,
+   "placesCount": 0,
+   "yearNum": -1711,
+   "verseID": "01036014",
+   "modified": "2026-10-13T03:46:59.000Z"
+  }
+ },
+ {
+  "id": "reccPnYCaJ5wQHljE",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.15",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "15",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "rec5NX8uW1K4csGEj",
+    "recDAmjcERkBwkg8Q",
+    "rec0Ctdb2a8sMOozt",
+    "recaDgdGwgUR3ViVq",
+    "receOOCNOnHaHsINB"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1711,
+   "verseID": "01036015",
+   "modified": "2026-10-13T03:42:23.000Z"
+  }
+ },
+ {
+  "id": "recnFznt6f9LRRts3",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.16",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "16",
+   "people": [
+    "reck78wSw5BXkLTC0",
+    "reciDbbigGBXYc63b",
+    "recp3sTywycVRJFZt",
+    "rec5NX8uW1K4csGEj",
+    "recUQWSZuOecG4z1Q",
+    "recaIkMXdattSy58r"
+   ],
+   "peopleCount": 6,
+   "places": [
+    "recLcxRZbz3yIQB7b"
+   ],
+   "placesCount": 1,
+   "yearNum": -1711,
+   "verseID": "01036016",
+   "modified": "2026-10-13T03:46:09.000Z"
+  }
+ },
+ {
+  "id": "recSxpypJLin73UlB",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.17",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "17",
+   "people": [
+    "recCBlNIAf0HhjdVO",
+    "recUQWSZuOecG4z1Q",
+    "recqJ7AbYRj6GkX6P",
+    "recUOUgjss2Lc3e4W",
+    "rece9TeCKxfJI5Tbl",
+    "recnc5Kni1UvfLx6u",
+    "receS32JnSfTDEwQR"
+   ],
+   "peopleCount": 7,
+   "places": [
+    "recLcxRZbz3yIQB7b"
+   ],
+   "placesCount": 1,
+   "yearNum": -1711,
+   "verseID": "01036017",
+   "modified": "2026-10-13T03:39:03.000Z"
+  }
+ },
+ {
+  "id": "recTHzdh49fCSIk9R",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.18",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "18",
+   "people": [
+    "recpvQCt0PY7dySM7",
+    "recUQWSZuOecG4z1Q",
+    "recxV95afGg2VYad3",
+    "recX3YCieD7ibQY5r",
+    "recjhebCIVeqCKJXN",
+    "recgTlJx28QdBDEsl"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1711,
+   "verseID": "01036018",
+   "modified": "2026-10-13T03:39:09.000Z"
+  }
+ },
+ {
+  "id": "recoXQtbdAmoWBnvI",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.19",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "19",
+   "people": [
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -1711,
+   "verseID": "01036019",
+   "modified": "2026-10-13T03:46:35.000Z"
+  }
+ },
+ {
+  "id": "reckdDgj7yX95wCU9",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.20",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "20",
+   "people": [
+    "recOX7bzog0NALtK7",
+    "recDVPMfLcfConM50",
+    "reclK7fHzOIxFQf6F",
+    "rec18ALrKRV4whrgb",
+    "recZwlJk5ecgPZaeX"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1805,
+   "verseID": "01036020",
+   "modified": "2026-10-13T03:45:13.000Z"
+  }
+ },
+ {
+  "id": "recLYhe4C5F43zL02",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.21",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "21",
+   "people": [
+    "recSb23V3EQtfldTc",
+    "recl1WPeQDwuZjXx4",
+    "recSiSW57dddI3uh2",
+    "recOX7bzog0NALtK7",
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 5,
+   "places": [
+    "recLcxRZbz3yIQB7b"
+   ],
+   "placesCount": 1,
+   "yearNum": -1799,
+   "verseID": "01036021",
+   "modified": "2026-10-13T03:36:13.000Z"
+  }
+ },
+ {
+  "id": "recNMmNB6bQHxmM97",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.22",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "22",
+   "people": [
+    "recDVPMfLcfConM50",
+    "recbM49PlDElnGlEe",
+    "recSIpHo7tmg0q7jL",
+    "recL7FKDcTneTvG5r"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036022",
+   "modified": "2026-10-13T03:36:53.000Z"
+  }
+ },
+ {
+  "id": "recR1jQMRWj4L9IK0",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.23",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "23",
+   "people": [
+    "reclK7fHzOIxFQf6F",
+    "recSlRUq0Y3H5qP4a",
+    "recFgNCiF51FxNarU",
+    "recvyn2DzXG14PDnY",
+    "recrcFmXLXwhyjYtC",
+    "rec2tIpkGX4O957vf"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036023",
+   "modified": "2026-10-13T03:38:14.000Z"
+  }
+ },
+ {
+  "id": "reclCXHQzWWzcs4nJ",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.24",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "24",
+   "people": [
+    "rec18ALrKRV4whrgb",
+    "recVAJtqZaVmlvha3",
+    "recwl616Y2Hx55XsA"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036024",
+   "modified": "2026-10-13T03:45:27.000Z"
+  }
+ },
+ {
+  "id": "recOCdotNozlazH1F",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.25",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "25",
+   "people": [
+    "recZwlJk5ecgPZaeX",
+    "recMEhCJ60xmpReVK",
+    "recYSNcfLr67bLbyN"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036025",
+   "modified": "2026-10-13T03:37:11.000Z"
+  }
+ },
+ {
+  "id": "rec5qyCXE7a38fUX0",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.26",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "26",
+   "people": [
+    "recSb23V3EQtfldTc",
+    "recyufwa3J3cy4GYB",
+    "rechVIzbtG8RyGHIk",
+    "recEvZ0nR0eBUJ4td",
+    "recuUV96KtID73CE9"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036026",
+   "modified": "2026-10-13T03:30:26.000Z"
+  }
+ },
+ {
+  "id": "rec0d6cl0Cone8Ds0",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.27",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "27",
+   "people": [
+    "recl1WPeQDwuZjXx4",
+    "recfIoZnm5vOytt1Z",
+    "recYd2uMuWHrctoFp",
+    "recjZ7LU45DM9XmtR"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036027",
+   "modified": "2026-10-13T03:28:28.000Z"
+  }
+ },
+ {
+  "id": "recBwMatgb3FXvmfU",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.28",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "28",
+   "people": [
+    "recSiSW57dddI3uh2",
+    "recbTOvXiOemssJob",
+    "rec4mQHE705nlOKkU"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036028",
+   "modified": "2026-10-13T03:32:36.000Z"
+  }
+ },
+ {
+  "id": "recjkLOyYsKJX6bTN",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.29",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "29",
+   "people": [
+    "recDVPMfLcfConM50",
+    "reclK7fHzOIxFQf6F",
+    "rec18ALrKRV4whrgb",
+    "recZwlJk5ecgPZaeX"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": -1755,
+   "verseID": "01036029",
+   "modified": "2026-10-13T03:44:56.000Z"
+  }
+ },
+ {
+  "id": "recQtFuDDEwzbkbdH",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.30",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "30",
+   "people": [
+    "recSb23V3EQtfldTc",
+    "recl1WPeQDwuZjXx4",
+    "recSiSW57dddI3uh2",
+    "recbM49PlDElnGlEe",
+    "recOX7bzog0NALtK7"
+   ],
+   "peopleCount": 5,
+   "places": [
+    "rec9FmVbRkqnkXn8n"
+   ],
+   "placesCount": 1,
+   "yearNum": -1755,
+   "verseID": "01036030",
+   "modified": "2026-10-13T03:38:11.000Z"
+  }
+ },
+ {
+  "id": "recxRZ6c8vCTrnKzx",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.31",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "31",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recLcxRZbz3yIQB7b"
+   ],
+   "placesCount": 1,
+   "yearNum": -1755,
+   "verseID": "01036031",
+   "modified": "2026-10-13T03:49:37.000Z"
+  }
+ },
+ {
+  "id": "recrrqxKMzHSBq2we",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.32",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "32",
+   "people": [
+    "recq108iK9IWsxfWI",
+    "recEQFL0coGYW9r6v",
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recLcxRZbz3yIQB7b",
+    "recCUWlaj24StC6GY"
+   ],
+   "placesCount": 2,
+   "yearNum": -1755,
+   "verseID": "01036032",
+   "modified": "2026-10-13T03:47:45.000Z"
+  }
+ },
+ {
+  "id": "rec3IHTEbUU2tepoq",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.33",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "33",
+   "people": [
+    "recq108iK9IWsxfWI",
+    "recTteg8e7OkMu4CN",
+    "recJxKJfpBBtCwLxm"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recIfdlpmLYrfPeAv"
+   ],
+   "placesCount": 1,
+   "yearNum": -1868,
+   "verseID": "01036033",
+   "modified": "2026-10-13T03:29:28.000Z"
+  }
+ },
+ {
+  "id": "recD1RqgTa96XU39R",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.34",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "34",
+   "people": [
+    "recTteg8e7OkMu4CN",
+    "rec2qqp5ieBegBNXo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -1826,
+   "verseID": "01036034",
+   "modified": "2026-10-13T03:33:02.000Z"
+  }
+ },
+ {
+  "id": "recANmGRGZAfJncX3",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.35",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "35",
+   "people": [
+    "rec2qqp5ieBegBNXo",
+    "recmnUFvMWZNuvltg",
+    "rec97ngbkDcdlxQ0h",
+    "recuAalSpGhVahIhx",
+    "rec3qiPi8JN2h86Mj"
+   ],
+   "peopleCount": 5,
+   "places": [
+    "recUn6eVJDoG4xI0j",
+    "recOXgajprNUckFFf",
+    "recBZhqAvy5xhTNRn"
+   ],
+   "placesCount": 3,
+   "yearNum": -1784,
+   "verseID": "01036035",
+   "modified": "2026-10-13T03:32:02.000Z"
+  }
+ },
+ {
+  "id": "recWl9OLsxnGByZGW",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.36",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "36",
+   "people": [
+    "recmnUFvMWZNuvltg",
+    "recD8Jy1e5VTDmylj"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recdxr4An8KJNjm8R"
+   ],
+   "placesCount": 1,
+   "yearNum": -1742,
+   "verseID": "01036036",
+   "modified": "2026-10-13T03:40:21.000Z"
+  }
+ },
+ {
+  "id": "recvRaInNksbQKIeF",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.37",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "37",
+   "people": [
+    "recD8Jy1e5VTDmylj",
+    "recGegp7Q6Typb8zs"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recXyD7VeEfvtVULJ",
+    "recJ0N5yStBk9CjXA"
+   ],
+   "placesCount": 2,
+   "yearNum": -1700,
+   "verseID": "01036037",
+   "modified": "2026-10-13T03:48:57.000Z"
+  }
+ },
+ {
+  "id": "recio9cFWeprQtJ41",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.38",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "38",
+   "people": [
+    "recGegp7Q6Typb8zs",
+    "recoCYDDF5LKkpYDu",
+    "reca2hKoAnJq9vfQi"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1658,
+   "verseID": "01036038",
+   "modified": "2026-10-13T03:44:35.000Z"
+  }
+ },
+ {
+  "id": "recW4NMTQr9CTxdJ5",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.39",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "39",
+   "people": [
+    "recoCYDDF5LKkpYDu",
+    "reca2hKoAnJq9vfQi",
+    "recsg1hkKVChVUrO0",
+    "rech7WeP3sb5eCl2q",
+    "recMd2rffhZH7Vn9z",
+    "recseUUFtC0w1sguT"
+   ],
+   "peopleCount": 6,
+   "places": [
+    "recDTAsguCJpPM5ev"
+   ],
+   "placesCount": 1,
+   "yearNum": -1616,
+   "verseID": "01036039",
+   "modified": "2026-10-13T03:40:06.000Z"
+  }
+ },
+ {
+  "id": "recSDcEW8b1fkrzpC",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.40",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "40",
+   "people": [
+    "recUQWSZuOecG4z1Q",
+    "recxOX2TYPvRHist4",
+    "recrRVoNnbeZRPzt7",
+    "recCcljZaZHz6U0Zi"
+   ],
+   "peopleCount": 4,
+   "places": [
+    "recDQe9YTG4wPXsNP"
+   ],
+   "placesCount": 1,
+   "yearNum": -1616,
+   "verseID": "01036040",
+   "modified": "2026-10-13T03:38:38.000Z"
+  }
+ },
+ {
+  "id": "rec38KB5h6bWFRioP",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.41",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "41",
+   "people": [
+    "recvCtuuRjcChSsQ2",
+    "recmowiegE6U14t3O",
+    "recZxu5KdYgrJXmJ6"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1616,
+   "verseID": "01036041",
+   "modified": "2026-10-13T03:29:24.000Z"
+  }
+ },
+ {
+  "id": "recCjYnsDr65Wui48",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.42",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "42",
+   "people": [
+    "recCn0z8UZ5IrV9KN",
+    "recJcdxe9TXKd3q85",
+    "recpFCt5WNLzzZ7C1"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": -1616,
+   "verseID": "01036042",
+   "modified": "2026-10-13T03:32:55.000Z"
+  }
+ },
+ {
+  "id": "recpqe9vyiGF47SHK",
+  "createdTime": "2018-05-13T17:36:24.000Z",
+  "fields": {
+   "osisRef": "Gen.36.43",
+   "status": "wip",
+   "book": [
+    "recIFusdNl6d8dj3L"
+   ],
+   "chapter": [
+    "recvA0DmEWC5GQX15"
+   ],
+   "verseNum": "43",
+   "people": [
+    "recitSp90iHC9Jy2b",
+    "rectNZW2XX3tfDudV",
+    "recUQWSZuOecG4z1Q"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recLcxRZbz3yIQB7b"
+   ],
+   "placesCount": 1,
+   "yearNum": -1616,
+   "verseID": "01036043",
+   "modified": "2026-10-13T03:47:02.000Z"
+  }
+ },
+ {
+  "id": "recc5faAV0NTEVOLz",
+  "createdTime": "2018-05-13T17:53:10.000Z",
+  "fields": {
+   "osisRef": "Matt.17.20",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recqFcRzGt867NdQK"
+   ],
+   "verseNum": "20",
+   "people": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 32,
+   "verseID": "40017020",
+   "modified": "2025-01-22T21:29:10.000Z",
+   "event": [
+    "recXhKGCw4B1CjXQB"
+   ]
+  }
+ },
+ {
+  "id": "recKEr58TF9iGCzWP",
+  "createdTime": "2018-05-13T17:53:10.000Z",
+  "fields": {
+   "osisRef": "Matt.17.21",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recqFcRzGt867NdQK"
+   ],
+   "verseNum": "21",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 32,
+   "verseID": "40017021",
+   "modified": "2025-01-22T21:29:10.000Z",
+   "event": [
+    "recXhKGCw4B1CjXQB"
+   ]
+  }
+ },
+ {
+  "id": "recNT6ykmkNInmgeC",
+  "createdTime": "2018-05-13T17:53:10.000Z",
+  "fields": {
+   "osisRef": "Matt.17.22",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recqFcRzGt867NdQK"
+   ],
+   "verseNum": "22",
+   "people": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recmL1lWBqWP3mAq3"
+   ],
+   "placesCount": 1,
+   "yearNum": 32,
+   "verseID": "40017022",
+   "modified": "2025-01-22T22:11:50.000Z",
+   "event": [
+    "recyFfX2l12rwEkqk"
+   ]
+  }
+ },
+ {
+  "id": "recQEgzU2qUisV8cc",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.1",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "1",
+   "people": [
+    "recI3j3vovxhEjhnP"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001001",
+   "modified": "2021-01-08T15:06:23.000Z"
+  }
+ },
+ {
+  "id": "recjJZ3fXYtHKaKjg",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.2",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "2",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001002",
+   "modified": "2020-06-07T13:01:08.000Z"
+  }
+ },
+ {
+  "id": "rec5USXY8XKMq52R5",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.3",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "3",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001003",
+   "modified": "2020-06-07T13:01:09.000Z"
+  }
+ },
+ {
+  "id": "recIdy65ISAauFacX",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.4",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "4",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001004",
+   "modified": "2020-06-07T13:01:09.000Z"
+  }
+ },
+ {
+  "id": "recaNbhkRsS8PQ00L",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.5",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "5",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001005",
+   "modified": "2020-06-07T13:01:10.000Z"
+  }
+ },
+ {
+  "id": "rec8u93J5FgbCSdNH",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.6",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "6",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001006",
+   "modified": "2020-06-07T13:01:10.000Z"
+  }
+ },
+ {
+  "id": "reczv7IxteD5D6wYk",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.7",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "7",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001007",
+   "modified": "2020-06-07T13:01:11.000Z"
+  }
+ },
+ {
+  "id": "recVe1vBxTnUJ4lE8",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.8",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "8",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001008",
+   "modified": "2020-06-07T13:01:12.000Z"
+  }
+ },
+ {
+  "id": "recjkOOoKlkKdbNVu",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.9",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "9",
+   "people": [
+    "recRd8VDsVN2BRjwo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001009",
+   "modified": "2021-01-08T15:06:24.000Z"
+  }
+ },
+ {
+  "id": "reca2XA0DSzFbGSni",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.10",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "10",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001010",
+   "modified": "2020-06-07T13:01:05.000Z"
+  }
+ },
+ {
+  "id": "recCHKqhwgY0oX6aI",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.11",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "11",
+   "people": [
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001011",
+   "modified": "2021-01-08T15:06:23.000Z"
+  }
+ },
+ {
+  "id": "recKGBLg6skvCLO4S",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.12",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "12",
+   "people": [
+    "recnjSr5ffVmmz3Rf"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001012",
+   "modified": "2021-01-08T15:06:24.000Z"
+  }
+ },
+ {
+  "id": "recxMpRAhWnETvKvE",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.13",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "13",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001013",
+   "modified": "2020-06-07T13:01:07.000Z"
+  }
+ },
+ {
+  "id": "rece47qD0Nm1hwzMu",
+  "createdTime": "2018-05-13T17:56:48.000Z",
+  "fields": {
+   "osisRef": "3John.1.14",
+   "status": "wip",
+   "book": [
+    "recMApftYXBHE8lV5"
+   ],
+   "chapter": [
+    "recC7eHfosTXlVT5U"
+   ],
+   "verseNum": "14",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": 90,
+   "verseID": "64001014",
+   "modified": "2020-06-07T13:01:07.000Z"
+  }
+ }
+]

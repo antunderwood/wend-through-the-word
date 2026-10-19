@@ -28,7 +28,7 @@ SOURCES = {
     "crossrefs": ("https://a.openbible.info/data/cross-references.zip", "CC BY 4.0"),
     **{
         f"theo-{t}": (f"{THEO}/{t}.json", "CC BY-SA 4.0")
-        for t in ("verses", "people", "places", "events", "peopleGroups", "easton")
+        for t in ("books", "verses", "people", "places", "events", "peopleGroups", "easton")
     },
     **{f"geo-{t}": (f"{GEO}/{t}.jsonl", "CC BY 4.0") for t in ("ancient", "modern", "source")},
     "tipnr": (f"{STEP}/{TIPNR.replace(' ', '%20')}", "CC BY 4.0"),
