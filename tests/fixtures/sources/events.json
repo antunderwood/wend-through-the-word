@@ -1,0 +1,1318 @@
+[
+ {
+  "id": "recxg4gEuXG5R6PUZ",
+  "createdTime": "2020-08-20T20:39:14.000Z",
+  "fields": {
+   "title": "Lifetime of Shem",
+   "eventID": 34,
+   "startDate": "-2445",
+   "duration": "600Y",
+   "predecessor": [
+    "recpUCaR0HNgYjco5"
+   ],
+   "verses": [
+    "recf8B2rRDQocOCUd",
+    "recbvpTzRQ5suZz0S"
+   ],
+   "participants": [
+    "recOCbR2kuXoxyvkq"
+   ],
+   "verseSort": "01011010",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2444.9898899,
+   "people (from verses)": [
+    "recOCbR2kuXoxyvkq",
+    "recDncefA67SnXVsu",
+    "recOCbR2kuXoxyvkq",
+    "recDncefA67SnXVsu"
+   ]
+  }
+ },
+ {
+  "id": "rec7uQ8Nhf6h5zdfj",
+  "createdTime": "2020-08-20T20:39:46.000Z",
+  "fields": {
+   "title": "Birth of Arphaxad",
+   "eventID": 45,
+   "startDate": "-2345",
+   "duration": "1D",
+   "predecessor": [
+    "recpUCaR0HNgYjco5"
+   ],
+   "lag": "100Y",
+   "lagType": "FS",
+   "partOf": [
+    "recQDMfXnyQKhXj01"
+   ],
+   "verses": [
+    "recf8B2rRDQocOCUd"
+   ],
+   "participants": [
+    "recDncefA67SnXVsu",
+    "recOCbR2kuXoxyvkq"
+   ],
+   "verseSort": "01011010",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2344.9898899,
+   "people (from verses)": [
+    "recOCbR2kuXoxyvkq",
+    "recDncefA67SnXVsu"
+   ]
+  }
+ },
+ {
+  "id": "recQDMfXnyQKhXj01",
+  "createdTime": "2020-08-20T20:39:44.000Z",
+  "fields": {
+   "title": "Lifetime of Arphaxad",
+   "eventID": 46,
+   "startDate": "-2345",
+   "duration": "438Y",
+   "predecessor": [
+    "rec7uQ8Nhf6h5zdfj"
+   ],
+   "verses": [
+    "recHcYV8A7aqySYjg",
+    "reco0pi1TPgqhAmEY"
+   ],
+   "participants": [
+    "recDncefA67SnXVsu"
+   ],
+   "verseSort": "01011012",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2344.98988988,
+   "people (from verses)": [
+    "recDncefA67SnXVsu",
+    "recMoCCDPVw5IzYq8",
+    "recDncefA67SnXVsu",
+    "recMoCCDPVw5IzYq8"
+   ]
+  }
+ },
+ {
+  "id": "recN97j5QCkdCwVOC",
+  "createdTime": "2020-08-20T20:40:06.000Z",
+  "fields": {
+   "title": "Birth of Salah",
+   "eventID": 47,
+   "startDate": "-2310",
+   "duration": "1D",
+   "predecessor": [
+    "rec7uQ8Nhf6h5zdfj"
+   ],
+   "lag": "35Y",
+   "lagType": "FS",
+   "partOf": [
+    "rectmsC3P5l7oRNpD"
+   ],
+   "verses": [
+    "recHcYV8A7aqySYjg"
+   ],
+   "participants": [
+    "recMoCCDPVw5IzYq8",
+    "recDncefA67SnXVsu"
+   ],
+   "verseSort": "01011012",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2309.98988988,
+   "people (from verses)": [
+    "recDncefA67SnXVsu",
+    "recMoCCDPVw5IzYq8"
+   ]
+  }
+ },
+ {
+  "id": "rectmsC3P5l7oRNpD",
+  "createdTime": "2020-08-20T20:40:02.000Z",
+  "fields": {
+   "title": "Lifetime of Salah",
+   "eventID": 48,
+   "startDate": "-2310",
+   "duration": "433Y",
+   "predecessor": [
+    "recN97j5QCkdCwVOC"
+   ],
+   "verses": [
+    "recgEXHdSBPj6sGT8",
+    "recCL2kJz5UKBnIR7"
+   ],
+   "participants": [
+    "recMoCCDPVw5IzYq8"
+   ],
+   "verseSort": "01011014",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2309.98988986,
+   "people (from verses)": [
+    "recMoCCDPVw5IzYq8",
+    "recRO35quNb37mHVy",
+    "recMoCCDPVw5IzYq8",
+    "recRO35quNb37mHVy"
+   ]
+  }
+ },
+ {
+  "id": "rec1JFgGFGfK07blt",
+  "createdTime": "2020-08-20T20:40:43.000Z",
+  "fields": {
+   "title": "Birth of Eber",
+   "eventID": 49,
+   "startDate": "-2280",
+   "duration": "1D",
+   "predecessor": [
+    "recN97j5QCkdCwVOC"
+   ],
+   "lag": "30Y",
+   "lagType": "FS",
+   "partOf": [
+    "rec3cw1D7e1QItoGc"
+   ],
+   "verses": [
+    "recgEXHdSBPj6sGT8"
+   ],
+   "participants": [
+    "recRO35quNb37mHVy",
+    "recMoCCDPVw5IzYq8"
+   ],
+   "verseSort": "01011014",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2279.98988986,
+   "people (from verses)": [
+    "recMoCCDPVw5IzYq8",
+    "recRO35quNb37mHVy"
+   ]
+  }
+ },
+ {
+  "id": "rec3cw1D7e1QItoGc",
+  "createdTime": "2020-08-20T20:40:30.000Z",
+  "fields": {
+   "title": "Lifetime of Eber",
+   "eventID": 50,
+   "startDate": "-2280",
+   "duration": "464Y",
+   "predecessor": [
+    "rec1JFgGFGfK07blt"
+   ],
+   "verses": [
+    "recZPXNOJmOJvUAgg",
+    "recL4AgRX5TOXgQrV"
+   ],
+   "participants": [
+    "recRO35quNb37mHVy"
+   ],
+   "verseSort": "01011016",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2279.98988984,
+   "people (from verses)": [
+    "recRO35quNb37mHVy",
+    "recIkDyjqErbTqdt0",
+    "recRO35quNb37mHVy",
+    "recIkDyjqErbTqdt0"
+   ]
+  }
+ },
+ {
+  "id": "recsQpAQgJcwaSk9l",
+  "createdTime": "2020-08-20T20:41:08.000Z",
+  "fields": {
+   "title": "Birth of Peleg",
+   "eventID": 51,
+   "startDate": "-2246",
+   "duration": "1D",
+   "predecessor": [
+    "rec1JFgGFGfK07blt"
+   ],
+   "lag": "34Y",
+   "lagType": "FS",
+   "partOf": [
+    "recFXC4GpemMuhURF"
+   ],
+   "verses": [
+    "recZPXNOJmOJvUAgg"
+   ],
+   "participants": [
+    "recIkDyjqErbTqdt0",
+    "recRO35quNb37mHVy"
+   ],
+   "verseSort": "01011016",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2245.98988984,
+   "people (from verses)": [
+    "recRO35quNb37mHVy",
+    "recIkDyjqErbTqdt0"
+   ]
+  }
+ },
+ {
+  "id": "recFXC4GpemMuhURF",
+  "createdTime": "2020-08-20T20:41:06.000Z",
+  "fields": {
+   "title": "Lifetime of Peleg",
+   "eventID": 52,
+   "startDate": "-2246",
+   "duration": "239Y",
+   "predecessor": [
+    "recsQpAQgJcwaSk9l"
+   ],
+   "verses": [
+    "recDyjfZrrWS53nKD",
+    "recZIwkbdM7Db3BUo"
+   ],
+   "participants": [
+    "recIkDyjqErbTqdt0"
+   ],
+   "verseSort": "01011018",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2245.98988982,
+   "people (from verses)": [
+    "recIkDyjqErbTqdt0",
+    "recmCYRmiSdCy63Fc",
+    "recIkDyjqErbTqdt0",
+    "recmCYRmiSdCy63Fc"
+   ]
+  }
+ },
+ {
+  "id": "recy4o2BxavybTuX6",
+  "createdTime": "2020-08-27T01:17:11.000Z",
+  "fields": {
+   "title": "Tower of Babel",
+   "eventID": 53,
+   "startDate": "-2245",
+   "duration": "1D",
+   "verses": [
+    "recLJMCOtNOhHq9Rq",
+    "recZfLrAXGCa0H8uJ",
+    "recYYRNNzPmGVhLTY",
+    "rec0YZ1KYoASvvVdc",
+    "rec4jHwU9G7mJO5Gc",
+    "reczWTm8IF3RW2RSI",
+    "recjKomlAk9rI3en4",
+    "recS6fO8Zcm4ThbSh",
+    "recM1AOXTSKtM4cFr"
+   ],
+   "locations": [
+    "recO7At5WvGRe0Xsu"
+   ],
+   "verseSort": "01011001",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2244.98988999,
+   "rangeFlag": true,
+   "people (from verses)": [
+    "reccZB8SVU5bEMcgo",
+    "reccZB8SVU5bEMcgo",
+    "reccZB8SVU5bEMcgo",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "places (from verses)": [
+    "rechl3VIoaKFb2C9f",
+    "recO7At5WvGRe0Xsu"
+   ]
+  }
+ },
+ {
+  "id": "recO9NRftpoIMlYmr",
+  "createdTime": "2020-08-20T20:41:34.000Z",
+  "fields": {
+   "title": "Birth of Reu",
+   "eventID": 54,
+   "startDate": "-2216",
+   "duration": "1D",
+   "predecessor": [
+    "recsQpAQgJcwaSk9l"
+   ],
+   "lag": "30Y",
+   "lagType": "FS",
+   "partOf": [
+    "recZegzr6mX3DH8vc"
+   ],
+   "verses": [
+    "recDyjfZrrWS53nKD"
+   ],
+   "participants": [
+    "recmCYRmiSdCy63Fc",
+    "recIkDyjqErbTqdt0"
+   ],
+   "verseSort": "01011018",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2215.98988982,
+   "people (from verses)": [
+    "recIkDyjqErbTqdt0",
+    "recmCYRmiSdCy63Fc"
+   ]
+  }
+ },
+ {
+  "id": "recZegzr6mX3DH8vc",
+  "createdTime": "2020-08-20T20:41:33.000Z",
+  "fields": {
+   "title": "Lifetime of Reu",
+   "eventID": 55,
+   "startDate": "-2216",
+   "duration": "239Y",
+   "predecessor": [
+    "recO9NRftpoIMlYmr"
+   ],
+   "verses": [
+    "rec4jlRgJz9BK5DOB",
+    "rec8bHkNLK6SPQRbp"
+   ],
+   "participants": [
+    "recmCYRmiSdCy63Fc"
+   ],
+   "verseSort": "01011020",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2215.9898898,
+   "people (from verses)": [
+    "recmCYRmiSdCy63Fc",
+    "rec5I7GZ9sLwh0hI2",
+    "recmCYRmiSdCy63Fc",
+    "rec5I7GZ9sLwh0hI2"
+   ]
+  }
+ },
+ {
+  "id": "recfX4yWDQUMG8Oqh",
+  "createdTime": "2020-08-20T20:42:04.000Z",
+  "fields": {
+   "title": "Birth of Serug",
+   "eventID": 56,
+   "startDate": "-2184",
+   "duration": "1D",
+   "predecessor": [
+    "recO9NRftpoIMlYmr"
+   ],
+   "lag": "32Y",
+   "lagType": "FS",
+   "partOf": [
+    "recLx9SIvsFEIJgVo"
+   ],
+   "verses": [
+    "rec4jlRgJz9BK5DOB"
+   ],
+   "participants": [
+    "rec5I7GZ9sLwh0hI2",
+    "recmCYRmiSdCy63Fc"
+   ],
+   "verseSort": "01011020",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2183.9898898,
+   "people (from verses)": [
+    "recmCYRmiSdCy63Fc",
+    "rec5I7GZ9sLwh0hI2"
+   ]
+  }
+ },
+ {
+  "id": "recLx9SIvsFEIJgVo",
+  "createdTime": "2020-08-20T20:42:01.000Z",
+  "fields": {
+   "title": "Lifetime of Serug",
+   "eventID": 57,
+   "startDate": "-2184",
+   "duration": "230Y",
+   "predecessor": [
+    "recfX4yWDQUMG8Oqh"
+   ],
+   "verses": [
+    "recA05ZgcwcTQiJHT",
+    "rec8luMTcPmLc3az3"
+   ],
+   "participants": [
+    "rec5I7GZ9sLwh0hI2"
+   ],
+   "verseSort": "01011022",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2183.98988978,
+   "people (from verses)": [
+    "rec5I7GZ9sLwh0hI2",
+    "recyVuQvM4Ue7gOd4",
+    "rec5I7GZ9sLwh0hI2",
+    "recyVuQvM4Ue7gOd4"
+   ]
+  }
+ },
+ {
+  "id": "rec1LWfxUiRxxCrbn",
+  "createdTime": "2020-08-20T20:42:23.000Z",
+  "fields": {
+   "title": "Birth of Nahor",
+   "eventID": 58,
+   "startDate": "-2154",
+   "duration": "1D",
+   "predecessor": [
+    "recfX4yWDQUMG8Oqh"
+   ],
+   "lag": "30Y",
+   "lagType": "FS",
+   "partOf": [
+    "recIfpeMJFEOdSQhh"
+   ],
+   "verses": [
+    "recA05ZgcwcTQiJHT"
+   ],
+   "participants": [
+    "recyVuQvM4Ue7gOd4",
+    "rec5I7GZ9sLwh0hI2"
+   ],
+   "verseSort": "01011022",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2153.98988978,
+   "people (from verses)": [
+    "rec5I7GZ9sLwh0hI2",
+    "recyVuQvM4Ue7gOd4"
+   ]
+  }
+ },
+ {
+  "id": "recIfpeMJFEOdSQhh",
+  "createdTime": "2020-08-20T20:42:18.000Z",
+  "fields": {
+   "title": "Lifetime of Nahor",
+   "eventID": 59,
+   "startDate": "-2154",
+   "duration": "148Y",
+   "predecessor": [
+    "rec1LWfxUiRxxCrbn"
+   ],
+   "verses": [
+    "recM4Un6cMI93tzl2",
+    "recGnIv3oR4SzTzJb"
+   ],
+   "participants": [
+    "recyVuQvM4Ue7gOd4"
+   ],
+   "verseSort": "01011024",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2153.98988976,
+   "people (from verses)": [
+    "recyVuQvM4Ue7gOd4",
+    "recXBYSWubfkpqNQm",
+    "recyVuQvM4Ue7gOd4",
+    "recXBYSWubfkpqNQm"
+   ]
+  }
+ },
+ {
+  "id": "recePREjv2zZ8Esoo",
+  "createdTime": "2020-08-20T20:42:46.000Z",
+  "fields": {
+   "title": "Birth of Terah",
+   "eventID": 60,
+   "startDate": "-2125",
+   "duration": "1D",
+   "predecessor": [
+    "rec1LWfxUiRxxCrbn"
+   ],
+   "lag": "29Y",
+   "lagType": "FS",
+   "partOf": [
+    "recB5Rg7JlgsMcPyq"
+   ],
+   "verses": [
+    "recM4Un6cMI93tzl2"
+   ],
+   "participants": [
+    "recXBYSWubfkpqNQm",
+    "recyVuQvM4Ue7gOd4"
+   ],
+   "verseSort": "01011024",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2124.98988976,
+   "people (from verses)": [
+    "recyVuQvM4Ue7gOd4",
+    "recXBYSWubfkpqNQm"
+   ]
+  }
+ },
+ {
+  "id": "recB5Rg7JlgsMcPyq",
+  "createdTime": "2020-08-20T20:42:42.000Z",
+  "fields": {
+   "title": "Lifetime of Terah",
+   "eventID": 61,
+   "startDate": "-2125",
+   "duration": "205Y",
+   "predecessor": [
+    "recePREjv2zZ8Esoo"
+   ],
+   "verses": [
+    "rec4ayUcZnUN9fhUl",
+    "recBtcagpUh0WBQFF",
+    "recuJqyP43vbWJbzj"
+   ],
+   "participants": [
+    "recXBYSWubfkpqNQm"
+   ],
+   "verseSort": "01011026",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2124.98988974,
+   "people (from verses)": [
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "recAZ1svRqs8DDACR",
+    "recAZ1svRqs8DDACR",
+    "recXBYSWubfkpqNQm",
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "recAZ1svRqs8DDACR",
+    "recH5aFqTzpwfDSRi"
+   ],
+   "places (from verses)": [
+    "recgQtoCtBjbsPwAw"
+   ]
+  }
+ },
+ {
+  "id": "recyn98EnxpfPAaEq",
+  "createdTime": "2020-08-20T20:41:08.000Z",
+  "fields": {
+   "title": "Death of Peleg",
+   "eventID": 62,
+   "startDate": "-2007",
+   "duration": "1D",
+   "predecessor": [
+    "recsQpAQgJcwaSk9l"
+   ],
+   "lag": "239Y",
+   "lagType": "FS",
+   "partOf": [
+    "recFXC4GpemMuhURF"
+   ],
+   "verses": [
+    "recZIwkbdM7Db3BUo"
+   ],
+   "participants": [
+    "recIkDyjqErbTqdt0"
+   ],
+   "verseSort": "01011019",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2006.98988981,
+   "people (from verses)": [
+    "recIkDyjqErbTqdt0",
+    "recmCYRmiSdCy63Fc"
+   ]
+  }
+ },
+ {
+  "id": "rec118tvZQItG2hEI",
+  "createdTime": "2020-08-20T20:42:23.000Z",
+  "fields": {
+   "title": "Death of Nahor",
+   "eventID": 63,
+   "startDate": "-2006",
+   "duration": "1D",
+   "predecessor": [
+    "rec1LWfxUiRxxCrbn"
+   ],
+   "lag": "148Y",
+   "lagType": "FS",
+   "partOf": [
+    "recIfpeMJFEOdSQhh"
+   ],
+   "verses": [
+    "recGnIv3oR4SzTzJb"
+   ],
+   "participants": [
+    "recyVuQvM4Ue7gOd4"
+   ],
+   "verseSort": "01011025",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -2005.98988975,
+   "people (from verses)": [
+    "recyVuQvM4Ue7gOd4",
+    "recXBYSWubfkpqNQm"
+   ]
+  }
+ },
+ {
+  "id": "recXveJRjCtPNMLqs",
+  "createdTime": "2020-08-20T20:43:12.000Z",
+  "fields": {
+   "title": "Birth of Abraham",
+   "eventID": 65,
+   "startDate": "-1995",
+   "duration": "1D",
+   "predecessor": [
+    "recePREjv2zZ8Esoo"
+   ],
+   "lag": "130Y",
+   "lagType": "FS",
+   "partOf": [
+    "recfnatCOLEHFYeLB"
+   ],
+   "verses": [
+    "rec4ayUcZnUN9fhUl",
+    "recuJqyP43vbWJbzj"
+   ],
+   "participants": [
+    "reccdFYIq50NyxNej",
+    "recXBYSWubfkpqNQm"
+   ],
+   "locations": [
+    "recgQtoCtBjbsPwAw"
+   ],
+   "notes": "Not all of Terah's sons would have been born the same year. In light of Acts 7:4 and Genesis 12:4, Abraham was born when Terah was 130 years old.\n",
+   "verseSort": "01011026",
+   "modified": "2026-10-13T03:22:52.000Z",
+   "sortKey": -1994.98988974,
+   "people (from verses)": [
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "recAZ1svRqs8DDACR",
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "reco9eltuMG5wxarS",
+    "recAZ1svRqs8DDACR",
+    "recH5aFqTzpwfDSRi"
+   ]
+  }
+ },
+ {
+  "id": "recfnatCOLEHFYeLB",
+  "createdTime": "2020-08-20T20:43:10.000Z",
+  "fields": {
+   "title": "Lifetime of Abraham",
+   "eventID": 66,
+   "startDate": "-1996",
+   "duration": "175Y",
+   "predecessor": [
+    "recXveJRjCtPNMLqs"
+   ],
+   "verses": [
+    "recIVXkKlPw1Jvuul"
+   ],
+   "participants": [
+    "reccdFYIq50NyxNej"
+   ],
+   "verseSort": "01021005",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1995.98978995,
+   "people (from verses)": [
+    "reccdFYIq50NyxNej",
+    "recqIoG1fkaNWJ1y0",
+    "reccdFYIq50NyxNej"
+   ]
+  }
+ },
+ {
+  "id": "rec8LzDmLtoQ5PD6q",
+  "createdTime": "2020-08-20T20:41:34.000Z",
+  "fields": {
+   "title": "Death of Reu",
+   "eventID": 68,
+   "startDate": "-1977",
+   "duration": "1D",
+   "predecessor": [
+    "recO9NRftpoIMlYmr"
+   ],
+   "lag": "239Y",
+   "lagType": "FS",
+   "partOf": [
+    "recZegzr6mX3DH8vc"
+   ],
+   "verses": [
+    "rec8bHkNLK6SPQRbp"
+   ],
+   "participants": [
+    "recmCYRmiSdCy63Fc"
+   ],
+   "verseSort": "01011021",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1976.98988979,
+   "people (from verses)": [
+    "recmCYRmiSdCy63Fc",
+    "rec5I7GZ9sLwh0hI2"
+   ]
+  }
+ },
+ {
+  "id": "rechmkETHJXlw66eb",
+  "createdTime": "2020-08-20T20:42:04.000Z",
+  "fields": {
+   "title": "Death of Serug",
+   "eventID": 69,
+   "startDate": "-1954",
+   "duration": "1D",
+   "predecessor": [
+    "recfX4yWDQUMG8Oqh"
+   ],
+   "lag": "230Y",
+   "lagType": "FS",
+   "partOf": [
+    "recLx9SIvsFEIJgVo"
+   ],
+   "verses": [
+    "rec8luMTcPmLc3az3"
+   ],
+   "participants": [
+    "rec5I7GZ9sLwh0hI2"
+   ],
+   "verseSort": "01011023",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1953.98988977,
+   "people (from verses)": [
+    "rec5I7GZ9sLwh0hI2",
+    "recyVuQvM4Ue7gOd4"
+   ]
+  }
+ },
+ {
+  "id": "recYgh6yAIxRItDC9",
+  "createdTime": "2020-08-20T20:42:46.000Z",
+  "fields": {
+   "title": "Death of Terah",
+   "eventID": 70,
+   "startDate": "-1920",
+   "duration": "1D",
+   "predecessor": [
+    "recePREjv2zZ8Esoo"
+   ],
+   "lag": "205Y",
+   "lagType": "FS",
+   "partOf": [
+    "recB5Rg7JlgsMcPyq"
+   ],
+   "verses": [
+    "rec4248MQbeZWPPQk"
+   ],
+   "participants": [
+    "recXBYSWubfkpqNQm"
+   ],
+   "locations": [
+    "recyuzIRhPm1IFEu0"
+   ],
+   "verseSort": "01011032",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1919.98988968,
+   "people (from verses)": [
+    "recXBYSWubfkpqNQm"
+   ],
+   "places (from verses)": [
+    "recyuzIRhPm1IFEu0"
+   ]
+  }
+ },
+ {
+  "id": "rechJv1ksZ00ye38i",
+  "createdTime": "2020-08-27T01:23:18.000Z",
+  "fields": {
+   "title": "Abraham enters Canaan",
+   "eventID": 71,
+   "startDate": "-1920",
+   "duration": "1D",
+   "predecessor": [
+    "recXveJRjCtPNMLqs"
+   ],
+   "lag": "75Y",
+   "lagType": "FS",
+   "partOf": [
+    "recc78JIsfuTy7cNu"
+   ],
+   "verses": [
+    "rec4248MQbeZWPPQk",
+    "rec6WN4WoQ5d67omJ"
+   ],
+   "participants": [
+    "reccdFYIq50NyxNej",
+    "recH5aFqTzpwfDSRi",
+    "rechda7WMDuW1jBTq"
+   ],
+   "locations": [
+    "recRxBBePxyyV6TFO",
+    "recyuzIRhPm1IFEu0",
+    "recUySlrBva4ffoVs",
+    "recyFR0y4HsEM2kds",
+    "recedRWoiFNdeGFm4",
+    "recJK76HLZSOzxTWW",
+    "recsX4et9ux7g07Zg"
+   ],
+   "verseSort": "01012001",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1919.98987999,
+   "people (from verses)": [
+    "reccdFYIq50NyxNej",
+    "reccZB8SVU5bEMcgo",
+    "reccdFYIq50NyxNej",
+    "recH5aFqTzpwfDSRi",
+    "reccZB8SVU5bEMcgo",
+    "reccdFYIq50NyxNej",
+    "rechda7WMDuW1jBTq",
+    "recH5aFqTzpwfDSRi",
+    "reccdFYIq50NyxNej",
+    "reccdFYIq50NyxNej",
+    "reccZB8SVU5bEMcgo",
+    "reccZB8SVU5bEMcgo",
+    "reccdFYIq50NyxNej",
+    "recXBYSWubfkpqNQm",
+    "recXBYSWubfkpqNQm",
+    "reccdFYIq50NyxNej",
+    "recH5aFqTzpwfDSRi",
+    "recAZ1svRqs8DDACR",
+    "rechda7WMDuW1jBTq",
+    "recGc4mBQC3rOkQ8m"
+   ],
+   "places (from verses)": [
+    "recyuzIRhPm1IFEu0",
+    "recyuzIRhPm1IFEu0",
+    "recRxBBePxyyV6TFO",
+    "recUySlrBva4ffoVs",
+    "recyFR0y4HsEM2kds",
+    "recJK76HLZSOzxTWW",
+    "recedRWoiFNdeGFm4",
+    "recsX4et9ux7g07Zg",
+    "recyuzIRhPm1IFEu0",
+    "recyuzIRhPm1IFEu0",
+    "recgQtoCtBjbsPwAw",
+    "recRxBBePxyyV6TFO"
+   ]
+  }
+ },
+ {
+  "id": "rechXJhZerr2X4BnE",
+  "createdTime": "2020-08-31T01:42:42.000Z",
+  "fields": {
+   "title": "Birth of Ishmael",
+   "eventID": 76,
+   "startDate": "-1909",
+   "duration": "1D",
+   "predecessor": [
+    "recXveJRjCtPNMLqs"
+   ],
+   "lag": "86Y",
+   "lagType": "FS",
+   "partOf": [
+    "rec1CnwQbgxnwGiRS"
+   ],
+   "verses": [
+    "recCXzbMY6GO8Z3Pk",
+    "rec0SJgVZUTB8EpMx",
+    "reccsgpPTh2wJ5mEr",
+    "recl8TB570m5tewgL",
+    "rec4UYC9gJdbLPP9t",
+    "recd9JbWH8ezrDBMH"
+   ],
+   "participants": [
+    "recvV3hxT3VINGuwx",
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG"
+   ],
+   "verseSort": "01016011",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1908.98983989,
+   "people (from verses)": [
+    "recvV3hxT3VINGuwx",
+    "reccZB8SVU5bEMcgo",
+    "reccZB8SVU5bEMcgo",
+    "recL1zd3NT68owBAG",
+    "reccdFYIq50NyxNej",
+    "recvV3hxT3VINGuwx",
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG",
+    "recvV3hxT3VINGuwx"
+   ],
+   "places (from verses)": [
+    "recbFkcAeBmrPDZvG",
+    "recrLh8m0GOwaWHsf"
+   ]
+  }
+ },
+ {
+  "id": "rec1CnwQbgxnwGiRS",
+  "createdTime": "2020-08-31T01:43:06.000Z",
+  "fields": {
+   "title": "Lifetime of Ishmael",
+   "eventID": 77,
+   "startDate": "-1909",
+   "duration": "137Y",
+   "predecessor": [
+    "rechXJhZerr2X4BnE"
+   ],
+   "verses": [
+    "recd9JbWH8ezrDBMH",
+    "rec8W0QGsomNEfq8r"
+   ],
+   "participants": [
+    "recvV3hxT3VINGuwx"
+   ],
+   "verseSort": "01016016",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1908.98983984,
+   "people (from verses)": [
+    "reccdFYIq50NyxNej",
+    "recL1zd3NT68owBAG",
+    "recvV3hxT3VINGuwx",
+    "recvV3hxT3VINGuwx"
+   ]
+  }
+ },
+ {
+  "id": "reciSatPkxfnd664i",
+  "createdTime": "2020-08-20T20:39:46.000Z",
+  "fields": {
+   "title": "Death of Arphaxad",
+   "eventID": 78,
+   "startDate": "-1907",
+   "duration": "1D",
+   "predecessor": [
+    "rec7uQ8Nhf6h5zdfj"
+   ],
+   "lag": "438Y",
+   "lagType": "FS",
+   "partOf": [
+    "recQDMfXnyQKhXj01"
+   ],
+   "verses": [
+    "reco0pi1TPgqhAmEY"
+   ],
+   "participants": [
+    "recDncefA67SnXVsu"
+   ],
+   "verseSort": "01011013",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1906.98988987,
+   "people (from verses)": [
+    "recDncefA67SnXVsu",
+    "recMoCCDPVw5IzYq8"
+   ]
+  }
+ },
+ {
+  "id": "recefHHfdDlITHHsH",
+  "createdTime": "2020-08-20T20:40:06.000Z",
+  "fields": {
+   "title": "Death of Salah",
+   "eventID": 82,
+   "startDate": "-1877",
+   "duration": "1D",
+   "predecessor": [
+    "recN97j5QCkdCwVOC"
+   ],
+   "lag": "433Y",
+   "lagType": "FS",
+   "partOf": [
+    "rectmsC3P5l7oRNpD"
+   ],
+   "verses": [
+    "recCL2kJz5UKBnIR7"
+   ],
+   "participants": [
+    "recMoCCDPVw5IzYq8"
+   ],
+   "verseSort": "01011015",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1876.98988985,
+   "people (from verses)": [
+    "recMoCCDPVw5IzYq8",
+    "recRO35quNb37mHVy"
+   ]
+  }
+ },
+ {
+  "id": "recSDGDMwUBAMUgur",
+  "createdTime": "2020-09-07T19:04:19.000Z",
+  "fields": {
+   "title": "Isaac Marries Rebekah",
+   "eventID": 83,
+   "startDate": "-1855",
+   "duration": "1D",
+   "predecessor": [
+    "recsPU7EMhmA9z27x"
+   ],
+   "lag": "40Y",
+   "lagType": "FS",
+   "verses": [
+    "recVuwRiQHi5hwRca"
+   ],
+   "participants": [
+    "recqIoG1fkaNWJ1y0",
+    "recZb9e7YIG9qh2qX"
+   ],
+   "verseSort": "01025020",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1854.9897498,
+   "people (from verses)": [
+    "recqIoG1fkaNWJ1y0",
+    "recZb9e7YIG9qh2qX",
+    "reccN1xlFTOq0eIxu",
+    "rec4gpLE6cs55ADcI"
+   ],
+   "places (from verses)": [
+    "recrEteYtMZW1c46t"
+   ]
+  }
+ },
+ {
+  "id": "recTZ4anILXT9AMbx",
+  "createdTime": "2020-08-20T20:39:15.000Z",
+  "fields": {
+   "title": "Death of Shem",
+   "eventID": 84,
+   "startDate": "-1845",
+   "duration": "1D",
+   "predecessor": [
+    "recpUCaR0HNgYjco5"
+   ],
+   "lag": "600Y",
+   "lagType": "FS",
+   "partOf": [
+    "recxg4gEuXG5R6PUZ"
+   ],
+   "verses": [
+    "recbvpTzRQ5suZz0S"
+   ],
+   "participants": [
+    "recOCbR2kuXoxyvkq"
+   ],
+   "verseSort": "01011011",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1844.98988989,
+   "people (from verses)": [
+    "recOCbR2kuXoxyvkq",
+    "recDncefA67SnXVsu"
+   ]
+  }
+ },
+ {
+  "id": "recd4mOzI2nL66vR5",
+  "createdTime": "2020-08-31T01:32:59.000Z",
+  "fields": {
+   "title": "Birth of Jacob and Esau",
+   "eventID": 85,
+   "startDate": "-1835",
+   "duration": "1D",
+   "partOf": [
+    "recTkocSMI0NxpIrw"
+   ],
+   "verses": [
+    "recqg3HN6jy8k4vT0",
+    "recCw0IUCy0TfKTkS",
+    "recF0awhZCSb06TMf"
+   ],
+   "participants": [
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI",
+    "recZb9e7YIG9qh2qX",
+    "recqIoG1fkaNWJ1y0"
+   ],
+   "verseSort": "01025025",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1834.98974975,
+   "people (from verses)": [
+    "recUQWSZuOecG4z1Q",
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI",
+    "recqIoG1fkaNWJ1y0"
+   ]
+  }
+ },
+ {
+  "id": "recTkocSMI0NxpIrw",
+  "createdTime": "2020-08-31T01:35:59.000Z",
+  "fields": {
+   "title": "Lifetime of Jacob",
+   "eventID": 86,
+   "startDate": "-1835",
+   "duration": "180Y",
+   "predecessor": [
+    "recd4mOzI2nL66vR5"
+   ],
+   "verses": [
+    "recqg3HN6jy8k4vT0",
+    "recCw0IUCy0TfKTkS",
+    "recF0awhZCSb06TMf"
+   ],
+   "participants": [
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "verseSort": "01025025",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1834.98974975,
+   "people (from verses)": [
+    "recUQWSZuOecG4z1Q",
+    "recUQWSZuOecG4z1Q",
+    "recsU2ZSdzBvDqzgI",
+    "recqIoG1fkaNWJ1y0",
+    "recsU2ZSdzBvDqzgI"
+   ]
+  }
+ },
+ {
+  "id": "recJYhotncnfEqGcN",
+  "createdTime": "2020-08-20T20:43:12.000Z",
+  "fields": {
+   "title": "Death of Abraham",
+   "eventID": 88,
+   "startDate": "-1820",
+   "duration": "1D",
+   "predecessor": [
+    "recXveJRjCtPNMLqs"
+   ],
+   "lag": "175Y",
+   "lagType": "FS",
+   "partOf": [
+    "recfnatCOLEHFYeLB"
+   ],
+   "verses": [
+    "recIVXkKlPw1Jvuul"
+   ],
+   "participants": [
+    "reccdFYIq50NyxNej"
+   ],
+   "locations": [
+    "recmEify6uZYLj26E"
+   ],
+   "verseSort": "01025007",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1819.98974993,
+   "people (from verses)": [
+    "reccdFYIq50NyxNej"
+   ]
+  }
+ },
+ {
+  "id": "rec6BqgiWIs1ADP6z",
+  "createdTime": "2020-08-20T20:40:43.000Z",
+  "fields": {
+   "title": "Death of Eber",
+   "eventID": 89,
+   "startDate": "-1816",
+   "duration": "1D",
+   "predecessor": [
+    "rec1JFgGFGfK07blt"
+   ],
+   "lag": "464Y",
+   "lagType": "FS",
+   "partOf": [
+    "rec3cw1D7e1QItoGc"
+   ],
+   "verses": [
+    "recL4AgRX5TOXgQrV"
+   ],
+   "participants": [
+    "recRO35quNb37mHVy"
+   ],
+   "verseSort": "01011017",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1815.98988983,
+   "people (from verses)": [
+    "recRO35quNb37mHVy",
+    "recIkDyjqErbTqdt0"
+   ]
+  }
+ },
+ {
+  "id": "recOWUvuVc8kC9Q1C",
+  "createdTime": "2020-08-31T01:42:59.000Z",
+  "fields": {
+   "title": "Death of Ishmael",
+   "eventID": 90,
+   "startDate": "-1772",
+   "duration": "1D",
+   "predecessor": [
+    "rechXJhZerr2X4BnE"
+   ],
+   "lag": "137Y",
+   "lagType": "FS",
+   "partOf": [
+    "rec1CnwQbgxnwGiRS"
+   ],
+   "verses": [
+    "rec8W0QGsomNEfq8r"
+   ],
+   "participants": [
+    "recvV3hxT3VINGuwx"
+   ],
+   "verseSort": "01025017",
+   "modified": "2020-11-25T15:12:15.000Z",
+   "sortKey": -1771.98974983,
+   "people (from verses)": [
+    "recvV3hxT3VINGuwx"
+   ]
+  }
+ },
+ {
+  "id": "recXhKGCw4B1CjXQB",
+  "createdTime": "2025-01-22T21:25:51.000Z",
+  "fields": {
+   "title": "Healing a Boy with a Demon",
+   "eventID": 407,
+   "startDate": "29",
+   "duration": "1D",
+   "predecessor": [
+    "recbbehq3RkfnSmCE"
+   ],
+   "verses": [
+    "recc5faAV0NTEVOLz",
+    "recKEr58TF9iGCzWP"
+   ],
+   "participants": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "locations": [
+    "rec1ET3TBR0oBaWJu"
+   ],
+   "groups": [
+    "recDquhyNAst5bTvn"
+   ],
+   "verseSort": "40017014",
+   "modified": "2025-01-22T21:31:02.000Z",
+   "sortKey": 29.40017014,
+   "people (from verses)": [
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi"
+   ]
+  }
+ },
+ {
+  "id": "recyFfX2l12rwEkqk",
+  "createdTime": "2025-01-22T22:10:54.000Z",
+  "fields": {
+   "title": "Second Foretelling of Death and Resurrection",
+   "eventID": 408,
+   "startDate": "29",
+   "duration": "1D",
+   "predecessor": [
+    "recXhKGCw4B1CjXQB"
+   ],
+   "verses": [
+    "recNT6ykmkNInmgeC"
+   ],
+   "participants": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "locations": [
+    "recmL1lWBqWP3mAq3"
+   ],
+   "groups": [
+    "recDquhyNAst5bTvn"
+   ],
+   "verseSort": "40017022",
+   "modified": "2025-01-22T22:13:27.000Z",
+   "sortKey": 29.40017022,
+   "people (from verses)": [
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "reccZB8SVU5bEMcgo",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi"
+   ],
+   "places (from verses)": [
+    "recmL1lWBqWP3mAq3",
+    "recmL1lWBqWP3mAq3"
+   ]
+  }
+ }
+]

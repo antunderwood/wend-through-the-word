@@ -79,6 +79,10 @@ From the source notes written for tickets #4 to #13.
 53. **Cross-references with zero or negative Votes are kept.** The front end's default filter hides them (PRD 12.4). Reason: the data stays complete, and trimming for size already drops the lowest Votes first.
 54. **People Group IDs are `group:` plus the group name in lower case, with spaces as underscores.** Reason: Theographic gives groups no ID field. The prototype used the same rule.
 
+## 2026-10-19: Entities and Mentions (#4)
+
+55. **Links in a Dictionary Entry become plain text.** Theographic's `dictText` holds Markdown links such as `[Gen. 11:27](/gen#Gen.11.27)`; the export keeps only "Gen. 11:27". Reason: the links point at paths on Theographic's own site, and the prototype did the same. Other Markdown (paragraph breaks) is kept. Turning the references into verse links in the app is a later choice.
+
 ## 2026-10-19: Coordinates and themes
 
 Numbers start at 56, because ticket #4 records decision 55.
@@ -89,6 +93,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 59. **Nave's references to a whole chapter are skipped and reported.** Reason: a chapter is weak evidence that every verse in it is about the topic. FILED_UNDER stays verse precise (8,267 Genesis links).
 60. **OpenBible confidence is `score.time_total` of the identification that gives the point.** Reason: the readme uses it to sort identifications. It is a number from 0 to 1,000; the front end can bucket it.
 61. **A Nave's heading with only "See" lines is not a Theme.** Reason: it has no Verses, so it would have no Neighbours.
+
+## 2026-10-19: Entity names (#4)
+
+62. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
