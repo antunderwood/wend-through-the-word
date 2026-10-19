@@ -34,9 +34,9 @@
   .el.derived { font-style: italic; opacity: 0.5; }
   .sector { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.25); pointer-events: none; }
 
-  #crumbs { position: fixed; top: 10px; left: 10px; right: 380px; display: flex; gap: 4px; align-items: center;
+  #crumbs { position: fixed; top: 10px; left: 10px; right: calc(min(370px, 92vw + 10px) + 74px); display: flex; gap: 4px; align-items: center;
     overflow-x: auto; white-space: nowrap; padding: 6px 8px; background: var(--panel); border-radius: 8px; border: 1px solid var(--line); }
-  body.collapsed #crumbs { right: 60px; }
+  body.collapsed #crumbs { right: 84px; }
   .crumb-title { color: var(--muted); font-size: 12px; margin-right: 4px; }
   .crumb { color: var(--text); text-decoration: none; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); font-size: 12px; opacity: 0.55; }
   .crumb.drawn { opacity: 0.85; }
