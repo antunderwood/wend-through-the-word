@@ -91,10 +91,10 @@ _Avoid_: Group, cluster
 
 **Pinned Node**:
 A node the reader keeps on screen while the Focus changes, to compare it with the new Focus. At most three. Each brings its own closest Neighbours, but no Ring 2.
+_Avoid_: Bookmark, favourite
 
 **Shared Node**:
 A node in Ring 1 or around a Pinned Node that is linked to both the Focus and a Pinned Node.
-_Avoid_: Bookmark, favourite
 
 **Your Path**:
 Every node that has been the Focus this session, in order of the latest visit. The last five are drawn in the scene as small dim nodes joined to the current Focus; the breadcrumb row shows all of them.

@@ -144,6 +144,7 @@ Event years follow the chronology of Floyd Nolen Jones. The interface shows them
 | CONCUBINE_OF | Person (man) | Person (woman) | source, evidence (verse) |
 | POSSIBLY_SAME_AS | Person | Person | source, evidence (verses), note |
 | SIBLING_OF | Person | Person | source |
+| HALF_SIBLING_OF | Person | Person | source (only when Theographic gives it; not derived) |
 | PARTICIPATED_IN | Person | Event | source |
 | OCCURRED_AT | Event | Place | source |
 | BORN_AT, DIED_AT | Person | Place | source |
@@ -279,7 +280,7 @@ pipeline/
   curated/             owner-reviewed tables, each row with an evidence verse and a reviewed flag:
     partners.csv       spouse, concubine, partner, or none for each Theographic partner pair
     possibly_same.csv  POSSIBLY_SAME_AS links (people a tradition reads as one person)
-    corrections.csv    fixes to Theographic attributes, for example gender
+    corrections.csv    fixes to Theographic attributes, for example gender; `was` holds the upstream value the fix replaces
                        every curated table has a `request` column: the URL of the correction request, or empty
   export_static.py     write JSON files
 docs/licences.md
@@ -488,8 +489,8 @@ The Genesis prototype is complete when all of these are true.
 |---|---|
 | M0 | Public GitHub repository with the "Correction request" issue form, licence check, `docs/licences.md`, download script. |
 | M1 | BSB, Theographic, and the verse exceptions for Genesis, with the mismatch report |
-| M2 | Cross-references, geocoding with re-sourced coordinates, the TIPNR check, Nave's themes, and CO_MENTION edges for Genesis |
-| M3 | A UI prototype of navigation in 2.5D (select, make focus, your path, pins, camera, orbit or not), building on `docs/prototypes/focus-model.md`. Static export and a minimal 3D page. Run the node limit test. Test the disclosure rings, the 2.5D tilt, and the node look from section 10.4 on hub nodes. |
+| M2 | Cross-references, geocoding with re-sourced coordinates, the TIPNR check, Nave's themes, CO_MENTION edges, and the static export for Genesis (spec: `docs/specs/genesis-data-build.md`) |
+| M3 | A UI prototype of navigation in 2.5D (select, make focus, your path, pins, camera, orbit or not), building on `docs/prototypes/focus-model.md`. A minimal 3D page. Run the node limit test. Test the disclosure rings, the 2.5D tilt, and the node look from section 10.4 on hub nodes. |
 | M4 | Reader panel, detail panel, search, filters, shareable URLs, and "Suggest a correction" links |
 | M5 | Cloudflare deploy with static assets and browser search. No Worker script. |
 | M6 | Run the pipeline for the whole Bible. Review data quality. |
