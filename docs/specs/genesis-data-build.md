@@ -4,7 +4,7 @@ Status: ready-for-agent
 Date: 2026-10-19
 Sources: `PRD.md` (Draft 5), `GLOSSARY.md`, `docs/decisions.md` (decisions 1 to 34), `docs/prototypes/focus-model.md`
 
-Terms follow `GLOSSARY.md`. This spec moves to a GitHub issue with the `ready-for-agent` label once M0 creates the public repository.
+Terms follow `GLOSSARY.md`. Published as issue #1; its tickets are sub-issues #2 to #13. The issue is the working copy for agents. This file is the reference copy.
 
 ## Problem Statement
 
