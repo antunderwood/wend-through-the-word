@@ -50,6 +50,13 @@ def test_a_search_for_abraham_returns_abraham_and_the_index_is_below_500_kb_comp
     assert compressed_size(genesis) < 500 * 1000
 
 
+def test_a_search_for_luz_finds_bethel(genesis):
+    from test_search_and_credits import search, search_index
+
+    # Luz is its own Place (decision 7) and an other name of Bethel (decision 65).
+    assert search(search_index(genesis), "Luz") == ["place:bethel_202", "place:luz_737"]
+
+
 def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
     event = read_json(genesis / "data" / VERSION / "entity" / "event" / "1.json")
     assert event["event_year"] == -4003

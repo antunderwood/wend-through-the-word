@@ -102,6 +102,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 63. **Search index entries carry no `source` or `licence`.** Each entry is a label (ID, type, name, aliases) for an Entity whose file already carries them, so the provenance test skips `search-index.json`. Reason: repeating them on every entry adds size to the file the front end loads first, and the index is not a node or an edge.
 64. **The build stops when it reads a source that has no credit in `pipeline/credits.py`.** Easton's is credited as its own source whenever a Dictionary Entry ships. Reason: the credits file must list every source the build read (PRD 5, rule 6), so a new source cannot ship without its credit wording and link.
+65. **A Place's `aliases` are Theographic's `aliases`, its `kjvName`, and the `displayTitle` of each of its `otherNames` places.** An alias that equals the Place's name, ignoring case, is left out. Reason: the owner wants a search for "Luz" to find Bethel. Luz is not in Bethel's `aliases` or `kjvName`; Theographic links the two only through `otherNames` (181 places, 257 links). Luz stays its own Place (decision 7). Some upstream aliases are poor (Mount of Olives `mount_of_olives_828` has `4b is just "mount" or "mountain"`); fix them through the curated tables, not in code.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 

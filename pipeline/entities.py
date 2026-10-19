@@ -18,7 +18,7 @@ TYPES = {
 }
 
 
-def facts(kind, f):
+def facts(kind, f, titles):
     out = {}
     # Never `dictionaryText`: it has broken characters (spec, user story 25).
     if text := "".join(f.get("dictText") or []).strip():
@@ -29,6 +29,11 @@ def facts(kind, f):
         }
     if kind in ("person", "place"):
         out["name"] = f["displayTitle"]  # disambiguated: "Jacob (Israel)" (decision 62)
+    if kind == "place":  # decision 65: Luz, an other name of Bethel, finds Bethel
+        names = (f.get("aliases") or "").split(",") + [f.get("kjvName") or ""]
+        names += [titles.get(r) or "" for r in f.get("otherNames") or []]  # fixture cuts some
+        names = {n.strip() for n in names} - {""}
+        out["aliases"] = sorted(n for n in names if n.lower() != out["name"].lower())
     if kind == "group":
         out["name"] = f["groupName"]
     if kind == "person":
@@ -48,7 +53,9 @@ def load(b):
             verse["mentions"] = []
     missing = Counter()  # verse record IDs that are not in Theographic's verses.json
     for kind, (source, name) in TYPES.items():
-        for r in json.loads(b.source(source).read_text()):
+        records = json.loads(b.source(source).read_text())
+        titles = {r["id"]: r["fields"].get("displayTitle") for r in records}
+        for r in records:
             f = r["fields"]
             missing.update(v for v in f.get("verses") or [] if v not in b.verse_recs)
             entity_id = f"{kind}:{name(f)}"
@@ -61,7 +68,7 @@ def load(b):
             b.entities[entity_id] = {
                 "id": entity_id,
                 "type": kind,
-                **facts(kind, f),
+                **facts(kind, f, titles),
                 **theographic,
                 "verses": in_range,  # replaced by Verse Neighbours below
             }
