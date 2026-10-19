@@ -170,9 +170,18 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
     assert not [r for r in rows if "cross-reference" in r["cause"]]
 
 
-def test_genesis_tipnr_check_reports_43_disagreements(genesis):
+def test_genesis_tipnr_check_reports_48_disagreements(genesis):
     rows = read_tsv(genesis / "reports" / "tipnr_disagreements.tsv")
-    assert len(rows) == 43  # 46 without the curated partners, which settle 3 "partners" rows
+    # 46 without the curated partners, which settle 3 "partners" rows; 5 are on gender.
+    assert len(rows) == 48
+    # Theographic's own gender, before the curated correction (decision 88).
+    assert {
+        "person": "person:anah_247",
+        "tipnr_person": "Anah@Gen.36.2-1Ch",
+        "field": "gender",
+        "theographic": "Female",
+        "tipnr": "Male",
+    } in rows
     # Theographic has three Anahs where TIPNR has one; Theographic decides (decision 7).
     assert {r["person"] for r in rows if r["tipnr_person"].startswith("Anah@")} == {
         "person:anah_247",
