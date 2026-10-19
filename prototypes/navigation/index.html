@@ -789,6 +789,7 @@ document.addEventListener("click", e => {
   if (!t) return;
   e.preventDefault();
   const act = t.dataset.act, id = t.dataset.id;
+  if (!act && t.closest("#results")) return makeFocus(id); // a search result moves the Focus at once
   if (!act) return clickNode(id, !!t.closest("#pList"));
   if (act === "makeFocus") makeFocus(id);
   else if (act === "pin" || act === "unpin") dispatch({ type: act, id });
@@ -814,8 +815,8 @@ document.addEventListener("keydown", e => {
 });
 
 // ---------- Search ----------
-// Names, aliases, and verse references from search-index.json. Click selects; double click or
-// Enter on the first result makes it the Focus.
+// Names, aliases, and verse references from search-index.json. A click on a result, or Enter for
+// the first one, makes it the Focus.
 const SEARCH_TYPES = [[null, "All"], ["person", "People"], ["place", "Places"], ["event", "Events"],
   ["group", "People Groups"], ["theme", "Themes"], ["verse", "Verses"]];
 let searchType = null;
