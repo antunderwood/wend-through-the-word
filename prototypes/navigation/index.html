@@ -242,9 +242,13 @@ const discWith = text => canvasTex(g => {
   g.fillStyle = "#fff"; g.beginPath(); g.arc(64, 64, 58, 0, Math.PI * 2); g.fill();
   g.fillStyle = "rgba(0,0,0,0.55)"; g.font = "bold 56px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, 64, 68);
 });
+// Draw order. Lines (edges, grids, the axis) are 0. Node sprites ignore depth and draw after every line, so no
+// line ever crosses a node: a background coloured mask fills the gap inside a ring, then the disc, then the ring.
+const LAYER = { glow: 0, mask: 1, disc: 2, ring: 3 };
 const TEX = {
   type: Object.fromEntries(TYPES.map(t => [t, discWith(TYPE_LETTER[t])])),
   plus: discWith("+"),
+  mask: canvasTex(g => { g.fillStyle = "#fff"; g.beginPath(); g.arc(64, 64, 58, 0, Math.PI * 2); g.fill(); }),
   ring: canvasTex(g => { g.strokeStyle = "#fff"; g.lineWidth = 9; g.beginPath(); g.arc(64, 64, 54, 0, Math.PI * 2); g.stroke(); }),
   glow: canvasTex(g => {
     const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
@@ -407,7 +411,8 @@ function makeView(key, host, hooks) {
   let nodeObjs = new Map(), edgeObjs = [], faint = null, faintPairs = [], domEls = [];
   let nameEls = [], selectedId = null, cullDirty = true;   // name labels, for hiding overlaps on a phone
   let anim = null, glide = null, raf = 0, frames = 0, fpsT = performance.now();
-  const selRing = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.ring, color: 0xffffff, transparent: true, depthWrite: false }));
+  const selRing = new THREE.Group();   // the white Selected Node ring, scaled to the node in setSelected
+  selRing.add(sprite(TEX.mask, BG, 1, 1, THREE.NormalBlending, LAYER.mask), sprite(TEX.ring, 0xffffff, 1, 1, THREE.NormalBlending, LAYER.ring));
   // Radius of the drawn circle as a fraction of sprite size: the disc is radius 58 of 128 px; a ring sprite is
   // 1.5 times the size with its stroke ending at 58.5 of 128 px.
   const DISC_RIM = 58 / 128, RING_RIM = (1.5 * 58.5) / 128;
@@ -450,9 +455,9 @@ function makeView(key, host, hooks) {
     return o;
   }
 
-  function sprite(map, color, opacity, size, blending = THREE.NormalBlending) {
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map, color, transparent: true, opacity, depthWrite: false, blending }));
-    s.scale.setScalar(size); return s;
+  function sprite(map, color, opacity, size, blending = THREE.NormalBlending, layer = LAYER.disc) {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map, color, transparent: true, opacity, depthWrite: false, depthTest: false, blending }));
+    s.scale.setScalar(size); s.renderOrder = layer; return s;
   }
 
   function render(sc, opts = {}) {
@@ -472,11 +477,12 @@ function makeView(key, host, hooks) {
       const to = rel.get(n.id).clone().add(centre);
       const from = origin ? origin.clone() : (prev.get(n.id) ?? to.clone());
       const group = new THREE.Group(); group.position.copy(from);
-      if (n.role === "focus") group.add(sprite(TEX.glow, ACCENT, 0.55, st.size * 3.2, THREE.AdditiveBlending));
+      if (n.role === "focus") group.add(sprite(TEX.glow, ACCENT, 0.55, st.size * 3.2, THREE.AdditiveBlending, LAYER.glow));
       const main = sprite(n.role === "overflow" ? TEX.plus : TEX.type[n.type], n.role === "focus" ? ACCENT : TYPE_COLOUR[n.type], st.opacity, st.size);
       main.userData.id = n.id; group.add(main);
-      if (n.shared) group.add(sprite(TEX.ring, SHARED, 0.95, st.size * 1.5));
-      if (n.role === "pinned") group.add(sprite(TEX.ring, PIN, 0.95, st.size * 1.5));
+      if (n.shared || n.role === "pinned") group.add(sprite(TEX.mask, BG, 1, st.size * 1.5, THREE.NormalBlending, LAYER.mask));
+      if (n.shared) group.add(sprite(TEX.ring, SHARED, 0.95, st.size * 1.5, THREE.NormalBlending, LAYER.ring));
+      if (n.role === "pinned") group.add(sprite(TEX.ring, PIN, 0.95, st.size * 1.5, THREE.NormalBlending, LAYER.ring));
       if (st.labelled || n.shared) group.add(nodeLabel(n));
       world.add(group);
       // Edges stop at the outer edge of what is drawn: the disc, or the cyan or orange ring around it.
