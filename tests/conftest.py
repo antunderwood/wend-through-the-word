@@ -38,9 +38,10 @@ def read_tsv(path):
 
 
 def nodes_and_edges(obj):
-    """Every dict in the export that is a node (has a `key` or `id`) or an edge (has `edge`)."""
+    """Every dict in the export that is a node (has a `key` or `id`) or an edge (has `edge`).
+    An Entity Neighbour is not one: it points at a node, and each of its `edges` is checked."""
     if isinstance(obj, dict):
-        if {"key", "id", "edge"} & obj.keys():
+        if {"key", "id", "edge"} & obj.keys() and "edges" not in obj:
             yield obj
         for v in obj.values():
             yield from nodes_and_edges(v)

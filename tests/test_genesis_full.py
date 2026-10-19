@@ -1,6 +1,7 @@
 """Slow acceptance run on the real downloaded sources. Skipped when they are missing (CI)."""
 
 import os
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -29,10 +30,38 @@ def test_every_genesis_file_is_below_500_kb(genesis):
     assert all(p.stat().st_size < 500 * 1000 for p in (genesis / "data").rglob("*.json"))
 
 
-def test_genesis_has_one_file_for_each_entity_in_range(genesis):
+def test_genesis_has_one_file_for_each_entity_in_range_and_each_stub(genesis):
     entity = genesis / "data" / VERSION / "entity"
-    counts = {d.name: len(list(d.glob("*.json"))) for d in entity.iterdir()}
-    assert counts == {"person": 352, "place": 119, "event": 116}
+    files = [read_json(p) for p in entity.rglob("*.json")]
+    in_range = Counter(e["type"] for e in files if e["verses"])
+    assert in_range == {"person": 352, "place": 119, "event": 116}
+    # Stubs: Entities with no Genesis verse that an explicit edge links to Genesis (decision 51).
+    stubs = Counter(e["type"] for e in files if not e["verses"])
+    assert stubs == {"person": 101, "place": 2, "event": 152, "group": 14}
+
+
+def test_genesis_half_siblings_are_the_242_links_theographic_gives(genesis):
+    entity = genesis / "data" / VERSION / "entity"
+    files = [read_json(p) for p in entity.rglob("*.json")]
+    half = [x for e in files for n in e["neighbours"] for x in n["edges"]]
+    assert sum(x["edge"] == "HALF_SIBLING_OF" for x in half) == 242
+    isaac = read_json(entity / "person" / "isaac_616.json")
+    assert sorted(
+        n["id"] for n in isaac["neighbours"] if n["edges"][0]["edge"] == "HALF_SIBLING_OF"
+    ) == [
+        "person:ishbak_620",
+        "person:ishmael_630",
+        "person:jokshan_1685",
+        "person:medan_1978",
+        "person:midian_2075",
+        "person:shuah_2727",
+        "person:zimran_3086",
+    ]
+
+
+def test_genesis_drops_no_edge_and_lists_23_uncurated_partner_pairs(genesis):
+    assert read_tsv(genesis / "reports" / "dropped_edges.tsv") == []
+    assert len(read_tsv(genesis / "reports" / "uncurated_partners.tsv")) == 23
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):

@@ -52,25 +52,45 @@ for line in (src / "bsb.txt").read_text(encoding="utf-8-sig").splitlines():
 lines.append("3 John 1:15\tSynthetic test line: a BSB verse with no Theographic key.")
 (dest / "bsb.txt").write_text("\n".join(lines) + "\n")
 
-# Entities that a kept verse mentions, with their `verses` cut to the kept verses.
+# Entities that a kept verse mentions, with their `verses` cut to the kept verses, and the
+# records their edge fields link to, with no verses (stubs outside the book range).
 kept = {r["fields"]["osisRef"]: r["id"] for r in verses}
+EDGE_FIELDS = [
+    *("father", "mother", "children", "siblings", "partners", "memberOf"),
+    *("halfSiblingsSameFather", "halfSiblingsSameMother", "birthPlace", "deathPlace"),
+    *("participants", "locations"),
+]
 SYNTHETIC = {  # (file, ID field, ID) -> change, each one listed in README.md
-    ("people.json", "personLookup", "abraham_58"): lambda f: f["verses"].append(
-        "recFixtureNoVerse"  # a mention whose verse record does not exist
+    ("people.json", "personLookup", "abraham_58"): lambda f: (
+        f["verses"].append("recFixtureNoVerse"),  # a mention whose verse record does not exist
+        f["siblings"].append("recFixtureNoRecord"),  # an edge to a record that does not exist
     ),
     ("people.json", "personLookup", "demetrius_1007"): lambda f: f.pop("dictText"),
     ("peopleGroups.json", "groupName", "Tribe of Judah"): lambda f: f.update(
         verses=[kept["Gen.36.1"]]  # no group has a real verse in the kept chapters
     ),
 }
-for name in ("people.json", "places.json", "events.json", "peopleGroups.json"):
-    rows = []
-    for r in json.loads((src / name).read_text()):
+NAMES = ("people.json", "places.json", "events.json", "peopleGroups.json")
+records = {name: json.loads((src / name).read_text()) for name in NAMES}
+for r in (r for rows in records.values() for r in rows):
+    r["fields"]["verses"] = [v for v in r["fields"].get("verses") or [] if v in kept.values()]
+mentioned = {r["id"] for rows in records.values() for r in rows if r["fields"]["verses"]}
+linked = {
+    rec
+    for rows in records.values()
+    for r in rows
+    if r["id"] in mentioned
+    for field in EDGE_FIELDS
+    for rec in r["fields"].get(field) or []
+}
+for name, rows in records.items():
+    rows = [r for r in rows if r["id"] in mentioned | linked]
+    for r in rows:
         f = r["fields"]
-        f["verses"] = [v for v in f.get("verses") or [] if v in kept.values()]
+        for field in EDGE_FIELDS:
+            if field in f:
+                f[field] = [rec for rec in f[field] if rec in mentioned | linked]
         for (file, field, value), change in SYNTHETIC.items():
             if file == name and f.get(field) == value:
                 change(f)
-        if f["verses"]:
-            rows.append(r)
     dump(name, rows)
