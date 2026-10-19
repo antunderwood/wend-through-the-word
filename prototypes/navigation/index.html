@@ -14,7 +14,7 @@
 <style>
   :root {
     --bg: #0d0f17; --panel: rgba(18, 21, 32, 0.9); --text: #e6e8f0; --muted: #9aa0b4; --line: rgba(255, 255, 255, 0.12);
-    --accent: #ffd27a; --shared: #4ff0e0; --pin: #ff9f6e;
+    --accent: #ffd27a; --shared: #4ff0e0; --pin: #ff9f6e; --sheet: 46vh;
     --person: #6fa8dc; --place: #6cc4a1; --event: #e6b85c; --group: #b48ee0; --theme: #e0869b; --verse: #a9b1c6;
   }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
@@ -106,6 +106,30 @@
   #pillLabel { min-width: 150px; text-align: center; }
   #pill button.guide { width: auto; padding: 0 12px; font-size: 13px; }
 
+  /* Phone: the panel is a bottom sheet, search opens from a button, and the Vote Limit lives in the panel. */
+  #searchToggle { display: none; }
+  @media (max-width: 640px) {
+    html, body { touch-action: manipulation; }
+    #searchToggle { display: flex; align-items: center; justify-content: center; position: fixed; top: 10px; left: 10px; z-index: 6;
+      width: 38px; height: 38px; padding: 0; border-radius: 999px; background: var(--panel); }
+    #crumbs, body.collapsed #crumbs { left: 56px; right: 10px; }
+    #search { display: none; left: 10px; right: 10px; width: auto; }
+    body.searching #search { display: block; }
+    #votesChip { display: none; }
+    #trimNote { bottom: 70px; font-size: 11px; }
+    #panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: var(--sheet); padding: 10px 14px 76px; background: #121520;
+      border-left: 0; border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; }
+    body.collapsed #panel { transform: translateY(100%); }
+    #pSel { height: auto; }
+    /* The chevron turns to point up or down, the way the sheet will move. */
+    #panelToggle, body:not(.collapsed) #panelToggle { top: auto; right: 10px; bottom: calc(var(--sheet) + 8px); transform: rotate(90deg); }
+    body.collapsed #panelToggle { bottom: 70px; }
+    #pill { bottom: 12px; gap: 6px; padding: 5px 6px; }
+    #pill .proto { display: none; }
+    #pillLabel { min-width: 0; font-size: 13px; white-space: nowrap; }
+    #pill button { width: 32px; height: 32px; }
+  }
+
   /* Guided tour */
   #tourRing { position: fixed; z-index: 20; pointer-events: none; border: 2px solid var(--accent); border-radius: 8px;
     animation: tourPulse 1.2s ease-in-out infinite; }
@@ -128,6 +152,8 @@
 <body>
 <div id="stage"></div>
 <nav id="crumbs" aria-label="Your Path"></nav>
+<button id="searchToggle" data-act="toggleSearch" aria-label="Search" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+  <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
 <div id="search" role="search">
   <input id="q" type="search" placeholder="Search names, aliases, or a verse (Gen 22:2)" aria-label="Search nodes" autocomplete="off">
   <div class="chips" role="group" aria-label="Filter by type"></div>
@@ -167,6 +193,7 @@ import { TYPES, TYPE_NAME, TYPE_PLURAL, ROLE_NAME, typeOf, FocusModel, createDat
 const START = "person:abraham_58";
 const DOUBLE_CLICK_MS = 400;
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PHONE = matchMedia("(max-width: 640px)");   // keep in step with the @media rule in the style sheet
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -565,10 +592,18 @@ function makeView(key, host, hooks) {
   el.addEventListener("pointerdown", onDown);
   el.addEventListener("pointerup", onUp);
   el.addEventListener("pointermove", onMove);
+  // On a phone the panel is a bottom sheet: shift the picture up so the scene is centred in the space above it.
+  function fit() {
+    const sheet = hooks.sheetHeight();
+    if (sheet) camera.setViewOffset(window.innerWidth, window.innerHeight, 0, sheet / 2, window.innerWidth, window.innerHeight);
+    else camera.clearViewOffset();
+  }
   const onResize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight); labels.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+    fit();
   };
+  fit();
   window.addEventListener("resize", onResize);
 
   function setSelected(id) {
@@ -585,7 +620,7 @@ function makeView(key, host, hooks) {
     controls.dispose(); renderer.dispose();
     renderer.domElement.remove(); labels.domElement.remove();
   }
-  return { render, setSelected, dispose };
+  return { render, setSelected, dispose, fit };
 }
 
 // ---------- App state (in memory only) ----------
@@ -605,6 +640,7 @@ const hooks = {
     tip.innerHTML = h; tip.hidden = false;
     tip.style.left = `${x + 14}px`; tip.style.top = `${y + 14}px`;
   },
+  sheetHeight: () => (PHONE.matches && !document.body.classList.contains("collapsed") ? $("#panel").offsetHeight : 0),
   onFps: v => { fps = v; const f = $("#fps"); if (f) f.textContent = v; },
   firstLine: id => {
     const r = data.rec(id)?.raw;
@@ -809,9 +845,10 @@ votesBox.querySelector("#votes").addEventListener("input", e => {
   dispatch({ type: "setFilter", key: "minVotes", value: +e.target.value });
 });
 function renderVotes() {
-  const slot = votesWhere === "scene" ? $("#votesChip") : $("#votesSlot");
-  const other = votesWhere === "scene" ? $("#votesSlot") : $("#votesChip");
-  if (votesBox.parentNode !== slot) { other.innerHTML = ""; slot.innerHTML = votesWhere === "panel" ? "<h2>Vote Limit</h2>" : ""; slot.appendChild(votesBox); }
+  const where = PHONE.matches ? "panel" : votesWhere;   // no room for it over the scene on a phone
+  const slot = where === "scene" ? $("#votesChip") : $("#votesSlot");
+  const other = where === "scene" ? $("#votesSlot") : $("#votesChip");
+  if (votesBox.parentNode !== slot) { other.innerHTML = ""; slot.innerHTML = where === "panel" ? "<h2>Vote Limit</h2>" : ""; slot.appendChild(votesBox); }
   const input = votesBox.querySelector("#votes");
   if (document.activeElement !== input) input.value = state.filters.minVotes;
   votesBox.querySelector("#votesVal").textContent = state.filters.minVotes;
@@ -838,7 +875,7 @@ document.addEventListener("click", e => {
   e.preventDefault();
   const act = t.dataset.act, id = t.dataset.id;
   if (!act && t.closest("#results")) { // a search result moves the Focus at once, then the list closes
-    $("#q").value = ""; renderSearch(); return makeFocus(id);
+    $("#q").value = ""; renderSearch(); setSearching(false); return makeFocus(id);
   }
   if (!act) return clickNode(id, !!t.closest("#pList"));
   if (act === "makeFocus") makeFocus(id);
@@ -856,7 +893,9 @@ document.addEventListener("click", e => {
     t.innerHTML = open ? "&#8250;" : "&#8249;";
     t.setAttribute("aria-label", open ? "Hide panel" : "Show panel");
     t.setAttribute("aria-expanded", open);
+    view.fit();
   }
+  else if (act === "toggleSearch") setSearching(!document.body.classList.contains("searching"));
   else if (act === "expand") { expanded.has(t.dataset.v) ? expanded.delete(t.dataset.v) : expanded.add(t.dataset.v); renderUI(); tourCheck({ kind: "expand" }); }
   else if (act === "guide") startTour(variant);
   else if (act === "copyGuide") copyGuide(t);
@@ -883,10 +922,17 @@ function renderSearch() {
     || ($("#q").value.trim() ? `<li class="muted small" style="padding:4px 6px">No match.</li>` : "");
 }
 $("#q").addEventListener("input", renderSearch);
+// On a phone the search box is hidden behind a button (body.searching shows it); on a desktop it is always shown.
+function setSearching(on) {
+  document.body.classList.toggle("searching", on);
+  $("#searchToggle").setAttribute("aria-expanded", on);
+  if (on) $("#q").focus();
+}
+PHONE.addEventListener("change", () => { view?.fit(); renderUI(); });
 $("#q").addEventListener("keydown", e => {
   const first = $("#results a");
-  if (e.key === "Enter" && first) { const id = first.dataset.id; e.target.value = ""; renderSearch(); makeFocus(id); }
-  if (e.key === "Escape") { e.target.value = ""; renderSearch(); }
+  if (e.key === "Enter" && first) { const id = first.dataset.id; e.target.value = ""; renderSearch(); setSearching(false); makeFocus(id); }
+  if (e.key === "Escape") { e.target.value = ""; renderSearch(); setSearching(false); }
 });
 
 // ---------- Guided tour (ABC test) ----------
@@ -1026,7 +1072,7 @@ const card = one("#tourCard"), ringEl = one("#tourRing");
 async function resetApp() {
   state = FocusModel.initialState(TOUR_FOCUS);
   listOwner = TOUR_FOCUS; expanded.clear(); lastClick = { id: null, t: 0 };
-  one("#q").value = ""; searchType = null;
+  one("#q").value = ""; searchType = null; setSearching(false);
   if (document.body.classList.contains("collapsed")) one("#panelToggle").click();
   one("#panel").scrollTop = 0;
   view.dispose(); view = makeView(variant, one("#stage"), hooks);   // fresh camera
@@ -1098,6 +1144,7 @@ function tourCheck(ev) {
 function currentTarget() {
   let el = run && STEPS[run.i].target?.();
   if (el && el.closest("#panel") && document.body.classList.contains("collapsed")) el = one("#panelToggle");
+  if (el && el.closest("#search") && PHONE.matches && !document.body.classList.contains("searching")) el = one("#searchToggle");
   return el || null;
 }
 
