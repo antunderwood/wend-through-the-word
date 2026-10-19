@@ -55,7 +55,9 @@ def test_genesis_half_siblings_are_the_242_links_theographic_gives(genesis):
     assert sum(x["edge"] == "HALF_SIBLING_OF" for x in half) == 242
     isaac = read_json(entity / "person" / "isaac_616.json")
     assert sorted(
-        n["id"] for n in isaac["neighbours"] if n["edges"][0]["edge"] == "HALF_SIBLING_OF"
+        n["id"]
+        for n in isaac["neighbours"]
+        if any(x["edge"] == "HALF_SIBLING_OF" for x in n["edges"])
     ) == [
         "person:ishbak_620",
         "person:ishmael_630",
@@ -129,3 +131,12 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
     assert not read_tsv(genesis / "reports" / "split_or_trimmed.tsv")
     rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
     assert not [r for r in rows if "cross-reference" in r["cause"]]
+
+
+def test_god_is_a_neighbour_of_abraham_but_not_in_his_ring_1(genesis):
+    from test_comention import ring1
+
+    abraham = read_json(genesis / "data" / VERSION / "entity" / "person" / "abraham_58.json")
+    # God is in more Genesis Verses than anyone (313); cosine demotes him (decision 20).
+    assert "person:god_1324" in {n["id"] for n in abraham["neighbours"]}
+    assert "person:god_1324" not in ring1(abraham)
