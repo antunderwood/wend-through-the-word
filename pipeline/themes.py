@@ -1,8 +1,9 @@
 """Themes from Nave's Topical Bible. Adds each Theme to `b.entities` and its whole-Bible Verse
 set to `b.verse_sets` (decision 95), and sets `filed_under` on each Verse in the book range.
 
-A heading is a Theme when it files a Verse in the book range and is not the name of a
-Theographic Person or Place. A heading with only "See" lines files no Verse (decision 61).
+A heading is a Theme when it files a Verse in the book range and is not the name or an alias of
+a Theographic Person or Place, unless a reviewed row in the curated `themes_keep.csv` keeps it
+(decision 99, amended). A heading with only "See" lines files no Verse (decision 61).
 A reference to a whole chapter is skipped (decision 59).
 """
 
@@ -95,7 +96,7 @@ def load(b):
         v["filed_under"] = []
     naves = {"source": "Nave's Topical Bible", "licence": b.licence("naves")}
 
-    b.new_report("removed_theme_headings", "heading", "action", "match", "entity_ids")
+    b.new_report("removed_theme_headings", "heading", "action", "match", "entity_ids", "keep_row")
     in_range_chapters = {f"{book}.{ch}" for book, ch in b.chapters}
     chapters, missing = Counter(), Counter()
     for h in headings:
@@ -104,14 +105,17 @@ def load(b):
         in_range = sorted(whole_bible & verses.keys())
         if not in_range:
             continue
-        n = norm(heading)
-        if n in names:
-            action, match, ids = "removed", "name", names[n]
-        elif n in aliases:
-            action, match, ids = "kept", "alias", aliases[n]
-        else:  # "REBEKAH (REBECCA)", "ISRAEL, PROPHECIES CONCERNING"
+        # "REBEKAH (REBECCA)" is Rebekah, as "Jacob (Israel)" is Jacob.
+        forms = {norm(heading), norm(re.sub(r"\s*\(.*\)$", "", heading))}
+        by_name = set().union(*(names.get(f, set()) for f in forms))
+        by_alias = set().union(*(aliases.get(f, set()) for f in forms))
+        if by_name or by_alias:
+            match, ids = ("name", by_name) if by_name else ("alias", by_alias)
+            keep = heading in b.themes_keep  # a reviewed themes_keep.csv row
+            action = "kept" if keep else "removed"
+        else:  # "ISRAEL, PROPHECIES CONCERNING" is a topic, so a part never removes a heading
             parts = {norm(p) for p in re.split(r"[,()]", heading)}
-            action, match = "kept", "part of the heading"
+            action, match, keep = "kept", "part of the heading", False
             ids = set().union(*(names.get(p, set()) for p in parts))
         if ids:
             b.report(
@@ -120,6 +124,7 @@ def load(b):
                 action=action,
                 match=match,
                 entity_ids=" ".join(sorted(ids)),
+                keep_row="yes" if keep else "",
             )
         if action == "removed":
             continue

@@ -1,6 +1,7 @@
 man_id,woman_id,relation,evidence,note,reviewed,request
 person:abraham_58,person:sarah_2473,spouse,Gen.11.29,"""Abram's wife was named Sarai""",yes,
-person:abraham_58,person:hagar_1348,spouse;concubine,Gen.16.3;Gen.25.6,"""gave her to Abram to be his wife""; Gen.25.6 ""the sons of his concubines""",yes,https://github.com/antunderwood/wend-through-the-word/issues/900
+person:abraham_58,person:hagar_1348,spouse,Gen.16.3,"""gave her to Abram to be his wife""",yes,https://github.com/antunderwood/wend-through-the-word/issues/900
+person:abraham_58,person:hagar_1348,concubine,Gen.25.6,"""the sons of his concubines"" (Hagar not named there)",yes,https://github.com/antunderwood/wend-through-the-word/issues/900
 person:eliphaz_1144,person:timna_2860,concubine,Gen.36.12,"""Timna, a concubine of Esau's son Eliphaz""",yes,
 person:esau_1216,person:bashemath_1887,partner,Gen.26.34,Synthetic: tests the partner value,yes,
 person:beeri_432,person:anah_247,none,Gen.26.34;Gen.36.2;Gen.36.24,Not partners. Owner: likely the same person (see possibly_same.csv),yes,

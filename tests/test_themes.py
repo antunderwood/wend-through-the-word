@@ -33,42 +33,75 @@ def test_a_verse_links_to_its_themes_by_filed_under_not_mentions(export):
     assert not [m for m in verse["mentions"] if m["id"].startswith("theme:")]
 
 
+def removed(export):
+    rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
+    return {r.pop("heading"): r for r in rows}
+
+
 def test_a_heading_that_names_a_person_or_place_is_removed_and_reported(export):
     themes = export / "data" / VERSION / "entity" / "theme"
     assert not (themes / "hagar.json").exists()
     assert not (themes / "jacob.json").exists()  # Theographic's name is Israel; Jacob (Israel)
-    rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
-    assert {
-        "heading": "HAGAR",
+    rows = removed(export)
+    assert rows["HAGAR"] == {
         "action": "removed",
         "match": "name",
         "entity_ids": "person:hagar_1348",
-    } in rows
-    assert {
-        "heading": "CANAAN",
+        "keep_row": "",
+    }
+    assert rows["CANAAN"]["entity_ids"] == "person:canaan_914 place:canaan_272"
+
+
+def test_a_heading_that_matches_an_alias_is_removed_and_reported(export):
+    # Judith is Aholibamah's other name (Gen 26:34, 36:2), so the Theme would duplicate her.
+    assert removed(export)["JUDITH"] == {
         "action": "removed",
-        "match": "name",
-        "entity_ids": "person:canaan_914 place:canaan_272",
-    } in rows
-
-
-def test_a_heading_that_matches_only_an_alias_or_part_of_a_name_is_kept_and_reported(export):
-    rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
-    # Judith is Aholibamah's other name (Gen 26:34, 36:2): the owner reviews it.
-    assert {
-        "heading": "JUDITH",
-        "action": "kept",
         "match": "alias",
         "entity_ids": "person:aholibamah_1761",
-    } in rows
-    assert {
-        "heading": "REBEKAH (REBECCA)",
+        "keep_row": "",
+    }
+    assert not (export / "data" / VERSION / "entity" / "theme" / "judith.json").exists()
+
+
+def test_a_heading_with_another_form_in_brackets_is_matched_without_it(export):
+    # "REBEKAH (REBECCA)" is Rebekah, as "Jacob (Israel)" is Jacob.
+    assert removed(export)["REBEKAH (REBECCA)"] == {
+        "action": "removed",
+        "match": "name",
+        "entity_ids": "person:rebekah_2401",
+        "keep_row": "",
+    }
+    assert not (export / "data" / VERSION / "entity" / "theme" / "rebekah_rebecca.json").exists()
+
+
+def test_a_heading_that_matches_only_a_part_before_a_comma_is_kept_and_reported(export):
+    assert removed(export)["JESUS, THE CHRIST"] == {
         "action": "kept",
         "match": "part of the heading",
-        "entity_ids": "person:rebekah_2401",
-    } in rows
-    assert theme(export, "judith")["name"] == "JUDITH"
-    assert theme(export, "rebekah_rebecca")["id"] == "theme:rebekah_rebecca"
+        "entity_ids": "person:jesus_905",
+        "keep_row": "",
+    }
+    assert theme(export, "jesus_the_christ")["name"] == "JESUS, THE CHRIST"
+
+
+def test_a_reviewed_keep_row_keeps_a_heading_that_names_a_person(export):
+    # Fixture themes_keep.csv: GOD is reviewed; MASTER (an alias of Jesus) is not.
+    rows = removed(export)
+    assert rows["GOD"] == {
+        "action": "kept",
+        "match": "name",
+        "entity_ids": "person:god_1324",
+        "keep_row": "yes",
+    }
+    assert theme(export, "god")["name"] == "GOD"
+    assert rows["MASTER"] == {
+        "action": "removed",
+        "match": "alias",
+        "entity_ids": "person:jesus_905",
+        "keep_row": "",
+    }
+    unreviewed = read_tsv(export / "reports" / "curated_unreviewed.tsv")
+    assert {"table": "themes_keep", "line": "3", "ids": "MASTER", "detail": "no"} in unreviewed
 
 
 def test_a_heading_with_only_see_lines_is_not_a_theme(export):

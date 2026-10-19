@@ -48,7 +48,7 @@ def test_genesis_has_one_file_for_each_entity_in_range_and_each_stub(genesis):
     entity = genesis / "data" / VERSION / "entity"
     files = [read_json(p) for p in entity.rglob("*.json")]
     in_range = Counter(e["type"] for e in files if e["verses"])
-    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 567}
+    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 535}
     # Stubs: Entities with no Genesis verse that an explicit edge links to Genesis (decision 51).
     stubs = Counter(e["type"] for e in files if not e["verses"])
     # Only People (family edges) and People Groups (MEMBER_OF) ship as stubs.
@@ -104,8 +104,11 @@ def test_genesis_ships_the_real_curated_tables(genesis):
         return [(e["edge"], [v["label"] for v in e.get("evidence", [])]) for e in explicit]
 
     assert edges("abraham_58", "sarah_2473") == [("SPOUSE_OF", ["Gen.11.29"])]
-    both = ["Gen.16.3", "Gen.25.6"]
-    assert edges("abraham_58", "hagar_1348") == [("CONCUBINE_OF", both), ("SPOUSE_OF", both)]
+    # One row per relation, so each edge cites only its own verse.
+    assert edges("abraham_58", "hagar_1348") == [
+        ("CONCUBINE_OF", ["Gen.25.6"]),
+        ("SPOUSE_OF", ["Gen.16.3"]),
+    ]
     assert edges("anah_247", "beeri_432") == [
         ("POSSIBLY_SAME_AS", ["Gen.26.34", "Gen.36.2", "Gen.36.24"])
     ]
@@ -114,10 +117,26 @@ def test_genesis_ships_the_real_curated_tables(genesis):
     for name in ("redundant", "no_longer_matches"):
         assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
     unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
-    assert [r["ids"] for r in unreviewed] == [
+    assert [r["ids"] for r in unreviewed if r["table"] == "corrections"] == [
         "place:mount_of_olives_828 aliases",
         "place:nile_895 coordinates",  # owner to confirm (decision 90)
         "place:gihon_472 coordinates",
+    ]
+    # Draft themes_keep.csv rows for the owner to review (decision 103).
+    assert sorted(r["ids"] for r in unreviewed if r["table"] == "themes_keep") == [
+        "CANAANITES",
+        "CAPHTORIM",
+        "DAUGHTER",
+        "FIRSTBORN",
+        "GOD",
+        "HOLY SPIRIT",
+        "LIGHT",
+        "MASTER",
+        "MIDIANITES",
+        "MOABITES",
+        "SALT",
+        "SUN",
+        "WIFE",
     ]
 
 
@@ -198,30 +217,32 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
     ]
 
 
-def test_genesis_themes_file_5414_verses_and_none_has_a_person_or_place_name(genesis):
+def test_genesis_themes_file_5193_verses_and_none_has_a_person_or_place_name(genesis):
     entity = genesis / "data" / VERSION / "entity"
     verses = [v for p in chapter_files(genesis) for v in read_json(p)["verses"]]
-    assert sum(len(v["filed_under"]) for v in verses) == 5414
+    assert sum(len(v["filed_under"]) for v in verses) == 5193
 
-    # PRD 12.13: no Theme has the name of a Theographic Person or Place ("Jacob (Israel)" is
-    # Jacob). Headings that match only an alias, or part of the heading, are kept and reported.
+    # PRD 12.13: no Theme has the name or an alias of a Theographic Person or Place ("Jacob
+    # (Israel)" is Jacob). A heading that matches only a part before a comma is kept and reported.
     def norm(name):
         return re.sub(r"[^a-z]", "", name.lower())
 
-    names = {
-        norm(re.sub(r"\s*\(.*\)$", "", read_json(p)["name"]))
-        for kind in ("person", "place")
-        for p in entity.glob(f"{kind}/*.json")
-    }
+    files = [read_json(p) for kind in ("person", "place") for p in entity.glob(f"{kind}/*.json")]
+    names = {norm(re.sub(r"\s*\(.*\)$", "", e["name"])) for e in files}
+    names |= {norm(a) for e in files for a in e["aliases"]}
     themes = [read_json(p)["name"] for p in (entity / "theme").glob("*.json")]
-    assert len(themes) == 567
-    assert not [t for t in themes if norm(t) in names]
+    assert len(themes) == 535
+    assert not [t for t in themes if norm(re.sub(r"\s*\(.*\)$", "", t)) in names]
     rows = read_tsv(genesis / "reports" / "removed_theme_headings.tsv")
-    assert Counter((r["action"], r["match"]) for r in rows) == {
-        ("removed", "name"): 382,
-        ("kept", "alias"): 31,
-        ("kept", "part of the heading"): 2,
+    # No keep row is reviewed yet, so GOD, HOLY SPIRIT, SALT, and LIGHT are removed for now.
+    assert Counter((r["action"], r["match"], r["keep_row"]) for r in rows) == {
+        ("removed", "name", ""): 383,
+        ("removed", "alias", ""): 31,
+        ("kept", "part of the heading", ""): 1,  # JESUS, THE CHRIST
     }
+    removed = {r["heading"] for r in rows if r["action"] == "removed"}
+    duplicates = ["MELCHIZEDEK", "REBEKAH (REBECCA)", "ZAPHNATH-PAANEAH", "BEN-ONI", "JUDITH"]
+    assert removed >= {*duplicates, "HEMAM", "PHALLU", "GOD", "HOLY SPIRIT", "SALT", "LIGHT"}
 
 
 def test_genesis_tipnr_check_reports_48_disagreements(genesis):
