@@ -98,6 +98,11 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 62. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
 
+## 2026-10-19: Search index and credits (#5)
+
+63. **Search index entries carry no `source` or `licence`.** Each entry is a label (ID, type, name, aliases) for an Entity whose file already carries them, so the provenance test skips `search-index.json`. Reason: repeating them on every entry adds size to the file the front end loads first, and the index is not a node or an edge.
+64. **The build stops when it reads a source that has no credit in `pipeline/credits.py`.** Easton's is credited as its own source whenever a Dictionary Entry ships. Reason: the credits file must list every source the build read (PRD 5, rule 6), so a new source cannot ship without its credit wording and link.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

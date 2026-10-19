@@ -2,6 +2,7 @@
 
 import shutil
 
+from pipeline import credits, search
 from pipeline.common import SIZE_LIMIT, write_json, write_tsv
 
 
@@ -19,6 +20,8 @@ def write(b):
     for entity in b.entities.values():
         kind, name = entity["id"].split(":", 1)
         write_json(version / "entity" / kind / f"{name}.json", entity)
+    write_json(version / "search-index.json", search.index(b))
+    write_json(version / "credits.json", credits.credits(b))
 
     write_json(
         data / "index.json",
