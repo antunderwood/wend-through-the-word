@@ -128,6 +128,12 @@
     #pill .proto { display: none; }
     #pillLabel { min-width: 0; font-size: 13px; white-space: nowrap; }
     #pill button { width: 32px; height: 32px; }
+    /* Less crowding: relationship words only on the selected node's edge, no Focus subtitle (the panel has it),
+       and names that would overlap a more important name are hidden until a tap or a zoom makes room. */
+    .el:not(.on) { display: none; }
+    .nl.focus { width: auto; }
+    .nl.focus small { display: none; }
+    .nl.culled, .el.culled { visibility: hidden; }
   }
 
   /* Guided tour */
@@ -399,6 +405,7 @@ function makeView(key, host, hooks) {
 
   let centre = new THREE.Vector3();
   let nodeObjs = new Map(), edgeObjs = [], faint = null, faintPairs = [], domEls = [];
+  let nameEls = [], selectedId = null, cullDirty = true;   // name labels, for hiding overlaps on a phone
   let anim = null, glide = null, raf = 0, frames = 0, fpsT = performance.now();
   const selRing = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.ring, color: 0xffffff, transparent: true, depthWrite: false }));
   // Radius of the drawn circle as a fraction of sprite size: the disc is radius 58 of 128 px; a ring sprite is
@@ -425,7 +432,7 @@ function makeView(key, host, hooks) {
     for (const o of edgeObjs) { world.remove(o.line); o.line.geometry.dispose(); o.line.material.dispose(); if (o.lab) world.remove(o.lab); }
     if (faint) { world.remove(faint); faint.geometry.dispose(); faint.material.dispose(); faint = null; }
     domEls.forEach(d => d.remove()); domEls = [];   // CSS2D elements stay in the DOM unless removed by hand
-    nodeObjs = new Map(); edgeObjs = []; faintPairs = [];
+    nodeObjs = new Map(); edgeObjs = []; faintPairs = []; nameEls = [];
   }
 
   function nodeLabel(n) {
@@ -439,7 +446,7 @@ function makeView(key, host, hooks) {
     d.addEventListener("pointerenter", e => hooks.onHover(n, e.clientX, e.clientY));
     d.addEventListener("pointerleave", () => hooks.onHover(null));
     const o = new CSS2DObject(d); o.center.set(0.5, 0);
-    domEls.push(d);
+    domEls.push(d); nameEls.push({ el: d, n });
     return o;
   }
 
@@ -503,6 +510,7 @@ function makeView(key, host, hooks) {
     anim = { t0: performance.now(), dur: REDUCED || (!origin && !prev.size) ? 0 : 650 };
     if (!opts.focusChanged) deco.position.copy(centre);
     updateEdges();
+    cullDirty = true;
   }
 
   // Runs whenever nodes or the camera move: the rim points depend on the view direction.
@@ -553,9 +561,10 @@ function makeView(key, host, hooks) {
       for (const o of nodeObjs.values()) o.group.position.lerpVectors(o.from, o.to, k);
       if (k >= 1) anim = null;
     }
-    if (controls.update() || nodesMoved) updateEdges();   // update() is true when the camera moved
+    if (controls.update() || nodesMoved) { updateEdges(); cullDirty = true; }   // update() is true when the camera moved
     renderer.render(scene, camera);
     labels.render(scene, camera);
+    if (cullDirty) { cullDirty = false; cullNames(); }
     frames++;
     if (now - fpsT >= 1000) { hooks.onFps(Math.round((frames * 1000) / (now - fpsT))); frames = 0; fpsT = now; }
   }
@@ -592,8 +601,31 @@ function makeView(key, host, hooks) {
   el.addEventListener("pointerdown", onDown);
   el.addEventListener("pointerup", onUp);
   el.addEventListener("pointermove", onMove);
+  // On a phone, a name that would overlap a more important one is hidden (visibility only, so its box can still
+  // be measured). Order: the Selected Node (just tapped), the Focus, Pinned Nodes, then Ring 1 by rank within each
+  // type, the rest last. The one relationship word left showing comes straight after the Selected Node.
+  const namePriority = n => (n.id === selectedId ? 0 : n.role === "focus" ? 1 : n.role === "pinned" ? 2
+    : n.ring1 ? 3 + n.ring1.pos : 20 + (n.rank ?? 0));
+  function cullNames() {
+    if (!PHONE.matches) { nameEls.forEach(L => L.el.classList.remove("culled")); return; }
+    const kept = [];
+    const place = el => {
+      const r = el.getBoundingClientRect();
+      const clash = r.width > 0 && kept.some(k => r.left < k.right && k.left < r.right && r.top < k.bottom && k.top < r.bottom);
+      el.classList.toggle("culled", clash);
+      if (r.width > 0 && !clash) kept.push(r);
+    };
+    const words = edgeObjs.filter(o => o.lab?.element.classList.contains("on")).map(o => o.lab.element);
+    let wordsPlaced = false;
+    for (const L of [...nameEls].sort((x, y) => namePriority(x.n) - namePriority(y.n))) {
+      if (!wordsPlaced && namePriority(L.n) > 0) { words.forEach(place); wordsPlaced = true; }
+      place(L.el);
+    }
+  }
+
   // On a phone the panel is a bottom sheet: shift the picture up so the scene is centred in the space above it.
   function fit() {
+    cullDirty = true;
     const sheet = hooks.sheetHeight();
     if (sheet) camera.setViewOffset(window.innerWidth, window.innerHeight, 0, sheet / 2, window.innerWidth, window.innerHeight);
     else camera.clearViewOffset();
@@ -610,6 +642,9 @@ function makeView(key, host, hooks) {
     selRing.removeFromParent();
     const o = nodeObjs.get(id);
     if (o) { selRing.scale.setScalar(o.size * 1.8); o.group.add(selRing); }
+    // Phone: only the edge between the Focus and the Selected Node keeps its relationship words.
+    for (const e of edgeObjs) if (e.lab) e.lab.element.classList.toggle("on", e.e.b === id);
+    selectedId = id; cullDirty = true;
   }
 
   function dispose() {
