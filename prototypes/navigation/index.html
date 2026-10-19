@@ -73,6 +73,7 @@
   button.more { font-size: 12px; padding: 1px 8px; margin: 2px 0 4px; border-radius: 999px; color: var(--muted); }
   button.more.on { color: var(--accent); }
   button.more .caret { display: inline-block; width: 0.8em; }
+  .verse-text { margin: 0 0 8px 14px; color: var(--text); opacity: 0.85; line-height: 1.4; }
   .btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
   ul.list, ol.list { margin: 4px 0 8px; padding-left: 20px; font-size: 13px; }
   ul.list a, ol.list a { color: var(--text); }
@@ -668,8 +669,15 @@ function renderSelected() {
   for (const other of [state.focus, ...state.pins]) {
     if (other === id || R.type === "verse" || typeOf(other) === "verse") continue;
     const mine = keysOf(R), shared = [...keysOf(data.rec(other))].filter(k => mine.has(k)).sort();
-    if (shared.length) h += `<details open><summary class="small">Together with ${esc(label(other))} in ${shared.length} verse${shared.length === 1 ? "" : "s"}</summary>
-      <ul class="list">${shared.map(k => item(k, "")).join("")}</ul></details>`;
+    if (!shared.length) continue;
+    // Load the chapter files of the shared Verses, then draw again with their text.
+    const missing = shared.filter(k => !data.rec(k));
+    if (missing.length) Promise.all(missing.map(data.load)).then(renderUI);
+    h += `<details open><summary class="small">Together with ${esc(label(other))} in ${shared.length} verse${shared.length === 1 ? "" : "s"}</summary>
+      <ul class="list">${shared.map(k => {
+        const text = data.rec(k)?.raw?.text_bsb;
+        return `${item(k, "")}<div class="small verse-text">${text ? esc(text) : '<span class="muted">Loading...</span>'}</div>`;
+      }).join("")}</ul></details>`;
   }
   return h;
 }
