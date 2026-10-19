@@ -55,7 +55,7 @@ export const FocusModel = (() => {
   }
 
   const initialState = focus => ({
-    focus, selected: focus, path: [], pins: [],
+    focus, selected: focus, path: [], pins: [], cleared: null,
     filters: { k: 6, minVotes: 1, nodeLimit: 500 },
     notice: "Start.",
   });
@@ -90,7 +90,13 @@ export const FocusModel = (() => {
         if (!s.path.length) return { ...s, notice: "Your Path is already empty." };
         // The Focus stays; a selected node that was only on Your Path gives way to the Focus.
         const selected = s.path.includes(s.selected) ? s.focus : s.selected;
-        return { ...s, path: [], selected, notice: `Cleared Your Path (${s.path.length} node${s.path.length === 1 ? "" : "s"}). The Focus and pins stay.` };
+        return { ...s, path: [], cleared: s.path, selected, notice: `Cleared Your Path (${s.path.length} node${s.path.length === 1 ? "" : "s"}). The Focus and pins stay. Undo brings it back.` };
+      }
+      case "undoClear": {
+        if (!s.cleared) return { ...s, notice: "Nothing to undo." };
+        // The cleared nodes go back before any visited since, each once; the Focus stays off Your Path.
+        const path = [...s.cleared.filter(x => x !== s.focus && !s.path.includes(x)), ...s.path];
+        return { ...s, path, cleared: null, notice: `Restored Your Path (${path.length} node${path.length === 1 ? "" : "s"}).` };
       }
       case "notice":
         return { ...s, notice: a.text };
