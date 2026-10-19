@@ -40,10 +40,12 @@ def read_tsv(path):
 
 def nodes_and_edges(obj):
     """Every dict in the export that is a node (has a `key` or `id`) or an edge (has `edge`).
-    Ring 2 entries are left out: the spec keeps them to an ID and a weight only, and the Ring 2
+    A Neighbour is not one: it points at a node, and each of its `edges` is checked. Ring 2
+    entries are left out too: the spec keeps them to an ID and a weight only, and the Ring 2
     file names their source and licence once at the top."""
     if isinstance(obj, dict):
-        if {"key", "id", "edge"} & obj.keys() and obj.keys() != {"id", "weight"}:
+        neighbour = "edges" in obj or obj.keys() == {"id", "weight"}
+        if {"key", "id", "edge"} & obj.keys() and not neighbour:
             yield obj
         for v in obj.values():
             yield from nodes_and_edges(v)

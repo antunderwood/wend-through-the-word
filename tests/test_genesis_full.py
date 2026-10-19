@@ -65,8 +65,9 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
     # 13,327 OpenBible rows start in Genesis and 11,300 point to Genesis (decision 52: a range
     # counts at its first verse). A row with both ends in Genesis is in two Verses.
     chapters = chapter_files(genesis)
-    refs = [r for p in chapters for v in read_json(p)["verses"] for r in v["cross_references"]]
-    assert len(refs) == 13327 + 11300
+    verses = [v for p in chapters for v in read_json(p)["verses"]]
+    edges = [e for v in verses for n in v["cross_references"] for e in n["edges"]]
+    assert len(edges) == 13327 + 11300
     assert not read_tsv(genesis / "reports" / "split_or_trimmed.tsv")
     rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
     assert not [r for r in rows if "cross-reference" in r["cause"]]

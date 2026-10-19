@@ -17,7 +17,7 @@ def write(b):
         chapter = {"book": book, "chapter": ch, "verses": verses}
         crossrefs.fit(b, path, chapter, [v["cross_references"] for v in verses])
         write_json(path, chapter)
-        ring1 = {r["key"] for v in verses for r in v["cross_references"]}
+        ring1 = {n["id"] for v in verses for n in v["cross_references"]}
         ring2 = {key: list(b.ring2[key]) for key in ring1}
         path = version / "chapter" / book / f"{ch}.ring2.json"
         sidecar = {

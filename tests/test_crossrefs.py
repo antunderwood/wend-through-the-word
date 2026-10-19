@@ -6,44 +6,63 @@ def verse(export, book, ch, vs):
     return next(v for v in verses if v["verse"] == vs)
 
 
-def test_chapter_file_lists_the_cross_references_of_each_verse_by_votes(export):
-    refs = verse(export, "Gen", 11, 1)["cross_references"]
-    assert [(r["key"], r["direction"], r["weight"]) for r in refs] == [
-        ("36003009", "out", 16),  # Zeph.3.9
-        ("44002006", "out", 16),  # Acts.2.6
-        ("36003009", "in", 11),
-        ("01011006", "in", 8),  # Gen.11.6
-        ("23019018", "out", 3),  # Isa.19.18
-        ("23019018", "in", 1),
+def edges(neighbours):
+    """(Neighbour ID, direction, Votes, to_end_key) for each edge of each Neighbour."""
+    return [
+        (n["id"], e["direction"], e["votes"], e.get("to_end_key"))
+        for n in neighbours
+        for e in n["edges"]
     ]
-    assert refs[0]["edge"] == "CROSS_REF"
-    assert (refs[0]["source"], refs[0]["licence"]) == ("OpenBible.info", "CC BY 4.0")
+
+
+def test_chapter_file_lists_the_cross_referenced_verses_of_each_verse_by_votes(export):
+    refs = verse(export, "Gen", 11, 1)["cross_references"]
+    # Fixture rows: Gen.11.1 to Zeph.3.9 (16) and back (11), to Acts.2.6 (16), to Isa.19.18 (3)
+    # and back (1), and Gen.11.6 to Gen.11.1 (8).
+    assert [(n["id"], n["type"], n["weight"]) for n in refs] == [
+        ("36003009", "verse", 16),  # Zeph.3.9
+        ("44002006", "verse", 16),  # Acts.2.6
+        ("01011006", "verse", 8),  # Gen.11.6
+        ("23019018", "verse", 3),  # Isa.19.18
+    ]
+    assert edges(refs[:1]) == [("36003009", "out", 16, None), ("36003009", "in", 11, None)]
+    assert edges(refs[3:]) == [("23019018", "out", 3, None), ("23019018", "in", 1, None)]
+    edge = refs[0]["edges"][0]
+    assert (edge["edge"], edge["source"], edge["licence"]) == (
+        "CROSS_REF",
+        "OpenBible.info",
+        "CC BY 4.0",
+    )
+
+
+def test_no_verse_lists_a_cross_referenced_verse_twice(export):
+    for path in (export / "data" / VERSION / "chapter").glob("*/*.json"):
+        for v in read_json(path).get("verses", []):
+            ids = [n["id"] for n in v["cross_references"]]
+            assert len(ids) == len(set(ids)), (path.name, v["label"])
 
 
 def test_a_cross_reference_to_a_range_is_one_edge_to_its_first_verse_with_the_end_key(export):
     # OpenBible row: 3John.1.2  3John.1.3-3John.1.6  9 (decision 52)
-    out = [r for r in verse(export, "3John", 1, 2)["cross_references"] if r["key"] == "64001003"]
-    assert [(r["direction"], r["weight"], r["to_end_key"]) for r in out] == [("out", 9, "64001006")]
-    into = [r for r in verse(export, "3John", 1, 3)["cross_references"] if r["key"] == "64001002"]
-    assert [(r["direction"], r["weight"], r["to_end_key"]) for r in into] == [("in", 9, "64001006")]
+    out = edges(verse(export, "3John", 1, 2)["cross_references"])
+    assert ("64001003", "out", 9, "64001006") in out
+    into = edges(verse(export, "3John", 1, 3)["cross_references"])
+    assert ("64001002", "in", 9, "64001006") in into
     for v in (4, 5, 6):
-        assert "64001002" not in [
-            r["key"] for r in verse(export, "3John", 1, v)["cross_references"]
-        ]
+        assert "64001002" not in [n["id"] for n in verse(export, "3John", 1, v)["cross_references"]]
 
 
 def test_a_genesis_verse_links_to_verses_outside_the_book_range(export):
-    keys = {r["key"] for r in verse(export, "Gen", 11, 1)["cross_references"]}
-    assert {"44002006", "36003009"} <= keys  # Acts.2.6, Zeph.3.9; the range is Gen, Matt, 3John
+    ids = {n["id"] for n in verse(export, "Gen", 11, 1)["cross_references"]}
+    assert {"44002006", "36003009"} <= ids  # Acts.2.6, Zeph.3.9; the range is Gen, Matt, 3John
 
 
 def test_a_cross_reference_to_3john_1_15_arrives_at_3john_1_14(export):
     # Fixture rows: Matt.17.20 to 3John.1.15 (synthetic, 3 votes), 3John.1.15 to John.10.3 (2)
-    refs = verse(export, "3John", 1, 14)["cross_references"]
-    edges = {(r["key"], r["direction"], r["weight"]) for r in refs}
-    assert {("40017020", "in", 3), ("43010003", "out", 2)} <= edges
-    matt = verse(export, "Matt", 17, 20)["cross_references"]
-    assert ("64001014", "out", 3) in [(r["key"], r["direction"], r["weight"]) for r in matt]
+    found = edges(verse(export, "3John", 1, 14)["cross_references"])
+    assert {("40017020", "in", 3, None), ("43010003", "out", 2, None)} <= set(found)
+    matt = edges(verse(export, "Matt", 17, 20)["cross_references"])
+    assert ("64001014", "out", 3, None) in matt
 
 
 def test_a_cross_reference_with_no_verse_key_is_in_the_verse_mismatch_report(export):
@@ -72,7 +91,7 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
         {"id": "44017026", "weight": 2},  # Acts.17.26
     ]
     ring1 = read_json(chapter / "11.json")["verses"]
-    assert {r["key"] for v in ring1 for r in v["cross_references"]} == ring2.keys()
+    assert {n["id"] for v in ring1 for n in v["cross_references"]} == ring2.keys()
     assert all(e.keys() == {"id", "weight"} for entries in ring2.values() for e in entries)
 
 
@@ -84,17 +103,13 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
     path = f"data/{VERSION}/chapter/Gen/25.json"
     assert (small / path).stat().st_size < limit
 
-    def edges(out):
+    def neighbours(out):
         verses = read_json(out / path)["verses"]
-        return {
-            (v["key"], r["key"], r["direction"], r["weight"])
-            for v in verses
-            for r in v["cross_references"]
-        }
+        return {(v["key"], n["id"], n["weight"]) for v in verses for n in v["cross_references"]}
 
-    kept, dropped = edges(small), edges(export) - edges(small)
+    kept, dropped = neighbours(small), neighbours(export) - neighbours(small)
     assert kept and dropped
-    assert min(e[3] for e in kept) >= max(e[3] for e in dropped)
+    assert min(e[2] for e in kept) >= max(e[2] for e in dropped)
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [(r["action"], r["dropped"]) for r in rows if r["path"] == path] == [
         ("trimmed", str(len(dropped)))
