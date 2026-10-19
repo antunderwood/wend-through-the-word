@@ -82,8 +82,8 @@ def check(table, row, upstream, pairs):
         if row["relation"] == "none":
             return "redundant", "Theographic no longer has the pair"
         return "stale", "Theographic does not have the pair"
-    if table == "possibly_same":
-        return "apply", ""
+    if table == "possibly_same" or row["field"] == "coordinates":
+        return "apply", ""  # Theographic coordinates never ship (decision 41): nothing to match
     was, value, now = row["was"], row["value"], upstream[row["id"]].get(row["field"])
     if row["field"] == "aliases":  # one alias: `was` is replaced by `value`, or removed
         now = now or []
@@ -109,7 +109,10 @@ def load(b):
         status, detail = check(table, row, upstream, pairs)
         if status != "apply":
             b.report(STATUS_REPORTS[status], **where, detail=detail)
-        plain_error = table == "corrections" or row.get("relation") == "none"  # PRD 10.5 rule 4
+        # PRD 10.5 rule 4. A coordinate is not Theographic's, so it is not reported upstream.
+        plain_error = (table == "corrections" and row["field"] != "coordinates") or (
+            row.get("relation") == "none"
+        )
         if plain_error and status == "apply":
             b.report("curated_upstream", **where, detail=row["note"])
         if row["reviewed"] != "yes":
@@ -146,7 +149,7 @@ def correct(b, e):
             if row["was"] in aliases:
                 aliases[aliases.index(row["was"])] = row["value"]
             e["aliases"] = [a for a in dict.fromkeys(aliases) if a]
-        else:
+        elif row["field"] != "coordinates":  # the coordinates step applies these
             e[row["field"]] = row["value"]
         e.setdefault("corrections", []).append(row)
 

@@ -53,6 +53,27 @@ def test_openbible_point_from_wikidata_that_cites_openstreetmap_is_dropped(expor
     assert no_coordinate(export)["place:canaan_272"] == cause
 
 
+def test_curated_correction_sets_a_point_with_its_evidence(export):
+    # Synthetic row in the fixture corrections.csv: Babel set to 32.5,44.4 (owner decision).
+    babel = place(export, "babel_150")
+    assert point(export, "babel_150") == (32.5, 44.4, "Curated")
+    assert "confidence" not in babel
+    fix = babel["corrections"][0]
+    assert (fix["field"], fix["source"], fix["evidence"][0]["label"]) == (
+        "coordinates",
+        "Curated",
+        "Gen.11.9",
+    )
+    assert "place:babel_150" not in no_coordinate(export)
+
+
+def test_curated_correction_removes_a_point_and_reports_the_place(export):
+    # Synthetic row: Pau's re-sourced Wikidata point is removed.
+    assert point(export, "pau_927") == (None, None, None)
+    assert "confidence" not in place(export, "pau_927")
+    assert no_coordinate(export)["place:pau_927"] == "point removed by a curated correction"
+
+
 def test_credits_list_each_lookup_source_with_its_licence(export):
     entries = read_json(export / "data" / VERSION / "credits.json")["sources"]
     licences = {e["name"]: (e["licence"], e["link"]) for e in entries}

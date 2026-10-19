@@ -111,7 +111,11 @@ def test_genesis_ships_the_real_curated_tables(genesis):
     for name in ("redundant", "no_longer_matches"):
         assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
     unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
-    assert [r["ids"] for r in unreviewed] == ["place:mount_of_olives_828 aliases"]
+    assert [r["ids"] for r in unreviewed] == [
+        "place:mount_of_olives_828 aliases",
+        "place:nile_895 coordinates",  # owner to confirm (decision 89)
+        "place:gihon_472 coordinates",
+    ]
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
