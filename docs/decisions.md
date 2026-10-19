@@ -79,6 +79,17 @@ From the source notes written for tickets #4 to #13.
 53. **Cross-references with zero or negative Votes are kept.** The front end's default filter hides them (PRD 12.4). Reason: the data stays complete, and trimming for size already drops the lowest Votes first.
 54. **People Group IDs are `group:` plus the group name in lower case, with spaces as underscores.** Reason: Theographic gives groups no ID field. The prototype used the same rule.
 
+## 2026-10-19: Coordinates and themes
+
+Numbers start at 56, because ticket #4 records decision 55.
+
+56. **A Theographic place joins its OpenBible record through Theographic's `geo/bible-places.geojson`.** The build uses only each feature's `links` (OpenBible, Pleiades, and Wikidata IDs). The geometry never ships (decision 41). This is a new source from the Theographic repository (CC BY-SA 4.0), added to `download` and `docs/licences.md` by ticket #10. Reason: it links 1,255 of 1,298 places, while a name and verse match leaves 36 unmatched and 15 ties.
+57. **OpenBible points computed from OpenStreetMap geometry are dropped and re-sourced.** These are points whose record has `geometry_credit` "osm", even when `coordinates_source` is not "osm" (45 Genesis places, such as the Euphrates and Ur). Reason: the OpenStreetMap record already rejects converted or shifted OpenStreetMap values as still derived. A point computed from the geometry is the same case.
+58. **The decision 43 check also applies to OpenBible points that come from Wikidata.** A point whose Wikidata coordinate cites OpenStreetMap is dropped and re-sourced. Reason: CC0 on Wikidata does not clean ODbL data, whoever looks it up.
+59. **Nave's references to a whole chapter are skipped and reported.** Reason: a chapter is weak evidence that every verse in it is about the topic. FILED_UNDER stays verse precise (8,267 Genesis links).
+60. **OpenBible confidence is `score.time_total` of the identification that gives the point.** Reason: the readme uses it to sort identifications. It is a number from 0 to 1,000; the front end can bucket it.
+61. **A Nave's heading with only "See" lines is not a Theme.** Reason: it has no Verses, so it would have no Neighbours.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
