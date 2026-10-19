@@ -227,6 +227,41 @@ export function createData(getJSON, root) {
     const si = await getJSON(`${D.base}/search-index.json`);
     for (const b of si.books) D.books.set(b.number, b);
     for (const e of si.entities) D.names.set(e.id, e.name);
+    D.entries = si.entities;
+  };
+
+  // Search over names, aliases, and verse references (decision 22: no verse text search in v1).
+  // type is a node type or null for all. Verse references: "Gen 22:2", "Genesis 22", "gen 22.2".
+  D.search = (q, type = null) => {
+    q = q.trim().toLowerCase();
+    if (!q) return [];
+    const out = [];
+    if (!type || type === "verse") {
+      const m = q.match(/^((?:[1-3]\s*)?[a-z]+)\.?\s*(\d+)(?:\s*[:.]\s*(\d+))?$/);
+      const s = m && m[1].replace(/\s+/g, "");
+      const book = m && [...D.books.values()].find(b => b.osis.toLowerCase() === s || (s.length >= 2 && b.name.toLowerCase().replace(/\s+/g, "").startsWith(s)));
+      if (book) out.push({ id: `${book.number}${m[2].padStart(3, "0")}${(m[3] || "1").padStart(3, "0")}`, hint: m[3] ? "" : "first verse of the chapter" });
+    }
+    if (type === "verse") return out;
+    const rank = e => {
+      const n = e.name.toLowerCase(), al = (e.aliases || []).map(a => a.toLowerCase());
+      if (n === q) return [0, ""];
+      if (n.startsWith(q)) return [1, ""];
+      const a = al.find(x => x.startsWith(q));
+      if (a) return [2, `also called ${a}`];
+      if (new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(n)) return [3, ""];
+      if (n.includes(q)) return [4, ""];
+      const b = al.find(x => x.includes(q));
+      return b ? [5, `also called ${b}`] : null;
+    };
+    const hits = [];
+    for (const e of D.entries) {
+      if (type && e.type !== type) continue;
+      const r = rank(e);
+      if (r) hits.push({ id: e.id, score: r[0], hint: r[1], name: e.name });
+    }
+    hits.sort((x, y) => x.score - y.score || x.name.length - y.name.length || (x.name < y.name ? -1 : 1));
+    return out.concat(hits.slice(0, 30));
   };
 
   D.verseParts = key => {

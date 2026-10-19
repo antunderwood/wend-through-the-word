@@ -44,7 +44,17 @@
   .crumb.sel { background: rgba(255, 255, 255, 0.12); }
   .sep { color: var(--muted); font-size: 11px; }
 
-  #votesChip { position: fixed; top: 58px; left: 10px; max-width: 330px; padding: 8px 10px; background: var(--panel);
+  #search { position: fixed; top: 54px; left: 10px; width: 330px; max-width: calc(100vw - 20px); z-index: 5; padding: 8px;
+    background: var(--panel); border-radius: 8px; border: 1px solid var(--line); }
+  #search input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; color: var(--text);
+    background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+  #search .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  #search .chips button { font-size: 11px; padding: 1px 8px; border-radius: 999px; }
+  #results { list-style: none; margin: 6px 0 0; padding: 0; max-height: 45vh; overflow-y: auto; }
+  #results:empty { display: none; }
+  #results li a { display: block; padding: 4px 6px; border-radius: 4px; color: var(--text); text-decoration: none; font-size: 13px; }
+  #results li a:hover, #results li a.sel { background: rgba(255, 255, 255, 0.1); }
+  #votesChip { position: fixed; top: 150px; left: 10px; max-width: 330px; padding: 8px 10px; background: var(--panel);
     border-radius: 8px; border: 1px solid var(--line); font-size: 12px; }
   #votesChip:empty { display: none; }
   .votes input { width: 100%; }
@@ -104,6 +114,11 @@
 <body>
 <div id="stage"></div>
 <nav id="crumbs" aria-label="Your Path"></nav>
+<div id="search" role="search">
+  <input id="q" type="search" placeholder="Search names, aliases, or a verse (Gen 22:2)" aria-label="Search nodes" autocomplete="off">
+  <div class="chips" role="group" aria-label="Filter by type"></div>
+  <ol id="results"></ol>
+</div>
 <div id="votesChip"></div>
 <div id="trimNote"></div>
 <div id="tooltip" hidden></div>
@@ -616,7 +631,7 @@ function clickNode(id, fromList = false) {
 // ---------- UI ----------
 function renderUI() {
   if (!lastScene) return;
-  renderCrumbs(); renderPanel(); renderVotes(); renderPill();
+  renderCrumbs(); renderPanel(); renderVotes(); renderPill(); renderSearch();
   const h = lastScene.hidden, onlyFaint = h === lastScene.trimmed.ring2;
   $("#trimNote").textContent = h ? `${h} ${onlyFaint ? "faint " : ""}node${h === 1 ? "" : "s"} hidden to keep the view fast` : "";
 }
@@ -780,6 +795,7 @@ document.addEventListener("click", e => {
   else if (act === "prev" || act === "next") dispatch({ type: "step", dir: act === "prev" ? -1 : 1 });
   else if (act === "limit") dispatch({ type: "setFilter", key: "nodeLimit", value: +t.dataset.v });
   else if (act === "votesWhere") { votesWhere = t.dataset.v; renderUI(); }
+  else if (act === "searchType") { searchType = t.dataset.v || null; renderSearch(); $("#q").focus(); }
   else if (act === "prevVariant") cycle(-1);
   else if (act === "nextVariant") cycle(1);
   else if (act === "togglePanel") {
@@ -797,6 +813,28 @@ document.addEventListener("keydown", e => {
   else if (e.key === "ArrowRight") cycle(1);
 });
 
+// ---------- Search ----------
+// Names, aliases, and verse references from search-index.json. Click selects; double click or
+// Enter on the first result makes it the Focus.
+const SEARCH_TYPES = [[null, "All"], ["person", "People"], ["place", "Places"], ["event", "Events"],
+  ["group", "People Groups"], ["theme", "Themes"], ["verse", "Verses"]];
+let searchType = null;
+function renderSearch() {
+  $("#search .chips").innerHTML = SEARCH_TYPES.map(([ty, n]) =>
+    `<button data-act="searchType" data-v="${ty ?? ""}" class="${searchType === ty ? "on" : ""}" aria-pressed="${searchType === ty}">${n}</button>`).join("");
+  const hits = data.search($("#q").value, searchType);
+  $("#results").innerHTML = hits.map(h => `<li><a href="#" data-id="${esc(h.id)}" class="${h.id === state?.selected ? "sel" : ""}">
+    <span class="dot t-${typeOf(h.id)}"></span>${esc(label(h.id))}
+    <span class="muted small">${esc(TYPE_NAME[typeOf(h.id)])}${h.hint ? ", " + esc(h.hint) : ""}</span></a></li>`).join("")
+    || ($("#q").value.trim() ? `<li class="muted small" style="padding:4px 6px">No match.</li>` : "");
+}
+$("#q").addEventListener("input", renderSearch);
+$("#q").addEventListener("keydown", e => {
+  const first = $("#results a");
+  if (e.key === "Enter" && first) makeFocus(first.dataset.id);
+  if (e.key === "Escape") { e.target.value = ""; renderSearch(); }
+});
+
 // ---------- Boot ----------
 try {
   await data.init();
@@ -804,6 +842,7 @@ try {
   const want = (new URLSearchParams(location.search).get("variant") || "A").toUpperCase();
   setVariant(VARIANTS[want] ? want : "A");
   await refresh(false);
+  renderSearch();
 } catch (err) {
   document.body.insertAdjacentHTML("beforeend", `<div style="position:fixed;inset:30% 20%;padding:20px;background:#300;border:1px solid #f66;z-index:9">
     Could not start: ${esc(err.message)}. Serve from the repo root with <code>uv run python -m http.server 8000</code> and open /prototypes/navigation/.</div>`);
