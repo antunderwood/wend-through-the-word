@@ -43,6 +43,7 @@
   .crumb.current { border-color: var(--accent); color: var(--accent); opacity: 1; }
   .crumb.sel { background: rgba(255, 255, 255, 0.12); }
   .sep { color: var(--muted); font-size: 11px; }
+  #crumbs .clear { margin: 0 0 0 auto; flex: none; }
 
   #search { position: fixed; top: 54px; left: 10px; width: 330px; max-width: calc(100vw - 20px); z-index: 5; padding: 8px;
     background: var(--panel); border-radius: 8px; border: 1px solid var(--line); }
@@ -601,7 +602,7 @@ async function dispatch(a, keepList = false) {
   const before = state;
   state = FocusModel.reduce(state, a, label);
   if (!keepList && ["select", "step", "focus"].includes(a.type)) listOwner = state.selected;
-  if (state.focus !== before.focus || state.pins !== before.pins || state.filters !== before.filters) {
+  if (state.focus !== before.focus || state.pins !== before.pins || state.filters !== before.filters || state.path !== before.path) {
     await refresh(state.focus !== before.focus);
   } else {
     view.setSelected(state.selected);
@@ -642,7 +643,8 @@ function renderCrumbs() {
     const cls = ["crumb", i === 0 ? "current" : "", i > 0 && i <= FocusModel.SCENE_PATH ? "drawn" : "", id === state.selected ? "sel" : ""].join(" ");
     const title = i === 0 ? "The Focus" : i <= FocusModel.SCENE_PATH ? "On Your Path, drawn in the scene" : "On Your Path, not drawn";
     return `<a href="#" class="${cls}" data-id="${esc(id)}" title="${title}">${esc(label(id))}</a>`;
-  }).join(`<span class="sep">&lsaquo;</span>`);
+  }).join(`<span class="sep">&lsaquo;</span>`)
+    + (state.path.length ? `<button class="more clear" data-act="clearPath" title="Clear Your Path; the Focus and pins stay">Clear</button>` : "");
 }
 
 function item(id, extra) {
@@ -747,7 +749,8 @@ function renderPanel() {
        <div class="small muted">Shared Nodes (cyan rings): ${[...sc.shared].map(label).map(esc).join(", ") || "none"}</div>`
     : `<div class="muted small">None. Select a node and press Pin.</div>`);
   const pathNewest = [...s.path].reverse();
-  $("#pPath").innerHTML = `<h2>Your Path (${s.path.length}, ${Math.min(s.path.length, FocusModel.SCENE_PATH)} drawn)</h2>` + (pathNewest.length
+  $("#pPath").innerHTML = `<h2>Your Path (${s.path.length}, ${Math.min(s.path.length, FocusModel.SCENE_PATH)} drawn)</h2>`
+    + (pathNewest.length ? `<div class="btns"><button data-act="clearPath">Clear Your Path</button></div>` : "") + (pathNewest.length
     ? `<ol class="list">${pathNewest.map(id => item(id, "")).join("")}</ol>` : `<div class="muted small">Empty. Make another node the Focus.</div>`);
 }
 
@@ -796,6 +799,7 @@ document.addEventListener("click", e => {
   else if (act === "prev" || act === "next") dispatch({ type: "step", dir: act === "prev" ? -1 : 1 });
   else if (act === "limit") dispatch({ type: "setFilter", key: "nodeLimit", value: +t.dataset.v });
   else if (act === "votesWhere") { votesWhere = t.dataset.v; renderUI(); }
+  else if (act === "clearPath") dispatch({ type: "clearPath" });
   else if (act === "searchType") { searchType = t.dataset.v || null; renderSearch(); $("#q").focus(); }
   else if (act === "prevVariant") cycle(-1);
   else if (act === "nextVariant") cycle(1);

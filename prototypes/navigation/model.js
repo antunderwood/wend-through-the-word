@@ -86,6 +86,12 @@ export const FocusModel = (() => {
         return { ...s, pins: s.pins.filter(x => x !== a.id), notice: `Unpinned ${label(a.id)}.` };
       case "setFilter":
         return { ...s, filters: { ...s.filters, [a.key]: a.value }, notice: `Set ${a.key} to ${a.value}.` };
+      case "clearPath": {
+        if (!s.path.length) return { ...s, notice: "Your Path is already empty." };
+        // The Focus stays; a selected node that was only on Your Path gives way to the Focus.
+        const selected = s.path.includes(s.selected) ? s.focus : s.selected;
+        return { ...s, path: [], selected, notice: `Cleared Your Path (${s.path.length} node${s.path.length === 1 ? "" : "s"}). The Focus and pins stay.` };
+      }
       case "notice":
         return { ...s, notice: a.text };
       default:
