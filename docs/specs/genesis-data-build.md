@@ -21,13 +21,13 @@ A Python build pipeline that runs from a clean checkout with one command. It rea
 
 Every node and every edge carries a `source` and a `licence`. Every file is below 500 KB. The book range is a config value, so the same build later runs on the whole Bible (M6).
 
-M0 also sets up the public repository, the "Correction request" issue form, the licence check in `docs/licences.md`, and the download script with checksums.
+M0 also sets up the repository (private until M5, decision 47), the "Correction request" issue form, the licence check in `docs/licences.md`, and the download script with checksums.
 
 ## User Stories
 
 ### Owner: repository and licences (M0)
 
-1. As the owner, I want a public GitHub repository, so that readers can see the data and send Correction Requests.
+1. As the owner, I want a GitHub repository, public from the M5 launch (decision 47), so that readers can see the data and send Correction Requests.
 2. As the owner, I want the code under MIT and the data under CC BY-SA 4.0, so that the two licences are clear and separate.
 3. As the owner, I want the LICENSE file of every source repository read and recorded in `docs/licences.md`, so that each licence decision has a dated record.
 4. As the owner, I want the build to refuse any CC BY-NC source, so that a non-commercial licence never enters the dataset by mistake.
