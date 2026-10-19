@@ -374,6 +374,23 @@ function makeView(key, host, hooks) {
   let nodeObjs = new Map(), edgeObjs = [], faint = null, faintPairs = [], domEls = [];
   let anim = null, glide = null, raf = 0, frames = 0, fpsT = performance.now();
   const selRing = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.ring, color: 0xffffff, transparent: true, depthWrite: false }));
+  // Radius of the drawn circle as a fraction of sprite size: the disc is radius 58 of 128 px; a ring sprite is
+  // 1.5 times the size with its stroke ending at 58.5 of 128 px.
+  const DISC_RIM = 58 / 128, RING_RIM = (1.5 * 58.5) / 128;
+  const fwd = new THREE.Vector3(), gap = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3();
+  // The point on p's circle towards q. Sprites face the camera, so measure in the plane across the view direction.
+  function onRim(out, p, q, r) {
+    out.copy(q).sub(p);
+    out.addScaledVector(fwd, -out.dot(fwd));
+    const len = out.length();
+    return len > 1e-6 ? out.multiplyScalar(r / len).add(p) : out.copy(p);
+  }
+  // True when the two circles overlap on screen, so there is no visible gap to draw an edge in.
+  function touching(A, B) {
+    gap.copy(B.group.position).sub(A.group.position);
+    gap.addScaledVector(fwd, -gap.dot(fwd));
+    return gap.length() <= A.rim + B.rim;
+  }
   const SEG = 12, curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()), tmp = new THREE.Vector3();
 
   function clear() {
@@ -428,7 +445,9 @@ function makeView(key, host, hooks) {
       if (n.role === "pinned") group.add(sprite(TEX.ring, PIN, 0.95, st.size * 1.5));
       if (st.labelled || n.shared) group.add(nodeLabel(n));
       world.add(group);
-      nodeObjs.set(n.id, { group, sprite: main, from, to, node: n, size: st.size, baseOpacity: st.opacity });
+      // Edges stop at the outer edge of what is drawn: the disc, or the cyan or orange ring around it.
+      const rim = st.size * (n.shared || n.role === "pinned" ? RING_RIM : DISC_RIM);
+      nodeObjs.set(n.id, { group, sprite: main, from, to, node: n, size: st.size, rim, baseOpacity: st.opacity });
     }
     for (const e of sc.edges) {
       if (!nodeObjs.has(e.a) || !nodeObjs.has(e.b)) continue;
@@ -459,11 +478,14 @@ function makeView(key, host, hooks) {
     updateEdges();
   }
 
+  // Runs whenever nodes or the camera move: the rim points depend on the view direction.
   function updateEdges() {
+    camera.getWorldDirection(fwd);
     for (const o of edgeObjs) {
-      const a = nodeObjs.get(o.e.a).group.position, b = nodeObjs.get(o.e.b).group.position;
-      curve.v0.copy(a); curve.v2.copy(b);
+      const A = nodeObjs.get(o.e.a), B = nodeObjs.get(o.e.b), a = A.group.position, b = B.group.position;
       curve.v1.copy(a).add(b).multiplyScalar(0.5); curve.v1.y += a.distanceTo(b) * 0.08;   // slight curve
+      o.line.visible = !touching(A, B);
+      onRim(curve.v0, a, curve.v1, A.rim); onRim(curve.v2, b, curve.v1, B.rim);   // leave each end along the curve
       const arr = o.line.geometry.attributes.position.array;
       for (let i = 0; i <= SEG; i++) { curve.getPoint(i / SEG, tmp); arr[i * 3] = tmp.x; arr[i * 3 + 1] = tmp.y; arr[i * 3 + 2] = tmp.z; }
       o.line.geometry.attributes.position.needsUpdate = true;
@@ -473,8 +495,10 @@ function makeView(key, host, hooks) {
     if (faint) {
       const arr = faint.geometry.attributes.position.array;
       faintPairs.forEach((e, i) => {
-        const a = nodeObjs.get(e.a).group.position, b = nodeObjs.get(e.b).group.position;
-        arr.set([a.x, a.y, a.z, b.x, b.y, b.z], i * 6);
+        const A = nodeObjs.get(e.a), B = nodeObjs.get(e.b);
+        if (touching(A, B)) { pa.copy(A.group.position); pb.copy(pa); }   // zero length: hidden
+        else { onRim(pa, A.group.position, B.group.position, A.rim); onRim(pb, B.group.position, A.group.position, B.rim); }
+        arr.set([pa.x, pa.y, pa.z, pb.x, pb.y, pb.z], i * 6);
       });
       faint.geometry.attributes.position.needsUpdate = true;
     }
@@ -496,13 +520,13 @@ function makeView(key, host, hooks) {
       deco.position.lerpVectors(glide.D0, glide.D1, k);
       if (k >= 1) glide = null;
     }
+    const nodesMoved = !!anim;
     if (anim) {
       const k = ease(anim.dur ? Math.min(1, (now - anim.t0) / anim.dur) : 1);
       for (const o of nodeObjs.values()) o.group.position.lerpVectors(o.from, o.to, k);
-      updateEdges();
       if (k >= 1) anim = null;
     }
-    controls.update();
+    if (controls.update() || nodesMoved) updateEdges();   // update() is true when the camera moved
     renderer.render(scene, camera);
     labels.render(scene, camera);
     frames++;
