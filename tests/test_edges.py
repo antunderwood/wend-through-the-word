@@ -88,6 +88,30 @@ def test_entity_outside_the_book_range_ships_as_a_stub_with_its_neighbours_in_ra
             assert all(entity(export, n["id"])["verses"] for n in e["neighbours"]), e["id"]
 
 
+def test_only_people_and_people_groups_ship_as_stubs(export):
+    stubs = [
+        read_json(p)["type"]
+        for p in (export / "data" / VERSION / "entity").rglob("*.json")
+        if not read_json(p)["verses"]
+    ]
+    assert set(stubs) == {"person", "group"}
+
+
+def test_place_or_event_edge_to_an_end_outside_the_range_is_dropped_and_reported(export):
+    # Jesus is in range (Matt 17); Bethlehem, his birthplace, has no verse in the fixture.
+    jesus = [n["id"] for n in entity(export, "person:jesus_905")["neighbours"]]
+    assert "place:bethlehem_218" not in jesus
+    assert not (export / "data" / VERSION / "entity" / "place" / "bethlehem_218.json").exists()
+    rows = read_tsv(export / "reports" / "dropped_edges.tsv")
+    assert {
+        "record": "person:jesus_905",
+        "field": "birthPlace",
+        "link": "place:bethlehem_218",
+        "cause": "other end is outside the book range, and only People and People Groups "
+        "ship as stubs (decision 51, until M6)",
+    } in rows
+
+
 def test_every_edge_reads_the_same_from_both_ends(export):
     flip = {"out": "in", "in": "out", "both": "both"}
     seen = 0
@@ -115,11 +139,9 @@ def test_every_theographic_partner_pair_ships_as_partner_of_and_is_reported_uncu
 def test_edge_to_a_record_that_does_not_exist_is_dropped_and_reported(export):
     # The fixture adds a sibling link to a record ID that is not in Theographic to Abraham.
     rows = read_tsv(export / "reports" / "dropped_edges.tsv")
-    assert rows == [
-        {
-            "record": "person:abraham_58",
-            "field": "siblings",
-            "link": "recFixtureNoRecord",
-            "cause": "links to a record that is not in Theographic, so the edge has no clear end",
-        }
-    ]
+    assert {
+        "record": "person:abraham_58",
+        "field": "siblings",
+        "link": "recFixtureNoRecord",
+        "cause": "links to a record that is not in Theographic, so the edge has no clear end",
+    } in rows

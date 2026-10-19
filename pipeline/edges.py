@@ -32,7 +32,12 @@ FIELDS = {
     },
 }
 DIRECTED = {edge for kind in FIELDS.values() for edge, out in kind.values() if out is not None}
+FAMILY = {"PARENT_OF", "SIBLING_OF", "HALF_SIBLING_OF", "PARTNER_OF"}
 NO_END = "links to a record that is not in Theographic, so the edge has no clear end"
+OUTSIDE = (
+    "other end is outside the book range, and only People and People Groups "
+    "ship as stubs (decision 51, until M6)"
+)
 
 
 def load(b):
@@ -42,7 +47,8 @@ def load(b):
             records[r["id"]] = (kind, source, r["fields"], f"{kind}:{name(r['fields'])}")
 
     b.new_report("dropped_edges", "record", "field", "link", "cause")
-    edges = {}  # (from, edge, to) -> licence; an edge with no direction has from < to
+    # (from, edge, to) -> (licence, record, field, link); an edge with no direction has from < to
+    edges = {}
     for kind, source, f, a in records.values():
         for field, (edge, out) in FIELDS.get(kind, {}).items():
             for rec in f.get(field) or []:
@@ -51,14 +57,26 @@ def load(b):
                     continue
                 c = records[rec][3]
                 x, y = (a, c) if out or (out is None and a < c) else (c, a)
-                edges[(x, edge, y)] = b.licence(source)
+                edges.setdefault((x, edge, y), (b.licence(source), a, field, c))
 
     # An edge ships when one end is in the book range. The other end, if outside, ships as a
-    # stub: its facts and its Neighbours in range, with no Verses (decision 51).
+    # stub (its facts and its Neighbours in range, no Verses) only when it is a Person reached
+    # by a family edge or a People Group reached by MEMBER_OF. Other edges are dropped until M6
+    # (decision 51 and its note).
     in_range = set(b.entities)
-    edges = {(x, e, y): lic for (x, e, y), lic in edges.items() if {x, y} & in_range}
+    edges = {k: v for k, v in edges.items() if {k[0], k[2]} & in_range}
+    stubs = {
+        end
+        for x, edge, y in edges
+        for end in (x, y)
+        if end not in in_range and (edge in FAMILY or edge == "MEMBER_OF" and end == y)
+    }
+    for key, (_, record, field, link) in list(edges.items()):
+        if not {key[0], key[2]} <= in_range | stubs:
+            b.report("dropped_edges", record=record, field=field, link=link, cause=OUTSIDE)
+            del edges[key]
     by_id = {r[3]: r for r in records.values()}
-    for end in {end for x, _, y in edges for end in (x, y)} - in_range:
+    for end in stubs:
         kind, source, f, _ = by_id[end]
         b.entities[end] = {
             "id": end,
@@ -71,7 +89,7 @@ def load(b):
 
     b.new_report("uncurated_partners", "man_id", "woman_id")
     neighbours = defaultdict(lambda: defaultdict(list))  # Entity ID -> Neighbour ID -> edges
-    for (x, edge, y), licence in sorted(edges.items()):
+    for (x, edge, y), (licence, *_) in sorted(edges.items()):
         item = {"edge": edge, "source": "Theographic", "licence": licence}
         if edge == "PARENT_OF":
             item["role"] = "father" if b.entities[x]["gender"] == "Male" else "mother"
