@@ -135,7 +135,7 @@ def load(b):
                 {**{k: row[k] for k in ("field", "was", "value")}, **item}
             )
         elif table == "themes_keep":
-            b.themes_keep[row["heading"]] = item
+            b.themes_keep[row["heading"]] = {**item, "name": row["name"] or None}
         elif table == "possibly_same":
             b.possibly_same.append(
                 (row["a_id"], row["b_id"], {"edge": "POSSIBLY_SAME_AS", **item}, False)

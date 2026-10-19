@@ -90,7 +90,7 @@ def test_a_reviewed_keep_row_keeps_a_heading_that_names_a_person(export):
         "entity_ids": "person:god_1324",
         "keep_row": "yes",
     }
-    assert theme(export, "god")["name"] == "GOD"
+    assert theme(export, "god")["name"] == "God (topic)"  # the keep row's display name
     assert rows["MASTER"] == {
         "action": "removed",
         "match": "alias",

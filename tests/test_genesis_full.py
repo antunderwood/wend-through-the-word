@@ -60,7 +60,7 @@ def test_genesis_has_one_file_for_each_entity_in_range_and_each_stub(genesis):
     entity = genesis / "data" / VERSION / "entity"
     files = [read_json(p) for p in entity.rglob("*.json")]
     in_range = Counter(e["type"] for e in files if e["verses"])
-    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 535}
+    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 544}
     # Stubs: Entities with no Genesis verse that an explicit edge links to Genesis (decision 51).
     stubs = Counter(e["type"] for e in files if not e["verses"])
     # Only People (family edges) and People Groups (MEMBER_OF) ship as stubs.
@@ -134,22 +134,28 @@ def test_genesis_ships_the_real_curated_tables(genesis):
         "place:nile_895 coordinates",  # owner to confirm (decision 90)
         "place:gihon_472 coordinates",
     ]
-    # Draft themes_keep.csv rows for the owner to review (decision 103).
-    assert sorted(r["ids"] for r in unreviewed if r["table"] == "themes_keep") == [
-        "CANAANITES",
-        "CAPHTORIM",
-        "DAUGHTER",
-        "FIRSTBORN",
+    # The owner reviewed themes_keep.csv on 2026-10-19 (decision 109).
+    assert not [r for r in unreviewed if r["table"] == "themes_keep"]
+    kept = {
+        r["heading"]
+        for r in read_tsv(genesis / "reports" / "removed_theme_headings.tsv")
+        if r["keep_row"] == "yes"
+    }
+    assert kept == {
         "GOD",
         "HOLY SPIRIT",
-        "LIGHT",
-        "MASTER",
-        "MIDIANITES",
-        "MOABITES",
         "SALT",
+        "LIGHT",
         "SUN",
+        "MASTER",
+        "DAUGHTER",
         "WIFE",
-    ]
+        "FIRSTBORN",
+    }
+    themes = genesis / "data" / VERSION / "entity" / "theme"
+    assert read_json(themes / "god.json")["name"] == "God (topic)"
+    assert read_json(themes / "holy_spirit.json")["name"] == "Holy Spirit (topic)"
+    assert not (themes / "canaanites.json").exists()
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
@@ -223,10 +229,10 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
     ]
 
 
-def test_genesis_themes_file_5193_verses_and_none_has_a_person_or_place_name(genesis):
+def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_place_name(genesis):
     entity = genesis / "data" / VERSION / "entity"
     verses = [v for p in chapter_files(genesis) for v in read_json(p)["verses"]]
-    assert sum(len(v["filed_under"]) for v in verses) == 5193
+    assert sum(len(v["filed_under"]) for v in verses) == 5470
 
     # PRD 12.13: no Theme has the name or an alias of a Theographic Person or Place ("Jacob
     # (Israel)" is Jacob). A heading that matches only a part before a comma is kept and reported.
@@ -237,18 +243,23 @@ def test_genesis_themes_file_5193_verses_and_none_has_a_person_or_place_name(gen
     names = {norm(re.sub(r"\s*\(.*\)$", "", e["name"])) for e in files}
     names |= {norm(a) for e in files for a in e["aliases"]}
     themes = [read_json(p)["name"] for p in (entity / "theme").glob("*.json")]
-    assert len(themes) == 535
-    assert not [t for t in themes if norm(re.sub(r"\s*\(.*\)$", "", t)) in names]
+    assert len(themes) == 544
+    clashes = {t for t in themes if norm(re.sub(r"\s*\(.*\)$", "", t)) in names}
+    # Only headings the owner kept (decision 109) may share a name with an Entity.
+    kept = {"God (topic)", "Holy Spirit (topic)", "SALT", "LIGHT", "SUN", "MASTER", "DAUGHTER"}
+    assert clashes <= kept | {"WIFE", "FIRSTBORN"}
     rows = read_tsv(genesis / "reports" / "removed_theme_headings.tsv")
-    # No keep row is reviewed yet, so GOD, HOLY SPIRIT, SALT, and LIGHT are removed for now.
+    # The owner kept nine headings (decision 109); the four peoples are removed.
     assert Counter((r["action"], r["match"], r["keep_row"]) for r in rows) == {
-        ("removed", "name", ""): 383,
-        ("removed", "alias", ""): 31,
+        ("removed", "name", ""): 380,
+        ("kept", "name", "yes"): 3,  # GOD, HOLY SPIRIT, SALT
+        ("removed", "alias", ""): 25,
+        ("kept", "alias", "yes"): 6,  # LIGHT, SUN, MASTER, DAUGHTER, WIFE, FIRSTBORN
         ("kept", "part of the heading", ""): 1,  # JESUS, THE CHRIST
     }
     removed = {r["heading"] for r in rows if r["action"] == "removed"}
     duplicates = ["MELCHIZEDEK", "REBEKAH (REBECCA)", "ZAPHNATH-PAANEAH", "BEN-ONI", "JUDITH"]
-    assert removed >= {*duplicates, "HEMAM", "PHALLU", "GOD", "HOLY SPIRIT", "SALT", "LIGHT"}
+    assert removed >= {*duplicates, "HEMAM", "PHALLU", "CANAANITES", "MOABITES"}
 
 
 def test_genesis_tipnr_check_reports_48_disagreements(genesis):

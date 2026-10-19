@@ -129,7 +129,7 @@ def load(b):
         b.entities[theme_id] = {
             "id": theme_id,
             "type": "theme",
-            "name": heading,
+            "name": b.themes_keep.get(heading, {}).get("name") or heading,
             **naves,
             "verses": [verses[k] for k in in_range],  # replaced by Verse Neighbours
         }

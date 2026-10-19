@@ -177,6 +177,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 107. **A CO_MENTION's `source` and `licence` come from the links of the two Entities to their shared Verses only.** This corrects the wording of decision 92, which named all the Verse links of both Entities. The output does not change today, because all of one Entity's Verse links have one source. Reason: the edge is derived from the shared Verses, so their links are its provenance.
 108. **`download` saves the Wikidata query as `wikidata-query.sparql`, next to its result, and the manifest entry of `wikidata-coords` records `query` (that file name) and `query_sha256`.** This adds to decision 83. The query is built from the Wikidata items in the downloaded `geo-modern` file, so `geo-modern` must be there first, also for `--supply`. Reason: PRD 9 rule 3, every source can be fetched again exactly.
 
+## 2026-10-19: Owner review of themes_keep.csv
+
+109. **Nine Nave's headings stay Themes: GOD, HOLY SPIRIT, SALT, LIGHT, SUN, MASTER, DAUGHTER, WIFE, and FIRSTBORN.** The four peoples (CANAANITES, MIDIANITES, MOABITES, CAPHTORIM) are removed, so the ancestor stands for them. `themes_keep.csv` gains an optional `name` column for the display name: GOD shows as "God (topic)" and HOLY SPIRIT as "Holy Spirit (topic)". Reason: these headings are topics, not the Person or Place they match, and the display names keep a Theme apart from the Person with the same name in search and in the scene.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
