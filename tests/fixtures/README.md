@@ -27,4 +27,8 @@ Changes from the sources:
 - Synthetic changes to modern records, to test the drop rules: Kadesh's (Ain el Qudeirat) source type is "osm"; Esek's has a `custom_lonlat` (commercial); Mamre's source type is "google_maps"; Shur's has no `coordinates_source` and a `root` that is Kadesh's record.
 - Every modern record whose point the build drops (OpenStreetMap source or geometry, commercial, Google, or a `root` point) has made-up coordinates, 1.111111 and 2.222222, also in the ancient records that resolve to it. Any `custom_lonlat` is 5.555555,6.666666 (decision 44).
 
+## Curated tables
+
+`curated/partners.csv`, `curated/possibly_same.csv`, and `curated/corrections.csv` are written by hand, not cut. They are this project's data (CC BY-SA 4.0, `LICENSE-DATA`). Rows copied from `pipeline/curated` keep their real values. Rows whose note starts with "Synthetic" are made up to test one case each: the `partner` relation (Esau and Basemath), an unreviewed row, an ID that is not in Theographic, a redundant correction (Beeri), a correction where Theographic holds neither value (Ur), and alias corrections on two stubs (Lot's daughters). Every Evidence Verse is in the kept chapters.
+
 Rules for later fixtures are in `docs/licences.md`, section 5. In short: the TIPNR fixture is synthetic, and OpenStreetMap records use made-up coordinates.

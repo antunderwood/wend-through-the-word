@@ -6,16 +6,19 @@ from pathlib import Path
 import pytest
 
 FIXTURES = Path(__file__).parent / "fixtures" / "sources"
+CURATED = FIXTURES.parent / "curated"  # fixture copies of the curated tables, with test rows
+REAL_CURATED = Path(__file__).parent.parent / "pipeline" / "curated"
 VERSION = "test1"
 
 
-def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), **extra):
+def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
     config keys with integer values, such as `size_limit`."""
     config = out.parent / f"{out.name}.toml"
     config.write_text(
         f"books = {json.dumps(list(books))}\n"
         f'sources = "{sources}"\n'
+        f'curated = "{curated}"\n'
         f'out = "{out}"\n'
         'build_date = "2026-10-19"\n'
         f'data_version = "{VERSION}"\n' + "".join(f"{k} = {v}\n" for k, v in extra.items())

@@ -8,6 +8,7 @@ is the edge's source, `in` when the Neighbour is, `both` for an edge with no dir
 import json
 from collections import defaultdict
 
+from pipeline.curation import correct
 from pipeline.entities import TYPES, facts
 
 # Theographic field: (edge, True when the record holding the field is the edge's source, None
@@ -21,7 +22,7 @@ FIELDS = {
         # Only from these fields, never from shared parents (decision 36).
         "halfSiblingsSameFather": ("HALF_SIBLING_OF", None),
         "halfSiblingsSameMother": ("HALF_SIBLING_OF", None),
-        "partners": ("PARTNER_OF", None),  # every pair for now; curated later (#7)
+        "partners": ("PARTNER_OF", None),  # or the curated edges of the pair (#7)
         "birthPlace": ("BORN_AT", True),
         "deathPlace": ("DIED_AT", True),
         "memberOf": ("MEMBER_OF", True),
@@ -87,19 +88,32 @@ def load(b):
             "licence": b.licence(source),
             "verses": [],
         }
+        correct(b, b.entities[end])
 
     b.new_report("uncurated_partners", "man_id", "woman_id")
     neighbours = defaultdict(lambda: defaultdict(list))  # Entity ID -> Neighbour ID -> edges
+
+    def add(x, y, item, directed):
+        neighbours[x][y].append({**item, "direction": "out" if directed else "both"})
+        neighbours[y][x].append({**item, "direction": "in" if directed else "both"})
+
     for (x, edge, y), (licence, *_) in sorted(edges.items()):
         item = {"edge": edge, "source": "Theographic", "licence": licence}
         if edge == "PARENT_OF":
             item["role"] = "father" if b.entities[x]["gender"] == "Male" else "mother"
+        if edge == "PARTNER_OF" and (x, y) in b.partners:  # x < y for an edge with no direction
+            for curated in b.partners[x, y]:
+                add(*curated)
+            continue
         if edge == "PARTNER_OF":  # Theographic has no pair of the same gender
             man, woman = (x, y) if b.entities[x]["gender"] == "Male" else (y, x)
             b.report("uncurated_partners", man_id=man, woman_id=woman)
-        directed = edge in DIRECTED
-        neighbours[x][y].append({**item, "direction": "out" if directed else "both"})
-        neighbours[y][x].append({**item, "direction": "in" if directed else "both"})
+        add(x, y, item, edge in DIRECTED)
+    for x, y, item, directed in b.possibly_same:
+        if {x, y} <= b.entities.keys():
+            add(x, y, item, directed)
+        else:
+            b.report("dropped_edges", record=x, field="possibly_same.csv", link=y, cause=OUTSIDE)
 
     for e in b.entities.values():
         e["neighbours"] = [

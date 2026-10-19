@@ -5,7 +5,7 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
-from conftest import VERSION, read_json, read_tsv, run_build
+from conftest import REAL_CURATED, VERSION, read_json, read_tsv, run_build
 from test_coordinates import openstreetmap_points, shipped_points
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
@@ -17,7 +17,12 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def genesis(tmp_path_factory):
-    return run_build(tmp_path_factory.mktemp("genesis") / "out", sources=SOURCES, books=["Gen"])
+    return run_build(
+        tmp_path_factory.mktemp("genesis") / "out",
+        sources=SOURCES,
+        books=["Gen"],
+        curated=REAL_CURATED,
+    )
 
 
 def chapter_files(genesis):
@@ -78,8 +83,33 @@ def test_genesis_drops_only_edges_to_places_and_events_outside_the_range(genesis
     assert all("outside the book range" in r["cause"] for r in rows)
 
 
-def test_genesis_lists_23_uncurated_partner_pairs(genesis):
-    assert len(read_tsv(genesis / "reports" / "uncurated_partners.tsv")) == 23
+def test_genesis_curates_21_of_its_23_partner_pairs(genesis):
+    # The other 2 have one end outside Genesis: Maachah and Machir, Abiah and Hezron.
+    assert read_tsv(genesis / "reports" / "uncurated_partners.tsv") == [
+        {"man_id": "person:hezron_1520", "woman_id": "person:abiah_16"},
+        {"man_id": "person:machir_1877", "woman_id": "person:maachah_1843"},
+    ]
+
+
+def test_genesis_ships_the_real_curated_tables(genesis):
+    entity = genesis / "data" / VERSION / "entity" / "person"
+
+    def edges(a, b):
+        n = [n for n in read_json(entity / f"{a}.json")["neighbours"] if n["id"] == f"person:{b}"]
+        return [(e["edge"], [v["label"] for v in e.get("evidence", [])]) for e in n[0]["edges"]]
+
+    assert edges("abraham_58", "sarah_2473") == [("SPOUSE_OF", ["Gen.11.29"])]
+    both = ["Gen.16.3", "Gen.25.6"]
+    assert edges("abraham_58", "hagar_1348") == [("CONCUBINE_OF", both), ("SPOUSE_OF", both)]
+    assert edges("anah_247", "beeri_432") == [
+        ("POSSIBLY_SAME_AS", ["Gen.26.34", "Gen.36.2", "Gen.36.24"])
+    ]
+    anah = read_json(entity / "anah_247.json")
+    assert (anah["gender"], anah["corrections"][0]["was"]) == ("Male", "Female")
+    for name in ("redundant", "no_longer_matches"):
+        assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
+    unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
+    assert [r["ids"] for r in unreviewed] == ["place:mount_of_olives_828 aliases"]
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):

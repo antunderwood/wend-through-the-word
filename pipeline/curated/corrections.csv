@@ -1,2 +1,3 @@
 id,field,was,value,evidence,note,reviewed,request
 person:anah_247,gender,Female,Male,Gen.36.24,"Theographic has Female, following KJV Gen.36.2 ""Anah the daughter of Zibeon"". BSB Gen.36.24 reads ""Anah son of Zibeon"".",yes,
+place:mount_of_olives_828,aliases,"4b is just ""mount"" or ""mountain""",,Zech.14.4,"Theographic's alias is an editor's note, not a name. Remove it. Report upstream. Zech.14.4 names the Mount of Olives.",no,
