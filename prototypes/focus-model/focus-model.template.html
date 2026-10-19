@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focus Model Prototype</title>
+<style>
+  :root { --ink:#1d1b22; --muted:#6b6676; --line:#e2e0e8; --bg:#f7f7fa; --card:#fff; --accent:#c4502d; --faint:#b9b5c2; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  header { padding:24px 32px 8px; max-width:1400px; margin:auto; }
+  h1 { margin:0 0 4px; font-size:24px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:20px 0 8px; }
+  .tag { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--accent); color:var(--accent); border-radius:99px; vertical-align:middle; margin-left:8px; }
+  .intro { max-width:900px; color:var(--muted); }
+  main { display:grid; grid-template-columns: 1fr 380px; gap:24px; padding:8px 32px 48px; max-width:1400px; margin:auto; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+  .notice { border-left:4px solid var(--accent); }
+  .notice b { color:var(--accent); }
+  button { font:inherit; font-size:13px; padding:4px 10px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button:disabled { opacity:.4; cursor:default; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .focus-label { font-size:22px; font-weight:600; }
+  .type { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .quote { font-family: Georgia, serif; color:var(--muted); }
+  .meter { height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin:6px 0; }
+  .meter > div { height:100%; background:var(--accent); }
+  .rings { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px; }
+  .ring-col h3 { margin:0 0 6px; font-size:14px; }
+  .row { display:flex; align-items:center; gap:6px; padding:3px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .row .name { flex:1; cursor:pointer; }
+  .row .name:hover { color:var(--accent); }
+  .why { color:var(--muted); font-size:11px; }
+  .badge { font-size:10px; padding:1px 6px; border-radius:99px; background:#f0e2dc; color:var(--accent); }
+  .badge.shared { background:#dfe9f5; color:#2d5a8c; }
+  .rel { font-weight:600; color:var(--ink); }
+  .rel::before { content:"\2015\2015 "; color:var(--faint); letter-spacing:-2px; }
+  .rel.derived { font-weight:400; font-style:italic; }
+  .rel.derived::before { content:"- - "; letter-spacing:0; }
+  .chip { display:inline-block; font-size:12px; padding:2px 8px; margin:2px; border-radius:99px; border:1px solid var(--line); color:var(--faint); cursor:pointer; }
+  .chip:hover { color:var(--ink); }
+  .sel { color:var(--accent) !important; font-weight:600; }
+  .crumbs button.on { border-color:var(--accent); color:var(--accent); }
+  .detail { border-color:var(--accent); }
+  .detail .easton { white-space:pre-line; font-size:14px; max-height:220px; overflow:auto; border-left:3px solid var(--line); padding-left:10px; }
+  .bar { position:relative; display:flex; height:22px; border-radius:6px; overflow:hidden; background:var(--line); margin:8px 0 4px; }
+  .bar { overflow:visible; margin-top:22px; height:24px; }
+  .bar > span { height:100%; font-size:11px; line-height:24px; text-align:center; color:#fff; font-weight:600; overflow:hidden; white-space:nowrap; }
+  .bar > span.dark { color:var(--ink); }
+  .bar > span:first-child { border-radius:6px 0 0 6px; }
+  .bar .limitline { position:absolute; top:-4px; bottom:-4px; width:3px; background:var(--ink); }
+  .bar .limitline b { position:absolute; bottom:100%; left:50%; transform:translateX(-50%); font-size:11px; white-space:nowrap; padding-bottom:2px; }
+  .legend span { display:inline-block; margin-right:10px; font-size:12px; }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:-1px; }
+  .presets button { padding:2px 8px; font-size:12px; }
+  .votebar { position:sticky; top:0; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.06); }
+  .xref { display:grid; grid-template-columns: 70px 90px 1fr 90px; gap:8px; font-size:13px; padding:3px 0; border-bottom:1px dashed var(--line); }
+  .xref.off { opacity:.35; }
+  .xref .v { font-variant-numeric: tabular-nums; text-align:right; font-weight:600; }
+  .cut { border-top:2px solid var(--accent); margin:6px 0; font-size:11px; color:var(--accent); padding-top:2px; }
+  .new { background:#e3f4e1; border-radius:4px; }
+  .verse-row { font-size:13px; padding:3px 0; border-bottom:1px dashed var(--line); }
+  .crumbs button { margin:2px 4px 2px 0; }
+  .tabs { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
+  .tabs button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .steps button { display:block; width:100%; text-align:left; margin:4px 0; }
+  .steps button.next { border-color:var(--accent); }
+  label { display:block; font-size:13px; margin:6px 0; }
+  input[type=range] { width:100%; }
+  .muted { color:var(--muted); font-size:13px; }
+  ul.tight { margin:4px 0; padding-left:18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Focus, Your Path and Pins <span class="tag">PROTOTYPE, throwaway</span></h1>
+  <p class="intro"><b>Question:</b> do the disclosure rules in PRD section 10.4 feel right when you walk real Genesis data? A click selects a node and shows it in the <b>detail panel</b> without changing the scene; a double click (or Make Focus) makes it the <b>Focus</b>. The view shows its <b>Ring 1</b> (top K Neighbours of each type), <b>Overflow Nodes</b> for the rest, a faint <b>Ring 2</b> (up to 3 Neighbours of each Ring 1 node, from its top 10), the <b>Your Path</b> of the last 5 Foci, and up to 3 <b>Pinned Nodes</b>, all under a node limit. Look for moments that feel wrong: a Neighbour you expected that is missing, a Your Path that forgets the wrong thing, a pin that should have been allowed.</p>
+  <p class="intro muted">Data: Genesis only. Theographic people, places, events and people groups; BSB text; OpenBible cross-references where both verses are in Genesis. No Themes (Nave's not loaded). Co-mention weight is the cosine score over Genesis verses. Nothing is drawn in 3D: this checks the rules, not the look.</p>
+</header>
+<main>
+  <section>
+    <div class="card votebar">
+      <label style="margin:0">Minimum cross-reference votes: <b id="votesVal"></b>
+        <input id="votes" type="range" min="-5" max="50" step="1"></label>
+      <div class="muted">Votes: how many OpenBible.info readers found this link helpful. It shows popularity, not scholarly strength.</div>
+      <div class="muted" id="votesSummary"></div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:10px 0">
+      <label style="margin:0">Node limit: <b id="limitVal"></b>
+        <input id="limit" type="range" min="5" max="500" step="5"></label>
+      <div class="presets"><button data-limit="500">500 desktop</button> <button data-limit="150">150 phone</button>
+        <button data-limit="60">60</button> <button data-limit="30">30</button> <button data-limit="15">15</button></div>
+      <div id="budget"></div>
+    </div>
+    <div id="state"></div>
+  </section>
+  <aside>
+    <div class="card">
+      <h2 style="margin-top:0">Guided walkthroughs</h2>
+      <div class="tabs" id="tabs"></div>
+      <div id="walk"></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Free play</h2>
+      <label>Jump to a node <input id="jump" list="all" placeholder="Type a name or Gen 22:2" style="width:100%"></label>
+      <datalist id="all"></datalist>
+      <div id="controls"></div>
+      <p><button id="reset">Start again at Abraham</button></p>
+    </div>
+  </aside>
+</main>
+
+<script>
+// ---- Pure model. No DOM below this line until the page section. ----
+const FocusModel = (() => {
+  const TYPES = ["person", "place", "event", "group", "verse"];
+  const IMPLICIT = new Set(["MENTIONS", "CO_MENTION", "CROSS_REF"]);
+  const typeOf = id => id.slice(0, id.indexOf(":"));
+  const isExplicit = edge => edge.split("+").some(t => !IMPLICIT.has(t.replace(/[<>]$/, "")));
+  const flip = edge => edge.replace(/[<>]/g, c => (c === ">" ? "<" : ">"));
+
+  // The words on an edge, read from the owner of the adjacency list towards neighbour n.
+  // ">" means the owner is the source ("owner PARENT_OF n": n is the child).
+  function relation(n, g) {
+    const sex = (g.nodes[n.id] || [])[3];
+    const kin = (m, f, x) => (sex === "M" ? m : sex === "F" ? f : x);
+    const WORDS = {
+      "PARENT_OF>": () => kin("son", "daughter", "child"), "PARENT_OF<": () => kin("father", "mother", "parent"),
+      PARTNER_OF: () => "partner",
+      POSSIBLY_SAME_AS: () => "possibly the same person",
+      "SPOUSE_OF>": () => kin("husband", "wife", "spouse"), "SPOUSE_OF<": () => kin("husband", "wife", "spouse"),
+      "CONCUBINE_OF>": () => "concubine", "CONCUBINE_OF<": () => (n.edge.includes("SPOUSE_OF") ? "" : "partner"),
+      SIBLING_OF: () => kin("brother", "sister", "sibling"),
+      HALF_SIBLING_OF: () => kin("half-brother", "half-sister", "half-sibling"),
+      "BORN_AT>": () => "birthplace", "BORN_AT<": () => "born here", "DIED_AT>": () => "place of death", "DIED_AT<": () => "died here",
+      "PARTICIPATED_IN>": () => "took part", "PARTICIPATED_IN<": () => "took part",
+      "OCCURRED_AT>": () => "where it happened", "OCCURRED_AT<": () => "happened here",
+      "MEMBER_OF>": () => "member of", "MEMBER_OF<": () => "member",
+    };
+    const explicit = [...new Set(n.edge.split("+").sort((a, b) => b.startsWith("SPOUSE") - a.startsWith("SPOUSE")).filter(t => WORDS[t]).map(t => WORDS[t]()))].filter(Boolean);
+    if (explicit.length) return { text: explicit.join(", "), derived: false };
+    if (n.edge.includes("CO_MENTION")) return { text: `together in ${n.n} verse${n.n === 1 ? "" : "s"}`, derived: true };
+    if (n.edge.includes("CROSS_REF")) return { text: "cross-reference", derived: false };
+    if (n.edge.includes("MENTIONS")) return { text: typeOf(n.id) === "verse" ? "named in this verse" : "named", derived: false };
+    return { text: n.edge, derived: false };
+  }
+
+  function buildGraph(data) {
+    const adj = new Map();
+    const push = (a, b, edge, w, n) => {
+      if (!adj.has(a)) adj.set(a, []);
+      adj.get(a).push({ id: b, edge, w, n, explicit: isExplicit(edge) });
+    };
+    for (const [a, b, edge, w, n] of data.edges) { push(a, b, edge, w, n); push(b, a, flip(edge), w, n); }
+    // Rank: explicit relationships first, then weight.
+    for (const list of adj.values()) list.sort((x, y) => (y.explicit - x.explicit) || (y.w - x.w));
+    return { nodes: data.nodes, adj };
+  }
+
+  const defaultFilters = () => ({
+    types: Object.fromEntries(TYPES.map(t => [t, true])),
+    minVotes: 1, k: 6, nodeLimit: 500, backMode: "rewind",
+  });
+
+  const initialState = (focus, filters = defaultFilters()) =>
+    ({ focus, selected: focus, path: [], pins: [], overflowOpen: null, filters, notice: "Start." });
+
+  const passes = (n, f) =>
+    f.types[typeOf(n.id)] && (!n.edge.includes("CROSS_REF") || n.w >= f.minVotes);
+
+  function moveFocus(s, id, label) {
+    // Your Path keeps every Focus of the session (each node once, latest visit wins). Only the last 5 are drawn.
+    const path = [...s.path.filter(x => x !== id && x !== s.focus), s.focus];
+    const wasOnPath = s.path.includes(id);
+    let notice = `${label(id)} is the Focus. ${label(s.focus)} joined Your Path.`;
+    if (wasOnPath) notice += ` ${label(id)} left Your Path (no duplicates).`;
+    return { ...s, focus: id, selected: id, path, overflowOpen: null, notice };
+  }
+
+  function reduce(s, a, label) {
+    switch (a.type) {
+      case "focus":
+        if (a.id === s.focus) return { ...s, notice: `${label(a.id)} is already the Focus.` };
+        return moveFocus(s, a.id, label);
+      case "back": {
+        const i = s.path.indexOf(a.id);
+        if (i < 0) return { ...s, notice: `${label(a.id)} is not on Your Path.` };
+        if (s.filters.backMode === "forward") return moveFocus(s, a.id, label);
+        const removed = [...s.path.slice(i + 1), s.focus];
+        return { ...s, focus: a.id, selected: a.id, path: s.path.slice(0, i), overflowOpen: null,
+          notice: `Went back to ${label(a.id)}. The Your Path was rewound: ${removed.map(label).join(", ")} removed.` };
+      }
+      case "select":
+        return { ...s, selected: a.id, notice: `Selected ${label(a.id)}. The scene did not change.` };
+      case "step": {
+        const seq = [...s.path, s.focus], i = seq.indexOf(s.selected), j = i + a.dir;
+        if (i < 0) return { ...s, notice: `${label(s.selected)} is not on Your Path, so there is no previous or next.` };
+        if (j < 0 || j >= seq.length) return { ...s, notice: `No ${a.dir < 0 ? "earlier" : "later"} node on Your Path.` };
+        return { ...s, selected: seq[j], notice: `Selected ${label(seq[j])} on Your Path. The scene did not change.` };
+      }
+      case "pin":
+        if (s.pins.includes(a.id)) return { ...s, notice: `${label(a.id)} is already pinned.` };
+        if (s.pins.length >= 3) return { ...s, notice: `Refused: 3 nodes are already pinned. Unpin one first.` };
+        return { ...s, pins: [...s.pins, a.id], notice: `Pinned ${label(a.id)}.` };
+      case "unpin":
+        return { ...s, pins: s.pins.filter(x => x !== a.id), notice: `Unpinned ${label(a.id)}.` };
+      case "openOverflow":
+        return { ...s, overflowOpen: a.nodeType, notice: `Opened the Overflow list for ${a.nodeType}. No nodes were added to the scene.` };
+      case "closeOverflow":
+        return { ...s, overflowOpen: null, notice: "Closed the Overflow list." };
+      case "setFilter":
+        return { ...s, filters: { ...s.filters, [a.key]: a.value }, notice: `Changed ${a.key} to ${JSON.stringify(a.value)}.` };
+      case "toggleType": {
+        const types = { ...s.filters.types, [a.nodeType]: !s.filters.types[a.nodeType] };
+        return { ...s, filters: { ...s.filters, types }, notice: `${types[a.nodeType] ? "Showing" : "Hiding"} ${a.nodeType} nodes.` };
+      }
+      default: return s;
+    }
+  }
+
+  function scene(g, s) {
+    const f = s.filters;
+    const roles = new Map();
+    const tag = (id, r) => { if (!roles.has(id)) roles.set(id, new Set()); roles.get(id).add(r); };
+    tag(s.focus, "focus");
+    s.pins.forEach(id => tag(id, "pinned"));
+    const SCENE_PATH = 5;
+    s.path.slice(-SCENE_PATH).forEach(id => tag(id, "path"));
+
+    const nb = (g.adj.get(s.focus) || []).filter(n => n.id !== s.focus && passes(n, f));
+    const ring1 = {}, overflow = {};
+    for (const t of TYPES) {
+      const list = nb.filter(n => typeOf(n.id) === t);
+      ring1[t] = list.slice(0, f.k);
+      overflow[t] = list.slice(f.k);
+      ring1[t].forEach(n => tag(n.id, "ring1"));
+    }
+    const ring1Flat = TYPES.flatMap(t => ring1[t]);
+    // Each pin brings its own top 3 of each type (a mini Ring 1, no Ring 2).
+    const pinRing = {};
+    for (const p of s.pins.filter(p => p !== s.focus)) {
+      const pnb = (g.adj.get(p) || []).filter(n => n.id !== p && passes(n, f));
+      pinRing[p] = TYPES.flatMap((t, ti) => pnb.filter(n => typeOf(n.id) === t).slice(0, 3).map((n, rank) => ({ ...n, rank, ti })));
+      pinRing[p].forEach(n => tag(n.id, "pinring"));
+    }
+    let ring2 = [];
+    TYPES.forEach((t, ti) => ring1[t].forEach((r, pos) => {
+      let rank = 0;
+      for (const n of (g.adj.get(r.id) || []).slice(0, 10)) {   // the build stores the top 10
+        if (rank === 3) break;
+        if (!passes(n, f) || roles.has(n.id)) continue;
+        tag(n.id, "ring2"); ring2.push({ id: n.id, via: r.id, link: n, rank, pos, ti }); rank++;
+      }
+    }));
+    const overflowNodes = TYPES.filter(t => overflow[t].length).length;
+
+    // Node limit: trim Ring 2 first, then the oldest Your Path nodes, then pin rings. Never the Focus, Pins, Ring 1 or Overflow Nodes.
+    const trimmed = { ring2: 0, path: 0, pinring: 0 };
+    const cut = [];   // nodes that left the scene because of the limit, in trimming order
+    const count = () => roles.size + overflowNodes;
+    const demand = count();
+    const drop = (id, role) => {
+      const rs = roles.get(id); rs.delete(role); trimmed[role]++;
+      if (!rs.size) { roles.delete(id); cut.push({ id, role }); }
+    };
+    // Round robin: every parent's 3rd neighbour goes before any 2nd, every 2nd before any 1st.
+    // Within a round, the parent ranked lowest in its type list loses first. No weights are compared across types.
+    const roundRobin = (a, b) => (b.rank - a.rank) || ((b.pos ?? 0) - (a.pos ?? 0)) || (b.ti - a.ti);
+    const ring2Queue = [...ring2].sort(roundRobin);
+    while (count() > f.nodeLimit && ring2Queue.length) drop(ring2Queue.shift().id, "ring2");
+    ring2 = ring2.filter(r => roles.get(r.id)?.has("ring2"));
+    const pathShown = s.path.slice(-SCENE_PATH);
+    while (count() > f.nodeLimit && pathShown.length) {
+      drop(pathShown.shift(), "path");
+    }
+
+    const pins = Object.keys(pinRing);
+    const pinQueue = pins.flatMap((p, pos) => pinRing[p].map(n => ({ ...n, pin: p, pos }))).sort(roundRobin);
+    while (count() > f.nodeLimit && pinQueue.length) {
+      const n = pinQueue.shift();
+      if (roles.get(n.id)?.has("pinring")) drop(n.id, "pinring");
+    }
+    for (const p of pins) pinRing[p] = pinRing[p].filter(n => roles.get(n.id)?.has("pinring"));
+
+    // Shared: in Ring 1 or around a pin, and linked to both the Focus and at least one pin. Faint Ring 2 nodes never count.
+    const near = id => new Set((g.adj.get(id) || []).filter(n => passes(n, f)).map(n => n.id));
+    const focusNear = near(s.focus), pinNear = s.pins.map(near);
+    const shared = new Set([...roles.entries()].filter(([id, rs]) =>
+      (rs.has("ring1") || rs.has("pinring")) && !s.pins.includes(id) && id !== s.focus
+      && focusNear.has(id) && pinNear.some(ps => ps.has(id))).map(([id]) => id));
+
+    return { ring1, overflow, ring2, pathShown, pinRing, shared, roles, overflowNodes,
+      count: count(), demand, cut, limit: f.nodeLimit, overLimit: count() > f.nodeLimit, trimmed,
+      breakdown: { focus: 1, ring1: ring1Flat.length, overflow: overflowNodes, ring2: ring2.length, path: pathShown.length, pins: s.pins.length,
+        pinring: [...roles.values()].filter(r => r.has("pinring") && r.size === 1).length } };
+  }
+
+  return { TYPES, typeOf, relation, buildGraph, defaultFilters, initialState, reduce, scene };
+})();
+</script>
+
+<script>
+// ---- Page shell. Throwaway. ----
+const DATA = /*DATA*/null;
+const G = FocusModel.buildGraph(DATA);
+const label = id => (G.nodes[id] || [, id])[1];
+const START = "person:abraham_58";
+const TYPE_NAMES = { person: "people", place: "places", event: "events", group: "people groups", verse: "verses" };
+const rel = n => FocusModel.relation(n, G);
+const edgeLabel = n => { const r = rel(n); return `<span class="rel${r.derived ? " derived" : ""}">${esc(r.text)}</span>`; };
+const weightText = n => n.edge.includes("CROSS_REF") ? `${n.w} votes`
+  : n.edge.includes("CO_MENTION") ? `strength ${n.w.toFixed(2)}`
+  : n.edge.includes("MENTIONS") ? `${n.w} other entities in verse` : "";
+
+let state = FocusModel.initialState(START);
+let prevRoles = new Map();
+
+function dispatch(action) {
+  state = FocusModel.reduce(state, action, label);
+  render();
+}
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let enteredSet = new Set();
+const nameBtn = (id, extra = "") => `<span class="name${id === state.selected ? " sel" : ""}${enteredSet.has(id) ? " new" : ""}" data-act="select" data-id="${id}" title="${esc(id)}">${esc(label(id))}</span>${extra}`;
+const roleBadges = (sc, id) => [...(sc.roles.get(id) || [])].filter(r => r === "path" || r === "pinned")
+  .map(r => `<span class="badge">${r === "path" ? "on Your Path" : "pinned"}</span>`).join(" ")
+  + (sc.shared.has(id) ? ` <span class="badge shared">shared</span>` : "");
+
+function render() {
+  const sc = FocusModel.scene(G, state);
+  const entered = [...sc.roles.keys()].filter(id => !prevRoles.has(id));
+  const left = [...prevRoles.keys()].filter(id => !sc.roles.has(id));
+  prevRoles = sc.roles;
+  enteredSet = new Set(entered);
+  const [ftype, flabel, fquote] = G.nodes[state.focus];
+  const pct = Math.min(100, 100 * sc.count / sc.limit);
+  const b = sc.breakdown;
+
+  let h = `<div class="card notice"><b>What just changed.</b> ${esc(state.notice)}<br>
+    <span class="muted">${entered.length} nodes entered the scene, ${left.length} left.
+    ${entered.length ? "In: " + entered.slice(0, 6).map(label).map(esc).join(", ") + (entered.length > 6 ? ", ..." : "") + "." : ""}</span></div>`;
+
+  h += crossRefCard(sc);
+  updateVoteBar(sc);
+  updateBudget(sc);
+
+  h += `<div class="card"><div class="type">Focus, ${ftype}</div>
+    <div class="focus-label">${esc(flabel)}</div>${fquote ? `<div class="quote">${esc(fquote.slice(0, 90))}</div>` : ""}
+    <p>${state.pins.includes(state.focus) ? `<button data-act="unpin" data-id="${state.focus}">Unpin</button>` : `<button data-act="pin" data-id="${state.focus}">Pin the Focus</button>`}</p>
+    <div class="muted">${sc.count} of ${sc.limit} nodes in the scene (see the node budget at the top). Shared nodes: ${sc.shared.size}.</div></div>`;
+
+  h += detailPanel(sc);
+
+  h += `<div class="card"><h2 style="margin-top:0">Your Path (${state.path.length} this session; the last ${sc.pathShown.length} are drawn in the scene as dim nodes on a line to the Focus)</h2><div class="crumbs">
+    ${state.path.length ? state.path.map(id => `<button data-act="select" data-id="${id}" class="${id === state.selected ? "on" : ""}">${esc(label(id))}</button>`).join(" &rsaquo; ") + ` &rsaquo; <button data-act="select" data-id="${state.focus}" class="${state.focus === state.selected ? "on" : ""}"><b>${esc(flabel)}</b></button>` : `<span class="muted">Empty. Click a Neighbour to start a Your Path.</span>`}
+    </div><div class="muted">Going back ${state.filters.backMode === "rewind" ? "rewinds Your Path, like a browser Back button" : "counts as a normal click: Your Path keeps growing"}.</div>
+    <h2>Pinned Nodes (${state.pins.length} of 3)</h2>
+    ${state.pins.length ? state.pins.map(p => `<div class="row">${nameBtn(p)} <button data-act="unpin" data-id="${p}">Unpin</button></div>
+      <div class="why" style="margin:2px 0 8px">${p === state.focus ? "This pin is the Focus; its Neighbours are Ring 1."
+        : "Around this pin (top 3 of each type): " + (sc.pinRing[p] || []).map(n => nameBtn(n.id) + (sc.shared.has(n.id) ? ` <span class="badge shared">shared</span>` : "")).join(", ")}</div>`).join("")
+      + (sc.shared.size ? `<div class="why">Shared with the Focus (${sc.shared.size}): ${[...sc.shared].map(id => nameBtn(id)).join(", ")}</div>` : "")
+      : `<span class="muted">None. Pin a node to keep it, with its closest Neighbours, while the Focus changes.</span>`}
+  </div>`;
+
+  h += `<div class="card"><h2 style="margin-top:0">Ring 1, top ${state.filters.k} of each type</h2><p class="muted">The bold words are the label drawn on each edge from the Focus, read from the Focus. Italic labels with a dashed mark are derived Co-mention links, drawn as dashed lines.</p><div class="rings">`;
+  for (const t of FocusModel.TYPES) {
+    if (!state.filters.types[t]) { h += `<div class="ring-col"><h3>${TYPE_NAMES[t]}</h3><span class="muted">Hidden by filter.</span></div>`; continue; }
+    const r1 = sc.ring1[t], ov = sc.overflow[t];
+    h += `<div class="ring-col"><h3>${TYPE_NAMES[t]}</h3>`;
+    if (!r1.length) h += `<span class="muted">None.</span>`;
+    for (const n of r1) h += `<div class="row">${nameBtn(n.id)} ${roleBadges(sc, n.id)}
+      <button data-act="pin" data-id="${n.id}" title="Pin">Pin</button></div>
+      <div class="why">${edgeLabel(n)}${weightText(n) ? " &middot; " + weightText(n) : ""}</div>`;
+    if (ov.length) h += `<p><button data-act="openOverflow" data-type="${t}">+${ov.length} ${TYPE_NAMES[t]}</button></p>`;
+    h += `</div>`;
+  }
+  h += `</div></div>`;
+
+  if (state.overflowOpen) {
+    const ov = sc.overflow[state.overflowOpen];
+    h += `<div class="card"><h2 style="margin-top:0">Overflow list: ${ov.length} more ${TYPE_NAMES[state.overflowOpen]} (detail panel, not in the scene)</h2>
+      ${ov.slice(0, 60).map(n => `<div class="row">${nameBtn(n.id)} <span class="why">${edgeLabel(n)}${weightText(n) ? " &middot; " + weightText(n) : ""}</span></div>`).join("")}
+      ${ov.length > 60 ? `<p class="muted">... and ${ov.length - 60} more.</p>` : ""}
+      <p><button data-act="closeOverflow">Close list</button></p></div>`;
+  }
+
+  h += `<div class="card"><h2 style="margin-top:0">Ring 2, faint and unlabelled in the scene (${sc.ring2.length})</h2>
+    ${sc.cut.length ? `<p class="notice" style="padding-left:8px">Scene corner note: "${sc.cut.length} faint nodes hidden to keep the view fast."</p>` : ""}<p class="muted">Hover a chip to see its path to the Focus. Click to read about it; double click to make it the Focus.</p>
+    ${sc.ring2.map(r => `<span class="chip${r.id === state.selected ? " sel" : ""}${enteredSet.has(r.id) ? " new" : ""}" data-act="select" data-id="${r.id}" title="${esc(flabel)} > ${esc(label(r.via))} > ${esc(label(r.id))} (${esc(rel(r.link).text)})">${esc(label(r.id))}</span>`).join("") || `<span class="muted">None.</span>`}
+  </div>`;
+
+  document.getElementById("state").innerHTML = h;
+  renderControls();
+  renderWalk();
+}
+
+function detailPanel(sc) {
+  const id = state.selected, [t, l, text] = G.nodes[id], inf = DATA.info[id] || {};
+  const seq = [...state.path, state.focus], i = seq.indexOf(id);
+  const roles = [...(sc.roles.get(id) || [])].map(r => ({ focus: "the Focus", ring1: "in Ring 1", ring2: "in Ring 2", path: "on Your Path", pinned: "pinned", pinring: "around a pin" }[r]));
+  const adj = G.adj.get(id) || [];
+  const facts = {};
+  for (const n of adj.filter(n => n.explicit))
+    for (const w of rel(n).text.split(", ")) (facts[w] ||= []).push(n.id);
+  const proof = x => { const e = DATA.evidence[[id, x].sort().join("|")]; return e ? ` <span class="why">(${esc(e.split(";").map(v => v.replace(/^(\w+)\.(\d+)\.(\d+)$/, "$1 $2:$3")).join(", "))})</span>` : ""; };
+  const verses = adj.filter(n => FocusModel.typeOf(n.id) === "verse").map(n => n.id).sort();
+  return `<div class="card detail"><div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="type">Detail panel, ${t}${roles.length ? ", " + roles.join(", ") : ", not in the scene"}</div>
+      <div><button data-act="step" data-dir="-1" ${i <= 0 ? "disabled" : ""}>&lsaquo; Prev on Your Path</button>
+      <button data-act="step" data-dir="1" ${i < 0 || i === seq.length - 1 ? "disabled" : ""}>Next on Your Path &rsaquo;</button></div></div>
+    <div class="focus-label">${esc(l)}</div>
+    ${inf.y ? `<div class="muted">Event Year: approx. ${inf.y} (Jones chronology)</div>` : ""}
+    ${t === "verse" ? `<p class="quote">${esc(text)}</p><p class="muted">Berean Standard Bible</p>` : ""}
+    ${inf.d ? `<h2>Dictionary Entry, Easton's Bible Dictionary (1897)</h2><div class="easton">${esc(inf.d)}</div>` : t !== "verse" ? `<p class="muted">No Dictionary Entry.</p>` : ""}
+    ${Object.keys(facts).length ? `<h2>Facts</h2>${Object.entries(facts).map(([k, ids]) => `<div class="row"><span class="why" style="width:110px">${k}</span><span>${ids.map(x => nameBtn(x) + proof(x)).join(", ")}</span></div>`).join("")}` : ""}
+    ${verses.length ? `<h2>${t === "verse" ? "Cross-references in Genesis" : "Verses in Genesis"} (${verses.length})</h2>${verses.slice(0, 8).map(v => `<div class="verse-row">${nameBtn(v)} <span class="quote">${esc(G.nodes[v][2].slice(0, 110))}</span></div>`).join("")}${verses.length > 8 ? `<p class="muted">... and ${verses.length - 8} more.</p>` : ""}` : ""}
+    <p>${id === state.focus ? `<span class="muted">This is the Focus.</span>` : `<button class="primary" data-act="${state.path.includes(id) ? "back" : "focus"}" data-id="${id}">Make Focus</button>`}
+    ${state.pins.includes(id) ? `<button data-act="unpin" data-id="${id}">Unpin</button>` : `<button data-act="pin" data-id="${id}">Pin</button>`}</p></div>`;
+}
+
+// ---- Cross-reference view: what the vote limit does to the current Focus ----
+const xrefsOf = id => (G.adj.get(id) || []).filter(n => n.edge.includes("CROSS_REF")).sort((a, b) => b.w - a.w);
+function updateVoteBar(sc) {
+  const v = state.filters.minVotes, input = document.getElementById("votes");
+  if (+input.value !== v) input.value = v;
+  document.getElementById("votesVal").textContent = v;
+  const ring2Verses = sc.ring2.filter(r => FocusModel.typeOf(r.id) === "verse").length;
+  const all = xrefsOf(state.focus), pass = all.filter(n => n.w >= v).length;
+  document.getElementById("votesSummary").textContent = FocusModel.typeOf(state.focus) === "verse"
+    ? `${G.nodes[state.focus][1]} has ${all.length} cross-references in Genesis: ${pass} pass, ${all.length - pass} hidden. Ring 1 verses ${sc.ring1.verse.length}, Overflow ${sc.overflow.verse.length}, Ring 2 verses ${ring2Verses}.`
+    : `From an entity, the vote limit only changes Ring 2 (verse to verse links from Ring 1 verses). Ring 2 verses: ${ring2Verses}.`;
+}
+// ---- Node budget: what the scene wants against the limit, and what was cut ----
+const ROLE_ORDER = [["focus", "Focus", "#c4502d"], ["pinned", "Pinned", "#8c3b8f"], ["ring1", "Ring 1", "#2d5a8c"],
+  ["overflow", "Overflow Nodes", "#5f86b3"], ["pinring", "Around pins", "#b07cc6"], ["path", "Your Path", "#7d9c6a"], ["ring2", "Ring 2", "#b9b5c2"]];
+function updateBudget(sc) {
+  const lim = state.filters.nodeLimit, input = document.getElementById("limit");
+  if (+input.value !== lim) input.value = lim;
+  document.getElementById("limitVal").textContent = lim;
+  const shown = Object.fromEntries(ROLE_ORDER.map(([r]) => [r, 0]));
+  for (const rs of sc.roles.values()) shown[ROLE_ORDER.find(([r]) => rs.has(r))[0]]++;  // each node counted once, by its strongest role
+  shown.overflow = sc.overflowNodes;
+  const cutBy = Object.fromEntries(ROLE_ORDER.map(([r]) => [r, sc.cut.filter(c => c.role === r).length]));
+  const scale = Math.max(sc.demand, lim), pct = n => (100 * n / scale) + "%";
+  const segs = ROLE_ORDER.filter(([r]) => shown[r]).map(([r, n, c]) => `<span class="${r === "ring2" ? "dark" : ""}" style="width:${pct(shown[r])};background:${c}" title="${n}: ${shown[r]}">${shown[r]}</span>`).join("")
+    + ROLE_ORDER.filter(([r]) => cutBy[r]).map(([r, n, c]) => `<span class="dark" style="width:${pct(cutBy[r])};background:repeating-linear-gradient(45deg,${c} 0 4px,#fff 4px 8px)" title="cut from ${n}: ${cutBy[r]}">&minus;${cutBy[r]}</span>`).join("");
+  const cutNames = sc.cut.slice(0, 8).map(c => esc(label(c.id))).join(", ") + (sc.cut.length > 8 ? ", ..." : "");
+  document.getElementById("budget").innerHTML = `
+    <div class="bar">${segs}<div class="limitline" style="left:calc(${pct(lim)} - 1px)" title="limit ${lim}"><b>limit ${lim}</b></div></div>
+    <div class="legend">${ROLE_ORDER.map(([r, n, c]) => `<span><i style="background:${c}"></i>${n} ${shown[r]}${cutBy[r] ? ` (cut ${cutBy[r]})` : ""}</span>`).join("")}</div>
+    <div class="muted">The scene wants <b>${sc.demand}</b> nodes; the limit is <b>${lim}</b>; it shows <b>${sc.count}</b>.
+      ${sc.cut.length ? `Cut, in order (Ring 2 round robin, then oldest Your Path, then around pins round robin): ${cutNames}.` : sc.demand <= lim ? "Nothing is cut." : ""}
+      ${sc.overLimit ? "<b>Still over the limit:</b> the Focus, Pins, Ring 1 and Overflow Nodes are never cut. Lower K to fit." : ""}</div>`;
+}
+
+function crossRefCard(sc) {
+  const v = state.filters.minVotes;
+  if (FocusModel.typeOf(state.focus) === "verse") {
+    const all = xrefsOf(state.focus);
+    if (!all.length) return `<div class="card"><h2 style="margin-top:0">Cross-references of the Focus</h2><span class="muted">None in Genesis.</span></div>`;
+    const inRing1 = new Set(sc.ring1.verse.map(n => n.id));
+    let rows = "", cut = false;
+    for (const n of all) {
+      if (!cut && n.w < v) { rows += `<div class="cut">Vote limit ${v}: links below this line are hidden</div>`; cut = true; }
+      const status = n.w < v ? "hidden" : inRing1.has(n.id) ? "Ring 1" : "Overflow";
+      rows += `<div class="xref${n.w < v ? " off" : ""}"><span class="v">${n.w}</span>${nameBtn(n.id)}<span class="quote">${esc(G.nodes[n.id][2].slice(0, 80))}</span><span class="why">${status}</span></div>`;
+    }
+    if (!cut) rows += `<div class="cut">Vote limit ${v}: nothing hidden</div>`;
+    return `<div class="card"><h2 style="margin-top:0">Cross-references of the Focus, by votes</h2>
+      <div class="xref" style="font-weight:600"><span class="v">votes</span><span>verse</span><span>text</span><span>shown as</span></div>${rows}</div>`;
+  }
+  const rows = sc.ring1.verse.map(r => {
+    const all = xrefsOf(r.id), pass = all.filter(n => n.w >= v).length;
+    return `<div class="xref"><span class="v">${pass}/${all.length}</span>${nameBtn(r.id)}<span class="quote">${esc(G.nodes[r.id][2].slice(0, 80))}</span><span class="why">${all.length ? Math.max(...all.map(n => n.w)) + " max votes" : "no links"}</span></div>`;
+  }).join("");
+  return `<div class="card"><h2 style="margin-top:0">Cross-references of the Ring 1 verses</h2>
+    <p class="muted">An entity has no cross-references. The vote limit decides which cross-referenced verses can appear in Ring 2 around these verses. Make a verse the Focus to see the cut line.</p>
+    <div class="xref" style="font-weight:600"><span class="v">pass</span><span>verse</span><span>text</span><span>strongest</span></div>${rows || `<span class="muted">No verses in Ring 1.</span>`}</div>`;
+}
+
+function renderControls() {
+  const f = state.filters;
+  document.getElementById("controls").innerHTML = `
+    <h2>Node types</h2>${FocusModel.TYPES.map(t => `<label><input type="checkbox" data-act="toggleType" data-type="${t}" ${f.types[t] ? "checked" : ""}> ${TYPE_NAMES[t]}</label>`).join("")}
+    <label>K, Ring 1 size for each type: <b>${f.k}</b><input type="range" min="1" max="12" value="${f.k}" data-filter="k"></label>
+    <label>Going back on Your Path <select data-filter="backMode">
+      <option value="rewind" ${f.backMode === "rewind" ? "selected" : ""}>rewinds, like a browser</option>
+      <option value="forward" ${f.backMode === "forward" ? "selected" : ""}>is a normal click</option></select></label>`;
+}
+
+// ---- Walkthroughs ----
+const F = id => ({ type: "focus", id }), P = id => ({ type: "pin", id }), B = id => ({ type: "back", id });
+const SET = (key, value) => ({ type: "setFilter", key, value });
+const ABRAHAM = "person:abraham_58", SARAH = "person:sarah_2473", ISAAC = "person:isaac_616", LOT = "person:lot_1830",
+  GOD = "person:god_1324", JACOB = "person:israel_682", ESAU = "person:esau_1216", REBEKAH = "person:rebekah_2401",
+  NOAH = "person:noah_2210", JOSEPH = "person:joseph_1710", GEN22_2 = "verse:01022002", GEN12_2 = "verse:01012002";
+const WALKS = [
+  { name: "Family walk", start: ABRAHAM,
+    text: "The happy path. Walk Abraham's family and go back. Watch Your Path grow, and check that each Ring 1 holds the people you would expect. Note: explicit family links rank before Co-mention, so Lot (a nephew) is not in Abraham's Ring 1. Is that right?",
+    steps: [["Make Sarah the Focus", F(SARAH)], ["Make Isaac the Focus", F(ISAAC)], ["Make Rebekah the Focus", F(REBEKAH)],
+      ["Go back to Abraham on Your Path", B(ABRAHAM)]] },
+  { name: "Read Your Path", start: ABRAHAM,
+    text: "Walk three steps, then read back along Your Path with Prev and Next. Reading never changes the scene. 'Make Focus' on a Your Path node is the only thing that moves the Focus back.",
+    steps: [["Make Sarah the Focus", F(SARAH)], ["Make Isaac the Focus", F(ISAAC)], ["Make Rebekah the Focus", F(REBEKAH)],
+      ["Prev: read Isaac", { type: "step", dir: -1 }], ["Prev: read Sarah", { type: "step", dir: -1 }], ["Prev: read Abraham", { type: "step", dir: -1 }],
+      ["Select Lot (not on Your Path)", { type: "select", id: LOT }], ["Make Sarah the Focus again", B(SARAH)]] },
+  { name: "A hub: God", start: ABRAHAM,
+    text: "God is in 28% of all verses. Does the God Focus stay readable? Is Ring 2 bounded? Does God appear in Abraham's Ring 1 (it should not, with the cosine score)? The Overflow list is the way to reach the long tail: Isaac, Sarah, and Joseph are in it, while Noah is already in Ring 1.",
+    steps: [["Make God the Focus", F(GOD)], ["Open the Overflow list for people", { type: "openOverflow", nodeType: "person" }],
+      ["Pick Joseph (son of Jacob) from the list: double click him", F(JOSEPH)]] },
+  { name: "Pins", start: ABRAHAM,
+    text: "Pin three people, try a fourth (it should be refused), then move the Focus. Each Pinned Node stays with its own top 3 Neighbours of each type. Nodes linked to both the Focus and a pin are marked shared. Does the comparison read clearly, and does the node count stay sensible?",
+    steps: [["Pin Abraham (the Focus)", P(ABRAHAM)], ["Pin Lot", P(LOT)], ["Pin Sarah", P(SARAH)], ["Try to pin Isaac", P(ISAAC)],
+      ["Make Jacob the Focus", F(JACOB)], ["Unpin Lot", { type: "unpin", id: LOT }]] },
+  { name: "Long walk", start: ABRAHAM,
+    text: "Seven moves: the breadcrumb keeps all of them, but the scene draws only the last 5. Then click Isaac again while he is on Your Path (no duplicates), and go back. Try it once with each 'Going back' setting.",
+    steps: [["Sarah", F(SARAH)], ["Isaac", F(ISAAC)], ["Rebekah", F(REBEKAH)], ["Esau", F(ESAU)], ["Jacob", F(JACOB)], ["Joseph", F(JOSEPH)],
+      ["Isaac again (he is on Your Path)", F(ISAAC)], ["Go back to Rebekah", B(REBEKAH)]] },
+  { name: "Verse votes", start: GEN12_2,
+    text: "Start from Genesis 12:2 (24 cross-references within Genesis, up to 33 votes). The card at the top lists its cross-references by votes, with a cut line at the vote limit. Drag the slider in the bar at the top (it stays visible as you scroll) and watch links cross the line, and new nodes turn green.",
+    steps: [["Minimum votes 5", SET("minVotes", 5)], ["Minimum votes 10", SET("minVotes", 10)], ["Minimum votes 20", SET("minVotes", 20)],
+      ["Back to 1", SET("minVotes", 1)], ["Make Abraham the Focus: the limit now only changes Ring 2", F(ABRAHAM)]] },
+  { name: "Node limit", start: GOD,
+    text: "Watch the node budget bar at the top. Each colour is a role; striped parts were cut; the black line is the limit. Ring 2 is cut first, then the oldest Your Path nodes, then the nodes around pins. The Focus, Pins, Ring 1 and Overflow Nodes are never cut. With K = 6, does the phone limit (150) ever bite?",
+    steps: [["Walk to Abraham", F(ABRAHAM)], ["Walk to Isaac", F(ISAAC)], ["Phone limit, 150", SET("nodeLimit", 150)],
+      ["Limit 60", SET("nodeLimit", 60)], ["Limit 30", SET("nodeLimit", 30)], ["Limit 15", SET("nodeLimit", 15)]] },
+];
+let walk = 0, stepAt = -1;
+let lastClick = { id: null, t: 0 };
+
+function renderWalk() {
+  document.getElementById("tabs").innerHTML = WALKS.map((w, i) => `<button class="${i === walk ? "on" : ""}" data-walk="${i}">${w.name}</button>`).join("");
+  const w = WALKS[walk];
+  document.getElementById("walk").innerHTML = `<p class="muted">${esc(w.text)}</p>
+    <button class="primary" data-start="1">${stepAt < 0 ? "Start" : "Restart"} at ${esc(label(w.start))}</button>
+    <div class="steps">${w.steps.map(([l], i) => `<button data-step="${i}" ${stepAt < 0 || i !== stepAt ? "disabled" : ""} class="${i === stepAt ? "next" : ""}">${i + 1}. ${esc(l)}${i < stepAt ? " (done)" : ""}</button>`).join("")}</div>`;
+}
+
+// ---- Wiring ----
+document.body.addEventListener("click", e => {
+  const el = e.target.closest("[data-act],[data-walk],[data-start],[data-step]");
+  if (!el) return;
+  const d = el.dataset;
+  if (d.walk) { walk = +d.walk; stepAt = -1; return renderWalk(); }
+  if (d.start) { state = FocusModel.initialState(WALKS[walk].start); prevRoles = new Map(); stepAt = 0; return render(); }
+  if (d.step) { stepAt++; return dispatch(WALKS[walk].steps[+d.step][1]); }
+  if (d.act === "toggleType") return dispatch({ type: "toggleType", nodeType: d.type });
+  if (d.act === "openOverflow") return dispatch({ type: "openOverflow", nodeType: d.type });
+  if (d.act === "step") return dispatch({ type: "step", dir: +d.dir });
+  if (el.tagName === "INPUT") return;
+  // Double click = two clicks on the same node within 400 ms. The native dblclick never fires
+  // here, because the first click re-renders the page under the pointer.
+  if (d.act === "select") {
+    const now = Date.now(), dbl = lastClick.id === d.id && now - lastClick.t < 400;
+    lastClick = { id: d.id, t: dbl ? 0 : now };
+    if (dbl && d.id !== state.focus) return dispatch({ type: state.path.includes(d.id) ? "back" : "focus", id: d.id });
+  }
+  dispatch({ type: d.act, id: d.id });
+});
+document.body.addEventListener("change", e => {
+  const k = e.target.dataset.filter;
+  if (!k) return;
+  const v = k === "backMode" ? e.target.value : +e.target.value;
+  dispatch({ type: "setFilter", key: k, value: v });
+});
+document.getElementById("limit").addEventListener("input", e =>
+  dispatch({ type: "setFilter", key: "nodeLimit", value: +e.target.value }));
+document.querySelectorAll("[data-limit]").forEach(b => b.addEventListener("click", () =>
+  dispatch({ type: "setFilter", key: "nodeLimit", value: +b.dataset.limit })));
+document.getElementById("votes").addEventListener("input", e =>
+  dispatch({ type: "setFilter", key: "minVotes", value: +e.target.value }));
+const byLabel = new Map();
+for (const [id, [t, l]] of Object.entries(G.nodes)) {
+  const key = `${l} (${t})`;
+  if (!byLabel.has(key)) byLabel.set(key, id);
+}
+document.getElementById("all").innerHTML = [...byLabel.keys()].map(k => `<option value="${esc(k)}">`).join("");
+document.getElementById("jump").addEventListener("change", e => {
+  const id = byLabel.get(e.target.value);
+  if (id) { dispatch({ type: "focus", id }); e.target.value = ""; }
+});
+document.getElementById("reset").onclick = () => { state = FocusModel.initialState(START); prevRoles = new Map(); stepAt = -1; render(); };
+render();
+</script>
+</body>
+</html>
