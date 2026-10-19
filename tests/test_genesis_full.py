@@ -18,8 +18,14 @@ def genesis(tmp_path_factory):
     return run_build(tmp_path_factory.mktemp("genesis") / "out", sources=SOURCES, books=["Gen"])
 
 
+def chapter_files(genesis):
+    """The Genesis chapter files, without their Ring 2 sidecars."""
+    files = (genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json")
+    return [p for p in files if not p.name.endswith(".ring2.json")]
+
+
 def test_genesis_has_50_chapters_and_1533_verses(genesis):
-    chapters = list((genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json"))
+    chapters = chapter_files(genesis)
     assert len(chapters) == 50
     assert sum(len(read_json(p)["verses"]) for p in chapters) == 1533
     assert read_json(genesis / "data" / "index.json")["counts"] == {"chapters": 50, "verses": 1533}
@@ -36,7 +42,7 @@ def test_genesis_has_one_file_for_each_entity_in_range(genesis):
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
-    chapters = (genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json")
+    chapters = chapter_files(genesis)
     mentions = [m for p in chapters for v in read_json(p)["verses"] for m in v["mentions"]]
     assert len(mentions) == 3348
     rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
@@ -46,3 +52,14 @@ def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
 def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
     event = read_json(genesis / "data" / VERSION / "entity" / "event" / "1.json")
     assert event["event_year"] == -4003
+
+
+def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesis):
+    # 13,327 OpenBible rows start in Genesis and 11,300 point to Genesis (decision 52: a range
+    # counts at its first verse). A row with both ends in Genesis is in two Verses.
+    chapters = chapter_files(genesis)
+    refs = [r for p in chapters for v in read_json(p)["verses"] for r in v["cross_references"]]
+    assert len(refs) == 13327 + 11300
+    assert not read_tsv(genesis / "reports" / "split_or_trimmed.tsv")
+    rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
+    assert not [r for r in rows if "cross-reference" in r["cause"]]

@@ -2,7 +2,8 @@
 
 import shutil
 
-from pipeline.common import SIZE_LIMIT, write_json, write_tsv
+from pipeline import crossrefs
+from pipeline.common import write_json, write_tsv
 
 
 def write(b):
@@ -12,10 +13,22 @@ def write(b):
     version = data / b.cfg["data_version"]
 
     for (book, ch), verses in b.chapters.items():
-        write_json(
-            version / "chapter" / book / f"{ch}.json",
-            {"book": book, "chapter": ch, "verses": verses},
-        )
+        path = version / "chapter" / book / f"{ch}.json"
+        chapter = {"book": book, "chapter": ch, "verses": verses}
+        crossrefs.fit(b, path, chapter, [v["cross_references"] for v in verses])
+        write_json(path, chapter)
+        ring1 = {r["key"] for v in verses for r in v["cross_references"]}
+        ring2 = {key: list(b.ring2[key]) for key in ring1}
+        path = version / "chapter" / book / f"{ch}.ring2.json"
+        sidecar = {
+            "book": book,
+            "chapter": ch,
+            "source": "OpenBible.info",  # every Ring 2 entry is a cross-reference
+            "licence": b.licence("crossrefs"),
+            "ring2": ring2,
+        }
+        crossrefs.fit(b, path, sidecar, ring2.values())
+        write_json(path, sidecar)
     for entity in b.entities.values():
         kind, name = entity["id"].split(":", 1)
         write_json(version / "entity" / kind / f"{name}.json", entity)
@@ -48,11 +61,11 @@ def write(b):
         (p.relative_to(b.out).as_posix(), p.stat().st_size) for p in data.rglob("*.json")
     )
     for path, size in files:
-        b.report("files", path=path, bytes=size, over_limit="yes" if size >= SIZE_LIMIT else "")
+        b.report("files", path=path, bytes=size, over_limit="yes" if size >= b.size_limit else "")
 
     reports.mkdir(parents=True)
     for name, (header, rows) in b.reports.items():
         rows = sorted(rows, key=lambda r: [str(r[h]) for h in header])
         write_tsv(reports / f"{name}.tsv", header, rows)
-    over = sum(1 for _, s in files if s >= SIZE_LIMIT)
-    print(f"{len(files)} files, {over} over {SIZE_LIMIT} bytes")
+    over = sum(1 for _, s in files if s >= b.size_limit)
+    print(f"{len(files)} files, {over} over {b.size_limit} bytes")
