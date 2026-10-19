@@ -131,11 +131,13 @@ def test_a_theme_and_a_person_that_share_verses_have_a_co_mention(export):
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": 4,
+            "cosine": 0.2165,
             "source": "Nave's Topical Bible; Theographic",
             "licence": "CC BY 4.0; CC BY-SA 4.0",
         }
     ]
-    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 0.2165
+    # In Esau's file the Theme is weighted by rarity (decision 111): 6 x ln(31,102 / 12).
+    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 47.1607
 
 
 def test_themes_are_in_the_search_index(export):

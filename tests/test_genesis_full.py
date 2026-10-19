@@ -233,6 +233,21 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
     ]
 
 
+def test_abrahams_top_6_themes_weight_broad_topics_by_rarity_not_cosine(genesis):
+    # Decision 111. Owner's expected result: Faith (1,290 Verses, 42 shared) ranks second, and
+    # Veneration (2 Verses, both about Abraham) leaves Ring 1.
+    abraham = read_json(genesis / "data" / VERSION / "entity" / "person" / "abraham_58.json")
+    themes = [n["id"] for n in abraham["neighbours"] if n["type"] == "theme"][:6]
+    assert themes == [
+        "theme:covenant",
+        "theme:faith",
+        "theme:courage",
+        "theme:communion",
+        "theme:god",
+        "theme:condescension_of_god",
+    ]
+
+
 def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_place_name(genesis):
     entity = genesis / "data" / VERSION / "entity"
     verses = [v for p in chapter_files(genesis) for v in read_json(p)["verses"]]

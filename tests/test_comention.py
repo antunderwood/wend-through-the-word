@@ -18,6 +18,14 @@ def co_mention(n):
     return next((e for e in n["edges"] if e["edge"] == "CO_MENTION"), None)
 
 
+def by_cosine(e):
+    """An Entity's Neighbours as Ring 2 entries, ranked on their CO_MENTION cosine (decision 111)."""
+    cos = [
+        {"id": n["id"], "weight": (co_mention(n) or {}).get("cosine", 0)} for n in e["neighbours"]
+    ]
+    return sorted(cos, key=lambda n: (-n["weight"], n["id"]))
+
+
 def ring1(e):
     """The top 6 Neighbours of each type: Entity IDs, then Verse Keys."""
     by_type = {}
@@ -48,6 +56,7 @@ def test_co_mention_weight_is_the_cosine_score_over_whole_bible_verse_sets(expor
         "edge": "CO_MENTION",
         "direction": "both",
         "shared_verses": 6,
+        "cosine": 0.5111,
         "source": "Theographic",
         "licence": "CC BY-SA 4.0",
     }
@@ -79,7 +88,7 @@ def test_a_hub_that_shares_many_verses_is_not_a_top_neighbour(export):
     assert (god["weight"], co_mention(god)["shared_verses"]) == (0.1554, 4)
     assert "person:god_1324" not in top_people(entity(export, "person:abraham_58"))
     # Esau is in all 6 of Adah's Verses; Eliphaz is in 4.
-    adah = entity(export, "person:adah_414")["neighbours"]
+    adah = [n for n in entity(export, "person:adah_414")["neighbours"] if n["type"] == "person"]
     esau = neighbour(export, "person:adah_414", "person:esau_1216")
     assert co_mention(esau)["shared_verses"] == 6
     assert (adah[0]["id"], adah[0]["weight"]) == ("person:eliphaz_1144", 0.5774)
@@ -127,10 +136,12 @@ def test_each_entity_file_holds_the_top_10_neighbours_of_each_ring_1_node(export
         assert e["ring2"].keys() == ring1(e), e["id"]
         for node, top in e["ring2"].items():
             # An Entity's Ring 2 is its top Entity Neighbours; a Verse's is its cross-references.
-            ranked = (
-                files[node]["neighbours"] if node in files else verses[node]["cross_references"]
-            )
-            assert top == [{"id": n["id"], "weight": n["weight"]} for n in ranked[:10]]
+            # Entity Neighbours are ranked on their CO_MENTION cosine, one scale for every type.
+            if node in files:
+                assert top == by_cosine(files[node])[:10]
+            else:
+                ranked = verses[node]["cross_references"]
+                assert top == [{"id": n["id"], "weight": n["weight"]} for n in ranked[:10]]
     abraham = entity(export, "person:abraham_58")
     assert abraham["ring2"]["person:isaac_616"][0] == {"id": "person:abraham_58", "weight": 0.5111}
 
@@ -143,8 +154,7 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
         mentioned = {m["id"] for v in verses for m in v["mentions"] + v["filed_under"]}
         assert mentioned <= sidecar["ring2"].keys(), path.name
         for node in mentioned:
-            top = files[node]["neighbours"][:10]
-            assert sidecar["ring2"][node] == [{"id": n["id"], "weight": n["weight"]} for n in top]
+            assert sidecar["ring2"][node] == by_cosine(files[node])[:10]
     gen11 = read_json(export / "data" / VERSION / "chapter" / "Gen" / "11.ring2.json")
     # Cross-references come from OpenBible.info; Entity Neighbours from Theographic, Nave's
     # (Co-mentions with Themes), and the curated tables (Abraham and Sarah's SPOUSE_OF).
@@ -164,3 +174,18 @@ def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(export, tm
         return {k: v for k, v in read_json(out / path)["ring2"].items() if ":" in k}
 
     assert entities(small) == entities(export)
+
+
+def test_a_theme_neighbour_is_weighted_by_shared_verses_times_the_rarity_of_the_heading(export):
+    # Decision 111. Fixture: across the Bible, Abraham shares 8 Verses with GENEALOGY (38 Verses
+    # under the heading) and 3 with BASTARD (3 Verses). Weight = shared x ln(31,102 / heading).
+    # Cosine would rank BASTARD (0.2148) above GENEALOGY (0.1610); this ranks the broad topic first.
+    genealogy = neighbour(export, "person:abraham_58", "theme:genealogy")
+    bastard = neighbour(export, "person:abraham_58", "theme:bastard")
+    assert (genealogy["weight"], bastard["weight"]) == (53.6595, 27.7392)
+    themes = [
+        n["id"] for n in entity(export, "person:abraham_58")["neighbours"] if n["type"] == "theme"
+    ]
+    assert themes.index("theme:genealogy") < themes.index("theme:bastard")
+    # A Person in a Theme's list keeps the cosine score.
+    assert neighbour(export, "theme:genealogy", "person:abraham_58")["weight"] == 0.161
