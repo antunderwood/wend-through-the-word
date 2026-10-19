@@ -1,7 +1,7 @@
 # PRD: Wend Through the Word
 
-Status: Draft 4 (records the design review of 2026-10-18; see `GLOSSARY.md` and `docs/decisions.md`)
-Date: 2026-10-18
+Status: Draft 5 (adds the focus model prototype findings and correction requests; see `docs/prototypes/focus-model.md` and decisions 24 to 34 in `docs/decisions.md`)
+Date: 2026-10-19
 Owner: Ant
 
 ## 1. Purpose
