@@ -79,6 +79,7 @@ SOURCES = {
     },
 }
 FILE_NAMES = {WIKIDATA: "wikidata-coords.json"}
+QUERY_FILE = "wikidata-query.sparql"  # saved next to its result, so it can be run again
 HEADERS = {"User-Agent": "wend-through-the-word (github.com/antunderwood/wend-through-the-word)"}
 # Every coordinate statement with its rank and references, and the Pleiades and GeoNames IDs.
 WIKIDATA_QUERY = """SELECT ?item ?st ?lat ?lon ?rank ?refProp ?refVal ?pleiades ?geonames WHERE {
@@ -109,10 +110,19 @@ def wikidata_ids(dest):
     return sorted(ids)
 
 
+def wikidata_query(dest):
+    """The SPARQL query for wikidata-coords. Saved as QUERY_FILE in `dest`."""
+    if not (dest / file_name(SOURCES["geo-modern"][0])).exists():
+        sys.exit("wikidata-coords: its query is built from geo-modern, so get geo-modern first")
+    query = WIKIDATA_QUERY % " ".join(f"wd:{q}" for q in wikidata_ids(dest))
+    (dest / QUERY_FILE).write_text(query)
+    return query
+
+
 def request(name, url, dest):
     if name != "wikidata-coords":
         return urllib.request.Request(url, headers=HEADERS)
-    query = WIKIDATA_QUERY % " ".join(f"wd:{q}" for q in wikidata_ids(dest))
+    query = wikidata_query(dest)
     headers = HEADERS | {"Accept": "application/sparql-results+json"}
     return urllib.request.Request(url, urllib.parse.urlencode({"query": query}).encode(), headers)
 
@@ -127,6 +137,9 @@ def record(manifest, name, path, how):
         "date": datetime.date.today().isoformat(),
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
     }
+    if name == "wikidata-coords":  # PRD 9 rule 3: the query too, so the file can be fetched again
+        query = wikidata_query(path.parent).encode()
+        manifest[name] |= {"query": QUERY_FILE, "query_sha256": hashlib.sha256(query).hexdigest()}
 
 
 def main(argv=None):

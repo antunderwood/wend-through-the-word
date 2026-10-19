@@ -25,26 +25,22 @@ def joined(pairs):
 
 
 def load(b):
-    in_range = {v["key"] for verses in b.chapters.values() for v in verses}
-    in_verse = defaultdict(list)  # Verse Key in range -> IDs of the Entities in it
-    for entity_id, keys in b.verse_sets.items():
-        for key in keys & in_range:
-            in_verse[key].append(entity_id)
     shared = Counter()  # (ID, ID) -> number of shared Verses in range
-    for ids in in_verse.values():
-        shared.update(combinations(sorted(ids), 2))
+    provenance = defaultdict(set)  # (ID, ID) -> (source, licence) of their links to those Verses
+    for verses in b.chapters.values():
+        for v in verses:  # Mentions, and Filed Under for a Theme
+            links = {m["id"]: (m["source"], m["licence"]) for m in v["mentions"] + v["filed_under"]}
+            for pair in combinations(sorted(links), 2):
+                shared[pair] += 1
+                provenance[pair] |= {links[i] for i in pair}
 
-    # Source and licence of each Entity's Verse links: Mentions, or Filed Under for a Theme
-    provenance = {
-        e["id"]: {(v["source"], v["licence"]) for v in e["verses"]} for e in b.entities.values()
-    }
     neighbours = {e["id"]: {n["id"]: n for n in e["neighbours"]} for e in b.entities.values()}
     for (x, y), n in sorted(shared.items()):
         item = {
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": n,
-            **joined(provenance[x] | provenance[y]),
+            **joined(provenance[x, y]),
         }
         a, c = b.verse_sets[x], b.verse_sets[y]
         weight = round(len(a & c) / math.sqrt(len(a) * len(c)), 4)

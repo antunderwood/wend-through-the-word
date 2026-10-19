@@ -32,9 +32,7 @@ def dump(name, rows):
     (dest / name).write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n")
 
 
-books = [
-    r for r in json.loads((src / "books.json").read_text()) if r["fields"]["osisName"] in CHAPTERS
-]
+books = json.loads((src / "books.json").read_text())  # all 66: the search index names them all
 for r in books:
     r["fields"] = {k: v for k, v in r["fields"].items() if not isinstance(v, list)}
 dump("books.json", books)

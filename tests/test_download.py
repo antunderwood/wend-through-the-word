@@ -29,6 +29,8 @@ def test_lookup_sources_are_recorded_with_their_licence_and_file_name(tmp_path):
     }
     src, dest = tmp_path / "any", tmp_path / "sources"
     src.write_bytes(b"lookup data")
+    dest.mkdir()
+    (dest / "modern.jsonl").write_text("")  # the Wikidata query is built from geo-modern
     for name in expected:
         cmd = [sys.executable, "-m", "pipeline.download", "--dest", dest, "--supply", name, src]
         subprocess.run(cmd, check=True)
@@ -36,3 +38,24 @@ def test_lookup_sources_are_recorded_with_their_licence_and_file_name(tmp_path):
     manifest = json.loads((dest / "manifest.json").read_text())
     assert {n: (manifest[n]["file"], manifest[n]["licence"]) for n in expected} == expected
     assert all((dest / file).exists() for file, _ in expected.values())
+
+
+def test_the_wikidata_query_is_saved_and_recorded_so_the_file_can_be_fetched_again(tmp_path):
+    # PRD 9 rule 3. The query is built from the Wikidata items that geo-modern cites.
+    dest = tmp_path / "sources"
+    dest.mkdir()
+    records = [
+        {"id": "m1", "coordinates_source": {"type": "wikidata", "id": "Q2"}},
+        {"id": "m2", "secondary_sources": [{"type": "wikidata", "id": "Q1"}]},
+    ]
+    (dest / "modern.jsonl").write_text("".join(json.dumps(r) + "\n" for r in records))
+    src = tmp_path / "result.json"
+    src.write_text('{"results": {"bindings": []}}')
+    cmd = [sys.executable, "-m", "pipeline.download", "--dest", dest]
+    subprocess.run([*cmd, "--supply", "wikidata-coords", src], check=True)
+
+    entry = json.loads((dest / "manifest.json").read_text())["wikidata-coords"]
+    query = (dest / entry["query"]).read_bytes()
+    assert entry["query"] == "wikidata-query.sparql"
+    assert entry["query_sha256"] == hashlib.sha256(query).hexdigest()
+    assert b"VALUES ?item { wd:Q1 wd:Q2 }" in query

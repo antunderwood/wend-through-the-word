@@ -1,4 +1,4 @@
-from conftest import VERSION, read_json, read_tsv, run_build
+from conftest import TRIM_LIMIT, VERSION, read_json, read_tsv, run_build
 
 
 def verse(export, book, ch, vs):
@@ -99,7 +99,7 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
 def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is_reported(
     export, tmp_path
 ):
-    limit = 45000  # Gen 25 is about 79 KB in the fixture build
+    limit = TRIM_LIMIT  # Gen 25 is about 116 KB in the fixture build
     small = run_build(tmp_path / "out", size_limit=limit)
     path = f"data/{VERSION}/chapter/Gen/25.json"
     assert (small / path).stat().st_size < limit
@@ -118,9 +118,9 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(export, tmp_path):
-    limit = 40000  # Gen 26 Ring 2 is about 58 KB in the fixture build, 35 KB of it Entities
+    limit = TRIM_LIMIT  # Gen 36 Ring 2 is about 80 KB in the fixture build, most of it Entities
     small = run_build(tmp_path / "out", size_limit=limit)
-    path = f"data/{VERSION}/chapter/Gen/26.ring2.json"
+    path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
     assert (small / path).stat().st_size < limit
     # The trimmed chapter file has fewer Ring 1 Verses, so compare only the ones it keeps.
     # Entity entries are never trimmed (decision 96).

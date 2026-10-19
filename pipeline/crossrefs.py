@@ -10,7 +10,6 @@ top 10 cross-referenced Verses as ID and weight.
 import zipfile
 from collections import Counter, defaultdict
 
-from pipeline.common import to_json
 from pipeline.verses import REMAP
 
 RING2_TOP = 10  # the browser filters these and shows 3 (PRD 10.4)
@@ -63,33 +62,3 @@ def load(b):
         key: [{"id": n["id"], "weight": n["weight"]} for n in neighbours(key)[:RING2_TOP]]
         for key in ring1
     }
-    b.new_report("split_or_trimmed", "path", "action", "dropped", "lowest_weight_kept")
-
-
-def fit(b, path, data, lists):
-    """Drop the lowest weight entries of `lists` (lists inside `data`) until `data` is below the
-    size limit (PRD 8.2), and report it. Searches for the fewest entries to drop."""
-    if len(to_json(data).encode()) < b.size_limit:
-        return
-    original = [list(entries) for entries in lists]
-    ranked = sorted((e for entries in original for e in entries), key=lambda e: e["weight"])
-
-    def drop(n):
-        gone = {id(e) for e in ranked[:n]}
-        for entries, before in zip(lists, original):
-            entries[:] = [e for e in before if id(e) not in gone]
-        return len(to_json(data).encode()) < b.size_limit
-
-    path = path.relative_to(b.out).as_posix()
-    if not drop(len(ranked)):  # keep them all; the files report flags the file
-        drop(0)
-        action = "not trimmed: over the limit even with no cross-references"
-        b.report("split_or_trimmed", path=path, action=action, dropped=0, lowest_weight_kept="")
-        return
-    lo, hi = 0, len(ranked)
-    while lo < hi:
-        mid = (lo + hi) // 2
-        lo, hi = (lo, mid) if drop(mid) else (mid + 1, hi)
-    drop(lo)
-    kept = ranked[lo]["weight"] if lo < len(ranked) else ""
-    b.report("split_or_trimmed", path=path, action="trimmed", dropped=lo, lowest_weight_kept=kept)

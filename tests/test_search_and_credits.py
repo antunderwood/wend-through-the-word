@@ -69,23 +69,21 @@ def credits(export):
 
 
 def test_credits_list_every_source_the_build_read_and_no_other(export):
-    read = read_json(export / "data" / "index.json")["sources"]
+    shipped = read_json(export / "data" / "index.json")["sources"]
     entries = credits(export)["sources"]
-    assert sorted(f for e in entries for f in e["files"]) == sorted(read)
+    # TIPNR is read for the check only, so it is credited but not listed as shipped data.
+    assert sorted(f for e in entries for f in e["files"]) == sorted([*shipped, "tipnr"])
     assert all(e["name"] and e["licence"] and e["link"].startswith("https://") for e in entries)
     theographic = next(e for e in entries if e["name"] == "Theographic Bible Metadata")
     assert theographic["licence"] == "CC BY-SA 4.0"
     assert theographic["licence_link"] == "https://creativecommons.org/licenses/by-sa/4.0/"
 
 
-def test_tipnr_is_credited_only_as_a_check(export):
-    # Decision 46. The fixture build reads TIPNR only once the TIPNR check (#13) exists.
-    read = read_json(export / "data" / "index.json")["sources"]
+def test_tipnr_is_credited_as_a_check_and_not_listed_as_shipped_data(export):
+    # Decision 46: nothing from TIPNR ships, so index.json does not list it as a source.
+    assert "tipnr" not in read_json(export / "data" / "index.json")["sources"]
     tipnr = [e for e in credits(export)["sources"] if "tipnr" in e["files"]]
-    if "tipnr" in read:
-        assert tipnr[0]["credit"] == "Used to check the data; nothing from it is included."
-    else:
-        assert tipnr == []
+    assert tipnr[0]["credit"] == "Used to check the data; nothing from it is included."
 
 
 def test_credits_say_the_data_is_modified_and_link_the_curated_tables_and_bibliography(export):
@@ -101,11 +99,22 @@ def test_eastons_is_credited_when_a_dictionary_entry_ships(export):
     assert eastons["licence"] == "Public domain (1897)"
 
 
-def test_index_lists_the_books_and_their_chapters(export):
+def test_index_lists_every_book_so_any_verse_key_can_be_labelled(export):
+    # Stories 44 and 69: a cross-reference can point outside the book range (Zeph.3.9 is
+    # 36003009), so the index names all 66 books by the BB of the Verse Key.
     books = search_index(export)["books"]
-    assert [(b["osis"], b["name"]) for b in books] == [
+    assert len(books) == 66
+    assert books[0] == {
+        "number": "01",
+        "osis": "Gen",
+        "name": "Genesis",
+        "chapters": [11, 16, 25, 26, 36],
+    }
+    assert {"number": "36", "osis": "Zeph", "name": "Zephaniah", "chapters": []} in books
+    # The chapter list stays limited to the book range.
+    assert [(b["osis"], b["name"]) for b in books if b["chapters"]] == [
         ("Gen", "Genesis"),
         ("Matt", "Matthew"),
         ("3John", "3 John"),
     ]
-    assert books[0]["chapters"] == [11, 16, 25, 26, 36]
+    assert [b["number"] for b in books] == [f"{n:02}" for n in range(1, 67)]
