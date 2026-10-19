@@ -11,5 +11,5 @@
 - [ ] Entities added by later tickets (for example Themes) appear without a change to this code
 - [ ] The search index is below 500 KB compressed, and a test checks it
 - [ ] The credits file lists every source the build read, with its licence and link, and no source the build did not read
-- [ ] No TIPNR entry appears in the credits as shipped data
+- [ ] TIPNR appears in the credits only as "used to check the data; nothing from it is included" (decision 46)
 - [ ] The credits say the data is modified, link to the curated tables, and link to Theographic's source bibliography (decision 45)

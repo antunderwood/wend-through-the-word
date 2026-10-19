@@ -1,6 +1,6 @@
 # Licences
 
-Status: draft. The owner reviews it before the repository goes public (ticket 01).
+Status: reviewed by the owner on 2026-10-19.
 Checked: 2026-10-19.
 This is not legal advice.
 
@@ -325,7 +325,6 @@ Decided on 2026-10-19 (decisions 38 to 45 in `docs/decisions.md`):
 7. Fixtures use made-up coordinates for OpenStreetMap records (decision 44).
 8. The credits page says the data is modified, and links to Theographic's source bibliography (decision 45).
 9. The PRD now says "dataset CC BY 4.0" for Nave's, with no public domain claim. Pleiades is CC BY 3.0. The cross-references are CC BY 4.0.
+10. The credits page thanks STEPBible for TIPNR, marked as used for checks only (decision 46).
 
-Open:
-
-1. **TIPNR credit.** Nothing from TIPNR ships, so the licence does not require credit. Should the credits page thank STEPBible anyway?
+No points are open.

@@ -58,6 +58,8 @@ Source: `docs/licences.md`.
 44. **Fixtures use made-up coordinates for OpenStreetMap records.** The source type stays "osm". Reason: a real OpenStreetMap point in a public repository is ODbL data, even if it never ships.
 45. **The credits page says the data is modified and links to Theographic's source bibliography.** Reason: CC BY-SA 4.0 section 3(a)(1)(B) requires a modification notice, and Theographic asks users to credit its original sources.
 
+46. **The credits page thanks STEPBible for TIPNR, marked "used to check the data; nothing from it is included".** Reason: the licence does not require credit, because nothing ships, but TIPNR helps find errors, and it already reaches us through Theographic.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
