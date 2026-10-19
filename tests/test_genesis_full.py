@@ -133,10 +133,22 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
     assert not [r for r in rows if "cross-reference" in r["cause"]]
 
 
-def test_god_is_a_neighbour_of_abraham_but_not_in_his_ring_1(genesis):
-    from test_comention import ring1
+def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(genesis):
+    from test_comention import top_people
 
-    abraham = read_json(genesis / "data" / VERSION / "entity" / "person" / "abraham_58.json")
-    # God is in more Genesis Verses than anyone (313); cosine demotes him (decision 20).
-    assert "person:god_1324" in {n["id"] for n in abraham["neighbours"]}
-    assert "person:god_1324" not in ring1(abraham)
+    entity = genesis / "data" / VERSION / "entity"
+    people = [read_json(p) for p in (entity / "person").glob("*.json")]
+    people = [e for e in people if e["verses"]]  # the 352 in Genesis, not the stubs
+    # God is in more Verses than anyone; cosine over whole-Bible Verse sets demotes him
+    # (decisions 20 and 79). Owner's expected result: about 19 of 352.
+    with_god = [e["id"] for e in people if "person:god_1324" in top_people(e)]
+    assert len(with_god) <= len(people) // 10
+    abraham = read_json(entity / "person" / "abraham_58.json")
+    assert top_people(abraham) == [
+        "person:isaac_616",
+        "person:sarah_2473",
+        "person:heth_1510",
+        "person:abimelech_40",
+        "person:nahor_2143",
+        "person:lot_1830",
+    ]

@@ -1,8 +1,9 @@
 """CO_MENTION edges between Entities that share a Verse, weighted by the cosine score, then the
 Neighbour ranking, Overflow counts, and Ring 2 of each Entity (PRD 10.4).
 
-The Verse set of an Entity is the Verse Keys in its `verses` list. That list holds its Mention
-Verses; Themes (#12) add their Filed Under Verses there, in a step that runs before this one.
+The Verse set of an Entity is `b.verse_sets`, across the whole Bible (decision 79), so weights
+do not change when the book range grows. A pair needs a shared Verse in the book range, and
+`shared_verses` counts only those.
 """
 
 import math
@@ -14,12 +15,21 @@ from pipeline.crossrefs import RING2_TOP
 K = 6  # default number of Neighbours of each type in Ring 1 (PRD 10.4 rule 1)
 
 
+def joined(pairs):
+    """Source and licence of an item derived from several (source, licence) pairs."""
+    return {
+        "source": "; ".join(sorted({s for s, _ in pairs})),
+        "licence": "; ".join(sorted({lic for _, lic in pairs})),
+    }
+
+
 def load(b):
-    in_verse = defaultdict(list)  # Verse Key -> IDs of the Entities in it
-    for e in b.entities.values():
-        for v in e["verses"]:
-            in_verse[v["key"]].append(e["id"])
-    shared = Counter()  # (ID, ID) -> number of shared Verses
+    in_range = {v["key"] for verses in b.chapters.values() for v in verses}
+    in_verse = defaultdict(list)  # Verse Key in range -> IDs of the Entities in it
+    for entity_id, keys in b.verse_sets.items():
+        for key in keys & in_range:
+            in_verse[key].append(entity_id)
+    shared = Counter()  # (ID, ID) -> number of shared Verses in range
     for ids in in_verse.values():
         shared.update(combinations(sorted(ids), 2))
 
@@ -29,16 +39,14 @@ def load(b):
     }
     neighbours = {e["id"]: {n["id"]: n for n in e["neighbours"]} for e in b.entities.values()}
     for (x, y), n in sorted(shared.items()):
-        sources = provenance[x] | provenance[y]
         item = {
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": n,
-            "source": "; ".join(sorted({s for s, _ in sources})),
-            "licence": "; ".join(sorted({lic for _, lic in sources})),
+            **joined(provenance[x] | provenance[y]),
         }
-        verses_x, verses_y = len(b.entities[x]["verses"]), len(b.entities[y]["verses"])
-        weight = round(n / math.sqrt(verses_x * verses_y), 4)
+        a, c = b.verse_sets[x], b.verse_sets[y]
+        weight = round(len(a & c) / math.sqrt(len(a) * len(c)), 4)
         for here, there in ((x, y), (y, x)):
             found = neighbours[here].get(there)
             if not found:
@@ -48,29 +56,28 @@ def load(b):
             found["weight"] = weight
             found["edges"] = sorted(found["edges"] + [item], key=lambda i: i["edge"])
 
-    # Rank: explicit relationship edges first, then weight descending, then ID (PRD 10.4 rule 2).
+    # Rank by weight alone, then ID. An explicit edge is a label, not a priority (decision 78).
     for e in b.entities.values():
-        e["neighbours"].sort(key=lambda n: (not explicit(n), -n["weight"], n["id"]))
+        e["neighbours"].sort(key=lambda n: (-n["weight"], n["id"]))
         types = Counter(n["type"] for n in e["neighbours"]) + Counter(verse=len(e["verses"]))
         e["overflow"] = {t: max(0, count - K) for t, count in types.items()}
 
     # Ring 2: the top Neighbours of each Ring 1 node, as ID and weight. An Entity's come from
     # its Entity Neighbours, a Verse's from its cross-references, so that no list ranks weights
-    # of two scales together (decision 33).
+    # of two scales together (decision 77). `b.top` also feeds the chapter Ring 2 (decision 80).
+    b.top = {
+        e["id"]: [{"id": n["id"], "weight": n["weight"]} for n in e["neighbours"][:RING2_TOP]]
+        for e in b.entities.values()
+    }
     verses = {v["key"]: v for vs in b.chapters.values() for v in vs}
     for e in b.entities.values():
         ring1 = [v["key"] for v in e["verses"][:K]]
         for t in {n["type"] for n in e["neighbours"]}:
             ring1 += [n["id"] for n in e["neighbours"] if n["type"] == t][:K]
-        e["ring2"] = {node: top(b, verses, node) for node in ring1}
+        e["ring2"] = {
+            node: top_verses(verses[node]) if node in verses else b.top[node] for node in ring1
+        }
 
 
-def explicit(n):
-    return any(i["edge"] != "CO_MENTION" for i in n["edges"])
-
-
-def top(b, verses, node):
-    ranked = (
-        b.entities[node]["neighbours"] if node in b.entities else verses[node]["cross_references"]
-    )
-    return [{"id": n["id"], "weight": n["weight"]} for n in ranked[:RING2_TOP]]
+def top_verses(verse):
+    return [{"id": n["id"], "weight": n["weight"]} for n in verse["cross_references"][:RING2_TOP]]

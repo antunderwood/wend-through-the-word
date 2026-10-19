@@ -1,6 +1,7 @@
 """Verses from the BSB text, keyed by Theographic's verseID. Sets `b.books`, `b.chapters`,
 `b.verse_recs` (every Theographic verse record ID -> its Verse, or None outside the book range),
-and `b.verse_keys` (every Theographic osisRef -> its Verse Key, in the book range or not)."""
+`b.verse_keys` (every Theographic osisRef -> its Verse Key, in the book range or not), and
+`b.rec_keys` (every Theographic verse record ID -> its Verse Key, in the book range or not)."""
 
 import json
 import re
@@ -36,12 +37,13 @@ def load(b):
     b.chapters = defaultdict(list)  # (book, chapter) -> verses
     b.verse_recs = {}
     b.verse_keys = {}
+    b.rec_keys = {}
     seen = set()
     for r in json.loads(b.source("theo-verses").read_text()):
         f = r["fields"]
         book, ch, vs = f["osisRef"].split(".")
         b.verse_recs[r["id"]] = None
-        b.verse_keys[f["osisRef"]] = f["verseID"]
+        b.verse_keys[f["osisRef"]] = b.rec_keys[r["id"]] = f["verseID"]
         if book not in wanted:
             continue
         seen.add(f["osisRef"])

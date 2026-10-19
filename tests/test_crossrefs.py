@@ -91,7 +91,8 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
         {"id": "44017026", "weight": 2},  # Acts.17.26
     ]
     ring1 = read_json(chapter / "11.json")["verses"]
-    assert {n["id"] for v in ring1 for n in v["cross_references"]} == ring2.keys()
+    verse_keys = {k for k in ring2 if ":" not in k}  # the rest are Entities (decision 80)
+    assert {n["id"] for v in ring1 for n in v["cross_references"]} == verse_keys
     assert all(e.keys() == {"id", "weight"} for entries in ring2.values() for e in entries)
 
 
@@ -117,16 +118,20 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(export, tmp_path):
-    limit = 15000  # Gen 25 Ring 2 is about 28 KB in the fixture build
+    limit = 15000  # Gen 26 Ring 2 is about 30 KB in the fixture build
     small = run_build(tmp_path / "out", size_limit=limit)
-    path = f"data/{VERSION}/chapter/Gen/25.ring2.json"
+    path = f"data/{VERSION}/chapter/Gen/26.ring2.json"
     assert (small / path).stat().st_size < limit
+    # The trimmed chapter file has fewer Ring 1 Verses, so compare only the ones it keeps.
+    # Entity entries are never trimmed (decision 80).
+    nodes = {k for k in read_json(small / path)["ring2"] if ":" not in k}
 
     def entries(out):
         ring2 = read_json(out / path)["ring2"]
-        return {(node, e["id"], e["weight"]) for node, top in ring2.items() for e in top}
+        return {(node, e["id"], e["weight"]) for node in nodes for e in ring2[node]}
 
     kept, dropped = entries(small), entries(export) - entries(small)
+    assert dropped
     assert min(e[2] for e in kept) >= max(e[2] for e in dropped)
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [r["action"] for r in rows if r["path"] == path] == ["trimmed"]
