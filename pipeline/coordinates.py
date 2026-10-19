@@ -47,7 +47,7 @@ def openbible_point(ob_ids, ancient, modern):
     """(modern record, confidence) of a place's CC BY OpenBible point, or why it has none."""
     if not ob_ids:
         return "no OpenBible link"
-    if len(ob_ids) > 1:  # 3 places link to two records; nothing says which (decision 65)
+    if len(ob_ids) > 1:  # 3 places link to two records; nothing says which (decision 66)
         return "more than one OpenBible record"
     best = ancient[ob_ids[0]]["identifications"][0]
     res = next((r for r in best.get("resolutions", []) if "lonlat" in r), None)

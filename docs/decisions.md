@@ -106,8 +106,8 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 ## 2026-10-19: OpenBible coordinates (#10)
 
-65. **A Place that Theographic links to more than one OpenBible record gets no OpenBible point.** The no-coordinate report lists it with both records. Reason: 3 places link to two records (`ether_418`, `kartan_672`, `kiriathaim_696`; none in Genesis), and nothing in the data says which one is meant. Picking one would choose an identification, not just a source.
-66. **Confidence ships as OpenBible gives it, negative values included.** Decision 60 calls `score.time_total` a number from 0 to 1,000, but it can be below 0: Dinhabah (`dinhabah_337`) has -77. Reason: a negative value means current scholarship leans against the identification. The front end can bucket it with the rest.
+66. **A Place that Theographic links to more than one OpenBible record gets no OpenBible point.** The no-coordinate report lists it with both records. Reason: 3 places link to two records (`ether_418`, `kartan_672`, `kiriathaim_696`; none in Genesis), and nothing in the data says which one is meant. Picking one would choose an identification, not just a source.
+67. **Confidence ships as OpenBible gives it, negative values included.** Decision 60 calls `score.time_total` a number from 0 to 1,000, but it can be below 0: Dinhabah (`dinhabah_337`) has -77. Reason: a negative value means current scholarship leans against the identification. The front end can bucket it with the rest.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
