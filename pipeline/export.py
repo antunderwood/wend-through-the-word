@@ -16,6 +16,9 @@ def write(b):
             version / "chapter" / book / f"{ch}.json",
             {"book": book, "chapter": ch, "verses": verses},
         )
+    for entity in b.entities.values():
+        kind, name = entity["id"].split(":", 1)
+        write_json(version / "entity" / kind / f"{name}.json", entity)
 
     write_json(
         data / "index.json",

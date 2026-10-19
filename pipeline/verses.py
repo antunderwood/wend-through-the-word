@@ -1,4 +1,5 @@
-"""Verses from the BSB text, keyed by Theographic's verseID. Sets `b.books` and `b.chapters`."""
+"""Verses from the BSB text, keyed by Theographic's verseID. Sets `b.books`, `b.chapters`, and
+`b.verse_recs` (every Theographic verse record ID -> its Verse, or None outside the book range)."""
 
 import json
 import re
@@ -29,11 +30,14 @@ def load(b):
             if osis in wanted:
                 bsb[f"{osis}.{m[2]}.{m[3]}"] = m[4].strip()
 
-    b.new_report("verse_mismatches", "verse", "cause")
+    b.new_report("verse_mismatches", "verse", "cause", "count")
     b.chapters = defaultdict(list)  # (book, chapter) -> verses
+    b.verse_recs = {}
     seen = set()
-    for f in (r["fields"] for r in json.loads(b.source("theo-verses").read_text())):
+    for r in json.loads(b.source("theo-verses").read_text()):
+        f = r["fields"]
         book, ch, vs = f["osisRef"].split(".")
+        b.verse_recs[r["id"]] = None
         if book not in wanted:
             continue
         seen.add(f["osisRef"])
@@ -49,8 +53,9 @@ def load(b):
         }
         if not verse["text_bsb"]:
             verse["no_bsb_text"] = True
-            b.report("verse_mismatches", verse=f["osisRef"], cause="no BSB text (kept)")
+            b.report("verse_mismatches", verse=f["osisRef"], cause="no BSB text (kept)", count=1)
         b.chapters[book, int(ch)].append(verse)
+        b.verse_recs[r["id"]] = verse
     for verses in b.chapters.values():
         verses.sort(key=lambda v: v["key"])
 
@@ -59,7 +64,8 @@ def load(b):
             "verse_mismatches",
             verse=osis,
             cause="BSB verse with no Theographic verse key (dropped)",
+            count=1,
         )
     for ref, note in NOTES.items():
         if ref.split(".")[0] in wanted:
-            b.report("verse_mismatches", verse=ref, cause=f"note: {note}")
+            b.report("verse_mismatches", verse=ref, cause=f"note: {note}", count=1)

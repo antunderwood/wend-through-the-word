@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import pytest
-from conftest import VERSION, read_json, run_build
+from conftest import VERSION, read_json, read_tsv, run_build
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -27,3 +27,22 @@ def test_genesis_has_50_chapters_and_1533_verses(genesis):
 
 def test_every_genesis_file_is_below_500_kb(genesis):
     assert all(p.stat().st_size < 500 * 1000 for p in (genesis / "data").rglob("*.json"))
+
+
+def test_genesis_has_one_file_for_each_entity_in_range(genesis):
+    entity = genesis / "data" / VERSION / "entity"
+    counts = {d.name: len(list(d.glob("*.json"))) for d in entity.iterdir()}
+    assert counts == {"person": 352, "place": 119, "event": 116}
+
+
+def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
+    chapters = (genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json")
+    mentions = [m for p in chapters for v in read_json(p)["verses"] for m in v["mentions"]]
+    assert len(mentions) == 3348
+    rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
+    assert not [r for r in rows if "mention" in r["cause"]]
+
+
+def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
+    event = read_json(genesis / "data" / VERSION / "entity" / "event" / "1.json")
+    assert event["year"] == -4003

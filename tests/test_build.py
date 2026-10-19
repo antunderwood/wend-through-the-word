@@ -48,6 +48,7 @@ def test_bsb_verse_with_no_theographic_key_is_reported(export):
     assert {
         "verse": "3John.1.15",
         "cause": "BSB verse with no Theographic verse key (dropped)",
+        "count": "1",
     } in rows
     assert all(v["verse"] <= 14 for v in chapter(export, "3John", 1)["verses"])
 

@@ -79,6 +79,10 @@ From the source notes written for tickets #4 to #13.
 53. **Cross-references with zero or negative Votes are kept.** The front end's default filter hides them (PRD 12.4). Reason: the data stays complete, and trimming for size already drops the lowest Votes first.
 54. **People Group IDs are `group:` plus the group name in lower case, with spaces as underscores.** Reason: Theographic gives groups no ID field. The prototype used the same rule.
 
+## 2026-10-19: Entities and Mentions (#4)
+
+55. **Links in a Dictionary Entry become plain text.** Theographic's `dictText` holds Markdown links such as `[Gen. 11:27](/gen#Gen.11.27)`; the export keeps only "Gen. 11:27". Reason: the links point at paths on Theographic's own site, and the prototype did the same. Other Markdown (paragraph breaks) is kept. Turning the references into verse links in the app is a later choice.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
