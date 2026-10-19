@@ -181,6 +181,8 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 109. **Nine Nave's headings stay Themes: GOD, HOLY SPIRIT, SALT, LIGHT, SUN, MASTER, DAUGHTER, WIFE, and FIRSTBORN.** The four peoples (CANAANITES, MIDIANITES, MOABITES, CAPHTORIM) are removed, so the ancestor stands for them. `themes_keep.csv` gains an optional `name` column for the display name: GOD shows as "God (topic)" and HOLY SPIRIT as "Holy Spirit (topic)". Reason: these headings are topics, not the Person or Place they match, and the display names keep a Theme apart from the Person with the same name in search and in the scene.
 
+110. **The owner approved the last three correction rows (2026-10-19).** The Nile's point is 29.85, 31.25 near Memphis (source "Curated"), the Gihon has no point, and the Mount of Olives loses the editor's note in its aliases. Reason: decisions 89 and 90 left them unreviewed until the owner confirmed them.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

@@ -129,11 +129,13 @@ def test_genesis_ships_the_real_curated_tables(genesis):
     for name in ("redundant", "no_longer_matches"):
         assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
     unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
-    assert [r["ids"] for r in unreviewed if r["table"] == "corrections"] == [
-        "place:mount_of_olives_828 aliases",
-        "place:nile_895 coordinates",  # owner to confirm (decision 90)
-        "place:gihon_472 coordinates",
-    ]
+    # The owner reviewed the last three correction rows on 2026-10-19 (decision 110).
+    assert not [r for r in unreviewed if r["table"] == "corrections"]
+    place = genesis / "data" / VERSION / "entity" / "place"
+    nile = read_json(place / "nile_895.json")
+    assert (nile["lat"], nile["lon"], nile["coord_source"]) == (29.85, 31.25, "Curated")
+    assert read_json(place / "gihon_472.json").get("lat") is None
+    # The Mount of Olives is not in Genesis; its alias row is checked by the fixture tests.
     # The owner reviewed themes_keep.csv on 2026-10-19 (decision 109).
     assert not [r for r in unreviewed if r["table"] == "themes_keep"]
     kept = {
@@ -185,7 +187,8 @@ def test_every_genesis_place_has_a_cc_by_point_or_is_in_the_no_coordinate_report
     shipped = shipped_points(genesis)
     assert not openstreetmap_shipped(genesis, SOURCES)
     report = {r["place"]: r["cause"] for r in read_tsv(genesis / "reports" / "no_coordinate.tsv")}
-    assert (len(shipped), len(report)) == (111, 8)
+    # The Gihon's point is removed by a curated row (decision 110).
+    assert (len(shipped), len(report)) == (110, 9)
     assert report["place:galeed_432"] == "no OpenBible link"
     assert report["place:eden_354"] == "OpenBible gives no point"
 
@@ -193,7 +196,8 @@ def test_every_genesis_place_has_a_cc_by_point_or_is_in_the_no_coordinate_report
 def test_every_dropped_genesis_point_is_re_sourced(genesis):
     # 47 OpenBible points are on OpenStreetMap geometry (decision 57); all are looked up again.
     sources = Counter(p["coord_source"] for p in shipped_points(genesis))
-    assert sources == {"OpenBible": 64, "Pleiades": 17, "Wikidata": 28, "GeoNames": 2}
+    # Curated rows replace the Nile's Pleiades point and remove the Gihon's (decision 110).
+    assert sources == {"OpenBible": 64, "Pleiades": 15, "Wikidata": 28, "GeoNames": 2, "Curated": 1}
     euphrates = read_json(genesis / "data" / VERSION / "entity" / "place" / "euphrates_421.json")
     assert euphrates["coord_source"] == "Pleiades"
 

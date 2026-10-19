@@ -1,5 +1,5 @@
 id,field,was,value,evidence,note,reviewed,request
 person:anah_247,gender,Female,Male,Gen.36.24,"Theographic has Female, following KJV Gen.36.2 ""Anah the daughter of Zibeon"". BSB Gen.36.24 reads ""Anah son of Zibeon"".",yes,
-place:mount_of_olives_828,aliases,"4b is just ""mount"" or ""mountain""",,Zech.14.4,"Theographic's alias is an editor's note, not a name. Remove it. Report upstream. Zech.14.4 names the Mount of Olives.",no,
-place:nile_895,coordinates,,"29.85,31.25",Gen.41.1,Owner chose a point in Egypt; Pleiades gives the source of the Nile in Rwanda,no,
-place:gihon_472,coordinates,,,Gen.2.13,River of Eden with no known location; the inherited Nile point was in Rwanda,no,
+place:mount_of_olives_828,aliases,"4b is just ""mount"" or ""mountain""",,Zech.14.4,"Theographic's alias is an editor's note, not a name. Remove it. Report upstream. Zech.14.4 names the Mount of Olives.",yes,
+place:nile_895,coordinates,,"29.85,31.25",Gen.41.1,Owner chose a point in Egypt; Pleiades gives the source of the Nile in Rwanda,yes,
+place:gihon_472,coordinates,,,Gen.2.13,River of Eden with no known location; the inherited Nile point was in Rwanda,yes,
