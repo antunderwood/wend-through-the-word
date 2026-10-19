@@ -46,8 +46,17 @@ def test_people_with_the_same_name_stay_separate_entities(export):
 
 
 def test_event_year_is_the_astronomical_year_from_theographic(export):
-    assert entity(export, "event", "53")["year"] == -2245  # Tower of Babel, 2246 BC
-    assert entity(export, "event", "407")["year"] == 29  # Healing a Boy with a Demon, AD 29
+    assert entity(export, "event", "53")["event_year"] == -2245  # Tower of Babel, 2246 BC
+    assert entity(export, "event", "407")["event_year"] == 29  # Healing a Boy with a Demon, AD 29
+
+
+def test_entity_files_hold_the_names_the_detail_panel_shows(export):
+    jacob = entity(export, "person", "israel_682")
+    assert (jacob["name"], jacob["aliases"]) == ("Jacob (Israel)", ["Israel"])
+    assert entity(export, "person", "abraham_58")["aliases"] == ["Abram"]
+    assert entity(export, "place", "canaan_272")["name"] == "Canaan"
+    assert entity(export, "event", "53")["title"] == "Tower of Babel"
+    assert entity(export, "group", "tribe_of_judah")["name"] == "Tribe of Judah"
 
 
 def test_dictionary_entry_comes_from_dict_text_labelled_as_eastons(export):

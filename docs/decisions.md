@@ -82,6 +82,7 @@ From the source notes written for tickets #4 to #13.
 ## 2026-10-19: Entities and Mentions (#4)
 
 55. **Links in a Dictionary Entry become plain text.** Theographic's `dictText` holds Markdown links such as `[Gen. 11:27](/gen#Gen.11.27)`; the export keeps only "Gen. 11:27". Reason: the links point at paths on Theographic's own site, and the prototype did the same. Other Markdown (paragraph breaks) is kept. Turning the references into verse links in the app is a later choice.
+56. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 

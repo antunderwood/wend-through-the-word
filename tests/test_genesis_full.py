@@ -45,4 +45,4 @@ def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
 
 def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
     event = read_json(genesis / "data" / VERSION / "entity" / "event" / "1.json")
-    assert event["year"] == -4003
+    assert event["event_year"] == -4003

@@ -27,11 +27,17 @@ def facts(kind, f):
             "source": "Easton's Bible Dictionary (1897)",
             "licence": "Public domain (1897)",  # decision 38
         }
+    if kind in ("person", "place"):
+        out["name"] = f["displayTitle"]  # disambiguated: "Jacob (Israel)" (decision 56)
+    if kind == "group":
+        out["name"] = f["groupName"]
     if kind == "person":
+        out["aliases"] = [a.strip() for a in (f.get("alsoCalled") or "").split(",") if a.strip()]
         out["gender"] = f["gender"]  # Male or Female, as Theographic gives it (decision 50)
     if kind == "event":
+        out["title"] = f["title"]
         # Astronomical numbering, kept as is: 4004 BC is -4003. Some dates are "0030-05-01".
-        out["year"] = int(re.match(r"-?\d+", f["startDate"])[0])
+        out["event_year"] = int(re.match(r"-?\d+", f["startDate"])[0])
     return out
 
 
