@@ -8,13 +8,12 @@ A reference to a whole chapter is skipped (decision 59).
 """
 
 import csv
-import json
 import re
 import sys
 from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
 
-from pipeline.entities import TYPES
+from pipeline.common import norm, report_mismatches
 
 # Nave's book codes, in Bible order, and the OSIS names Theographic uses, in the same order.
 CODES = (
@@ -36,33 +35,28 @@ BOOKS = "|".join(sorted(OSIS, key=len, reverse=True))
 REF = re.compile(rf"\b({BOOKS}) ({SEG}(?:; (?:with )?{SEG})*)")
 
 
-def norm(name):
-    return re.sub(r"[^a-z]", "", name.lower())
-
-
 def theographic_names(b):
     """Normalised name -> IDs of the People and Places with that name, and the same for aliases.
     All of Theographic, so a heading's fate does not depend on the book range."""
     names, aliases = defaultdict(set), defaultdict(set)
-    for kind in ("person", "place"):
-        source, name = TYPES[kind]
-        for r in json.loads(b.source(source).read_text()):
-            f, entity_id = r["fields"], f"{kind}:{name(r['fields'])}"
-            title = re.sub(r"\s*\(.*\)$", "", f["displayTitle"])  # "Jacob (Israel)" is Jacob
-            if kind == "person":
-                own, other = [f["name"], title], f.get("alsoCalled")
-            else:
-                own, other = [title, f.get("kjvName"), f.get("esvName")], f.get("aliases")
-            for n in own:
-                names[norm(n or "")].add(entity_id)
-            for n in (other or "").split(","):
-                aliases[norm(n)].add(entity_id)
+    for kind, _, f, entity_id in b.records.values():
+        if kind not in ("person", "place"):
+            continue
+        title = re.sub(r"\s*\(.*\)$", "", f["displayTitle"])  # "Jacob (Israel)" is Jacob
+        if kind == "person":
+            own, other = [f["name"], title], f.get("alsoCalled")
+        else:
+            own, other = [title, f.get("kjvName"), f.get("esvName")], f.get("aliases")
+        for n in own:
+            names[norm(n or "")].add(entity_id)
+        for n in (other or "").split(","):
+            aliases[norm(n)].add(entity_id)
     names.pop("", None)
     aliases.pop("", None)
     return names, aliases
 
 
-def filed(b, entry, keys, chapters, missing):
+def filed_verses(b, entry, keys, chapters, missing):
     """Verse Keys of every Verse an entry's references file, in the whole Bible. Adds the whole
     chapters it skips to `chapters` and counts its references to no Theographic verse."""
     found = set()
@@ -101,7 +95,7 @@ def load(b):
     chapters, missing = Counter(), Counter()
     for h in headings:
         heading, skipped = h["subject"], set()
-        whole_bible = filed(b, h["entry"], keys, skipped, missing)
+        whole_bible = filed_verses(b, h["entry"], keys, skipped, missing)
         in_range = sorted(whole_bible & verses.keys())
         if not in_range:
             continue
@@ -145,9 +139,7 @@ def load(b):
     for v in verses.values():
         v["filed_under"].sort(key=lambda x: x["id"])
 
-    for chapter, count in chapters.items():
-        cause = "Nave's reference to a whole chapter (skipped, decision 59)"
-        b.report("verse_mismatches", verse=chapter, cause=cause, count=count)
-    for ref, count in missing.items():
-        cause = "Nave's reference to a verse that is not in Theographic (dropped)"
-        b.report("verse_mismatches", verse=ref, cause=cause, count=count)
+    report_mismatches(b, chapters, "Nave's reference to a whole chapter (skipped, decision 59)")
+    report_mismatches(
+        b, missing, "Nave's reference to a verse that is not in Theographic (dropped)"
+    )

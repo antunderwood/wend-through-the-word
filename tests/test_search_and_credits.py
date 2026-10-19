@@ -1,24 +1,4 @@
-import gzip
-
-from conftest import VERSION, read_json
-
-
-def search_index(export):
-    return read_json(export / "data" / VERSION / "search-index.json")
-
-
-def compressed_size(export):
-    return len(gzip.compress((export / "data" / VERSION / "search-index.json").read_bytes()))
-
-
-def search(index, text):
-    """What the front end does: match names and aliases (PRD 11, search box)."""
-    text = text.lower()
-    return [
-        e["id"]
-        for e in index["entities"]
-        if text in (n.lower() for n in [e["name"], *e["aliases"]])
-    ]
+from conftest import VERSION, compressed_size, read_json, search, search_index
 
 
 def test_a_search_for_abraham_returns_abraham(export):

@@ -1,17 +1,4 @@
-import csv
-import gzip
-import json
-
-from conftest import FIXTURES, VERSION, read_json, read_tsv
-
-
-def place(export, name):
-    return read_json(export / "data" / VERSION / "entity" / "place" / f"{name}.json")
-
-
-def no_coordinate(export):
-    rows = read_tsv(export / "reports" / "no_coordinate.tsv")
-    return {r["place"]: r["cause"] for r in rows}
+from conftest import FIXTURES, no_coordinate, openstreetmap_shipped, place, shipped_points
 
 
 def test_place_with_a_cc_by_openbible_point_has_coordinate_confidence_and_source(export):
@@ -69,47 +56,6 @@ def test_no_theographic_coordinate_ships(export):
     assert "11.111111" not in text and "22.222222" not in text
     for field in ("latitude", "longitude", "openBibleLat", "recogitoLat", "recogitoLon"):
         assert f'"{field}"' not in text
-
-
-def shipped_points(export):
-    places = (export / "data" / VERSION / "entity" / "place").glob("*.json")
-    return [p for p in map(read_json, places) if "lat" in p]
-
-
-def openstreetmap_points(sources):
-    """Coordinate source -> its points that come from OpenStreetMap: OpenBible modern records
-    whose source or geometry is OpenStreetMap, Pleiades OpenStreetMap locations, and Wikidata
-    coordinates whose reference cites OpenStreetMap. GeoNames and Curated have none."""
-    points = {
-        "OpenBible": set(),
-        "Pleiades": set(),
-        "Wikidata": set(),
-        "GeoNames": set(),
-        "Curated": set(),
-    }
-    for line in (sources / "modern.jsonl").read_text().splitlines():
-        rec = json.loads(line)
-        if rec.get("coordinates_source", {}).get("type") == "osm" or "geometry_credit" in rec:
-            lon, lat = map(float, rec["lonlat"].split(","))
-            points["OpenBible"].add((lat, lon))
-    csv.field_size_limit(10**9)
-    with gzip.open(sources / "pleiades-locations-latest.csv.gz", "rt", encoding="utf-8") as f:
-        for loc in csv.DictReader(f):
-            text = f"{loc['id']} {loc['title']} {loc['description']}".lower()
-            if loc["reprLat"] and ("osm" in text or "openstreetmap" in text):
-                points["Pleiades"].add((float(loc["reprLat"]), float(loc["reprLong"])))
-    for row in read_json(sources / "wikidata-coords.json")["results"]["bindings"]:
-        ref = row.get("refVal", {}).get("value", "")
-        if ref.endswith("/entity/Q936") or "openstreetmap" in ref.lower():
-            points["Wikidata"].add((float(row["lat"]["value"]), float(row["lon"]["value"])))
-    return points
-
-
-def openstreetmap_shipped(export, sources):
-    """Shipped points that equal an OpenStreetMap point of the source they claim. (OpenBible
-    copies some Wikidata and Pleiades points, so the same value can be in two sources.)"""
-    osm = openstreetmap_points(sources)
-    return [p for p in shipped_points(export) if (p["lat"], p["lon"]) in osm[p["coord_source"]]]
 
 
 def test_no_shipped_coordinate_has_an_openstreetmap_source(export):

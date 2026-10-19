@@ -1,7 +1,4 @@
-from conftest import VERSION, read_json, read_tsv
-from test_edges import neighbour
-from test_entities import verse as chapter_verse
-from test_search_and_credits import search, search_index
+from conftest import VERSION, chapter_verse, neighbour, read_json, read_tsv, search, search_index
 
 NAVES = {"source": "Nave's Topical Bible", "licence": "CC BY 4.0"}
 

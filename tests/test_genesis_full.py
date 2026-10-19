@@ -6,9 +6,21 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
-from conftest import FIXTURES, REAL_CURATED, VERSION, read_json, read_tsv, run_build
-from test_coordinates import openstreetmap_shipped, shipped_points
-from test_tipnr import TIPNR
+from conftest import (
+    FIXTURES,
+    REAL_CURATED,
+    TIPNR,
+    VERSION,
+    compressed_size,
+    openstreetmap_shipped,
+    read_json,
+    read_tsv,
+    run_build,
+    search,
+    search_index,
+    shipped_points,
+    top_people,
+)
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -149,15 +161,11 @@ def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
 
 
 def test_a_search_for_abraham_returns_abraham_and_the_index_is_below_500_kb_compressed(genesis):
-    from test_search_and_credits import compressed_size, search, search_index
-
     assert search(search_index(genesis), "Abraham") == ["person:abraham_58"]
     assert compressed_size(genesis) < 500 * 1000
 
 
 def test_a_search_for_luz_finds_bethel(genesis):
-    from test_search_and_credits import search, search_index
-
     # Luz is its own Place (decision 7) and an other name of Bethel (decision 65).
     assert search(search_index(genesis), "Luz") == ["place:bethel_202", "place:luz_737"]
 
@@ -197,8 +205,6 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
 
 
 def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(genesis):
-    from test_comention import top_people
-
     entity = genesis / "data" / VERSION / "entity"
     people = [read_json(p) for p in (entity / "person").glob("*.json")]
     people = [e for e in people if e["verses"]]  # the 352 in Genesis, not the stubs

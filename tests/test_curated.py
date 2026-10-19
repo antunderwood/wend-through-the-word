@@ -5,15 +5,10 @@ import subprocess
 
 import pytest
 from conftest import CURATED as CURATED_FIXTURES
-from conftest import VERSION, read_json, read_tsv, run_build
+from conftest import entity, read_tsv, run_build
 
 CURATED = {"source": "Curated", "licence": "CC BY-SA 4.0"}
 THEOGRAPHIC = {"source": "Theographic", "licence": "CC BY-SA 4.0"}
-
-
-def entity(export, entity_id):
-    kind, name = entity_id.split(":")
-    return read_json(export / "data" / VERSION / "entity" / kind / f"{name}.json")
 
 
 def edges(export, entity_id, other_id):

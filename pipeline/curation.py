@@ -16,12 +16,11 @@ depend on the range. A row ships only when it is reviewed and still matches.
 """
 
 import csv
-import json
 import sys
 from collections import defaultdict
 from pathlib import Path
 
-from pipeline.entities import TYPES, facts
+from pipeline.entities import facts
 
 CURATED = {"source": "Curated", "licence": "CC BY-SA 4.0"}
 # partners.csv relation -> (edge, True when it runs from the woman to the man, None when it has
@@ -70,15 +69,13 @@ def read(b):
 
 def theographic(b):
     """Every Theographic Entity ID -> its facts, and every partner pair (sorted IDs)."""
-    upstream, ids, partners = {}, {}, []
-    for kind, (source, name) in TYPES.items():
-        records = json.loads(b.source(source).read_text())
-        titles = {r["id"]: r["fields"].get("displayTitle") for r in records}
-        for r in records:
-            ids[r["id"]] = f"{kind}:{name(r['fields'])}"
-            upstream[ids[r["id"]]] = facts(kind, r["fields"], titles)
-            partners += [(r["id"], p) for p in r["fields"].get("partners") or []]
-    pairs = {tuple(sorted((ids[x], ids[y]))) for x, y in partners if y in ids}
+    upstream = {e: facts(kind, f, b.titles) for kind, _, f, e in b.records.values()}
+    pairs = {
+        tuple(sorted((entity_id, b.records[p][3])))
+        for _, _, f, entity_id in b.records.values()
+        for p in f.get("partners") or []
+        if p in b.records
+    }
     return upstream, pairs
 
 

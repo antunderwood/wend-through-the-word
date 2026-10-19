@@ -10,9 +10,9 @@ import math
 from collections import Counter, defaultdict
 from itertools import combinations
 
-from pipeline.crossrefs import RING2_TOP
+from pipeline.common import ring2_entries
 
-K = 6  # default number of Neighbours of each type in Ring 1 (PRD 10.4 rule 1)
+RING1_PER_TYPE = 6  # default number of Neighbours of each type in Ring 1, K (PRD 10.4 rule 1)
 
 
 def joined(pairs):
@@ -57,24 +57,18 @@ def load(b):
     for e in b.entities.values():
         e["neighbours"].sort(key=lambda n: (-n["weight"], n["id"]))
         types = Counter(n["type"] for n in e["neighbours"]) + Counter(verse=len(e["verses"]))
-        e["overflow"] = {t: max(0, count - K) for t, count in types.items()}
+        e["overflow"] = {t: max(0, count - RING1_PER_TYPE) for t, count in types.items()}
 
     # Ring 2: the top Neighbours of each Ring 1 node, as ID and weight. An Entity's come from
     # its Entity Neighbours, a Verse's from its cross-references, so that no list ranks weights
     # of two scales together (decision 93). `b.top` also feeds the chapter Ring 2 (decision 96).
-    b.top = {
-        e["id"]: [{"id": n["id"], "weight": n["weight"]} for n in e["neighbours"][:RING2_TOP]]
-        for e in b.entities.values()
-    }
+    b.top = {e["id"]: ring2_entries(e["neighbours"]) for e in b.entities.values()}
     verses = {v["key"]: v for vs in b.chapters.values() for v in vs}
     for e in b.entities.values():
-        ring1 = [v["key"] for v in e["verses"][:K]]
+        ring1 = [v["key"] for v in e["verses"][:RING1_PER_TYPE]]
         for t in {n["type"] for n in e["neighbours"]}:
-            ring1 += [n["id"] for n in e["neighbours"] if n["type"] == t][:K]
+            ring1 += [n["id"] for n in e["neighbours"] if n["type"] == t][:RING1_PER_TYPE]
         e["ring2"] = {
-            node: top_verses(verses[node]) if node in verses else b.top[node] for node in ring1
+            node: ring2_entries(verses[node]["cross_references"]) if node in verses else b.top[node]
+            for node in ring1
         }
-
-
-def top_verses(verse):
-    return [{"id": n["id"], "weight": n["weight"]} for n in verse["cross_references"][:RING2_TOP]]

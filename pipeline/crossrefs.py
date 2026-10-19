@@ -10,9 +10,8 @@ top 10 cross-referenced Verses as ID and weight.
 import zipfile
 from collections import Counter, defaultdict
 
+from pipeline.common import report_mismatches, ring2_entries
 from pipeline.verses import REMAP
-
-RING2_TOP = 10  # the browser filters these and shows 3 (PRD 10.4)
 
 
 def load(b):
@@ -33,9 +32,7 @@ def load(b):
         end_key = keys[2] if end else None  # a range is one edge to its first verse (dec. 52)
         for here, there, direction in ((keys[0], keys[1], "out"), (keys[1], keys[0], "in")):
             edges[here][there].append((int(votes), direction, end_key))
-    for ref, count in missing.items():
-        cause = "OpenBible cross-reference with no Verse Key (dropped)"
-        b.report("verse_mismatches", verse=ref, cause=cause, count=count)
+    report_mismatches(b, missing, "OpenBible cross-reference with no Verse Key (dropped)")
 
     def edge(votes, direction, end_key):
         e = {"edge": "CROSS_REF", "direction": direction, "votes": votes, **openbible}
@@ -58,7 +55,4 @@ def load(b):
         for v in verses:
             v["cross_references"] = neighbours(v["key"])
             ring1.update(n["id"] for n in v["cross_references"])
-    b.ring2 = {
-        key: [{"id": n["id"], "weight": n["weight"]} for n in neighbours(key)[:RING2_TOP]]
-        for key in ring1
-    }
+    b.ring2 = {key: ring2_entries(neighbours(key)) for key in ring1}

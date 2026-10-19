@@ -1,5 +1,13 @@
-from conftest import TRIM_LIMIT, VERSION, read_json, read_tsv, run_build
-from test_edges import entity, neighbour
+from conftest import (
+    TRIM_LIMIT,
+    VERSION,
+    entity,
+    neighbour,
+    read_json,
+    read_tsv,
+    run_build,
+    top_people,
+)
 
 
 def entity_files(export):
@@ -16,10 +24,6 @@ def ring1(e):
     for n in e["neighbours"]:
         by_type.setdefault(n["type"], []).append(n["id"])
     return {i for ids in by_type.values() for i in ids[:6]} | {v["key"] for v in e["verses"][:6]}
-
-
-def top_people(e):
-    return [n["id"] for n in e["neighbours"] if n["type"] == "person"][:6]
 
 
 def test_every_pair_of_entities_sharing_a_verse_in_range_has_one_co_mention(export):

@@ -1,10 +1,6 @@
 """TIPNR check (#13). The fixture is synthetic: TIPNR asks not to be reposted (licences.md 5.4)."""
 
-from conftest import FIXTURES, read_tsv
-
-TIPNR = (
-    "TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt"
-)
+from conftest import FIXTURES, TIPNR, read_tsv
 
 
 def disagreements(export, person):
