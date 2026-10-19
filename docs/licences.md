@@ -164,7 +164,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Date checked: 2026-10-19.
 - Conditions: attribution to Pleiades and its contributors, with a link. The datasets README says: "we encourage use and citation of numbered releases". Record the release number we use.
 - Notes: the PRD says "CC BY" with no version. The version is 3.0.
-- Download: the daily locations dump, https://atlantides.org/downloads/pleiades/dumps/pleiades-locations-latest.csv.gz. It has no release number, so the manifest's date and SHA-256 identify the version we use. Some Pleiades locations are based on OpenStreetMap, and a place's own point blends them in; the build uses only the other locations (decision 77).
+- Download: the daily locations dump, https://atlantides.org/downloads/pleiades/dumps/pleiades-locations-latest.csv.gz. It has no release number, so the manifest's date and SHA-256 identify the version we use. Some Pleiades locations are based on OpenStreetMap, and a place's own point blends them in; the build uses only the other locations (decision 84).
 
 ### 3.7 Wikidata
 
@@ -176,7 +176,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Date checked: 2026-10-19.
 - Conditions: none. We still record Wikidata as the source of each coordinate.
 - Notes: coordinates (property P625) are structured data, so they are CC0. Wikidata's licence statement does not tell us where each value came from, so the build checks the references on each coordinate (decisions 43 and 58). Limitation: a coordinate "imported from" a Wikipedia may itself have come from OpenStreetMap; its reference cannot show that.
-- Download: one SPARQL query to https://query.wikidata.org/sparql, saved as `wikidata-coords.json` (decision 83).
+- Download: one SPARQL query to https://query.wikidata.org/sparql, saved as `wikidata-coords.json`, with the query saved as `wikidata-query.sparql` and its SHA-256 in the manifest (decisions 83 and 108).
 
 ### 3.8 GeoNames
 

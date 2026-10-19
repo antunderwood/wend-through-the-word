@@ -19,6 +19,7 @@ Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 17:20 to 22; 3 John 1.
 Changes from the sources:
 
 - KJV text is removed from `verses.json` (decision 42).
+- `books.json` keeps all 66 books, so the search index names them all (decision 102).
 - `cross-references.zip` keeps the rows with an end in a kept verse (or at `3John.1.15`) whose other ends are outside Genesis, Matthew, and 3 John. `verses.json` also holds the Theographic records of those other ends, with only `osisRef` and `verseID`.
 - `cross-references.zip` has two synthetic rows: `Matt.17.20` to `3John.1.15` (3 Votes), to test the remap to `3John.1.14`, and `Gen.11.1` to `Gen.11.33` (1 Vote), to test a cross-reference with no Verse Key.
 - `bsb.txt` has one synthetic line, 3 John 1:15, to test a BSB verse with no Theographic key.
@@ -39,7 +40,7 @@ Changes from the sources:
 
 ## Curated tables
 
-`curated/partners.csv`, `curated/possibly_same.csv`, and `curated/corrections.csv` are written by hand, not cut. They are this project's data (CC BY-SA 4.0, `LICENSE-DATA`). Rows copied from `pipeline/curated` keep their real values. Rows whose note starts with "Synthetic" are made up to test one case each: the `partner` relation (Esau and Basemath), an unreviewed row, an ID that is not in Theographic, a redundant correction (Beeri), a correction where Theographic holds neither value (Ur), alias corrections on two stubs (Lot's daughters), and coordinate corrections that set Babel's point and remove Pau's. Every Evidence Verse is in the kept chapters.
+`curated/partners.csv`, `curated/possibly_same.csv`, `curated/corrections.csv`, and `curated/themes_keep.csv` are written by hand, not cut. They are this project's data (CC BY-SA 4.0, `LICENSE-DATA`). Rows copied from `pipeline/curated` keep their real values. Rows whose note starts with "Synthetic" are made up to test one case each: the `partner` relation (Esau and Basemath), an unreviewed row, an ID that is not in Theographic, a redundant correction (Beeri), a correction where Theographic holds neither value (Ur), alias corrections on two stubs (Lot's daughters), coordinate corrections that set Babel's point and remove Pau's, and keep rows for GOD (reviewed) and MASTER (not reviewed). Hagar has two partner rows, one for each relation (decision 104). Every Evidence Verse is in the kept chapters.
 The TIPNR fixture is not cut by `cut.py`. It is written by hand (licences.md, section 5, rule 4), with CRLF line ends like the real file. It has three synthetic People, Peleg, Reu, and Serug, whose references are Genesis 11 verses, and one Place record that the check skips. Each record says "Synthetic TIPNR record, written for tests" and has a made-up Strong's number (`HX001` to `HX004`). Reu agrees with Theographic. Serug names Peleg, not Reu, as his father, to test the disagreement report. Peleg is Female, to test a gender disagreement. Peleg has one reference with a letter suffix and one LXX reference.
 
 Rules for later fixtures are in `docs/licences.md`, section 5. In short: the TIPNR fixture is synthetic, and OpenStreetMap records use made-up coordinates.
