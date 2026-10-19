@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from conftest import REAL_CURATED, VERSION, read_json, read_tsv, run_build
-from test_coordinates import openstreetmap_points, shipped_points
+from test_coordinates import openstreetmap_shipped, shipped_points
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -141,12 +141,19 @@ def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
 
 def test_every_genesis_place_has_a_cc_by_point_or_is_in_the_no_coordinate_report(genesis):
     shipped = shipped_points(genesis)
-    assert not {(p["lat"], p["lon"]) for p in shipped} & openstreetmap_points(SOURCES)
+    assert not openstreetmap_shipped(genesis, SOURCES)
     report = {r["place"]: r["cause"] for r in read_tsv(genesis / "reports" / "no_coordinate.tsv")}
-    assert (len(shipped), len(report)) == (64, 55)  # 47 of the 55 are on OSM geometry (dec. 57)
+    assert (len(shipped), len(report)) == (111, 8)
     assert report["place:galeed_432"] == "no OpenBible link"
     assert report["place:eden_354"] == "OpenBible gives no point"
-    assert report["place:euphrates_421"] == "OpenBible point dropped: OpenStreetMap geometry"
+
+
+def test_every_dropped_genesis_point_is_re_sourced(genesis):
+    # 47 OpenBible points are on OpenStreetMap geometry (decision 57); all are looked up again.
+    sources = Counter(p["coord_source"] for p in shipped_points(genesis))
+    assert sources == {"OpenBible": 64, "Pleiades": 17, "Wikidata": 28, "GeoNames": 2}
+    euphrates = read_json(genesis / "data" / VERSION / "entity" / "place" / "euphrates_421.json")
+    assert euphrates["coord_source"] == "Pleiades"
 
 
 def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesis):
