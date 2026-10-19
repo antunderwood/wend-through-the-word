@@ -104,6 +104,19 @@
   #pill button { background: #000; color: #fff; border: 0; border-radius: 999px; width: 34px; height: 34px; font-size: 18px; padding: 0; }
   #pill .proto { margin-left: 2px; }
   #pillLabel { min-width: 150px; text-align: center; }
+  #pill button.guide { width: auto; padding: 0 12px; font-size: 13px; }
+
+  /* Guided tour */
+  #tourRing { position: fixed; z-index: 20; pointer-events: none; border: 2px solid var(--accent); border-radius: 8px;
+    animation: tourPulse 1.2s ease-in-out infinite; }
+  @keyframes tourPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 210, 122, 0.7); } 50% { box-shadow: 0 0 0 9px rgba(255, 210, 122, 0); } }
+  @media (prefers-reduced-motion: reduce) { #tourRing { animation: none; box-shadow: 0 0 0 4px rgba(255, 210, 122, 0.35); } }
+  #tourCard { position: fixed; z-index: 21; width: 300px; max-width: calc(100vw - 16px); box-sizing: border-box; padding: 10px 12px;
+    background: #1b1f2e; border: 1px solid var(--accent); border-radius: 10px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6); font-size: 13px; }
+  #tourCard .head { display: flex; justify-content: space-between; align-items: center; }
+  #tourCard h3 { margin: 4px 0; font-size: 15px; color: var(--accent); }
+  #tourCard p { margin: 4px 0 8px; }
+  .guide-row { font-size: 12px; margin: 4px 0; }
 </style>
 <script type="importmap">
 { "imports": {
@@ -134,12 +147,16 @@
   <section id="votesSlot"></section>
   <section id="pPins"></section>
   <section id="pPath"></section>
+  <section id="pGuide"></section>
 </aside>
 <div id="pill"><span class="proto">PROTOTYPE</span>
   <button data-act="prevVariant" aria-label="Previous variant">&larr;</button>
   <span id="pillLabel"></span>
   <button data-act="nextVariant" aria-label="Next variant">&rarr;</button>
+  <button data-act="guide" class="guide" title="Restart the guided tour on this variant">Guide</button>
 </div>
+<div id="tourRing" hidden></div>
+<div id="tourCard" role="dialog" aria-label="Guided tour" hidden></div>
 
 <script type="module">
 import * as THREE from "three";
@@ -370,6 +387,7 @@ function makeView(key, host, hooks) {
   function nodeLabel(n) {
     const d = document.createElement("div");
     d.className = `nl ${n.role}${n.shared ? " shared" : ""}`;
+    d.dataset.node = n.id;   // the guided tour finds scene labels by this
     if (n.role === "focus") d.innerHTML = `${esc(label(n.id))}<small>${esc(hooks.firstLine(n.id))}</small>`;
     else d.textContent = (n.role === "pinned" ? "Pinned: " : "") + label(n.id);
     d.addEventListener("pointerdown", e => e.stopPropagation());
@@ -608,6 +626,7 @@ async function dispatch(a, keepList = false) {
     view.setSelected(state.selected);
     renderUI();
   }
+  tourCheck({ action: a, before });
   // Family words in the lists need each listed person's gender.
   const owner = typeOf(listOwner) === "overflow" ? null : await data.load(listOwner);
   const rows = owner ? TYPES.flatMap(t => owner.links.filter(l => l.type === t).slice(0, state.filters.k)) : lastScene.overflow[listOwner.slice("overflow:".length)] || [];
@@ -750,6 +769,7 @@ function renderPanel() {
        <div class="small muted">Shared Nodes (cyan rings): ${[...sc.shared].map(label).map(esc).join(", ") || "none"}</div>`
     : `<div class="muted small">None. Select a node and press Pin.</div>`);
   const pathNewest = [...s.path].reverse();
+  $("#pGuide").innerHTML = guideResultsHTML();
   $("#pPath").innerHTML = `<h2>Your Path (${s.path.length}, ${Math.min(s.path.length, FocusModel.SCENE_PATH)} drawn)</h2>`
     + (pathNewest.length || s.cleared ? `<div class="btns">${pathNewest.length ? `<button data-act="clearPath">Clear Your Path</button>` : ""}${s.cleared ? `<button data-act="undoClear">Undo clear</button>` : ""}</div>` : "") + (pathNewest.length
     ? `<ol class="list">${pathNewest.map(id => item(id, "")).join("")}</ol>` : `<div class="muted small">Empty. Make another node the Focus.</div>`);
@@ -784,7 +804,7 @@ function setVariant(key) {
   variant = key;
   const url = new URL(location.href); url.searchParams.set("variant", key); history.replaceState(null, "", url);
   view = makeView(key, $("#stage"), hooks);
-  if (lastScene) { view.render(lastScene, {}); view.setSelected(state.selected); renderUI(); }
+  if (lastScene) { view.render(lastScene, {}); view.setSelected(state.selected); renderUI(); tourOnVariant(key); }
 }
 const cycle = dir => setVariant(VARIANT_KEYS[(VARIANT_KEYS.indexOf(variant) + dir + VARIANT_KEYS.length) % VARIANT_KEYS.length]);
 
@@ -811,7 +831,9 @@ document.addEventListener("click", e => {
     t.setAttribute("aria-label", open ? "Hide panel" : "Show panel");
     t.setAttribute("aria-expanded", open);
   }
-  else if (act === "expand") { expanded.has(t.dataset.v) ? expanded.delete(t.dataset.v) : expanded.add(t.dataset.v); renderUI(); }
+  else if (act === "expand") { expanded.has(t.dataset.v) ? expanded.delete(t.dataset.v) : expanded.add(t.dataset.v); renderUI(); tourCheck({ kind: "expand" }); }
+  else if (act === "guide") startTour(variant);
+  else if (act === "copyGuide") copyGuide(t);
 });
 document.addEventListener("keydown", e => {
   if (e.target.closest("input, select, textarea")) return;
@@ -841,6 +863,267 @@ $("#q").addEventListener("keydown", e => {
   if (e.key === "Escape") { e.target.value = ""; renderSearch(); }
 });
 
+// ---------- Guided tour (ABC test) ----------
+// Walks a tester through "studying Abraham" with the normal UI, so the variants can be compared on the
+// same tasks. Auto starts the first time a tester lands on a variant; once finished or skipped there it
+// never auto starts again. The Guide button in the pill restarts it. Per variant and per step it records
+// the seconds taken and whether "Do it for me" was used. All of this lives in localStorage, with a memory
+// fallback when storage fails. Hooks: tourCheck at the end of dispatch and after the expand toggle,
+// tourOnVariant in setVariant and at boot, and the scene pointer listeners below for step 1.
+const ABRAHAM = "person:abraham_58", SARAH = "person:sarah_2473", ISAAC = "person:isaac_616", FAITH = "theme:faith";
+const TOUR_FOCUS = "01001001";   // Gen 1:1
+const store = (() => {
+  const mem = new Map();
+  return {
+    get(k) { try { const v = localStorage.getItem(k); if (v !== null) return JSON.parse(v); } catch { /* fall back to memory */ } return mem.get(k) ?? null; },
+    set(k, v) { mem.set(k, v); try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* memory only */ } },
+  };
+})();
+const DONE_KEY = v => `navTour.done.${v}`, RESULTS_KEY = "navTour.results";
+const one = s => document.querySelector(s);
+const sceneLabel = id => one(`#stage .nl[data-node="${id}"]`);
+const CAMERA = {
+  A: "Variant A, tilted plane: drag to pan, scroll or pinch to zoom. It does not rotate.",
+  B: "Variant B, stacked discs: drag to spin the scene around its centre, scroll or pinch to zoom.",
+  C: "Variant C, free orbit: drag to orbit in any direction, scroll or pinch to zoom.",
+};
+
+const STEPS = [
+  { key: "camera", title: "Welcome: move the camera",
+    text: () => `The guide has reset the app: Focus Gen 1:1, no pins, empty Your Path. ${CAMERA[variant]} Try it on the scene now.`,
+    target: () => one("#stage .nl.focus"),
+    done: ev => ev.kind === "camera",
+    doIt: () => one("#stage canvas").dispatchEvent(new WheelEvent("wheel", { deltaY: -240, bubbles: true, cancelable: true, clientX: innerWidth / 2, clientY: innerHeight / 2 })) },
+  { key: "search", title: "Find Abraham",
+    text: () => 'Type "Abraham" in the search box, then click the result. A search result becomes the Focus.',
+    target: () => (one("#q").value.trim() && one(`#results a[data-id="${ABRAHAM}"]`)) || one("#q"),
+    done: () => state.focus === ABRAHAM,
+    doIt: () => { one("#q").value = "Abraham"; renderSearch(); one(`#results a[data-id="${ABRAHAM}"]`).click(); } },
+  { key: "select", title: "Read the scene",
+    text: () => "Ring 1 holds his closest Neighbours of each type; the labels on the lines say how each relates to him. Click Sarah to select her: the scene stays, the panel shows her.",
+    target: () => sceneLabel(SARAH),
+    done: () => state.selected === SARAH,
+    doIt: () => dispatch({ type: "select", id: SARAH }) },
+  { key: "reselect", title: "Back to Abraham",
+    text: () => "Select Abraham again: click him in the scene, or his name next to Focus in the panel's State section. The panel then lists his Neighbours.",
+    target: () => sceneLabel(ABRAHAM),
+    done: () => state.selected === ABRAHAM && listOwner === ABRAHAM,
+    doIt: () => dispatch({ type: "select", id: ABRAHAM }) },
+  { key: "themes", title: "Open his Themes",
+    text: () => `In the panel, under Themes, press "${(data.rec(ABRAHAM)?.links.filter(l => l.type === "theme").length ?? 0) - state.filters.k} more" to list all his Themes.`,
+    target: () => one(`#pList [data-act="expand"][data-v="${ABRAHAM}|theme"]`),
+    done: () => listOwner === ABRAHAM && expanded.has(`${ABRAHAM}|theme`),
+    doIt: async () => {
+      if (listOwner !== ABRAHAM) await dispatch({ type: "select", id: ABRAHAM });
+      if (!expanded.has(`${ABRAHAM}|theme`)) one(`#pList [data-act="expand"][data-v="${ABRAHAM}|theme"]`).click();
+      else tourCheck({ kind: "expand" });
+    } },
+  { key: "faith", title: "Faith",
+    text: () => 'Select Faith in his Themes list. Under Selected Node, "Together with Abraham" lists the verses they share, with the text.',
+    target: () => one(`#pList a[data-id="${FAITH}"]`),
+    done: () => state.selected === FAITH,
+    doIt: () => dispatch({ type: "select", id: FAITH }, true) },
+  { key: "focus", title: "Make Isaac the Focus",
+    text: () => "Double click Isaac in the scene, or select him and press Make Focus. The scene moves to him.",
+    target: () => (state.selected === ISAAC && one('#pSel [data-act="makeFocus"]')) || sceneLabel(ISAAC),
+    done: () => state.focus === ISAAC,
+    doIt: () => makeFocus(ISAAC) },
+  { key: "pin", title: "Pin Abraham",
+    text: () => "Abraham joined Your Path, the bar at the top. Click him there to select him, then press Pin in the panel.",
+    target: () => (state.selected === ABRAHAM && one(`#pSel [data-act="pin"][data-id="${ABRAHAM}"]`)) || one(`#crumbs a[data-id="${ABRAHAM}"]`),
+    done: () => state.pins.includes(ABRAHAM),
+    doIt: async () => {
+      if (state.selected !== ABRAHAM) await dispatch({ type: "select", id: ABRAHAM });
+      await dispatch({ type: "pin", id: ABRAHAM });
+    } },
+  { key: "walk", title: "Walk Your Path",
+    text: () => "Cyan rings mark Shared Nodes: linked to both Isaac and the pinned Abraham. Now press Prev or Next in the panel to walk Your Path.",
+    target: () => one('#pSel [data-act="prev"]:not(:disabled)') || one('#pSel [data-act="next"]:not(:disabled)'),
+    done: ev => ev.action?.type === "step",
+    doIt: () => dispatch({ type: "step", dir: [...state.path, state.focus].indexOf(state.selected) > 0 ? -1 : 1 }) },
+  { key: "clear", title: "Clear, then undo",
+    text: () => "Press Clear at the end of the Your Path bar, then Undo clear to bring it back. The Focus and pins stay either way.",
+    target: () => one('#crumbs [data-act="undoClear"]') || one('#crumbs [data-act="clearPath"]'),
+    done: ev => ev.action?.type === "undoClear" && !!ev.before?.cleared,
+    doIt: async () => {
+      if (!state.cleared) {
+        if (!state.path.length) await makeFocus(state.focus === ISAAC ? ABRAHAM : ISAAC);
+        await dispatch({ type: "clearPath" });
+      }
+      await dispatch({ type: "undoClear" });
+    } },
+  { key: "done", title: "Done", final: true },
+];
+const TASKS = STEPS.filter(s => !s.final);
+
+// ---- Results ----
+const allResults = () => store.get(RESULTS_KEY) || {};
+function saveResult(v, change) {
+  const all = allResults();
+  all[v] = change(all[v] || { status: "running", steps: [] });
+  store.set(RESULTS_KEY, all);
+  if (lastScene) renderUI();
+}
+const fmt = s => s.toFixed(1);
+function resultLines(v) {
+  const r = allResults()[v];
+  const head = `${v} ${VARIANTS[v].name}`;
+  if (!r) return [`${head}: not run`];
+  const steps = r.steps.filter(Boolean);
+  const total = steps.reduce((t, x) => t + x.s, 0), help = steps.filter(x => x.help).length;
+  return [`${head}: ${r.status}. ${steps.length} of ${TASKS.length} steps, total ${fmt(total)} s, Do it for me on ${help}.`,
+    TASKS.map((st, i) => r.steps[i] ? `${i + 1} ${st.key} ${fmt(r.steps[i].s)}${r.steps[i].help ? "*" : ""}` : `${i + 1} ${st.key} -`).join(", ")];
+}
+const guideText = () => ['Guide results, seconds per step ("*" means Do it for me was used)', ...VARIANT_KEYS.flatMap(resultLines)].join("\n");
+function guideResultsHTML() {
+  return `<h2>Guide results</h2>` + VARIANT_KEYS.map(v => {
+    const [a, b] = resultLines(v);
+    return `<div class="guide-row">${esc(a)}${b ? `<br><span class="muted">${esc(b)}</span>` : ""}</div>`;
+  }).join("") + `<div class="muted small">"*" means Do it for me was used.</div>
+    <div class="btns"><button data-act="copyGuide">Copy results</button><button data-act="guide">Restart guide on ${variant}</button></div>`;
+}
+async function copyGuide(btn) {
+  const text = guideText();
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const t = document.createElement("textarea"); t.value = text; document.body.append(t); t.select();
+    try { document.execCommand("copy"); } catch { /* nothing else to try */ }
+    t.remove();
+  }
+  btn.textContent = "Copied";
+}
+
+// ---- Running the tour ----
+let run = null, tourSeq = 0, tourRaf = 0;
+const card = one("#tourCard"), ringEl = one("#tourRing");
+
+async function resetApp() {
+  state = FocusModel.initialState(TOUR_FOCUS);
+  listOwner = TOUR_FOCUS; expanded.clear(); lastClick = { id: null, t: 0 };
+  one("#q").value = ""; searchType = null;
+  if (document.body.classList.contains("collapsed")) one("#panelToggle").click();
+  one("#panel").scrollTop = 0;
+  view.dispose(); view = makeView(variant, one("#stage"), hooks);   // fresh camera
+  await refresh(false);
+  renderSearch();
+}
+
+async function startTour(v) {
+  const my = ++tourSeq;
+  stopTour();
+  await resetApp();
+  if (my !== tourSeq || v !== variant) return;
+  run = { variant: v, started: false };   // earlier results stay until this run completes a step
+  showStep(0);
+  tourRaf = requestAnimationFrame(placeTour);
+}
+
+// A restart that has recorded nothing yet keeps the variant's earlier results, so a stray Guide click loses no data.
+function setStatus(status) {
+  if (run.started || !allResults()[run.variant]) saveResult(run.variant, r => ({ ...r, status }));
+}
+
+function stopTour(status = run && !STEPS[run.i].final ? `left at step ${run.i + 1}` : null) {
+  if (status) setStatus(status);
+  run = null; card.hidden = true; ringEl.hidden = true; cancelAnimationFrame(tourRaf);
+}
+
+function tourOnVariant(v) {
+  if (run && run.variant !== v) { tourSeq++; stopTour(); }   // paused: the old variant starts again from step 1 next time
+  if (!run && !store.get(DONE_KEY(v))) startTour(v);
+}
+
+function showStep(i) {
+  Object.assign(run, { i, t0: performance.now(), helped: false });
+  const st = STEPS[i], n = `Step ${i + 1} of ${STEPS.length}`;
+  if (st.final) {
+    store.set(DONE_KEY(run.variant), true);
+    setStatus("finished");
+    const [a, b] = resultLines(run.variant);
+    card.innerHTML = `<div class="head"><span class="muted small">${n}</span></div><h3>Done</h3>
+      <p>${esc(a)}</p><p class="small muted">${esc(b)} ("*" means Do it for me)</p>
+      <p>Press Guide in the bottom bar to run it again. Each other variant guides you once, the first time you open it. All results are in the panel under Guide results.</p>
+      <div class="btns"><button data-tour="copy">Copy results</button><button data-tour="close">Close</button></div>`;
+  } else {
+    card.innerHTML = `<div class="head"><span class="muted small">${n}</span><button class="more" data-tour="skip">Skip guide</button></div>
+      <h3>${esc(st.title)}</h3><p>${esc(st.text())}</p>
+      <div class="btns">${i > 0 ? `<button data-tour="back">Back</button>` : ""}<button data-tour="do">Do it for me</button></div>`;
+  }
+  card.hidden = false;
+  revealTarget();
+}
+
+// Called after every dispatch, after the expand toggle, and on camera moves. Only the current step is checked.
+function tourCheck(ev) {
+  if (!run) return;
+  const st = STEPS[run.i];
+  if (st.final) return;
+  if (!st.done(ev)) { revealTarget(); return; }
+  const s = (performance.now() - run.t0) / 1000, help = run.helped, i = run.i;
+  saveResult(run.variant, r => {
+    const steps = run.started ? [...r.steps] : [];
+    steps[i] = { s, help };
+    return { status: "running", steps };
+  });
+  run.started = true;
+  showStep(i + 1);
+}
+
+function currentTarget() {
+  let el = run && STEPS[run.i].target?.();
+  if (el && el.closest("#panel") && document.body.classList.contains("collapsed")) el = one("#panelToggle");
+  return el || null;
+}
+
+// Scroll the panel so a target inside it is on screen (the page itself never scrolls).
+function revealTarget() {
+  const el = currentTarget(), panel = one("#panel");
+  if (!el || !panel.contains(el)) return;
+  const r = el.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+  if (r.top < pr.top + 20 || r.bottom > pr.bottom - 100) panel.scrollTop += r.top - pr.top - pr.height / 3;
+}
+
+// The highlight and the card follow the target every frame: panel redraws replace elements and scene labels move.
+function placeTour() {
+  if (!run) return;
+  tourRaf = requestAnimationFrame(placeTour);
+  const el = currentTarget(), r = el?.getBoundingClientRect();
+  const visible = r && r.width > 0 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+  ringEl.hidden = !visible;
+  if (visible) Object.assign(ringEl.style, { left: `${r.left - 5}px`, top: `${r.top - 5}px`, width: `${r.width + 10}px`, height: `${r.height + 10}px` });
+  const cw = card.offsetWidth, ch = card.offsetHeight, m = 14;
+  const cx = x => Math.max(8, Math.min(innerWidth - cw - 8, x)), cy = y => Math.max(8, Math.min(innerHeight - ch - 8, y));
+  let x = 16, y = innerHeight - ch - 70;
+  if (visible) {
+    const spots = [[cx(r.left), r.bottom + m], [cx(r.left), r.top - m - ch], [r.left - m - cw, cy(r.top)], [r.right + m, cy(r.top)]];
+    const fits = ([a, b]) => a >= 8 && b >= 8 && a + cw <= innerWidth - 8 && b + ch <= innerHeight - 8;
+    [x, y] = spots.find(fits) || [cx(r.left), cy(r.bottom + m)];
+  }
+  card.style.left = `${x}px`; card.style.top = `${y}px`;
+}
+
+card.addEventListener("click", e => {
+  const b = e.target.closest("[data-tour]");
+  if (!b || !run) return;
+  const what = b.dataset.tour;
+  if (what === "skip") {
+    store.set(DONE_KEY(run.variant), true);
+    stopTour(`skipped at step ${run.i + 1}`);
+  } else if (what === "close") stopTour();
+  else if (what === "back") showStep(run.i - 1);
+  else if (what === "copy") copyGuide(b);
+  else if (what === "do") { run.helped = true; Promise.resolve(STEPS[run.i].doIt()).catch(err => console.error(err)); }
+});
+
+// Step 1: a drag (more than 5 px) or a wheel on the scene. Labels stop pointerdown, so a label click does not count.
+let tourDrag = null;
+one("#stage").addEventListener("pointerdown", e => { tourDrag = { x: e.clientX, y: e.clientY }; });
+addEventListener("pointermove", e => {
+  if (tourDrag && Math.hypot(e.clientX - tourDrag.x, e.clientY - tourDrag.y) > 5) { tourDrag = null; tourCheck({ kind: "camera" }); }
+});
+addEventListener("pointerup", () => { tourDrag = null; });
+one("#stage").addEventListener("wheel", () => tourCheck({ kind: "camera" }), { passive: true });
+
 // ---------- Boot ----------
 try {
   await data.init();
@@ -849,6 +1132,7 @@ try {
   setVariant(VARIANTS[want] ? want : "A");
   await refresh(false);
   renderSearch();
+  tourOnVariant(variant);
 } catch (err) {
   document.body.insertAdjacentHTML("beforeend", `<div style="position:fixed;inset:30% 20%;padding:20px;background:#300;border:1px solid #f66;z-index:9">
     Could not start: ${esc(err.message)}. Serve from the repo root with <code>uv run python -m http.server 8000</code> and open /prototypes/navigation/.</div>`);
