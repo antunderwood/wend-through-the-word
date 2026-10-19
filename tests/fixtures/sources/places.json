@@ -1,5 +1,46 @@
 [
  {
+  "id": "recedRWoiFNdeGFm4",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "ai_36",
+   "displayTitle": "Ai",
+   "featureType": "City",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 31,
+   "placeID": 36,
+   "verses": [],
+   "recogitoUri": "http://pleiades.stoa.org/places/665310877",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "settlement",
+   "recogitoLabel": "Ai/Et-Tell",
+   "recogitoUID": "9a7ce38f-afed-47aa-aa59-1e63edac4853",
+   "eastons": [
+    "recJclemremwb0pvE"
+   ],
+   "modified": "2026-10-13T19:35:41.000Z",
+   "kjvName": "Ai",
+   "esvName": "Ai",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "A",
+   "slug": "ai_36",
+   "dictText": [
+    "One of the royal cities of the Canaanites ([Josh. 10:1](/josh#Josh.10.1); [Gen. 12:8](/gen#Gen.12.8); [13:3](/gen#Gen.13.3)). It was the scene of Joshua’s defeat, and afterwards of his victory. It was the second Canaanite city taken by Israel ([Josh. 7:2-5](/josh#Josh.7.2); [8:1-29](/josh#Josh.8.1)). It lay rebuilt and inhibited by the Benjamites ([Ezra 2:28](/ezra#Ezra.2.28); [Neh. 7:32](/neh#Neh.7.32); [11:31](/neh#Neh.11.31)). It lay to the east of Bethel, “beside Beth-aven.” The spot which is most probably the site of this ancient city is Haiyan, 2 miles east from Bethel. It lay up the Wady Suweinit, a steep, rugged valley, extending from the Jordan valley to Bethel."
+   ],
+   "eventsHere": [
+    "rechJv1ksZ00ye38i"
+   ],
+   "otherNames": [
+    "recwBcaQrg8xhl7a7",
+    "recTnu7k5LCNvA37v"
+   ]
+  }
+ },
+ {
   "id": "recIJFRcqI6KbKgXb",
   "createdTime": "2017-09-19T23:40:41.000Z",
   "fields": {
@@ -218,6 +259,103 @@
    "slug": "bered_178",
    "dictText": [
     "A town in the south of Palestine ([Gen. 16:14](/gen#Gen.16.14)), in the desert of Shur, near Lahai-roi."
+   ]
+  }
+ },
+ {
+  "id": "recJK76HLZSOzxTWW",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "bethel_202",
+   "displayTitle": "Bethel (of Palestine)",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 62,
+   "placeID": 202,
+   "verses": [],
+   "recogitoStatus": "NOT_IDENTIFIABLE",
+   "recogitoUID": "a73db4f8-a6f6-47bc-9ebf-9f29c4d49c95",
+   "eastons": [
+    "recetiimjyhTymvUe"
+   ],
+   "modified": "2026-10-13T20:05:27.000Z",
+   "kjvName": "Bethel",
+   "esvName": "Bethel",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "alphaGroup": "B",
+   "slug": "bethel_202",
+   "dictText": [
+    "A place in Central Palestine, about 10 miles north of Jerusalem, at the head of the pass of Michmash and Ai. It was originally the royal Canaanite city of Luz ([Gen. 28:19](/gen#Gen.28.19)). The name Bethel was at first apparently given to the sanctuary in the neighbourhood of Luz, and was not given to the city itself till after its conquest by the tribe of Ephraim. When Abram entered Canaan he formed his second encampment between Bethel and Hai ([Gen. 12:8](/gen#Gen.12.8)); and on his return from Egypt he came back to it, and again “called upon the name of the Lord” (13:4). Here Jacob, on his way from Beersheba to Haran, had a vision of the angels of God ascending and descending on the ladder whose top reached unto heaven (28:10, 19); and on his return he again visited this place, “where God talked with him” (35:1-15), and there he “built an altar, and called the place El-beth-el” (q.v.). To this second occasion of God’s speaking with Jacob at Bethel, Hosea (12:4, 5) makes reference.\n\n In troublous times the people went to Bethel to ask counsel of God ([Judg. 20:18](/judg#Judg.20.18), [31](/judg#Judg.20.31); 21:2). Here the ark of the covenant was kept for a long time under the care of Phinehas, the grandson of Aaron (20:26-28). Here also Samuel held in rotation his court of justice ([1 Sam. 7:16](/1sam#1Sam.7.16)). It was included in Israel after the kingdom was divided, and it became one of the seats of the worship of the golden calf ([1 Kings 12:28-33](/1kgs#1Kgs.12.28); [13:1](/1kgs#1Kgs.13.1)). Hence the prophet Hosea ([Hos. 4:15](/hos#Hos.4.15); [5:8](/hos#Hos.5.8); [10:5](/hos#Hos.10.5), [8](/hos#Hos.10.8)) calls it in contempt Beth-aven, i.e., “house of idols.” Bethel remained an abode of priests even after the kingdom of Israel was desolated by the king of Assyria ([2 Kings 17:28](/2kgs#2Kgs.17.28), [29](/2kgs#2Kgs.17.29)). At length all traces of the idolatries were extirpated by Josiah, king of Judah ([2 Kings 23:15-18](/2kgs#2Kgs.23.15)); and the place was still in existence after the Captivity ([Ezra 2:28](/ezra#Ezra.2.28); [Neh. 7:32](/neh#Neh.7.32)). It has been identified with the ruins of Beitin, a small village amid extensive ruins some 9 miles south of Shiloh."
+   ],
+   "eventsHere": [
+    "rechJv1ksZ00ye38i"
+   ],
+   "otherNames": [
+    "reci4G5xtsAv4FRwr",
+    "recgAmwf1FZDe8DST",
+    "recW1hr037qxVsNBt",
+    "rect9L2mkHh1K2Bka",
+    "rec7ux6O0fwgSs7Cw"
+   ],
+   "partOf": [
+    "recMRitcM5QeA7Q4M"
+   ],
+   "nearby": [
+    "recZ2V3lwJO1fyj6I"
+   ]
+  }
+ },
+ {
+  "id": "rec81f3wE4gATsRRE",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "bethlehem_218",
+   "displayTitle": "Bethlehem",
+   "featureType": "City",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 32,
+   "placeID": 218,
+   "peopleBorn": [
+    "recWzeY5izSP83047",
+    "recLyymGfYW0x6xK6",
+    "recgkFqZovgbr3pAi",
+    "recAnjspoNLxphIjV"
+   ],
+   "verses": [],
+   "recogitoUri": "http://dare.ht.lu.se/places/28331",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "settlement",
+   "recogitoLabel": "Bethlehem|Bethlehem, Beit Lahm",
+   "recogitoUID": "30df045e-7342-4ffe-a9c0-94246b7baab1",
+   "eastons": [
+    "rectXd7qs0zqKqfm6"
+   ],
+   "modified": "2026-10-13T20:05:32.000Z",
+   "kjvName": "Bethlehem",
+   "esvName": "Bethlehem",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "B",
+   "slug": "bethlehem_218",
+   "ambiguous": true,
+   "dictText": [
+    "A city in the “hill country” of Judah. It was originally called Ephrath ([Gen. 35:16](/gen#Gen.35.16), [19](/gen#Gen.35.19); 48:7; [Ruth 4:11](/ruth#Ruth.4.11)). It was also called Beth-lehem Ephratah ([Micah 5:2](/mic#Mic.5.2)), Beth-lehem-judah ([1 Sam. 17:12](/1sam#1Sam.17.12)), and “the city of David” ([Luke 2:4](/luke#Luke.2.4)). It is first noticed in Scripture as the place where Rachel died and was buried “by the wayside,” directly to the north of the city ([Gen. 48:7](/gen#Gen.48.7)). The valley to the east was the scene of the story of Ruth the Moabitess. There are the fields in which she gleaned, and the path by which she and Naomi returned to the town. Here was David’s birth-place, and here also, in after years, he was anointed as king by Samuel ([1 Sam. 16:4-13](/1sam#1Sam.16.4)); and it was from the well of Bethlehem that three of his heroes brought water for him at the risk of their lives when he was in the cave of Adullam ([2 Sam. 23:13-17](/2sam#2Sam.23.13)). But it was distinguished above every other city as the birth-place of “Him whose goings forth have been of old” ([Matt. 2:6](/matt#Matt.2.6); comp. [Micah 5:2](/mic#Mic.5.2)). Afterwards Herod, “when he saw that he was mocked of the wise men,” sent and slew “all the children that were in Bethlehem, and in all the coasts thereof, from two years old and under” ([Matt. 2:16](/matt#Matt.2.16), [18](/matt#Matt.2.18); [Jer. 31:15](/jer#Jer.31.15)).\n\n Bethlehem bears the modern name of Beit-Lahm, i.e., “house of flesh.” It is about 5 miles south of Jerusalem, standing at an elevation of about 2,550 feet above the sea, thus 100 feet higher than Jerusalem.\n\n There is a church still existing, built by Constantine the Great (A.D. 330), called the “Church of the Nativity,” over a grotto or cave called the “holy crypt,” and said to be the “stable” in which Jesus was born. This is perhaps the oldest existing Christian church in the world. Close to it is another grotto, where Jerome the Latin father is said to have spent thirty years of his life in translating the Scriptures into Latin."
+   ],
+   "eventsHere": [
+    "recg5KKSE8un6XLe6",
+    "recVRh2awW5WGpXK4",
+    "rec78vW2GDruKkctf"
+   ],
+   "otherNames": [
+    "recX46u00iXp2HIOW",
+    "recTsiqfHAu6vwW3H"
+   ],
+   "nearby": [
+    "recdDLSOObiskYhuJ"
    ]
   }
  },
@@ -769,6 +907,272 @@
   }
  },
  {
+  "id": "recL1WV82pXaRBQ59",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "jerusalem_636",
+   "displayTitle": "Jerusalem",
+   "aliases": "Zion, Jebus, Salem, City of God",
+   "featureType": "City",
+   "precision": "Precise",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "dictionaryLink": "https://www.biblestudytools.com/dictionaries/eastons-bible-dictionary/jerusalem.html",
+   "dictionaryText": " called also Salem, Ariel, Jebus, the \"city of God,\" the \"holy city;\" by the modern Arabs el-Khuds, meaning \"the holy;\" once \"the city of Judah\" ( 2 Chronicles 25:28  ). This name is in the original in the dual form, and means \"possession of peace,\" or \"foundation of peace.\" The dual form probably refers to the two mountains on which it was built, viz., Zion and Moriah; or, as some suppose, to the two parts of the city, the \"upper\" and the \"lower city.\" Jerusalem is a \"mountain city enthroned on a mountain fastness\" (Compare  Psalms 68:15  Psalms 68:16  ;  87:1  ;  125:2  ;  Psalms 76:1  Psalms 76:2  ;  122:3  ). It stands on the edge of one of the highest table-lands in Palestine, and is surrounded on the south-eastern, the southern, and the western sides by deep and precipitous ravines.    It is first mentioned in Scripture under the name Salem ( Genesis 14:18  ; Compare  Psalms 76:2  ). When first mentioned under the name Jerusalem, Adonizedek was its king ( Joshua 10:1  ). It is afterwards named among the cities of Benjamin ( Judges 19:10  ;  1 Chronicles 11:4  ); but in the time of David it was divided between Benjamin and Judah. After the death of Joshua the city was taken and set on fire by the men of Judah ( Judges 1:1-8  ); but the Jebusites were not wholly driven out of it. The city is not again mentioned till we are told that David brought the head of Goliath thither ( 1 Samuel 17:54  ). David afterwards led his forces against the Jebusites still residing within its walls, and drove them out, fixing his own dwelling on Zion, which he called \"the city of David\" ( 2 Samuel 5:5-9  ;  1 Chronicles 11:4-8  ). Here he built an altar to the Lord on the threshing-floor of Araunah the Jebusite ( 2 Samuel 24:15-25  ), and thither he brought up the ark of the covenant and placed it in the new tabernacle which he had prepared for it. Jerusalem now became the capital of the kingdom.    After the death of David, Solomon built the temple, a house for the name of the Lord, on Mount Moriah (B.C. 1010). He also greatly strengthened and adorned the city, and it became the great centre of all the civil and religious affairs of the nation ( Deuteronomy 12:5  ; comp  12:14  ;  14:23  ;  16:11-16  ;  Psalms 122  ).    After the disruption of the kingdom on the accession to the throne of Rehoboam, the son of Solomon, Jerusalem became the capital of the kingdom of the two tribes. It was subsequently often taken and retaken by the Egyptians, the Assyrians, and by the kings of Israel ( 2 Kings 14:13  2 Kings 14:14  ;  2 Kings 18:15  2 Kings 18:16  ;  23:33-35  ;  24:14  ;  2  Chr  12:9  ;   26:9  ;   2 Kings 27:3   2 Kings 27:4  ;   29:3  ;   32:30  ;   33:11  ), till finally, for the abounding iniquities of the nation, after a siege of three years, it was taken and utterly destroyed, its walls razed to the ground, and its temple and palaces consumed by fire, by Nebuchadnezzar, the king of Babylon ( 2 Kings 25  ;  2  Chr.   36  ;  Jeremiah 39  ), B.C. 588. The desolation of the city and the land was completed by the retreat of the principal Jews into Egypt (  Jeremiah 4044  -44), and by the final carrying captive into Babylon of all that still remained in the land ( 52:3  ), so that it was left without an inhabitant (B.C. 582). Compare the predictions,  Deuteronomy 28  ;  Leviticus 26:14-39  .    But the streets and walls of Jerusalem were again to be built, in troublous times ( Daniel 9:16  Daniel 9:19  Daniel 9:25  ), after a captivity of seventy years. This restoration was begun B.C. 536, \"in the first year of Cyrus\" ( Ezra 1:2  Ezra 1:3  Ezra 1:5-11  ). The Books of Ezra and Nehemiah contain the history of the re-building of the city and temple, and the restoration of the kingdom of the Jews, consisting of a portion of all the tribes. The kingdom thus constituted was for two centuries under the dominion of Persia, till B.C. 331; and thereafter, for about a century and a half, under the rulers of the Greek empire in Asia, till B.C. 167. For a century the Jews maintained their independence under native rulers, the Asmonean princes. At the close of this period they fell under the rule of Herod and of members of his family, but practically under Rome, till the time of the destruction of Jerusalem, A.D. 70. The city was then laid in ruins.    The modern Jerusalem by-and-by began to be built over the immense beds of rubbish resulting from the overthrow of the ancient city; and whilst it occupies certainly the same site, there are no evidences that even the lines of its streets are now what they were in the ancient city. Till A.D. 131 the Jews who still lingered about Jerusalem quietly submitted to the Roman sway. But in that year the emperor (Hadrian), in order to hold them in subjection, rebuilt and fortified the city. The Jews, however, took possession of it, having risen under the leadership of one Bar-Chohaba (i.e., \"the son of the star\") in revolt against the Romans. Some four years afterwards (A.D. 135), however, they were driven out of it with great slaughter, and the city was again destroyed; and over its ruins was built a Roman city called Aelia Capitolina, a name which it retained till it fell under the dominion of the Mohammedans, when it was called el-Khuds, i.e., \"the holy.\"    In A.D. 326 Helena, mother of the emperor Constantine, made a pilgrimage to Jerusalem with the view of discovering the places mentioned in the life of our Lord. She caused a church to be built on what was then supposed to be the place of the nativity at Bethlehem. Constantine, animated by her example, searched for the holy sepulchre, and built over the supposed site a magnificent church, which was completed and dedicated A.D. 335. He relaxed the laws against the Jews till this time in force, and permitted them once a year to visit the city and wail over the desolation of \"the holy and beautiful house.\"    In A.D. 614 the Persians, after defeating the Roman forces of the emperor Heraclius, took Jerusalem by storm, and retained it till A.D. 637, when it was taken by the Arabians under the Khalif Omar. It remained in their possession till it passed, in A.D. 960, under the dominion of the Fatimite khalifs of Egypt, and in A.D. 1073 under the Turcomans. In A.D. 1099 the crusader Godfrey of Bouillon took the city from the Moslems with great slaughter, and was elected king of Jerusalem. He converted the Mosque of Omar into a Christian cathedral. During the eighty-eight years which followed, many churches and convents were erected in the holy city. The Church of the Holy Sepulchre was rebuilt during this period, and it alone remains to this day. In A.D. 1187 the sultan Saladin wrested the city from the Christians. From that time to the present day, with few intervals, Jerusalem has remained in the hands of the Moslems. It has, however, during that period been again and again taken and retaken, demolished in great part and rebuilt, no city in the world having passed through so many vicissitudes.    In the year 1850 the Greek and Latin monks residing in Jerusalem had a fierce dispute about the guardianship of what are called the \"holy places.\" In this dispute the emperor Nicholas of Russia sided with the Greeks, and Louis Napoleon, the emperor of the French, with the Latins. This led the Turkish authorities to settle the question in a way unsatisfactory to Russia. Out of this there sprang the Crimean War, which was protracted and sanguinary, but which had important consequences in the way of breaking down the barriers of Turkish exclusiveness.    Modern Jerusalem \"lies near the summit of a broad mountain-ridge, which extends without interruption from the plain of Esdraelon to a line drawn between the southern end of the Dead Sea and the southeastern corner of the Mediterranean.\" This high, uneven table-land is everywhere from 20 to 25 geographical miles in breadth. It was anciently known as the mountains of Ephraim and Judah.    \"Jerusalem is a city of contrasts, and differs widely from Damascus, not merely because it is a stone town in mountains, whilst the latter is a mud city in a plain, but because while in Damascus Moslem religion and Oriental custom are unmixed with any foreign element, in Jerusalem every form of religion, every nationality of East and West, is represented at one time.\"   Jerusalem is first mentioned under that name in the Book of Joshua, and the Tell-el-Amarna collection of tablets includes six letters from its Amorite king to Egypt, recording the attack of the Abiri about B.C. 1480. The name is there spelt Uru-Salim (\"city of peace\"). Another monumental record in which the Holy City is named is that of Sennacherib's attack in B.C. 702. The \"camp of the Assyrians\" was still shown about A.D. 70, on the flat ground to the north-west, included in the new quarter of the city.    The city of David included both the upper city and Millo, and was surrounded by a wall built by David and Solomon, who appear to have restored the original Jebusite fortifications. The name Zion (or Sion) appears to have been, like Ariel (\"the hearth of God\"), a poetical term for Jerusalem, but in the Greek age was more specially used of the Temple hill. The priests' quarter grew up on Ophel, south of the Temple, where also was Solomon's Palace outside the original city of David. The walls of the city were extended by Jotham and Manasseh to include this suburb and the Temple ( 2 Chronicles 27:3  ;  33:14  ).    Jerusalem is now a town of some 50,000 inhabitants, with ancient mediaeval walls, partly on the old lines, but extending less far to the south. The traditional sites, as a rule, were first shown in the 4th and later centuries A.D., and have no authority. The results of excavation have, however, settled most of the disputed questions, the limits of the Temple area, and the course of the old walls having been traced. ",
+   "verseCount": 754,
+   "placeID": 636,
+   "peopleBorn": [
+    "recEg9i0J2MgmkZr8",
+    "recQoq4AXnZxZhOFh",
+    "rec83PZfB7PGjHMh0",
+    "receruzYNFLuIW0Kn",
+    "rectyCDQXPV0r8tal",
+    "recaraSBvlHIwaaOB",
+    "recETOArOcU47Zbug",
+    "recGM8omzST49QfAW",
+    "recLMJPw4B6G5tgZj",
+    "recgqGkjB3fwZwVF2",
+    "reciGkULiubW0Bzb5",
+    "recNlVijtEIdQhAIm",
+    "rec0QYQffoyQAB6HI",
+    "recE0hKis0rQUSZsv",
+    "reczy1Y7fPcD5BDQh",
+    "reckTJIVOYS9ZKKz3",
+    "recO6jj8WG1gFfhIR",
+    "recRVq3v1aG0UAtsg",
+    "recsyU2HqpyE9PeTo",
+    "receirdHjT36JrgKt",
+    "recyNusCmwtrDBSab",
+    "recjmUPCSbEXarzei",
+    "recIk6sWqv4grgo1Z",
+    "recA6SoUZemkcNXbN",
+    "recLr7DncYLE2Jnia",
+    "recNOn1RcB3sCzCnh",
+    "recRMsfahAI4RmTZe",
+    "recmGUzaFR2xi2Fjr",
+    "reclB503V5brNEbjx",
+    "rec5LjGfCEP8klGHt",
+    "recD8WDUZtmlX6anv",
+    "recIAAd2MVLAfQtAW",
+    "recn2SX3r73jFJWhF",
+    "rechVdaexhTWffGwx",
+    "recPb6u81qAX46CYI",
+    "recqQthL4TAHb0KeC",
+    "rec9lmrkS4r7NmjYG",
+    "recG85ZxQmYlj2vnx",
+    "rec6uRtuoTphwfzxH",
+    "rec0pylMTvkkfmwSw",
+    "recvwM6UwmaVMdquV",
+    "rec0BAacWSGBXZ0zI",
+    "rechWXNTz4Lf906rK",
+    "recZOriotFt9GIf6b",
+    "recm7DfqRuXV83jTD",
+    "recg7o6VW80KwLJz7",
+    "rec5naIzF29A8wJIP",
+    "reciAzG2W23BNFFR4"
+   ],
+   "peopleDied": [
+    "recEg9i0J2MgmkZr8",
+    "recMIpVUk92YKxyNs",
+    "recQoq4AXnZxZhOFh",
+    "rec83PZfB7PGjHMh0",
+    "receruzYNFLuIW0Kn",
+    "rectyCDQXPV0r8tal",
+    "recaraSBvlHIwaaOB",
+    "recjyWBYEzNaB2uZC",
+    "recGM8omzST49QfAW",
+    "rec1ZMFtfbEvoGC73",
+    "recNlVijtEIdQhAIm",
+    "reczy1Y7fPcD5BDQh",
+    "recRVq3v1aG0UAtsg",
+    "recsyU2HqpyE9PeTo",
+    "recyNusCmwtrDBSab",
+    "recgkFqZovgbr3pAi",
+    "recA6SoUZemkcNXbN",
+    "recNOn1RcB3sCzCnh",
+    "recRMsfahAI4RmTZe",
+    "rec5LjGfCEP8klGHt",
+    "recD8WDUZtmlX6anv",
+    "recqQthL4TAHb0KeC",
+    "rec0pylMTvkkfmwSw",
+    "rec0BAacWSGBXZ0zI",
+    "recZOriotFt9GIf6b",
+    "recg7o6VW80KwLJz7",
+    "recUipM9EEsnFSZI0"
+   ],
+   "hasBeenHere": "jesus_905, paul_2479, peter_2745, satan_2476, john_1677, barnabas_1722, mary_1938, silas_2740, mark_1679, philip_2347, james_719, philip_2344, andrew_264, thomas_2851, caiaphas_532, matthew_1971, stephen_2802, james_718, lebbaeus_1815, alphaeus_192, annas_269, bartholomew_405, simon_2746, ananias_258, judas_1759, trophimus_2880, agabus_107, ananias_260, gamaliel_1277, matthias_1972, alexander_187, barsabas_1720, john_1678, mnason_2102, nicanor_2203, nicolas_2205, parmenas_2272, prochorus_2371, sapphira_2472, timon_2862",
+   "verses": [],
+   "recogitoUri": "http://dare.ht.lu.se/places/15896",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "church-2,settlement,temple-2",
+   "recogitoLabel": "Ierusalem/Hierosolyma/Col. Aelia Capitolina|Ierusalem/Hierosolyma/Col. Aelia Capitolina, Jerusalem",
+   "recogitoUID": "377645f9-2992-4632-acf3-dec1e07062d3",
+   "eastons": [
+    "recFoDoSDqAKkMCtw"
+   ],
+   "modified": "2026-10-13T20:05:46.000Z",
+   "kjvName": "Jerusalem",
+   "esvName": "Jerusalem",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "J",
+   "slug": "jerusalem_636",
+   "dictText": [
+    "Called also Salem, Ariel, Jebus, the “city of God,” the “holy city;” by the modern Arabs el-Khuds, meaning “the holy;” once “the city of Judah” ([2 Chr. 25:28](/2chr#2Chr.25.28)). This name is in the original in the dual form, and means “possession of peace,” or “foundation of peace.” The dual form probably refers to the two mountains on which it was built, viz., Zion and Moriah; or, as some suppose, to the two parts of the city, the “upper” and the “lower city.” Jerusalem is a “mountain city enthroned on a mountain fastness” (comp. [Ps. 68:15](/ps#Ps.68.15), [16](/ps#Ps.68.16); 87:1; 125:2; 76:1, 2; 122:3). It stands on the edge of one of the highest table-lands in Palestine, and is surrounded on the south-eastern, the southern, and the western sides by deep and precipitous ravines.\n\n It is first mentioned in Scripture under the name Salem ([Gen. 14:18](/gen#Gen.14.18); comp. [Ps. 76:2](/ps#Ps.76.2)). When first mentioned under the name Jerusalem, Adonizedek was its king ([Josh. 10:1](/josh#Josh.10.1)). It is afterwards named among the cities of Benjamin ([Judg. 19:10](/judg#Judg.19.10); [1 Chr. 11:4](/1chr#1Chr.11.4)); but in the time of David it was divided between Benjamin and Judah. After the death of Joshua the city was taken and set on fire by the men of Judah ([Judg. 1:1-8](/judg#Judg.1.1)); but the Jebusites were not wholly driven out of it. The city is not again mentioned till we are told that David brought the head of Goliath thither ([1 Sam. 17:54](/1sam#1Sam.17.54)). David afterwards led his forces against the Jebusites still residing within its walls, and drove them out, fixing his own dwelling on Zion, which he called “the city of David” ([2 Sam. 5:5-9](/2sam#2Sam.5.5); [1 Chr. 11:4-8](/1chr#1Chr.11.4)). Here he built an altar to the Lord on the threshing-floor of Araunah the Jebusite ([2 Sam. 24:15-25](/2sam#2Sam.24.15)), and thither he brought up the ark of the covenant and placed it in the new tabernacle which he had prepared for it. Jerusalem now became the capital of the kingdom.\n\n After the death of David, Solomon built the temple, a house for the name of the Lord, on Mount Moriah (B.C. 1010). He also greatly strengthened and adorned the city, and it became the great centre of all the civil and religious affairs of the nation ([Deut. 12:5](/deut#Deut.12.5); comp. 12:14; 14:23; 16:11-16; [Ps. 122](/ps#Ps.122)).\n\n After the disruption of the kingdom on the accession to the throne of Rehoboam, the son of Solomon, Jerusalem became the capital of the kingdom of the two tribes. It was subsequently often taken and retaken by the Egyptians, the Assyrians, and by the kings of Israel ([2 Kings 14:13](/2kgs#2Kgs.14.13), [14](/2kgs#2Kgs.14.14); 18:15, 16; 23:33-35; 24:14; [2 Chr. 12:9](/2chr#2Chr.12.9); [26:9](/2chr#2Chr.26.9); [27:3](/2chr#2Chr.27.3), [4](/2chr#2Chr.27.4); [29:3](/2chr#2Chr.29.3); [32:30](/2chr#2Chr.32.30); [33:11](/2chr#2Chr.33.11)), till finally, for the abounding iniquities of the nation, after a siege of three years, it was taken and utterly destroyed, its walls razed to the ground, and its temple and palaces consumed by fire, by Nebuchadnezzar, the king of Babylon ([2 Kings 25](/2kgs#2Kgs.25); [2 Chr. 36](/2chr#2Chr.36); [Jer. 39](/jer#Jer.39)), B.C. 588. The desolation of the city and the land was completed by the retreat of the principal Jews into Egypt ([Jer. 40](/jer#Jer.40)-44), and by the final carrying captive into Babylon of all that still remained in the land (52:3), so that it was left without an inhabitant (B.C. 582). Compare the predictions, [Deut. 28](/deut#Deut.28); [Lev. 26:14-39](/lev#Lev.26.14).\n\n But the streets and walls of Jerusalem were again to be built, in troublous times ([Dan. 9:16](/dan#Dan.9.16), [19](/dan#Dan.9.19), [25](/dan#Dan.9.25)), after a captivity of seventy years. This restoration was begun B.C. 536, “in the first year of Cyrus” ([Ezra 1:2](/ezra#Ezra.1.2), [3](/ezra#Ezra.1.3), [5](/ezra#Ezra.1.5)-11). The Books of Ezra and Nehemiah contain the history of the re-building of the city and temple, and the restoration of the kingdom of the Jews, consisting of a portion of all the tribes. The kingdom thus constituted was for two centuries under the dominion of Persia, till B.C. 331; and thereafter, for about a century and a half, under the rulers of the Greek empire in Asia, till B.C. 167. For a century the Jews maintained their independence under native rulers, the Asmonean princes. At the close of this period they fell under the rule of Herod and of members of his family, but practically under Rome, till the time of the destruction of Jerusalem, A.D. 70. The city was then laid in ruins.\n\n The modern Jerusalem by-and-by began to be built over the immense beds of rubbish resulting from the overthrow of the ancient city; and whilst it occupies certainly the same site, there are no evidences that even the lines of its streets are now what they were in the ancient city. Till A.D. 131 the Jews who still lingered about Jerusalem quietly submitted to the Roman sway. But in that year the emperor (Hadrian), in order to hold them in subjection, rebuilt and fortified the city. The Jews, however, took possession of it, having risen under the leadership of one Bar-Chohaba (i.e., “the son of the star”) in revolt against the Romans. Some four years afterwards (A.D. 135), however, they were driven out of it with great slaughter, and the city was again destroyed; and over its ruins was built a Roman city called Aelia Capitolina, a name which it retained till it fell under the dominion of the Mohammedans, when it was called el-Khuds, i.e., “the holy.”\n\n In A.D. 326 Helena, mother of the emperor Constantine, made a pilgrimage to Jerusalem with the view of discovering the places mentioned in the life of our Lord. She caused a church to be built on what was then supposed to be the place of the nativity at Bethlehem. Constantine, animated by her example, searched for the holy sepulchre, and built over the supposed site a magnificent church, which was completed and dedicated A.D. 335. He relaxed the laws against the Jews till this time in force, and permitted them once a year to visit the city and wail over the desolation of “the holy and beautiful house.”\n\n In A.D. 614 the Persians, after defeating the Roman forces of the emperor Heraclius, took Jerusalem by storm, and retained it till A.D. 637, when it was taken by the Arabians under the Khalif Omar. It remained in their possession till it passed, in A.D. 960, under the dominion of the Fatimite khalifs of Egypt, and in A.D. 1073 under the Turcomans. In A.D. 1099 the crusader Godfrey of Bouillon took the city from the Moslems with great slaughter, and was elected king of Jerusalem. He converted the Mosque of Omar into a Christian cathedral. During the eighty-eight years which followed, many churches and convents were erected in the holy city. The Church of the Holy Sepulchre was rebuilt during this period, and it alone remains to this day. In A.D. 1187 the sultan Saladin wrested the city from the Christians. From that time to the present day, with few intervals, Jerusalem has remained in the hands of the Moslems. It has, however, during that period been again and again taken and retaken, demolished in great part and rebuilt, no city in the world having passed through so many vicissitudes.\n\n In the year 1850 the Greek and Latin monks residing in Jerusalem had a fierce dispute about the guardianship of what are called the “holy places.” In this dispute the emperor Nicholas of Russia sided with the Greeks, and Louis Napoleon, the emperor of the French, with the Latins. This led the Turkish authorities to settle the question in a way unsatisfactory to Russia. Out of this there sprang the Crimean War, which was protracted and sanguinary, but which had important consequences in the way of breaking down the barriers of Turkish exclusiveness.\n\n Modern Jerusalem “lies near the summit of a broad mountain-ridge, which extends without interruption from the plain of Esdraelon to a line drawn between the southern end of the Dead Sea and the southeastern corner of the Mediterranean.” This high, uneven table-land is everywhere from 20 to 25 geographical miles in breadth. It was anciently known as the mountains of Ephraim and Judah.\n\n “Jerusalem is a city of contrasts, and differs widely from Damascus, not merely because it is a stone town in mountains, whilst the latter is a mud city in a plain, but because while in Damascus Moslem religion and Oriental custom are unmixed with any foreign element, in Jerusalem every form of religion, every nationality of East and West, is represented at one time.”\n\n Jerusalem is first mentioned under that name in the Book of Joshua, and the Tell-el-Amarna collection of tablets includes six letters from its Amorite king to Egypt, recording the attack of the Abiri about B.C. 1480. The name is there spelt Uru-Salim (“city of peace”). Another monumental record in which the Holy City is named is that of Sennacherib’s attack in B.C. 702. The “camp of the Assyrians” was still shown about A.D. 70, on the flat ground to the north-west, included in the new quarter of the city.\n\n The city of David included both the upper city and Millo, and was surrounded by a wall built by David and Solomon, who appear to have restored the original Jebusite fortifications. The name Zion (or Sion) appears to have been, like Ariel (“the hearth of God”), a poetical term for Jerusalem, but in the Greek age was more specially used of the Temple hill. The priests’ quarter grew up on Ophel, south of the Temple, where also was Solomon’s Palace outside the original city of David. The walls of the city were extended by Jotham and Manasseh to include this suburb and the Temple ([2 Chr. 27:3](/2chr#2Chr.27.3); [33:14](/2chr#2Chr.33.14)).\n\n Jerusalem is now a town of some 50,000 inhabitants, with ancient mediaeval walls, partly on the old lines, but extending less far to the south. The traditional sites, as a rule, were first shown in the 4th and later centuries A.D., and have no authority. The results of excavation have, however, settled most of the disputed questions, the limits of the Temple area, and the course of the old walls having been traced."
+   ],
+   "eventsHere": [
+    "reczDqE366xgbgv2C",
+    "recIu7xhASS4Ufyfd",
+    "recQoK9KFveLh556S",
+    "recVrh6Nbm3PruADf",
+    "rech8qvzNnkDTqCi3",
+    "recNQxwdQFjZidQTP",
+    "rec5Y0EXegwQ5m9mX",
+    "recnjhZVhcbtc7WL0",
+    "recCcRDJtUxaIqXnD",
+    "rec1qE6wAe0XINRoV",
+    "recXUpfeHouc4qLEl",
+    "reclAFi4IpJvlWCDp",
+    "recNZVX1qwBc7F9AU",
+    "recgcZKRVZDvMUMOa",
+    "recVjdJplfI1wSxYk",
+    "reczeOH6wbjkZHP1w",
+    "recNnOBWct1TV6CUZ",
+    "recGlchVqaW39mkY0",
+    "recwmsQ1HEDGztu9O",
+    "recxOoLkd6wFyKysC",
+    "recYE6hOLCtnqejur",
+    "recuV2kc7FiAUIuBQ",
+    "recR2Yyty10Qn41wQ",
+    "rec9DRZs8DbQy0fv5",
+    "rectG8MR4Z2zb8mwZ",
+    "recUWXmZlrKxIx99u",
+    "rec3TOdsAxCr5ADHA",
+    "reczzYTmzPPDcP3qv",
+    "recYlpu8OdsUJoG8g",
+    "rec3u4dUBOoBi5pUx",
+    "recfIqDLtdCqz7N3V",
+    "reczE7xS17Z9mHerq",
+    "recswFKDMGbMahY8n",
+    "recqa3Rn2VGAUlDtq",
+    "rechq7jRwzAypqM7H",
+    "recbJqPiE3mvFuUvn",
+    "recCU4JFzMUcVRqAd",
+    "recKTbnO8VY7lXLeX",
+    "recX0KzMJywvbeM6D",
+    "recDK5FF0d1qrz8sn",
+    "recmEKC9vgAJDYa2z",
+    "recHolFWoWqNqtmup",
+    "recb9vQAySe8NXtZn",
+    "rec8neSzth86PNqvR",
+    "recrLA9xtcQ35mLv1",
+    "recwy2j4O3x7NcWz5",
+    "rec75MawjODD5ju3b",
+    "recOJfWD0IUcT4yJD",
+    "recEOMPybxT6g8y8E",
+    "recglW6zUkkgDVPt9",
+    "recRusMYR5At9TlEV",
+    "rece9FgMugc1bp3tG",
+    "rec1X3krfmWLAKJXU",
+    "recVf3eQjAq3nk94o",
+    "recmY05Xj0sxEcdCh",
+    "reciunQ6bRGaY2gib",
+    "recW2cNLqUyMIV6O7",
+    "reczmi6XtMXALtcNn",
+    "recOtonfrqZVuz2iF",
+    "rec2fX249sj1mmGFr",
+    "recQdRNODeVwWG5Qx",
+    "recISCjAW413V6T1j",
+    "rec8FDMhG6menTpse",
+    "recajWYSuk71jMpgi",
+    "recqe4jV2tmZC9XuG",
+    "rec5EydSXHdbLbzk1",
+    "recZcjp3TlQQqapTX",
+    "recWT2eiDCOXEAbGB",
+    "recD6VSiTfaITZLz4",
+    "recO855E9csJLnyFO",
+    "recs2ESnv8JHoLJNs",
+    "recs1VxMp6PJ11GLW",
+    "recZhxqZJmXuGMdvd",
+    "recBsshyiGaHc6bgC",
+    "recmXmhZt51doQu7o",
+    "rece7YQZcZkN73mF8",
+    "recOZxrWd00qyF4Ej",
+    "recym9Dfibw7KdshX",
+    "rec3IGuoFfX4wwc0u",
+    "recehyRQPiIuEscz4",
+    "recu6M6co9Iaw0Ow5",
+    "recP6WhPl8eV4tavO",
+    "recUlD55WynUKdHAo",
+    "recvsq3X87BSBcInj",
+    "recwQXXtK8ZbnYuIJ"
+   ],
+   "otherNames": [
+    "rec49TXccUxr6Dnhe",
+    "rec3SLjiyY0ddRB03",
+    "recynQnhWEkUNUZRU",
+    "recXmfE7tECVVSN23",
+    "recC8Nf4sI5O2LSMv",
+    "recHLZEykCCOixlEm"
+   ],
+   "partOf": [
+    "recMRitcM5QeA7Q4M",
+    "recM4RAfBVSEH5W7l",
+    "recVs3Ah7KNLdczEe"
+   ],
+   "parts": [
+    "recpnCSwEBvgwIXdu",
+    "rec232gzESK5PLtd0",
+    "recNdvSZuqT39nqz4",
+    "rec6CMR83y25xqFji",
+    "recMaqHhvN1sVoUPs",
+    "recXJTt1RtCp5IWJG",
+    "reco1OMEHTEdSnL1o",
+    "recZwsy0mEhiftoDs",
+    "recAaf40EEWyTLYmo",
+    "recppjCaJndWnPp96",
+    "recxDEP8UZTymLeVj",
+    "recsLU4WRYzdXPnrE",
+    "recZTEJYFgHuZKP2h",
+    "rec8064V4gSQu7kT9",
+    "recjCJINpI08QY5oX",
+    "recDIuscmis4rpWY5",
+    "reckka7zs9Q7wDsVH",
+    "rechN4gu5ltBnuSD2",
+    "rec0jxSkEigFIdFqj",
+    "rechZwu8ZbWlB6fyU",
+    "rece93mlmCa74NCqg",
+    "recu5RJXSosEdwMwl",
+    "recRJO8SWdV2puVLx",
+    "recIF1Q0gHP65ziSy",
+    "recWnxvGvhTaH6YBZ",
+    "recEtYuMAHI6UAK8P",
+    "rechwC9RVeZxnckLq",
+    "recsSXHp8TaXQVDGH",
+    "reclfB8zbauosDusS",
+    "recjf4Aa0zHrkKhlj",
+    "recWMy4BcpoOC3LSr",
+    "reczKwHT81lCIivSq",
+    "recZDZhL8UbjPnNeu",
+    "recMhcqIQlGkgMUZU",
+    "recdamy0rKo9jHoE1",
+    "recRShKfG3aDWnBy5",
+    "recF7TDLi8QE5kF4P"
+   ],
+   "nearby": [
+    "recAt5Dc8ewQhhW5f",
+    "recbBFKI5CVixfoI2",
+    "recSyQJ7fMDS4wAsm",
+    "recOLA4quMGFmyPwG",
+    "recYlTJouLztJii9o",
+    "recruGIaExz1GoMbG",
+    "recZeNEbOWIqV0AmA"
+   ]
+  }
+ },
+ {
   "id": "recbFkcAeBmrPDZvG",
   "createdTime": "2017-09-19T23:40:41.000Z",
   "fields": {
@@ -1004,6 +1408,126 @@
   }
  },
  {
+  "id": "recyFR0y4HsEM2kds",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "moreh_817",
+   "displayTitle": "Moreh (Shechem)",
+   "aliases": "Shechem",
+   "precision": "Rough",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 2,
+   "placeID": 817,
+   "verses": [],
+   "recogitoUri": "http://sws.geonames.org/283366",
+   "recogitoStatus": "UNVERIFIED",
+   "recogitoLabel": "Kafr Qaddūm",
+   "recogitoUID": "a76d0784-fbd1-4560-9091-e22808e84d17",
+   "eastons": [
+    "recqKAEqfFIQEHjGx"
+   ],
+   "modified": "2026-10-13T20:05:40.000Z",
+   "kjvName": "Moreh",
+   "esvName": "Moreh",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "M",
+   "slug": "moreh_817",
+   "dictText": [
+    "A Canaanite probably who inhabited the district south of Shechem, between Mounts Ebal and Gerizim, and gave his name to the “plain” there ([Gen. 12:6](/gen#Gen.12.6)). Here at this “plain,” or rather (R.V.) “oak,” of Moreh, Abraham built his first altar in the land of Palestine; and here the Lord appeared unto him. He afterwards left this plain and moved southward, and pitched his tent between Bethel on the west and Hai on the east ([Gen. 12:7](/gen#Gen.12.7), [8](/gen#Gen.12.8))."
+   ],
+   "eventsHere": [
+    "rechJv1ksZ00ye38i"
+   ],
+   "near": [
+    "recUySlrBva4ffoVs"
+   ]
+  }
+ },
+ {
+  "id": "rec1ET3TBR0oBaWJu",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "mount_hermon_841",
+   "displayTitle": "Mount Hermon",
+   "featureType": "Mountain",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 7,
+   "placeID": 841,
+   "verses": [],
+   "recogitoUri": "http://dare.ht.lu.se/places/41235",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "mountain",
+   "recogitoLabel": "Hermon M.|Hermon Mons, Jabal al-Shaykh",
+   "recogitoUID": "b0d7c73d-0bce-469b-8c24-f93f09af7a1e",
+   "modified": "2026-10-13T19:35:53.000Z",
+   "kjvName": "mount Hermon",
+   "esvName": "Mount Hermon",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "M",
+   "slug": "mount_hermon_841",
+   "eventsHere": [
+    "recbbehq3RkfnSmCE",
+    "recXhKGCw4B1CjXQB"
+   ],
+   "otherNames": [
+    "recl43rvNqfYRmsyj",
+    "recIyQIm2LMXScx0M",
+    "recWQDkxXj0IjAdkn",
+    "recrpaouE7oxrv5jy",
+    "recCrwfh0wZHipZnN"
+   ]
+  }
+ },
+ {
+  "id": "recsX4et9ux7g07Zg",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "negeb_885",
+   "displayTitle": "Negeb",
+   "featureType": "Region",
+   "precision": "Related-Surrounding",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 36,
+   "placeID": 885,
+   "verses": [],
+   "recogitoUri": "http://pleiades.stoa.org/places/687985",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "labeled feature",
+   "recogitoLabel": "Negev",
+   "recogitoUID": "79f965bc-9e97-469e-a345-3f4d4b978bbb",
+   "eastons": [
+    "recCR3M8adKcb3cGe"
+   ],
+   "modified": "2026-10-13T19:35:54.000Z",
+   "kjvName": "Negeb",
+   "esvName": "Negeb",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "N",
+   "slug": "negeb_885",
+   "dictText": [
+    "Heb. Negeb, that arid district to the south of Palestine through which lay the caravan route from Central Palestine to Egypt ([Gen. 12:9](/gen#Gen.12.9); [13:1](/gen#Gen.13.1), [3](/gen#Gen.13.3); [46:1-6](/gen#Gen.46.1)). “The Negeb comprised a considerable but irregularly-shaped tract of country, its main portion stretching from the mountains and lowlands of Judah in the north to the mountains of Azazemeh in the south, and from the Dead Sea and southern Ghoron the east to the Mediterranean on the west.” In [Ezek. 20:46](/ezek#Ezek.20.46) (21:1 in Heb.) three different Hebrew words are all rendered “south.” (1) “Set thy face toward the south” (Teman, the region on the right, [1 Sam. 33:24](/1sam#1Sam.33.24)); (2) “Drop thy word toward the south” (Negeb, the region of dryness, [Josh. 15:4](/josh#Josh.15.4)); (3) “Prophesy against the forest of the south field” (Darom, the region of brightness, [Deut. 33:23](/deut#Deut.33.23)). In [Job 37:9](/job#Job.37.9) the word “south” is literally “chamber,” used here in the sense of treasury (comp. 38:22; [Ps. 135:7](/ps#Ps.135.7)). This verse is rendered in the Revised Version “out of the chamber of the south.”"
+   ],
+   "eventsHere": [
+    "rechJv1ksZ00ye38i"
+   ],
+   "otherNames": [
+    "recItoooL8TKSOT5p"
+   ]
+  }
+ },
+ {
   "id": "recrEteYtMZW1c46t",
   "createdTime": "2017-09-19T23:40:41.000Z",
   "fields": {
@@ -1183,6 +1707,56 @@
    ],
    "canonicalPlace": [
     "recE3qR8iDUqdkAuw"
+   ]
+  }
+ },
+ {
+  "id": "recUySlrBva4ffoVs",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "shechem_1069",
+   "displayTitle": "Shechem",
+   "aliases": "Moreh",
+   "featureType": "City",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 40,
+   "placeID": 1069,
+   "verses": [],
+   "recogitoUri": "http://sws.geonames.org/282615",
+   "recogitoStatus": "VERIFIED",
+   "recogitoLabel": "Nablus",
+   "recogitoUID": "faa814f8-a474-4df9-9352-d45c44880556",
+   "eastons": [
+    "recLrEOyGPYK5n7fi"
+   ],
+   "modified": "2026-10-13T20:05:43.000Z",
+   "kjvName": "Shechem",
+   "esvName": "Shechem",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "S",
+   "slug": "shechem_1069",
+   "dictText": [
+    "A city in Samaria ([Gen. 33:18](/gen#Gen.33.18)), called also Sichem (12:6), Sychem ([Acts 7:16](/acts#Acts.7.16)). It stood in the narrow sheltered valley between Ebal on the north and Gerizim on the south, these mountains at their base being only some 500 yards apart. Here Abraham pitched his tent and built his first altar in the Promised Land, and received the first divine promise ([Gen. 12:6](/gen#Gen.12.6), [7](/gen#Gen.12.7)). Here also Jacob “bought a parcel of a field at the hands of the children of Hamor” after his return from Mesopotamia, and settled with his household, which he purged from idolatry by burying the teraphim of his followers under an oak tree, which was afterwards called “the oak of the sorcerer” ([Gen. 33:19](/gen#Gen.33.19); [35:4](/gen#Gen.35.4); [Judg. 9:37](/judg#Judg.9.37)). Here too, after a while, he dug a well, which bears his name to this day ([John 4:5](/john#John.4.5), [39-42](/john#John.4.39)). To Shechem Joshua gathered all Israel “before God,” and delivered to them his second parting address ([Josh. 24:1-15](/josh#Josh.24.1)). He “made a covenant with the people that day” at the very place where, on first entering the land, they had responded to the law from Ebal and Gerizim ([Josh. 24:25](/josh#Josh.24.25)), the terms of which were recorded “in the book of the law of God”, i.e., in the roll of the law of Moses; and in memory of this solemn transaction a great stone was set up “under an oak” (comp. [Gen. 28:18](/gen#Gen.28.18); [31:44-48](/gen#Gen.31.44); [Ex. 24:4](/exod#Exod.24.4); [Josh. 4:3](/josh#Josh.4.3), [8](/josh#Josh.4.8), [9](/josh#Josh.4.9)), possibly the old “oak of Moreh,” as a silent witness of the transaction to all coming time.\n\n Shechem became one of the cities of refuge, the central city of refuge for Western Palestine ([Josh. 20:7](/josh#Josh.20.7)), and here the bones of Joseph were buried (24:32). Rehoboam was appointed king in Shechem ([1 Kings 12:1](/1kgs#1Kgs.12.1), [19](/1kgs#1Kgs.12.19)), but Jeroboam afterwards took up his residence here. This city is mentioned in connection with our Lord’s conversation with the woman of Samaria ([John 4:5](/john#John.4.5)); and thus, remaining as it does to the present day, it is one of the oldest cities of the world. It is the modern Nablus, a contraction for Neapolis, the name given to it by Vespasian. It lies about a mile and a half up the valley on its southern slope, and on the north of Gerizim, which rises about 1,100 feet above it, and is about 34 miles north of Jerusalem. It contains about 10,000 inhabitants, of whom about 160 are Samaritans and 100 Jews, the rest being Christians and Mohammedans.\n\n The site of Shechem is said to be of unrivalled beauty. Stanley says it is “the most beautiful, perhaps the only very beautiful, spot in Central Palestine.”\n\n Gaza, near Shechem, only mentioned [1 Chr. 7:28](/1chr#1Chr.7.28), has entirely disappeared. It was destroyed at the time of the Conquest, and its place was taken by Shechem."
+   ],
+   "eventsHere": [
+    "rechJv1ksZ00ye38i"
+   ],
+   "otherNames": [
+    "recrQGkK6uDl8hxAn"
+   ],
+   "partOf": [
+    "recB4j4FGhLQPCbqw"
+   ],
+   "parts": [
+    "recnw5UrjW4YHoSY8"
+   ],
+   "nearby": [
+    "recAjiz44mVed43zg",
+    "recyFR0y4HsEM2kds"
    ]
   }
  },

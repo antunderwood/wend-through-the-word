@@ -6,7 +6,7 @@ first (best) identification; there is no fall back to a lower one. Its confidenc
 identification's `score.time_total` (decision 60). Theographic coordinates never ship (decision 41).
 
 A dropped point (OpenStreetMap, commercial, or Google) is looked up again, offline, in Pleiades,
-then Wikidata, then GeoNames, by the IDs its OpenBible location cites (decisions 68 to 71).
+then Wikidata, then GeoNames, by the IDs its OpenBible location cites (decisions 75 to 78).
 """
 
 import csv

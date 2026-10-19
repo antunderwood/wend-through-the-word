@@ -164,7 +164,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Date checked: 2026-10-19.
 - Conditions: attribution to Pleiades and its contributors, with a link. The datasets README says: "we encourage use and citation of numbered releases". Record the release number we use.
 - Notes: the PRD says "CC BY" with no version. The version is 3.0.
-- Download: the daily locations dump, https://atlantides.org/downloads/pleiades/dumps/pleiades-locations-latest.csv.gz. It has no release number, so the manifest's date and SHA-256 identify the version we use. Some Pleiades locations are based on OpenStreetMap, and a place's own point blends them in; the build uses only the other locations (decision 70).
+- Download: the daily locations dump, https://atlantides.org/downloads/pleiades/dumps/pleiades-locations-latest.csv.gz. It has no release number, so the manifest's date and SHA-256 identify the version we use. Some Pleiades locations are based on OpenStreetMap, and a place's own point blends them in; the build uses only the other locations (decision 77).
 
 ### 3.7 Wikidata
 
@@ -176,7 +176,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Date checked: 2026-10-19.
 - Conditions: none. We still record Wikidata as the source of each coordinate.
 - Notes: coordinates (property P625) are structured data, so they are CC0. Wikidata's licence statement does not tell us where each value came from, so the build checks the references on each coordinate (decisions 43 and 58). Limitation: a coordinate "imported from" a Wikipedia may itself have come from OpenStreetMap; its reference cannot show that.
-- Download: one SPARQL query to https://query.wikidata.org/sparql, saved as `wikidata-coords.json` (decision 69).
+- Download: one SPARQL query to https://query.wikidata.org/sparql, saved as `wikidata-coords.json` (decision 76).
 
 ### 3.8 GeoNames
 
@@ -189,7 +189,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
   - Export page, "Terms and Conditions": "You should give credit to GeoNames when using data or web services with a link or another reference to GeoNames." and "commercial usage is allowed".
 - Date checked: 2026-10-19.
 - Conditions: credit GeoNames with a link.
-- Notes: the free web service has a limit: "10,000 credits daily limit per application (identified by the parameter 'username'), the hourly limit is 1000 credits." This does not apply: `download` uses the dump files, one per country for 22 Bible lands plus `no-country.zip` (decision 69).
+- Notes: the free web service has a limit: "10,000 credits daily limit per application (identified by the parameter 'username'), the hourly limit is 1000 credits." This does not apply: `download` uses the dump files, one per country for 22 Bible lands plus `no-country.zip` (decision 76).
 
 ### 3.9 STEPBible TIPNR
 
@@ -259,7 +259,7 @@ The mapping from the licence statement to fields is our reading of the field doc
 - A location with no `coordinates_source` takes its point from its `root` location, so the build checks the root by the same rules.
 - It ships points only. No geometry files ship.
 - It drops points whose source is a Wikidata item with a coordinate that cites OpenStreetMap (decision 58).
-- It looks up dropped places in Pleiades, then Wikidata, then GeoNames (decisions 68 to 71). Each coordinate records `coord_source`. It skips Pleiades locations based on OpenStreetMap and Wikidata coordinates whose reference cites OpenStreetMap (decision 43).
+- It looks up dropped places in Pleiades, then Wikidata, then GeoNames (decisions 75 to 78). Each coordinate records `coord_source`. It skips Pleiades locations based on OpenStreetMap and Wikidata coordinates whose reference cites OpenStreetMap (decision 43).
 - A test fails if any shipped coordinate has an OpenStreetMap source (spec, user story 49).
 
 ### Why

@@ -20,8 +20,14 @@ def genesis(tmp_path_factory):
     return run_build(tmp_path_factory.mktemp("genesis") / "out", sources=SOURCES, books=["Gen"])
 
 
+def chapter_files(genesis):
+    """The Genesis chapter files, without their Ring 2 sidecars."""
+    files = (genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json")
+    return [p for p in files if not p.name.endswith(".ring2.json")]
+
+
 def test_genesis_has_50_chapters_and_1533_verses(genesis):
-    chapters = list((genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json"))
+    chapters = chapter_files(genesis)
     assert len(chapters) == 50
     assert sum(len(read_json(p)["verses"]) for p in chapters) == 1533
     assert read_json(genesis / "data" / "index.json")["counts"] == {"chapters": 50, "verses": 1533}
@@ -31,14 +37,53 @@ def test_every_genesis_file_is_below_500_kb(genesis):
     assert all(p.stat().st_size < 500 * 1000 for p in (genesis / "data").rglob("*.json"))
 
 
-def test_genesis_has_one_file_for_each_entity_in_range(genesis):
+def test_genesis_has_one_file_for_each_entity_in_range_and_each_stub(genesis):
     entity = genesis / "data" / VERSION / "entity"
-    counts = {d.name: len(list(d.glob("*.json"))) for d in entity.iterdir()}
-    assert counts == {"person": 352, "place": 119, "event": 116}
+    files = [read_json(p) for p in entity.rglob("*.json")]
+    in_range = Counter(e["type"] for e in files if e["verses"])
+    assert in_range == {"person": 352, "place": 119, "event": 116}
+    # Stubs: Entities with no Genesis verse that an explicit edge links to Genesis (decision 51).
+    stubs = Counter(e["type"] for e in files if not e["verses"])
+    # Only People (family edges) and People Groups (MEMBER_OF) ship as stubs.
+    assert stubs == {"person": 84, "group": 14}
+
+
+def test_genesis_half_siblings_are_the_242_links_theographic_gives(genesis):
+    entity = genesis / "data" / VERSION / "entity"
+    files = [read_json(p) for p in entity.rglob("*.json")]
+    half = [x for e in files for n in e["neighbours"] for x in n["edges"]]
+    assert sum(x["edge"] == "HALF_SIBLING_OF" for x in half) == 242
+    isaac = read_json(entity / "person" / "isaac_616.json")
+    assert sorted(
+        n["id"] for n in isaac["neighbours"] if n["edges"][0]["edge"] == "HALF_SIBLING_OF"
+    ) == [
+        "person:ishbak_620",
+        "person:ishmael_630",
+        "person:jokshan_1685",
+        "person:medan_1978",
+        "person:midian_2075",
+        "person:shuah_2727",
+        "person:zimran_3086",
+    ]
+
+
+def test_genesis_drops_only_edges_to_places_and_events_outside_the_range(genesis):
+    rows = read_tsv(genesis / "reports" / "dropped_edges.tsv")
+    assert Counter(r["field"] for r in rows) == {
+        "participants": 135,
+        "locations": 44,
+        "birthPlace": 16,
+        "deathPlace": 1,
+    }
+    assert all("outside the book range" in r["cause"] for r in rows)
+
+
+def test_genesis_lists_23_uncurated_partner_pairs(genesis):
+    assert len(read_tsv(genesis / "reports" / "uncurated_partners.tsv")) == 23
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
-    chapters = (genesis / "data" / VERSION / "chapter" / "Gen").glob("*.json")
+    chapters = chapter_files(genesis)
     mentions = [m for p in chapters for v in read_json(p)["verses"] for m in v["mentions"]]
     assert len(mentions) == 3348
     rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
@@ -79,3 +124,15 @@ def test_every_dropped_genesis_point_is_re_sourced(genesis):
     assert sources == {"OpenBible": 64, "Pleiades": 17, "Wikidata": 28, "GeoNames": 2}
     euphrates = read_json(genesis / "data" / VERSION / "entity" / "place" / "euphrates_421.json")
     assert euphrates["coord_source"] == "Pleiades"
+
+
+def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesis):
+    # 13,327 OpenBible rows start in Genesis and 11,300 point to Genesis (decision 52: a range
+    # counts at its first verse). A row with both ends in Genesis is in two Verses.
+    chapters = chapter_files(genesis)
+    verses = [v for p in chapters for v in read_json(p)["verses"]]
+    edges = [e for v in verses for n in v["cross_references"] for e in n["edges"]]
+    assert len(edges) == 13327 + 11300
+    assert not read_tsv(genesis / "reports" / "split_or_trimmed.tsv")
+    rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
+    assert not [r for r in rows if "cross-reference" in r["cause"]]

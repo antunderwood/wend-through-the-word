@@ -7,6 +7,40 @@
    "links": [
     {
      "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/city-ai"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/ai_36/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/aiath_38/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/aija_39/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a7e13e1"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/665310877"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q403166"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
      "identifier": "https://www.digitalmanna.org/encyclopedia/places/assyria"
     },
     {
@@ -154,6 +188,86 @@
     {
      "type": "seeAlso",
      "identifier": "https://www.openbible.info/geo/ancient/aa3ff18"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/bethel-of-benjamin"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/aven_121/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/beth-aven_191/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/bethel_202/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/bochim_252/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/el-bethel_367/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/luz_737/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a64f355"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/260940008"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q3876767"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/bethlehem-of-judah"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/bethlehem_218/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/bethlehem_ephrathah_220/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/ephrath_403/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a112427"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/687856"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q5776"
     }
    ]
   },
@@ -455,6 +569,48 @@
    "links": [
     {
      "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/jerusalem"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/jerusalem_636/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/ariel_89/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/lord_303/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/jebus_629/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/salem_1018/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a15257a"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/687928"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q1218"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
      "identifier": "https://www.digitalmanna.org/encyclopedia/places/kadesh-barnea"
     },
     {
@@ -581,6 +737,70 @@
    "links": [
     {
      "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/moreh-near-shechem"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/moreh_817/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a38ad9f"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/hermon"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/mount_hermon_841/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/senir_1047/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/mount_sion_856/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/sirion_1101/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/hermon_564/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/mount_baalhermon_829/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a341fe8"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/678181"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q215471"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
      "identifier": "https://www.digitalmanna.org/encyclopedia/places/seir"
     },
     {
@@ -602,6 +822,36 @@
     {
      "type": "seeAlso",
      "identifier": "https://www.openbible.info/geo/ancient/a2735ff"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/negeb"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/negeb_885/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/south_1110/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a1cb244"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/687985"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q162843"
     }
    ]
   },
@@ -690,6 +940,36 @@
     {
      "type": "seeAlso",
      "identifier": "https://www.openbible.info/geo/ancient/a17e154"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/shechem"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/shechem_1069/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/shechem_1178/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/adf74d4"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/678403"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q7951237"
     }
    ]
   },

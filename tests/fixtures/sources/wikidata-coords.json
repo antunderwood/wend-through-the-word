@@ -45,6 +45,34 @@
    {
     "geonames": {
      "type": "literal",
+     "value": "169612"
+    },
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q215471"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "33.4"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.85"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/q215471-BDDEB0FD-8FEB-4C79-9FC1-3A248549942D"
+    }
+   },
+   {
+    "geonames": {
+     "type": "literal",
      "value": "247858"
     },
     "item": {
@@ -268,6 +296,62 @@
     "st": {
      "type": "uri",
      "value": "http://www.wikidata.org/entity/statement/Q35242037-A2BBF4F7-6F87-4A33-ACD1-6C325026309D"
+    }
+   },
+   {
+    "geonames": {
+     "type": "literal",
+     "value": "284198"
+    },
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q6583605"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.9225"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.244722222222"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q6583605-ab3a8d69-4965-be4c-8ef5-ffac56a95f1f"
+    }
+   },
+   {
+    "geonames": {
+     "type": "literal",
+     "value": "285108"
+    },
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q311326"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.905141666667"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.214958333333"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/q311326-E106EB6C-302E-45DD-A50D-57C005D22E95"
     }
    },
    {
@@ -1313,6 +1397,38 @@
    {
     "geonames": {
      "type": "literal",
+     "value": "8075635"
+    },
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q194504"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.704305555556"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.207583333333"
+    },
+    "pleiades": {
+     "type": "literal",
+     "value": "211190325"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/q194504-C3E1F82D-E34A-4529-A284-4E8E8B5CF93C"
+    }
+   },
+   {
+    "geonames": {
+     "type": "literal",
      "value": "8367629"
     },
     "item": {
@@ -1400,6 +1516,30 @@
     "st": {
      "type": "uri",
      "value": "http://www.wikidata.org/entity/statement/q5699-148A1576-C675-4120-A3D6-52968CEAE95A"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q107039162"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.8972132"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.22909882"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q107039162-f5f3de66-452f-eb15-800d-13d0113495cf"
     }
    },
    {
@@ -1639,7 +1779,79 @@
    {
     "item": {
      "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q3876767"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.922777777778"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.241388888889"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q3876767-27930352-84BE-4E5A-A2DD-434A577CD7E7"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q403166"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.916944444444"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.261111111111"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/q403166-D34EA31D-F57D-4D69-9561-BD489ED61730"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
      "value": "http://www.wikidata.org/entity/Q49371526"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q5402334"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "31.916667"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.288333"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q5402334-5F780840-697C-4C8A-9865-0C8CC484BFD1"
     }
    },
    {
@@ -1688,6 +1900,58 @@
     "st": {
      "type": "uri",
      "value": "http://www.wikidata.org/entity/statement/Q70786350-0A9CA9BF-FA05-4E59-A767-B400E9CDD278"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q7697383"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "32.213618"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.281993"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q7697383-ACEC4D92-BCB1-4C31-A6FD-8CB2F0283883"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q7951237"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "32.21361111"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.28194444"
+    },
+    "pleiades": {
+     "type": "literal",
+     "value": "678403"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q7951237-AFA59FF9-4736-4B4F-9A91-0C69741B5E55"
     }
    },
    {
