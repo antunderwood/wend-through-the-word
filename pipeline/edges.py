@@ -76,12 +76,13 @@ def load(b):
             b.report("dropped_edges", record=record, field=field, link=link, cause=OUTSIDE)
             del edges[key]
     by_id = {r[3]: r for r in records.values()}
+    titles = {rec: r[2].get("displayTitle") for rec, r in records.items()}
     for end in stubs:
         kind, source, f, _ = by_id[end]
         b.entities[end] = {
             "id": end,
             "type": kind,
-            **facts(kind, f),
+            **facts(kind, f, titles),
             "source": "Theographic",
             "licence": b.licence(source),
             "verses": [],
