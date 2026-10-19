@@ -813,7 +813,9 @@ document.addEventListener("click", e => {
   if (!t) return;
   e.preventDefault();
   const act = t.dataset.act, id = t.dataset.id;
-  if (!act && t.closest("#results")) return makeFocus(id); // a search result moves the Focus at once
+  if (!act && t.closest("#results")) { // a search result moves the Focus at once, then the list closes
+    $("#q").value = ""; renderSearch(); return makeFocus(id);
+  }
   if (!act) return clickNode(id, !!t.closest("#pList"));
   if (act === "makeFocus") makeFocus(id);
   else if (act === "pin" || act === "unpin") dispatch({ type: act, id });
@@ -859,7 +861,7 @@ function renderSearch() {
 $("#q").addEventListener("input", renderSearch);
 $("#q").addEventListener("keydown", e => {
   const first = $("#results a");
-  if (e.key === "Enter" && first) makeFocus(first.dataset.id);
+  if (e.key === "Enter" && first) { const id = first.dataset.id; e.target.value = ""; renderSearch(); makeFocus(id); }
   if (e.key === "Escape") { e.target.value = ""; renderSearch(); }
 });
 
