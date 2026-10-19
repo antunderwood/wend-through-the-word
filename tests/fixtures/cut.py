@@ -280,6 +280,84 @@ for r in locations:
     writer.writerow(r)
 (dest / PLEIADES).write_bytes(gzip.compress(out.getvalue().encode(), mtime=0))
 
+# Nave's (#12): the headings that file a kept verse, with only their references to verses in
+# verses.json (cutting a range that leaves the fixture). Lines with no reference are kept as
+# they are; a line whose references are all cut is dropped. A whole chapter stays when it is a
+# kept chapter, so the build can skip and report it (decision 59).
+NAVES = "NavesTopicalDictionary.csv"
+CODES = (
+    "GEN EXO LEV NUM DEU JOS JDG RUT 1SA 2SA 1KI 2KI 1CH 2CH EZR NEH EST JOB PSA PRO ECC So ISA "
+    "JER LAM EZK DAN HOS JOL AMO OBA JON MIC NAM HAB ZEP HAG ZEC MAL MAT MRK LUK JHN ACT ROM 1CO "
+    "2CO GAL EPH PHP COL 1TH 2TH 1TI 2TI TIT PHM HEB JAS 1PE 2PE 1JN 2JN 3JN Jude REV"
+)
+all_books = json.loads((src / "books.json").read_text())  # in Bible order
+osis = dict(zip(CODES.split(), [r["fields"]["osisName"] for r in all_books]))
+SEG = r"\d+(?::\d+(?:-\d+(?::\d+)?)?(?:,\d+(?:-\d+)?)*)?(?!\w)"  # not the "1" of "; 1CO"
+REF = re.compile(rf"\b({'|'.join(osis)}) ({SEG}(?:; (?:with )?{SEG})*)")
+fixture_refs = kept_refs | outside
+
+
+def cut_refs(m):
+    """The reference list of match `m` with only what the fixture holds, or "" for none."""
+    book, segs = osis[m[1]], []
+    for seg in re.split(r"; (?:with )?", m[2]):
+        ch, _, items = seg.partition(":")
+        if not items:
+            segs += [ch] if int(ch) in CHAPTERS.get(book, ()) else []
+            continue
+        kept_items = []
+        for item in items.split(","):
+            first, _, last = item.partition("-")
+            span = range(int(first), int(last or first) + 1) if ":" not in last else []
+            if span and all(f"{book}.{ch}.{v}" in fixture_refs for v in span):
+                kept_items.append(item)
+        segs += [f"{ch}:{','.join(kept_items)}"] if kept_items else []
+    return f"{m[1]} {'; '.join(segs)}" if segs else ""
+
+
+def cut_line(line):
+    """The line's text before its first reference, then the references the fixture holds, or
+    None when it had references and none are left."""
+    matches = list(REF.finditer(line))
+    if not matches:
+        return line
+    refs = [r for r in map(cut_refs, matches) if r]
+    return f"{line[: matches[0].start()]}{'; '.join(refs)}" if refs else None
+
+
+def files_kept_verse(line):
+    return any(
+        f"{osis[m[1]]}.{ch}.{v}" in kept
+        for m in REF.finditer(line)
+        for seg in re.split(r"; (?:with )?", m[2])
+        for ch, _, items in [seg.partition(":")]
+        for item in items.split(",")
+        if items and ":" not in item.partition("-")[2]
+        for first, _, last in [item.partition("-")]
+        for v in range(int(first), int(last or first) + 1)
+    )
+
+
+SEE_ONLY = "ACCOUNTABILITY"  # a heading with only "See" lines (decision 61)
+# Synthetic: a range across chapters and a verse that does not exist (Genesis 11 has 32).
+NAVES_SYNTHETIC = {"BIRTHRIGHT": "-Synthetic test line GEN 25:33-26:1; 11:33"}
+with open(src / NAVES, encoding="utf-8-sig", newline="") as f:
+    naves = list(csv.DictReader(f))
+out = io.StringIO()
+writer = csv.DictWriter(out, ["section", "subject", "entry"], lineterminator="\n")
+writer.writeheader()
+for r in naves:
+    lines = r["entry"].split("\n")
+    if r["subject"] != SEE_ONLY and not any(map(files_kept_verse, lines)):
+        continue
+    lines = [cut_line(line) for line in lines]
+    lines = [line for line in lines if line is not None]
+    if r["subject"] in NAVES_SYNTHETIC:
+        lines.append(NAVES_SYNTHETIC[r["subject"]])
+    r["entry"] = "\n".join(lines)
+    writer.writerow(r)
+(dest / NAVES).write_text(out.getvalue(), encoding="utf-8-sig")
+
 for zip_path in sorted(src.glob("*.zip")):
     if zip_path.name == "cross-references.zip":
         continue

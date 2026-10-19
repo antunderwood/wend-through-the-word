@@ -117,22 +117,22 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
     for path in (export / "data" / VERSION / "chapter").rglob("*.ring2.json"):
         verses = read_json(path.with_name(path.name.replace(".ring2", "")))["verses"]
         sidecar = read_json(path)
-        mentioned = {m["id"] for v in verses for m in v["mentions"]}
+        mentioned = {m["id"] for v in verses for m in v["mentions"] + v["filed_under"]}
         assert mentioned <= sidecar["ring2"].keys(), path.name
         for node in mentioned:
             top = files[node]["neighbours"][:10]
             assert sidecar["ring2"][node] == [{"id": n["id"], "weight": n["weight"]} for n in top]
     gen11 = read_json(export / "data" / VERSION / "chapter" / "Gen" / "11.ring2.json")
-    # Cross-references come from OpenBible.info; Entity Neighbours from Theographic and the
-    # curated tables (Abraham and Sarah's SPOUSE_OF).
+    # Cross-references come from OpenBible.info; Entity Neighbours from Theographic, Nave's
+    # (Co-mentions with Themes), and the curated tables (Abraham and Sarah's SPOUSE_OF).
     assert (gen11["source"], gen11["licence"]) == (
-        "Curated; OpenBible.info; Theographic",
+        "Curated; Nave's Topical Bible; OpenBible.info; Theographic",
         "CC BY 4.0; CC BY-SA 4.0",
     )
 
 
 def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(export, tmp_path):
-    small = run_build(tmp_path / "out", size_limit=15000)
+    small = run_build(tmp_path / "out", size_limit=40000)  # Gen 26 Ring 2 is about 58 KB
     path = f"data/{VERSION}/chapter/Gen/26.ring2.json"
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [r["action"] for r in rows if r["path"] == path] == ["trimmed"]

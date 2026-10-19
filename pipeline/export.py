@@ -20,8 +20,9 @@ def write(b):
         ring1 = {n["id"] for v in verses for n in v["cross_references"]}
         ring2 = {key: list(b.ring2[key]) for key in ring1}
         sources = {("OpenBible.info", b.licence("crossrefs"))} if ring1 else set()
-        # Every Entity a Verse mentions is in its Ring 1 too (decision 96).
-        for entity_id in {m["id"] for v in verses for m in v["mentions"]}:
+        # Every Entity a Verse mentions, and every Theme it is filed under, is in its Ring 1 too
+        # (decision 96).
+        for entity_id in {m["id"] for v in verses for m in v["mentions"] + v["filed_under"]}:
             ring2[entity_id] = b.top[entity_id]
             sources |= {
                 (x["source"], x["licence"])

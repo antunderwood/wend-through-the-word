@@ -16,10 +16,11 @@ K = 6  # default number of Neighbours of each type in Ring 1 (PRD 10.4 rule 1)
 
 
 def joined(pairs):
-    """Source and licence of an item derived from several (source, licence) pairs."""
+    """Source and licence of an item derived from several (source, licence) pairs. A pair may
+    already be joined (a CO_MENTION's), so each is split again."""
     return {
-        "source": "; ".join(sorted({s for s, _ in pairs})),
-        "licence": "; ".join(sorted({lic for _, lic in pairs})),
+        "source": "; ".join(sorted({x for s, _ in pairs for x in s.split("; ")})),
+        "licence": "; ".join(sorted({x for _, lic in pairs for x in lic.split("; ")})),
     }
 
 
@@ -33,7 +34,7 @@ def load(b):
     for ids in in_verse.values():
         shared.update(combinations(sorted(ids), 2))
 
-    # Source and licence of each Entity's Verse links: Mentions, and Filed Under once Themes ship
+    # Source and licence of each Entity's Verse links: Mentions, or Filed Under for a Theme
     provenance = {
         e["id"]: {(v["source"], v["licence"]) for v in e["verses"]} for e in b.entities.values()
     }

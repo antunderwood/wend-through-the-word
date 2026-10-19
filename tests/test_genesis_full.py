@@ -48,7 +48,7 @@ def test_genesis_has_one_file_for_each_entity_in_range_and_each_stub(genesis):
     entity = genesis / "data" / VERSION / "entity"
     files = [read_json(p) for p in entity.rglob("*.json")]
     in_range = Counter(e["type"] for e in files if e["verses"])
-    assert in_range == {"person": 352, "place": 119, "event": 116}
+    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 567}
     # Stubs: Entities with no Genesis verse that an explicit edge links to Genesis (decision 51).
     stubs = Counter(e["type"] for e in files if not e["verses"])
     # Only People (family edges) and People Groups (MEMBER_OF) ship as stubs.
@@ -196,6 +196,32 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
         "person:nahor_2143",
         "person:lot_1830",
     ]
+
+
+def test_genesis_themes_file_5414_verses_and_none_has_a_person_or_place_name(genesis):
+    entity = genesis / "data" / VERSION / "entity"
+    verses = [v for p in chapter_files(genesis) for v in read_json(p)["verses"]]
+    assert sum(len(v["filed_under"]) for v in verses) == 5414
+
+    # PRD 12.13: no Theme has the name of a Theographic Person or Place ("Jacob (Israel)" is
+    # Jacob). Headings that match only an alias, or part of the heading, are kept and reported.
+    def norm(name):
+        return re.sub(r"[^a-z]", "", name.lower())
+
+    names = {
+        norm(re.sub(r"\s*\(.*\)$", "", read_json(p)["name"]))
+        for kind in ("person", "place")
+        for p in entity.glob(f"{kind}/*.json")
+    }
+    themes = [read_json(p)["name"] for p in (entity / "theme").glob("*.json")]
+    assert len(themes) == 567
+    assert not [t for t in themes if norm(t) in names]
+    rows = read_tsv(genesis / "reports" / "removed_theme_headings.tsv")
+    assert Counter((r["action"], r["match"]) for r in rows) == {
+        ("removed", "name"): 382,
+        ("kept", "alias"): 31,
+        ("kept", "part of the heading"): 2,
+    }
 
 
 def test_genesis_tipnr_check_reports_48_disagreements(genesis):
