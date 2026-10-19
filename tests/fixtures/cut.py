@@ -91,6 +91,10 @@ SYNTHETIC = {  # (file, ID field, ID) -> change, each one listed in README.md
         verses=[kept["Gen.36.1"]]  # no group has a real verse in the kept chapters
     ),
 }
+# Decision 41: Theographic coordinates are made up, so a test can spot them in the export.
+LAT, LON = "-11.111111", "-22.222222"
+THEO_COORDS = dict.fromkeys(("latitude", "openBibleLat", "recogitoLat"), LAT)
+THEO_COORDS |= dict.fromkeys(("longitude", "openBibleLong", "recogitoLon"), LON)
 for name in ("people.json", "places.json", "events.json", "peopleGroups.json"):
     rows = []
     for r in json.loads((src / name).read_text()):
@@ -99,6 +103,86 @@ for name in ("people.json", "places.json", "events.json", "peopleGroups.json"):
         for (file, field, value), change in SYNTHETIC.items():
             if file == name and f.get(field) == value:
                 change(f)
+        if name == "places.json":
+            f.update({k: v for k, v in THEO_COORDS.items() if k in f})
         if f["verses"]:
             rows.append(r)
     dump(name, rows)
+
+# OpenBible geocoding, joined through Theographic's links (decision 56).
+places = {r["fields"]["placeLookup"] for r in json.loads((dest / "places.json").read_text())}
+THEO_PLACE, OB_ANCIENT = "theographic.netlify.app/place/", "openbible.info/geo/ancient/"
+
+
+def link_id(url):
+    return url.rstrip("/").rsplit("/", 1)[1]
+
+
+features = []
+for f in json.loads((src / "bible-places.geojson").read_text())["features"]:
+    links = [x["identifier"] for x in f.get("links") or []]
+    if any(THEO_PLACE in x and link_id(x) in places for x in links):
+        features.append({"type": "Feature", "geometry": None, "links": f["links"]})  # dec. 41
+seir = next(f for f in features if any(x["identifier"].endswith("/seir_1042/") for x in f["links"]))
+seir["links"].append({"type": "seeAlso", "identifier": f"https://www.{OB_ANCIENT}a2735ff"})
+(dest / "bible-places.geojson").write_text(
+    json.dumps({"type": "FeatureCollection", "features": features}, indent=1) + "\n"
+)
+
+ob_ids = {
+    link_id(x["identifier"]) for f in features for x in f["links"] if OB_ANCIENT in x["identifier"]
+}
+ancient = [
+    r
+    for r in map(json.loads, (src / "ancient.jsonl").read_text().splitlines())
+    if r["id"] in ob_ids
+]
+for r in ancient:  # size: drop fields the build does not read
+    for k in ("verses", "extra", "media", "identification_sources"):
+        r.pop(k, None)
+    for i in r["identifications"]:
+        i.pop("media", None)
+modern = {r["id"]: r for r in map(json.loads, (src / "modern.jsonl").read_text().splitlines())}
+want = {
+    res["modern_basis_id"]
+    for r in ancient
+    for i in r["identifications"]
+    for res in i.get("resolutions", [])
+    if "modern_basis_id" in res
+}
+while roots := {modern[m]["root"]["id"] for m in want if "root" in modern[m]} - want:
+    want |= roots
+modern = {m: modern[m] for m in sorted(want)}
+
+
+def first_point(ancient_id):  # the modern record that gives the point of an ancient record
+    first = next(r for r in ancient if r["id"] == ancient_id)["identifications"][0]
+    return modern[next(x for x in first["resolutions"] if "lonlat" in x)["modern_basis_id"]]
+
+
+kadesh = first_point("ac2cef0")  # kadesh_661
+kadesh["coordinates_source"]["type"] = "osm"
+first_point("a43608b")["custom_lonlat"] = "5.555555,6.666666"  # esek_409
+first_point("aeb9e97")["coordinates_source"]["type"] = "google_maps"  # mamre_762
+shur = first_point("acdbce0")  # shur_1090
+del shur["coordinates_source"]
+shur["root"] = {"id": kadesh["id"], "source": "modern"}
+# Decision 44: made-up coordinates for every record whose point is OpenStreetMap derived,
+# commercial, from Google, or inherited from a root record.
+made_up = set()
+for m in modern.values():
+    src_type = m.get("coordinates_source", {}).get("type")
+    if src_type in (None, "osm", "google_maps", "google_earth_community") or (
+        "custom_lonlat" in m or m.get("geometry_credit") == "osm"
+    ):
+        m["lonlat"] = "1.111111,2.222222"
+        if "custom_lonlat" in m:
+            m["custom_lonlat"] = "5.555555,6.666666"
+        made_up.add(m["id"])
+for r in ancient:
+    for i in r["identifications"]:
+        for res in i.get("resolutions", []):
+            if "lonlat" in res and res.get("modern_basis_id") in made_up:
+                res["lonlat"] = modern[res["modern_basis_id"]]["lonlat"]
+for name, rows in (("ancient.jsonl", ancient), ("modern.jsonl", modern.values())):
+    (dest / name).write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))

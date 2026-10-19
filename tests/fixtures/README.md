@@ -5,7 +5,8 @@ Small slices of the real sources, cut by `cut.py` from a full download. Each sli
 | File | Source | Licence |
 |---|---|---|
 | `sources/bsb.txt` | Berean Standard Bible, bereanbible.com/bsb.txt | CC0 1.0 (public domain) |
-| `sources/books.json`, `sources/verses.json`, `sources/people.json`, `sources/places.json`, `sources/events.json`, `sources/peopleGroups.json` | Theographic Bible Metadata, github.com/robertrouse/theographic-bible-metadata | CC BY-SA 4.0 |
+| `sources/books.json`, `sources/verses.json`, `sources/people.json`, `sources/places.json`, `sources/events.json`, `sources/peopleGroups.json`, `sources/bible-places.geojson` | Theographic Bible Metadata, github.com/robertrouse/theographic-bible-metadata | CC BY-SA 4.0 |
+| `sources/ancient.jsonl`, `sources/modern.jsonl` | OpenBible.info Bible Geocoding Data, github.com/openbibleinfo/Bible-Geocoding-Data (commit `7eb18a5`) | CC BY 4.0 |
 | `sources/cross-references.zip` | OpenBible.info cross-references, a.openbible.info/data/cross-references.zip | CC BY 4.0 |
 
 Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 17:20 to 22; 3 John 1.
@@ -20,5 +21,10 @@ Changes from the sources:
 - Abraham (`abraham_58`) has one synthetic verse link, `recFixtureNoVerse`, to test a mention with no Verse Key.
 - Demetrius (`demetrius_1007`) has no `dictText`, but keeps `dictionaryText`, to test that no Dictionary Entry comes from `dictionaryText`.
 - The Tribe of Judah has one synthetic verse link, to Genesis 36:1, because no People Group has a real verse in the kept chapters.
+- Theographic coordinates in `places.json` (`latitude`, `openBibleLat`, `recogitoLat`, and the longitudes) are made up: -11.111111 and -22.222222. They can carry OpenStreetMap points (decision 41), and a test checks they never reach the export.
+- `bible-places.geojson` keeps only the features of the kept places, each with its `links` and `geometry` set to null (decision 41). Seir's feature has a synthetic second OpenBible link, to Edom's record, to test a place with two records.
+- `ancient.jsonl` keeps the records the kept places link to, without `verses`, `extra`, `media`, and `identification_sources`. `modern.jsonl` keeps the records they resolve to, and their `root` records.
+- Synthetic changes to modern records, to test the drop rules: Kadesh's (Ain el Qudeirat) source type is "osm"; Esek's has a `custom_lonlat` (commercial); Mamre's source type is "google_maps"; Shur's has no `coordinates_source` and a `root` that is Kadesh's record.
+- Every modern record whose point the build drops (OpenStreetMap source or geometry, commercial, Google, or a `root` point) has made-up coordinates, 1.111111 and 2.222222, also in the ancient records that resolve to it. Any `custom_lonlat` is 5.555555,6.666666 (decision 44).
 
 Rules for later fixtures are in `docs/licences.md`, section 5. In short: the TIPNR fixture is synthetic, and OpenStreetMap records use made-up coordinates.
