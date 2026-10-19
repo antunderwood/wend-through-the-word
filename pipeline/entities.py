@@ -1,5 +1,6 @@
 """People, Places, Events, and People Groups from Theographic. Sets `b.entities` (ID -> Entity)
-and `b.verse_sets` (ID -> whole-Bible Verse Keys, for each Entity in the book range).
+and `b.verse_sets` (ID -> whole-Bible Verse Keys, for each Entity in the book range). Then, once
+Themes are in, `verse_neighbours` turns each Entity's Verses into Verse Neighbours.
 
 Theographic decides identity: one record is one Entity, and no two are merged (decision 7).
 An Entity is in the book range when one of its `verses` is.
@@ -66,8 +67,8 @@ def load(b):
             in_range = [b.verse_recs[v] for v in f.get("verses") or [] if b.verse_recs.get(v)]
             if not in_range:
                 continue
-            # Whole-Bible Verse set for the Co-mention weight (decision 95). Themes (#12) add
-            # their Filed Under Verses here.
+            # Whole-Bible Verse set for the Co-mention weight (decision 95). The themes step
+            # adds the Filed Under Verses of each Theme.
             b.verse_sets[entity_id] = {b.rec_keys[v] for v in f["verses"] if v in b.rec_keys}
             theographic = {"source": "Theographic", "licence": b.licence(source)}
             b.entities[entity_id] = {
@@ -86,14 +87,17 @@ def load(b):
         cause = "Theographic mention of a verse record that does not exist (dropped)"
         b.report("verse_mismatches", verse=rec, cause=cause, count=count)
 
-    # Verse Neighbours: weight is the number of other Entities in the Verse (PRD 10.4 rule 2).
+
+def verse_neighbours(b):
+    """Turn each Entity's Verses into Verse Neighbours. The weight is the number of other
+    Entities in the Verse, Themes included (PRD 10.4 rule 2), so this runs after `themes`."""
     for e in b.entities.values():
         neighbours = [
             {
                 "key": v["key"],
-                "edge": "MENTIONS",
+                "edge": "FILED_UNDER" if e["type"] == "theme" else "MENTIONS",
                 "direction": "in",
-                "weight": len(v["mentions"]) - 1,
+                "weight": len(v["mentions"]) + len(v["filed_under"]) - 1,
                 "source": e["source"],
                 "licence": e["licence"],
             }

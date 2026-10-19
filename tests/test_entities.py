@@ -80,13 +80,14 @@ def test_dictionary_entry_is_never_taken_from_dictionary_text(export):
 
 def test_verse_neighbours_rank_by_other_entities_in_the_verse_then_by_key(export):
     verses = entity(export, "person", "hagar_1348")["verses"]
+    # Themes count too: Gen 16:3 mentions Hagar and 4 other Entities, and is filed under 2 Themes.
     assert [(v["key"], v["weight"]) for v in verses] == [
-        ("01016003", 4),
+        ("01016003", 6),
+        ("01016008", 6),
+        ("01016015", 4),
         ("01016016", 4),
-        ("01016015", 3),
-        ("01025012", 3),
-        ("01016001", 2),
-        ("01016008", 1),
+        ("01025012", 4),
+        ("01016001", 3),
         ("01016004", 0),
     ]
     assert {(v["edge"], v["direction"], v["source"]) for v in verses} == {

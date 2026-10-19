@@ -1,0 +1,116 @@
+from conftest import VERSION, read_json, read_tsv
+from test_edges import neighbour
+from test_entities import verse as chapter_verse
+from test_search_and_credits import search, search_index
+
+NAVES = {"source": "Nave's Topical Bible", "licence": "CC BY 4.0"}
+
+
+def theme(export, name):
+    return read_json(export / "data" / VERSION / "entity" / "theme" / f"{name}.json")
+
+
+def test_a_kept_heading_is_a_theme_entity_with_its_filed_under_verses(export):
+    birthright = theme(export, "birthright")
+    assert {k: birthright[k] for k in ("id", "type", "name", "source", "licence")} == {
+        "id": "theme:birthright",
+        "type": "theme",
+        "name": "BIRTHRIGHT",
+        **NAVES,
+    }
+    # Fixture: GEN 25:29-34 and 25:33, and a synthetic range across chapters, GEN 25:33-26:1.
+    # Its other references (HEB 12:16, ROM 9:12,13, ...) are outside the book range.
+    keys = ["01025029", "01025030", "01025031", "01025032", "01025033", "01025034", "01026001"]
+    assert sorted(v["key"] for v in birthright["verses"]) == keys
+    assert {
+        (v["edge"], v["direction"], v["source"], v["licence"]) for v in birthright["verses"]
+    } == {("FILED_UNDER", "in", *NAVES.values())}
+
+
+def test_a_verse_links_to_its_themes_by_filed_under_not_mentions(export):
+    verse = chapter_verse(export, "Gen.25.29")
+    assert {"id": "theme:birthright", "edge": "FILED_UNDER", **NAVES} in verse["filed_under"]
+    assert not [m for m in verse["mentions"] if m["id"].startswith("theme:")]
+
+
+def test_a_heading_that_names_a_person_or_place_is_removed_and_reported(export):
+    themes = export / "data" / VERSION / "entity" / "theme"
+    assert not (themes / "hagar.json").exists()
+    assert not (themes / "jacob.json").exists()  # Theographic's name is Israel; Jacob (Israel)
+    rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
+    assert {
+        "heading": "HAGAR",
+        "action": "removed",
+        "match": "name",
+        "entity_ids": "person:hagar_1348",
+    } in rows
+    assert {
+        "heading": "CANAAN",
+        "action": "removed",
+        "match": "name",
+        "entity_ids": "person:canaan_914 place:canaan_272",
+    } in rows
+
+
+def test_a_heading_that_matches_only_an_alias_or_part_of_a_name_is_kept_and_reported(export):
+    rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
+    # Judith is Aholibamah's other name (Gen 26:34, 36:2): the owner reviews it.
+    assert {
+        "heading": "JUDITH",
+        "action": "kept",
+        "match": "alias",
+        "entity_ids": "person:aholibamah_1761",
+    } in rows
+    assert {
+        "heading": "REBEKAH (REBECCA)",
+        "action": "kept",
+        "match": "part of the heading",
+        "entity_ids": "person:rebekah_2401",
+    } in rows
+    assert theme(export, "judith")["name"] == "JUDITH"
+    assert theme(export, "rebekah_rebecca")["id"] == "theme:rebekah_rebecca"
+
+
+def test_a_heading_with_only_see_lines_is_not_a_theme(export):
+    assert not (export / "data" / VERSION / "entity" / "theme" / "accountability.json").exists()
+
+
+def test_whole_chapters_and_missing_verses_in_naves_are_reported(export):
+    rows = read_tsv(export / "reports" / "verse_mismatches.tsv")
+    # Synthetic: GEN 11:33 (Genesis 11 has 32 verses). Real: "Descendants of GEN 36", 3 Themes.
+    assert {
+        "verse": "Gen.11.33",
+        "cause": "Nave's reference to a verse that is not in Theographic (dropped)",
+        "count": "1",
+    } in rows
+    assert {
+        "verse": "Gen.36",
+        "cause": "Nave's reference to a whole chapter (skipped, decision 59)",
+        "count": "3",
+    } in rows
+    assert "01036001" not in [v["key"] for v in theme(export, "edomites")["verses"]]
+
+
+def test_a_theme_and_a_person_that_share_verses_have_a_co_mention(export):
+    # Across the fixture's Bible, Birthright files 12 Verses and Esau is in 64; they share 6
+    # (Gen 25:29, 30, 32, 34, Rom 9:13, Heb 12:16): 6 / sqrt(12 * 64). 4 are in the book range.
+    esau = neighbour(export, "theme:birthright", "person:esau_1216")
+    assert esau["weight"] == 0.2165
+    assert esau["edges"] == [
+        {
+            "edge": "CO_MENTION",
+            "direction": "both",
+            "shared_verses": 4,
+            "source": "Nave's Topical Bible; Theographic",
+            "licence": "CC BY 4.0; CC BY-SA 4.0",
+        }
+    ]
+    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 0.2165
+
+
+def test_themes_are_in_the_search_index(export):
+    index = search_index(export)
+    assert search(index, "Birthright") == ["theme:birthright"]
+    assert {"id": "theme:birthright", "type": "theme", "name": "BIRTHRIGHT", "aliases": []} in (
+        index["entities"]
+    )

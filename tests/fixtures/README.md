@@ -11,6 +11,7 @@ Small slices of the real sources, cut by `cut.py` from a full download. Each sli
 | `sources/pleiades-locations-latest.csv.gz` | Pleiades locations dump, atlantides.org/downloads/pleiades/dumps (downloaded 2026-10-19) | CC BY 3.0 |
 | `sources/wikidata-coords.json` | Wikidata SPARQL result, query.wikidata.org (query in `pipeline/download.py`, run 2026-10-19) | CC0 1.0 |
 | `sources/??.zip`, `sources/no-country.zip` | GeoNames dump files, download.geonames.org/export/dump (downloaded 2026-10-19) | CC BY 4.0 |
+| `sources/NavesTopicalDictionary.csv` | Nave's Topical Bible, BibleData, github.com/BradyStephenson/bible-data (commit `720a8da`) | CC BY 4.0 |
 | `sources/TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt` | Synthetic, written by hand in the TIPNR format (github.com/STEPBible/STEPBible-Data). Holds no real TIPNR rows | Our own test data, MIT |
 
 Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 17:20 to 22; 3 John 1.
@@ -33,6 +34,7 @@ Changes from the sources:
 
 - The lookup files keep only the records that the kept modern records cite, directly or through their Wikidata items: Wikidata rows for their items, Pleiades locations of the Pleiades IDs, and GeoNames lines of the GeoNames IDs (a file with no such line is empty).
 - `wikidata-coords.json` keeps a reference only when it cites OpenStreetMap. Canaan's coordinate (Q163329) has a synthetic reference "stated in" OpenStreetMap (Q936), to test decision 58. Every coordinate that cites OpenStreetMap has made-up values, 3.333333 and 4.444444 (decision 44).
+- `NavesTopicalDictionary.csv` keeps the headings that file a kept verse, and `ACCOUNTABILITY`, a heading with only "See" lines. Each line keeps the text before its first reference, then only the references to verses in `verses.json` (a range only when all its verses are there, a whole chapter only when it is a kept chapter), joined with "; ". A line whose references are all cut is dropped; a line with no reference is kept as it is. `BIRTHRIGHT` has one synthetic line, `-Synthetic test line GEN 25:33-26:1; 11:33`, to test a range across chapters and a verse that does not exist.
 - `pleiades-locations-latest.csv.gz` has empty `geometry` and `bbox`. Every location based on OpenStreetMap has made-up coordinates, 7.777777 and 8.888888 (decision 44).
 
 ## Curated tables

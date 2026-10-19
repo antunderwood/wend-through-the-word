@@ -18,6 +18,7 @@ from pipeline import (
     entities,
     export,
     ranking,
+    themes,
     tipnr,
     verses,
 )
@@ -27,6 +28,8 @@ from pipeline.common import Build
 STEPS = [
     verses.load,
     entities.load,
+    themes.load,
+    entities.verse_neighbours,  # after every step that links Entities to Verses
     curation.load,  # before edges: a gender correction changes the PARENT_OF role
     coordinates.load,
     edges.load,

@@ -118,7 +118,7 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(export, tmp_path):
-    limit = 15000  # Gen 26 Ring 2 is about 30 KB in the fixture build
+    limit = 40000  # Gen 26 Ring 2 is about 58 KB in the fixture build, 35 KB of it Entities
     small = run_build(tmp_path / "out", size_limit=limit)
     path = f"data/{VERSION}/chapter/Gen/26.ring2.json"
     assert (small / path).stat().st_size < limit
