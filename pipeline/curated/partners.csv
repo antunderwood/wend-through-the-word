@@ -6,7 +6,7 @@ person:lamech_1808,person:adah_69,spouse,Gen.4.19,"""Lamech married two women, o
 person:esau_1216,person:adah_414,spouse,Gen.36.2,"""Esau took his wives ... Adah""",yes,
 person:adam_78,person:eve_1231,spouse,Gen.3.20,"""Adam named his wife Eve""",yes,
 person:esau_1216,person:aholibamah_1761,spouse,Gen.36.2,"""Esau took his wives ... Oholibamah""",yes,
-person:beeri_432,person:anah_247,none,,Not partners. Owner: likely the same person (see possibly_same.csv),yes,
+person:beeri_432,person:anah_247,none,Gen.26.34;Gen.36.2;Gen.36.24,Not partners. Owner: likely the same person (see possibly_same.csv),yes,
 person:joseph_1710,person:asenath_335,spouse,Gen.41.45,"""gave him Asenath ... to be his wife""",yes,
 person:esau_1216,person:bashemath_1887,spouse,Gen.26.34,"""he took as his wives ... Basemath""",yes,
 person:israel_682,person:bilhah_502,spouse;concubine,Gen.30.4;Gen.35.22,"""gave Jacob her servant Bilhah as a wife""; Gen.35.22 ""his father's concubine Bilhah""",yes,

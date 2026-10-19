@@ -10,15 +10,17 @@ import sys
 import tomllib
 from pathlib import Path
 
-from pipeline import coordinates, edges, entities, export, verses
+from pipeline import coordinates, curation, edges, entities, export, verses
 from pipeline.common import Build
 
 # Each step reads what earlier steps set on the Build. Add new steps here, before export.
 STEPS = [
     verses.load,
     entities.load,
+    curation.load,  # before edges: a gender correction changes the PARENT_OF role
     coordinates.load,
     edges.load,
+    curation.report_aliases,  # after every step that adds Entities
     export.write,
 ]
 
