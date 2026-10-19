@@ -25,7 +25,7 @@ The data comes from open sources. The data is stored in a graph model. The graph
 
 ## 3. Non-goals for version 1
 
-- User accounts, notes, or saved views.
+- User accounts or saved views. (Journey notes are in version 1, kept in the browser only: decision 112.)
 - Original language word study (Hebrew and Greek). This is phase 2.
 - Commentary text.
 - Storage of copyrighted translation text.
@@ -492,7 +492,7 @@ The Genesis prototype is complete when all of these are true.
 | M1 | BSB, Theographic, and the verse exceptions for Genesis, with the mismatch report |
 | M2 | Cross-references, geocoding with re-sourced coordinates, the TIPNR check, Nave's themes, CO_MENTION edges, and the static export for Genesis (spec: `docs/specs/genesis-data-build.md`) |
 | M3 | A UI prototype of navigation in 2.5D (select, make focus, your path, pins, camera, orbit or not), building on `docs/prototypes/focus-model.md`. A minimal 3D page. Run the node limit test. Test the disclosure rings, the 2.5D tilt, and the node look from section 10.4 on hub nodes. |
-| M4 | Reader panel, detail panel, search, filters, shareable URLs, and "Suggest a correction" links |
+| M4 | Reader panel, detail panel, search, filters, shareable URLs, "Suggest a correction" links, and journey notes with download (decision 112) |
 | M5 | Cloudflare deploy with static assets and browser search. No Worker script. The repository becomes public. |
 | M6 | Run the pipeline for the whole Bible. Review data quality. |
 | M7 | Mobile release: touch controls, a narrow layout, and the lower node limit |
