@@ -659,6 +659,14 @@ function renderSelected() {
   if (R.type !== "verse") rows.push(["Linked verses", `${(d.verses || []).length} in Genesis`]);
   if (rows.length) h += `<table class="kv">${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table>`;
   if (d.dictionary_entry) h += `<details><summary class="small">Dictionary Entry (${esc(d.dictionary_entry.source)})</summary><p>${esc(d.dictionary_entry.text)}</p></details>`;
+  // "Together in N verses": the Verses this node shares with the Focus and each pin, from both entity files.
+  const keysOf = rec => new Set((rec?.raw?.verses || []).map(v => v.key));
+  for (const other of [state.focus, ...state.pins]) {
+    if (other === id || R.type === "verse" || typeOf(other) === "verse") continue;
+    const mine = keysOf(R), shared = [...keysOf(data.rec(other))].filter(k => mine.has(k)).sort();
+    if (shared.length) h += `<details open><summary class="small">Together with ${esc(label(other))} in ${shared.length} verse${shared.length === 1 ? "" : "s"}</summary>
+      <ul class="list">${shared.map(k => item(k, "")).join("")}</ul></details>`;
+  }
   return h;
 }
 
