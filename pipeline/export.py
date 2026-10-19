@@ -33,9 +33,11 @@ def write(b):
         # (decision 96).
         for entity_id in {m["id"] for v in verses for m in v["mentions"] + v["filed_under"]}:
             ring2[entity_id] = b.top[entity_id]
+            chosen = {t["id"] for t in b.top[entity_id]}
             sources |= {
                 (x["source"], x["licence"])
-                for n in b.entities[entity_id]["neighbours"][: len(b.top[entity_id])]
+                for n in b.entities[entity_id]["neighbours"]
+                if n["id"] in chosen
                 for x in n["edges"]
             }
         path = version / "chapter" / book / f"{ch}.ring2.json"

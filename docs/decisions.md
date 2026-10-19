@@ -183,6 +183,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 110. **The owner approved the last three correction rows (2026-10-19).** The Nile's point is 29.85, 31.25 near Memphis (source "Curated"), the Gihon has no point, and the Mount of Olives loses the editor's note in its aliases. Reason: decisions 89 and 90 left them unreviewed until the owner confirmed them.
 
+## 2026-10-19: Theme weights (from the navigation prototype)
+
+111. **A Theme neighbour is weighted by shared Verses times the rarity of its heading: shared x ln(31,102 / Verses under the heading).** Shared Verses count across the whole Bible (decision 95). This applies wherever the Neighbour is a Theme; a Person, Place, Event, or People Group neighbour keeps the cosine score, so one pair can carry a different weight in each file. This amends decision 20 for Themes. Reason: in the navigation prototype the owner found Veneration (2 Verses, both about Abraham, cosine 0.085) ranked above Faith (1,290 Verses, 42 shared, cosine 0.070). Cosine rewards how specific a pair is, which keeps God out of most People's Ring 1, but for Themes a reader wants the big topics a node is central to. With this weight, Abraham's top 6 Themes are Covenant, Faith, Courage, Communion, God (topic), and Condescension of God. Ring 1 never compares weights across types (decision 93), so the two scales do not meet. Ring 2 does mix types, so it ranks every Neighbour on its CO_MENTION cosine, which each CO_MENTION edge now carries as `cosine`.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

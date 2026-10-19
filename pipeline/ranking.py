@@ -1,4 +1,5 @@
-"""CO_MENTION edges between Entities that share a Verse, weighted by the cosine score, then the
+"""CO_MENTION edges between Entities that share a Verse, weighted by the cosine score (a Theme
+neighbour by shared Verses times the rarity of its heading, decision 111), then the
 Neighbour ranking, Overflow counts, and Ring 2 of each Entity (PRD 10.4).
 
 The Verse set of an Entity is `b.verse_sets`, across the whole Bible (decision 95), so weights
@@ -13,6 +14,7 @@ from itertools import combinations
 from pipeline.common import ring2_entries
 
 RING1_PER_TYPE = 6  # default number of Neighbours of each type in Ring 1, K (PRD 10.4 rule 1)
+BIBLE_VERSES = 31102  # Verse Keys in the Bible (PRD 7.1), for the rarity of a Nave's heading
 
 
 def joined(pairs):
@@ -22,6 +24,11 @@ def joined(pairs):
         "source": "; ".join(sorted({x for s, _ in pairs for x in s.split("; ")})),
         "licence": "; ".join(sorted({x for _, lic in pairs for x in lic.split("; ")})),
     }
+
+
+def cosine_of(n):
+    """A Neighbour's CO_MENTION cosine, or 0 when an explicit edge is its only link."""
+    return next((e["cosine"] for e in n["edges"] if e["edge"] == "CO_MENTION"), 0)
 
 
 def load(b):
@@ -36,15 +43,21 @@ def load(b):
 
     neighbours = {e["id"]: {n["id"]: n for n in e["neighbours"]} for e in b.entities.values()}
     for (x, y), n in sorted(shared.items()):
+        a, c = b.verse_sets[x], b.verse_sets[y]
+        cosine = round(len(a & c) / math.sqrt(len(a) * len(c)), 4)
         item = {
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": n,
+            "cosine": cosine,  # Ring 2 ranks every type on this one scale (decision 111)
             **joined(provenance[x, y]),
         }
-        a, c = b.verse_sets[x], b.verse_sets[y]
-        weight = round(len(a & c) / math.sqrt(len(a) * len(c)), 4)
         for here, there in ((x, y), (y, x)):
+            # Cosine favours a tiny heading (VENERATION, 2 Verses) over a broad one (FAITH), so a
+            # Theme neighbour is weighted by how many Verses it shares, damped by how broad the
+            # heading is. Ring 1 never compares types, so the scales may differ (decision 93).
+            rarity = math.log(BIBLE_VERSES / len(b.verse_sets[there]))
+            weight = round(len(a & c) * rarity, 4) if there.startswith("theme:") else cosine
             found = neighbours[here].get(there)
             if not found:
                 found = {"id": there, "type": b.entities[there]["type"], "edges": []}
@@ -62,7 +75,12 @@ def load(b):
     # Ring 2: the top Neighbours of each Ring 1 node, as ID and weight. An Entity's come from
     # its Entity Neighbours, a Verse's from its cross-references, so that no list ranks weights
     # of two scales together (decision 93). `b.top` also feeds the chapter Ring 2 (decision 96).
-    b.top = {e["id"]: ring2_entries(e["neighbours"]) for e in b.entities.values()}
+    # Ring 2 mixes types, so it ranks on the cosine, never on a Theme's rarity weight.
+    def on_cosine(e):
+        scored = [{"id": n["id"], "weight": cosine_of(n)} for n in e["neighbours"]]
+        return sorted(scored, key=lambda n: (-n["weight"], n["id"]))
+
+    b.top = {e["id"]: ring2_entries(on_cosine(e)) for e in b.entities.values()}
     verses = {v["key"]: v for vs in b.chapters.values() for v in vs}
     for e in b.entities.values():
         ring1 = [v["key"] for v in e["verses"][:RING1_PER_TYPE]]
