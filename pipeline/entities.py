@@ -2,6 +2,10 @@
 and `b.verse_sets` (ID -> whole-Bible Verse Keys, for each Entity in the book range). Then, once
 Themes are in, `verse_neighbours` turns each Entity's Verses into Verse Neighbours.
 
+Also sets, for the later steps, every Theographic record in or out of the book range:
+`b.records` (record ID -> (type, source name, fields, Entity ID)) and `b.titles` (record ID ->
+displayTitle, which `facts` uses for a Place's other names).
+
 Theographic decides identity: one record is one Entity, and no two are merged (decision 7).
 An Entity is in the book range when one of its `verses` is.
 """
@@ -10,6 +14,8 @@ import json
 import re
 import sys
 from collections import Counter
+
+from pipeline.common import report_mismatches
 
 # type: (source name, function giving the part of the ID after the type prefix)
 TYPES = {
@@ -54,38 +60,38 @@ def load(b):
     for verses in b.chapters.values():
         for verse in verses:
             verse["mentions"] = []
-    missing = Counter()  # verse record IDs that are not in Theographic's verses.json
+    b.records = {}
     for kind, (source, name) in TYPES.items():
-        records = json.loads(b.source(source).read_text())
-        titles = {r["id"]: r["fields"].get("displayTitle") for r in records}
-        for r in records:
-            f = r["fields"]
-            missing.update(v for v in f.get("verses") or [] if v not in b.verse_recs)
-            entity_id = f"{kind}:{name(f)}"
-            if entity_id in b.entities:
-                sys.exit(f"two Theographic records give the ID {entity_id}")
-            in_range = [b.verse_recs[v] for v in f.get("verses") or [] if b.verse_recs.get(v)]
-            if not in_range:
-                continue
-            # Whole-Bible Verse set for the Co-mention weight (decision 95). The themes step
-            # adds the Filed Under Verses of each Theme.
-            b.verse_sets[entity_id] = {b.rec_keys[v] for v in f["verses"] if v in b.rec_keys}
-            theographic = {"source": "Theographic", "licence": b.licence(source)}
-            b.entities[entity_id] = {
-                "id": entity_id,
-                "type": kind,
-                **facts(kind, f, titles),
-                **theographic,
-                "verses": in_range,  # replaced by Verse Neighbours below
-            }
-            for verse in in_range:
-                verse["mentions"].append({"id": entity_id, "edge": "MENTIONS", **theographic})
+        for r in json.loads(b.source(source).read_text()):
+            b.records[r["id"]] = (kind, source, r["fields"], f"{kind}:{name(r['fields'])}")
+    b.titles = {rec: r[2].get("displayTitle") for rec, r in b.records.items()}
+
+    missing = Counter()  # verse record IDs that are not in Theographic's verses.json
+    for kind, source, f, entity_id in b.records.values():
+        missing.update(v for v in f.get("verses") or [] if v not in b.verse_recs)
+        if entity_id in b.entities:
+            sys.exit(f"two Theographic records give the ID {entity_id}")
+        in_range = [b.verse_recs[v] for v in f.get("verses") or [] if b.verse_recs.get(v)]
+        if not in_range:
+            continue
+        # Whole-Bible Verse set for the Co-mention weight (decision 95). The themes step adds
+        # the Filed Under Verses of each Theme.
+        b.verse_sets[entity_id] = {b.rec_keys[v] for v in f["verses"] if v in b.rec_keys}
+        theographic = {"source": "Theographic", "licence": b.licence(source)}
+        b.entities[entity_id] = {
+            "id": entity_id,
+            "type": kind,
+            **facts(kind, f, b.titles),
+            **theographic,
+            "verses": in_range,  # replaced by Verse Neighbours below
+        }
+        for verse in in_range:
+            verse["mentions"].append({"id": entity_id, "edge": "MENTIONS", **theographic})
     for verses in b.chapters.values():
         for verse in verses:
             verse["mentions"].sort(key=lambda m: m["id"])
-    for rec, count in missing.items():
-        cause = "Theographic mention of a verse record that does not exist (dropped)"
-        b.report("verse_mismatches", verse=rec, cause=cause, count=count)
+    cause = "Theographic mention of a verse record that does not exist (dropped)"
+    report_mismatches(b, missing, cause)
 
 
 def verse_neighbours(b):

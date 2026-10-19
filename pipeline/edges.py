@@ -5,11 +5,10 @@ between the pair. Each edge keeps its direction read from this Entity: `out` whe
 is the edge's source, `in` when the Neighbour is, `both` for an edge with no direction.
 """
 
-import json
 from collections import defaultdict
 
 from pipeline.curation import correct
-from pipeline.entities import TYPES, facts
+from pipeline.entities import facts
 
 # Theographic field: (edge, True when the record holding the field is the edge's source, None
 # when the edge has no direction).
@@ -42,10 +41,7 @@ OUTSIDE = (
 
 
 def load(b):
-    records = {}  # record ID -> (type, source name, fields, Entity ID)
-    for kind, (source, name) in TYPES.items():
-        for r in json.loads(b.source(source).read_text()):
-            records[r["id"]] = (kind, source, r["fields"], f"{kind}:{name(r['fields'])}")
+    records = b.records
 
     b.new_report("dropped_edges", "record", "field", "link", "cause")
     # (from, edge, to) -> (licence, record, field, link); an edge with no direction has from < to
@@ -77,13 +73,12 @@ def load(b):
             b.report("dropped_edges", record=record, field=field, link=link, cause=OUTSIDE)
             del edges[key]
     by_id = {r[3]: r for r in records.values()}
-    titles = {rec: r[2].get("displayTitle") for rec, r in records.items()}
     for end in stubs:
         kind, source, f, _ = by_id[end]
         b.entities[end] = {
             "id": end,
             "type": kind,
-            **facts(kind, f, titles),
+            **facts(kind, f, b.titles),
             "source": "Theographic",
             "licence": b.licence(source),
             "verses": [],

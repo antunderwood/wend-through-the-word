@@ -1,15 +1,6 @@
-from conftest import VERSION, read_json, read_tsv
+from conftest import VERSION, entity, neighbour, read_json, read_tsv
 
 THEOGRAPHIC = {"source": "Theographic", "licence": "CC BY-SA 4.0"}
-
-
-def entity(export, entity_id):
-    kind, name = entity_id.split(":")
-    return read_json(export / "data" / VERSION / "entity" / kind / f"{name}.json")
-
-
-def neighbour(export, entity_id, other_id):
-    return next(n for n in entity(export, entity_id)["neighbours"] if n["id"] == other_id)
 
 
 def test_parent_and_child_each_read_the_link_from_their_own_end(export):

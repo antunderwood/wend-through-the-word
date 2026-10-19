@@ -10,6 +10,8 @@ import json
 import re
 from collections import defaultdict
 
+from pipeline.common import norm
+
 # TIPNR (STEP) book codes in canonical order: the n-th code is Theographic's book number n.
 STEP_BOOKS = """Gen Exo Lev Num Deu Jos Jdg Rut 1Sa 2Sa 1Ki 2Ki 1Ch 2Ch Ezr Neh Est Job Psa Pro
 Ecc Sng Isa Jer Lam Ezk Dan Hos Jol Amo Oba Jon Mic Nam Hab Zep Hag Zec Mal Mat Mrk Luk Jhn Act
@@ -17,11 +19,7 @@ Rom 1Co 2Co Gal Eph Php Col 1Th 2Th 1Ti 2Ti Tit Phm Heb Jas 1Pe 2Pe 1Jn 2Jn 3Jn 
 FIELDS = ("father", "mother", "siblings", "partners", "children")
 
 
-def norm(name):
-    return re.sub(r"[^a-z]", "", name.lower())
-
-
-def direct(keys):
+def direct_links(keys):
     """Family keys, dropping those marked descended from (d), founder (f), or ancestor (a).
     Uncertain ones (?) are kept."""
     out = set()
@@ -42,7 +40,7 @@ def people(path, books):
         f = head.split("\t")
         key = f[0].split("=")[0]
         father, mother = f[2].split(" + ")
-        r = out[key] = dict(zip(FIELDS, map(direct, (father, mother, f[3], f[4], f[5]))))
+        r = out[key] = dict(zip(FIELDS, map(direct_links, (father, mother, f[3], f[4], f[5]))))
         r["names"], r["verses"], r["gender"] = {norm(key.split("@")[0])}, set(), f[8]
         for sub in (line.split("\t") for line in lines if line.startswith("\u2013 ")):
             if sub[0] == "\u2013 Total" or len(sub) < 5:  # Total refs are abbreviated
@@ -89,8 +87,9 @@ def load(b):
     }
     match = {}  # Theographic Entity ID -> TIPNR key
     gender = {}  # Theographic's own value, before curated corrections (decision 88)
-    for r in json.loads(b.source("theo-people").read_text()):
-        f = r["fields"]
+    for kind, _, f, entity_id in b.records.values():
+        if kind != "person":
+            continue
         verses = {refs[v] for v in f.get("verses") or [] if v in refs}
         names = [f["name"], *(f.get("alsoCalled") or "").split(",")]
         keys = {k for n in names for k in by_name.get(norm(n), ())}
@@ -102,8 +101,8 @@ def load(b):
             default=(0, None),
         )
         if score:
-            match[f"person:{f['personLookup']}"] = key
-        gender[f"person:{f['personLookup']}"] = f["gender"]
+            match[entity_id] = key
+        gender[entity_id] = f["gender"]
     matched = defaultdict(set)  # TIPNR key -> Theographic Entity IDs
     for entity_id, key in match.items():
         matched[key].add(entity_id)

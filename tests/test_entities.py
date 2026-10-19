@@ -1,4 +1,4 @@
-from conftest import VERSION, read_json, read_tsv
+from conftest import VERSION, chapter_verse, read_json, read_tsv
 
 
 def entity(export, kind, name):
@@ -12,22 +12,18 @@ def test_each_entity_type_has_files_with_prefixed_ids(export):
     assert entity(export, "group", "tribe_of_judah")["id"] == "group:tribe_of_judah"
 
 
-def verse(export, label):
-    book, ch, _ = label.split(".")
-    path = export / "data" / VERSION / "chapter" / book / f"{ch}.json"
-    return next(v for v in read_json(path)["verses"] if v["label"] == label)
-
-
 def test_chapter_file_shows_the_entities_each_verse_mentions(export):
-    mentions = verse(export, "Gen.25.7")["mentions"]
+    mentions = chapter_verse(export, "Gen.25.7")["mentions"]
     assert [(m["id"], m["edge"]) for m in mentions] == [
         ("event:66", "MENTIONS"),
         ("event:88", "MENTIONS"),
         ("person:abraham_58", "MENTIONS"),
     ]
     assert all(m["source"] == "Theographic" and m["licence"] == "CC BY-SA 4.0" for m in mentions)
-    assert "group:tribe_of_judah" in [m["id"] for m in verse(export, "Gen.36.1")["mentions"]]
-    assert verse(export, "3John.1.2")["mentions"] == []
+    assert "group:tribe_of_judah" in [
+        m["id"] for m in chapter_verse(export, "Gen.36.1")["mentions"]
+    ]
+    assert chapter_verse(export, "3John.1.2")["mentions"] == []
 
 
 def test_each_person_has_a_gender_and_no_year(export):

@@ -1,11 +1,14 @@
 """Shared state and helpers for the build steps."""
 
 import json
+import re
 from pathlib import Path
 
 from pipeline.download import SOURCES, file_name
 
 SIZE_LIMIT = 500 * 1000  # bytes, PRD 8.2
+# Ring 2 entries kept for each node; the browser filters these and shows 3 (PRD 10.4).
+RING2_TOP = 10
 
 
 class Build:
@@ -32,6 +35,22 @@ class Build:
 
     def report(self, name, **row):
         self.reports[name][1].append(row)
+
+
+def norm(name):
+    """A name in lower case with every character that is not a letter removed, for matching."""
+    return re.sub(r"[^a-z]", "", name.lower())
+
+
+def ring2_entries(neighbours):
+    """The top Neighbours of a ranked list as Ring 2 entries: ID and weight only (spec)."""
+    return [{"id": n["id"], "weight": n["weight"]} for n in neighbours[:RING2_TOP]]
+
+
+def report_mismatches(b, counts, cause):
+    """List each verse reference in `counts` (reference -> count) in `verse_mismatches.tsv`."""
+    for verse, count in counts.items():
+        b.report("verse_mismatches", verse=verse, cause=cause, count=count)
 
 
 def to_json(data):

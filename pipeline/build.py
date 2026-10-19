@@ -28,9 +28,9 @@ from pipeline.common import Build
 STEPS = [
     verses.load,
     entities.load,
+    curation.load,  # before themes (themes_keep.csv), and before edges (a gender correction)
     themes.load,
     entities.verse_neighbours,  # after every step that links Entities to Verses
-    curation.load,  # before edges: a gender correction changes the PARENT_OF role
     coordinates.load,
     edges.load,
     crossrefs.load,

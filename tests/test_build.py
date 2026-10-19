@@ -1,3 +1,6 @@
+import subprocess
+
+import pytest
 from conftest import VERSION, nodes_and_edges, read_json, read_tsv, run_build
 
 LIMIT = 500 * 1000
@@ -66,6 +69,29 @@ def test_every_file_is_below_the_size_limit_and_reported(export):
     files = list((export / "data").rglob("*.json"))
     assert len(rows) == len(files)
     assert all(p.stat().st_size < LIMIT for p in files)
+
+
+def test_the_total_file_count_is_reported(export):
+    # Story 76: the owner watches the 20,000 file limit before M6.
+    files = list((export / "data").rglob("*.json"))
+    assert read_tsv(export / "reports" / "file_count.tsv") == [
+        {"files": str(len(files)), "over_limit": "0"}
+    ]
+
+
+def test_a_file_still_over_the_limit_is_reported_and_fails_the_build(tmp_path, capfd):
+    # Story 74 and decision 73: the limit never fails silently. At 40 KB, Abraham's entity file
+    # (about 51 KB) and the search index (about 49 KB) are over, and only cross-references trim.
+    with pytest.raises(subprocess.CalledProcessError):
+        run_build(tmp_path / "out", size_limit=40000)
+    out = tmp_path / "out"
+    trimmed = {r["path"]: r for r in read_tsv(out / "reports" / "split_or_trimmed.tsv")}
+    over = [r["path"] for r in read_tsv(out / "reports" / "files.tsv") if r["over_limit"] == "yes"]
+    assert f"data/{VERSION}/entity/person/abraham_58.json" in over
+    assert f"data/{VERSION}/search-index.json" in over
+    for path in over:
+        assert trimmed[path]["action"].startswith("not trimmed"), path
+    assert "over the size limit" in capfd.readouterr().err
 
 
 def test_two_builds_are_byte_identical(export, tmp_path):

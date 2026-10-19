@@ -1,5 +1,13 @@
-from conftest import VERSION, read_json, read_tsv, run_build
-from test_edges import entity, neighbour
+from conftest import (
+    TRIM_LIMIT,
+    VERSION,
+    entity,
+    neighbour,
+    read_json,
+    read_tsv,
+    run_build,
+    top_people,
+)
 
 
 def entity_files(export):
@@ -16,10 +24,6 @@ def ring1(e):
     for n in e["neighbours"]:
         by_type.setdefault(n["type"], []).append(n["id"])
     return {i for ids in by_type.values() for i in ids[:6]} | {v["key"] for v in e["verses"][:6]}
-
-
-def top_people(e):
-    return [n["id"] for n in e["neighbours"] if n["type"] == "person"][:6]
 
 
 def test_every_pair_of_entities_sharing_a_verse_in_range_has_one_co_mention(export):
@@ -48,6 +52,25 @@ def test_co_mention_weight_is_the_cosine_score_over_whole_bible_verse_sets(expor
         "licence": "CC BY-SA 4.0",
     }
     assert neighbour(export, "person:isaac_616", "person:abraham_58")["weight"] == 0.5111
+
+
+def test_co_mention_source_and_licence_come_from_the_shared_verses_links_only(export):
+    chapters = (export / "data" / VERSION / "chapter").rglob("*.json")
+    links = {}  # (Verse Key, Entity ID) -> (source, licence) of the Mention or Filed Under
+    for p in chapters:
+        for v in read_json(p).get("verses", []):
+            for m in v["mentions"] + v["filed_under"]:
+                links[v["key"], m["id"]] = (m["source"], m["licence"])
+    for e in entity_files(export):
+        verses = {v["key"] for v in e["verses"]}
+        for n in e["neighbours"]:
+            if not (c := co_mention(n)):
+                continue
+            shared = {k for k, i in links if i == n["id"]} & verses
+            found = {links[k, i] for k in shared for i in (e["id"], n["id"])}
+            sources = "; ".join(sorted({s for s, _ in found}))
+            licences = "; ".join(sorted({lic for _, lic in found}))
+            assert (c["source"], c["licence"]) == (sources, licences), (e["id"], n["id"])
 
 
 def test_a_hub_that_shares_many_verses_is_not_a_top_neighbour(export):
@@ -132,8 +155,8 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
 
 
 def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(export, tmp_path):
-    small = run_build(tmp_path / "out", size_limit=40000)  # Gen 26 Ring 2 is about 58 KB
-    path = f"data/{VERSION}/chapter/Gen/26.ring2.json"
+    small = run_build(tmp_path / "out", size_limit=TRIM_LIMIT)  # Gen 36 Ring 2 is about 80 KB
+    path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [r["action"] for r in rows if r["path"] == path] == ["trimmed"]
 

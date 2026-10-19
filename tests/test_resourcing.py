@@ -2,8 +2,7 @@
 GeoNames (ticket #11). The fixture lookups are slices of the real files; OpenStreetMap records
 in them have made-up coordinates (decision 44)."""
 
-from conftest import VERSION, read_json, run_build
-from test_coordinates import no_coordinate, place
+from conftest import VERSION, no_coordinate, place, read_json, run_build
 
 
 def point(export, name):

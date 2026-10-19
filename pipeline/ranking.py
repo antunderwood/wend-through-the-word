@@ -10,9 +10,9 @@ import math
 from collections import Counter, defaultdict
 from itertools import combinations
 
-from pipeline.crossrefs import RING2_TOP
+from pipeline.common import ring2_entries
 
-K = 6  # default number of Neighbours of each type in Ring 1 (PRD 10.4 rule 1)
+RING1_PER_TYPE = 6  # default number of Neighbours of each type in Ring 1, K (PRD 10.4 rule 1)
 
 
 def joined(pairs):
@@ -25,26 +25,22 @@ def joined(pairs):
 
 
 def load(b):
-    in_range = {v["key"] for verses in b.chapters.values() for v in verses}
-    in_verse = defaultdict(list)  # Verse Key in range -> IDs of the Entities in it
-    for entity_id, keys in b.verse_sets.items():
-        for key in keys & in_range:
-            in_verse[key].append(entity_id)
     shared = Counter()  # (ID, ID) -> number of shared Verses in range
-    for ids in in_verse.values():
-        shared.update(combinations(sorted(ids), 2))
+    provenance = defaultdict(set)  # (ID, ID) -> (source, licence) of their links to those Verses
+    for verses in b.chapters.values():
+        for v in verses:  # Mentions, and Filed Under for a Theme
+            links = {m["id"]: (m["source"], m["licence"]) for m in v["mentions"] + v["filed_under"]}
+            for pair in combinations(sorted(links), 2):
+                shared[pair] += 1
+                provenance[pair] |= {links[i] for i in pair}
 
-    # Source and licence of each Entity's Verse links: Mentions, or Filed Under for a Theme
-    provenance = {
-        e["id"]: {(v["source"], v["licence"]) for v in e["verses"]} for e in b.entities.values()
-    }
     neighbours = {e["id"]: {n["id"]: n for n in e["neighbours"]} for e in b.entities.values()}
     for (x, y), n in sorted(shared.items()):
         item = {
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": n,
-            **joined(provenance[x] | provenance[y]),
+            **joined(provenance[x, y]),
         }
         a, c = b.verse_sets[x], b.verse_sets[y]
         weight = round(len(a & c) / math.sqrt(len(a) * len(c)), 4)
@@ -61,24 +57,18 @@ def load(b):
     for e in b.entities.values():
         e["neighbours"].sort(key=lambda n: (-n["weight"], n["id"]))
         types = Counter(n["type"] for n in e["neighbours"]) + Counter(verse=len(e["verses"]))
-        e["overflow"] = {t: max(0, count - K) for t, count in types.items()}
+        e["overflow"] = {t: max(0, count - RING1_PER_TYPE) for t, count in types.items()}
 
     # Ring 2: the top Neighbours of each Ring 1 node, as ID and weight. An Entity's come from
     # its Entity Neighbours, a Verse's from its cross-references, so that no list ranks weights
     # of two scales together (decision 93). `b.top` also feeds the chapter Ring 2 (decision 96).
-    b.top = {
-        e["id"]: [{"id": n["id"], "weight": n["weight"]} for n in e["neighbours"][:RING2_TOP]]
-        for e in b.entities.values()
-    }
+    b.top = {e["id"]: ring2_entries(e["neighbours"]) for e in b.entities.values()}
     verses = {v["key"]: v for vs in b.chapters.values() for v in vs}
     for e in b.entities.values():
-        ring1 = [v["key"] for v in e["verses"][:K]]
+        ring1 = [v["key"] for v in e["verses"][:RING1_PER_TYPE]]
         for t in {n["type"] for n in e["neighbours"]}:
-            ring1 += [n["id"] for n in e["neighbours"] if n["type"] == t][:K]
+            ring1 += [n["id"] for n in e["neighbours"] if n["type"] == t][:RING1_PER_TYPE]
         e["ring2"] = {
-            node: top_verses(verses[node]) if node in verses else b.top[node] for node in ring1
+            node: ring2_entries(verses[node]["cross_references"]) if node in verses else b.top[node]
+            for node in ring1
         }
-
-
-def top_verses(verse):
-    return [{"id": n["id"], "weight": n["weight"]} for n in verse["cross_references"][:RING2_TOP]]

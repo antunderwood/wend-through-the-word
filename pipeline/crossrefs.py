@@ -10,10 +10,8 @@ top 10 cross-referenced Verses as ID and weight.
 import zipfile
 from collections import Counter, defaultdict
 
-from pipeline.common import to_json
+from pipeline.common import report_mismatches, ring2_entries
 from pipeline.verses import REMAP
-
-RING2_TOP = 10  # the browser filters these and shows 3 (PRD 10.4)
 
 
 def load(b):
@@ -34,9 +32,7 @@ def load(b):
         end_key = keys[2] if end else None  # a range is one edge to its first verse (dec. 52)
         for here, there, direction in ((keys[0], keys[1], "out"), (keys[1], keys[0], "in")):
             edges[here][there].append((int(votes), direction, end_key))
-    for ref, count in missing.items():
-        cause = "OpenBible cross-reference with no Verse Key (dropped)"
-        b.report("verse_mismatches", verse=ref, cause=cause, count=count)
+    report_mismatches(b, missing, "OpenBible cross-reference with no Verse Key (dropped)")
 
     def edge(votes, direction, end_key):
         e = {"edge": "CROSS_REF", "direction": direction, "votes": votes, **openbible}
@@ -59,37 +55,4 @@ def load(b):
         for v in verses:
             v["cross_references"] = neighbours(v["key"])
             ring1.update(n["id"] for n in v["cross_references"])
-    b.ring2 = {
-        key: [{"id": n["id"], "weight": n["weight"]} for n in neighbours(key)[:RING2_TOP]]
-        for key in ring1
-    }
-    b.new_report("split_or_trimmed", "path", "action", "dropped", "lowest_weight_kept")
-
-
-def fit(b, path, data, lists):
-    """Drop the lowest weight entries of `lists` (lists inside `data`) until `data` is below the
-    size limit (PRD 8.2), and report it. Searches for the fewest entries to drop."""
-    if len(to_json(data).encode()) < b.size_limit:
-        return
-    original = [list(entries) for entries in lists]
-    ranked = sorted((e for entries in original for e in entries), key=lambda e: e["weight"])
-
-    def drop(n):
-        gone = {id(e) for e in ranked[:n]}
-        for entries, before in zip(lists, original):
-            entries[:] = [e for e in before if id(e) not in gone]
-        return len(to_json(data).encode()) < b.size_limit
-
-    path = path.relative_to(b.out).as_posix()
-    if not drop(len(ranked)):  # keep them all; the files report flags the file
-        drop(0)
-        action = "not trimmed: over the limit even with no cross-references"
-        b.report("split_or_trimmed", path=path, action=action, dropped=0, lowest_weight_kept="")
-        return
-    lo, hi = 0, len(ranked)
-    while lo < hi:
-        mid = (lo + hi) // 2
-        lo, hi = (lo, mid) if drop(mid) else (mid + 1, hi)
-    drop(lo)
-    kept = ranked[lo]["weight"] if lo < len(ranked) else ""
-    b.report("split_or_trimmed", path=path, action="trimmed", dropped=lo, lowest_weight_kept=kept)
+    b.ring2 = {key: ring2_entries(neighbours(key)) for key in ring1}

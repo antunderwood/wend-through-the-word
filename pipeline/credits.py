@@ -6,6 +6,7 @@ import sys
 
 REPO = "https://github.com/antunderwood/wend-through-the-word"
 THEOGRAPHIC = "https://github.com/robertrouse/theographic-bible-metadata"
+CHECK_ONLY = {"tipnr"}  # read to check the data; credited, but not shipped data (decision 46)
 
 # The part of a SOURCES name before the first "-" (so "theo-people" is "theo") -> credit.
 CREDITS = {

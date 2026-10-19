@@ -5,15 +5,10 @@ import subprocess
 
 import pytest
 from conftest import CURATED as CURATED_FIXTURES
-from conftest import VERSION, read_json, read_tsv, run_build
+from conftest import entity, read_tsv, run_build
 
 CURATED = {"source": "Curated", "licence": "CC BY-SA 4.0"}
 THEOGRAPHIC = {"source": "Theographic", "licence": "CC BY-SA 4.0"}
-
-
-def entity(export, entity_id):
-    kind, name = entity_id.split(":")
-    return read_json(export / "data" / VERSION / "entity" / kind / f"{name}.json")
 
 
 def edges(export, entity_id, other_id):
@@ -45,14 +40,14 @@ def edge_types(export, entity_id, other_id):
 
 
 def test_each_partner_relation_value_gives_its_edges(export):
-    # spouse;concubine: both, each with the row's evidence. CONCUBINE_OF runs from her to him.
+    # spouse and concubine: one row each, so each edge cites only the verse that supports it.
+    # CONCUBINE_OF runs from her to him.
     hagar = edges(export, "person:abraham_58", "person:hagar_1348")
-    assert [(e["edge"], e["direction"]) for e in hagar] == [
-        ("CONCUBINE_OF", "in"),
-        ("SPOUSE_OF", "both"),
+    assert [(e["edge"], e["direction"], e["evidence"]) for e in hagar] == [
+        ("CONCUBINE_OF", "in", evidence("Gen.25.6")),
+        ("SPOUSE_OF", "both", evidence("Gen.16.3")),
     ]
     for e in hagar:
-        assert e["evidence"] == evidence("Gen.16.3", "Gen.25.6")
         assert e["request"] == "https://github.com/antunderwood/wend-through-the-word/issues/900"
     assert edge_types(export, "person:hagar_1348", "person:abraham_58") == [
         ("CONCUBINE_OF", "out"),
@@ -92,10 +87,11 @@ def test_an_unreviewed_row_does_not_ship_and_is_reported(export):
         {"table": "corrections", "line": "8", "ids": "person:isaac_616 gender", "detail": "no"},
         {
             "table": "partners",
-            "line": "7",
+            "line": "8",
             "ids": "person:esau_1216 person:adah_414",
             "detail": "no",
         },
+        {"table": "themes_keep", "line": "3", "ids": "MASTER", "detail": "no"},
     ]
 
 
@@ -164,7 +160,7 @@ def test_a_row_that_no_longer_matches_is_not_applied_and_is_reported(export):
         },
         {
             "table": "partners",
-            "line": "8",
+            "line": "9",
             "ids": "person:abraham_58 person:nobody_0",
             "detail": "person:nobody_0 is not in Theographic",
         },
@@ -179,7 +175,7 @@ def test_rows_that_fix_plain_theographic_errors_are_listed_for_upstream_reportin
         ("corrections", "6"),
         ("corrections", "7"),
         ("corrections", "8"),
-        ("partners", "6"),
+        ("partners", "7"),
     ]
 
 
@@ -194,11 +190,12 @@ def test_an_alias_correction_removes_or_replaces_one_alias_and_every_alias_is_re
     assert "firstborn" not in [r["alias"] for r in rows]
 
 
-def broken_tables(tmp_path, evidence):
+def broken_tables(tmp_path, new, table="possibly_same.csv", old="Gen.26.34;Gen.36.2;Gen.36.24"):
+    """A copy of the fixture tables with `old` replaced by `new` in one table."""
     folder = tmp_path / "curated"
     shutil.copytree(CURATED_FIXTURES, folder)
-    table = folder / "possibly_same.csv"
-    table.write_text(table.read_text().replace("Gen.26.34;Gen.36.2;Gen.36.24", evidence))
+    path = folder / table
+    path.write_text(path.read_text().replace(old, new))
     return folder
 
 
@@ -215,3 +212,12 @@ def test_a_row_with_no_evidence_or_evidence_that_does_not_parse_fails_the_build(
     with pytest.raises(subprocess.CalledProcessError):
         run_build(tmp_path / "out", curated=broken_tables(tmp_path, bad))
     assert message in capfd.readouterr().err
+
+
+def test_a_partner_row_with_two_relations_fails_the_build(tmp_path, capfd):
+    # One row per relation, so each edge carries only its own evidence.
+    new, old = "timna_2860,spouse;concubine", "timna_2860,concubine"
+    folder = broken_tables(tmp_path, new, "partners.csv", old)
+    with pytest.raises(subprocess.CalledProcessError):
+        run_build(tmp_path / "out", curated=folder)
+    assert "partners.csv line 5: relation spouse;concubine is not one of" in capfd.readouterr().err

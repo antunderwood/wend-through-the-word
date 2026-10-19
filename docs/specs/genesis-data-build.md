@@ -151,8 +151,8 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 
 ### Partners
 
-- `partners.csv` relation values: `spouse`, `concubine`, `spouse;concubine`, `partner`, `none`.
-- `spouse` gives SPOUSE_OF, `concubine` gives CONCUBINE_OF, both give both, `partner` gives PARTNER_OF, `none` gives no partner edge.
+- `partners.csv` relation values: `spouse`, `concubine`, `partner`, `none`. A pair that is both wife and concubine has one row for each, each with its own evidence (decision 104).
+- `spouse` gives SPOUSE_OF, `concubine` gives CONCUBINE_OF, `partner` gives PARTNER_OF, `none` gives no partner edge.
 - A Theographic partner pair with no row ships as PARTNER_OF and is reported as uncurated.
 
 ### Curated tables
@@ -163,7 +163,10 @@ Current headers (on `main`):
 partners.csv       man_id,woman_id,relation,evidence,note,reviewed,request
 possibly_same.csv  a_id,b_id,evidence,note,reviewed,request
 corrections.csv    id,field,was,value,evidence,note,reviewed,request
+themes_keep.csv    heading,evidence,note,reviewed,request
 ```
+
+- `themes_keep.csv` lists Nave's headings that stay Themes although they match a Theographic Person or Place by name or alias (decision 103).
 
 - `was` in `corrections.csv` is the upstream value the row was written against (for Anah: `F`). It makes a changed value detectable (decision 35).
 
