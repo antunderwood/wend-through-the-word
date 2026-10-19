@@ -55,6 +55,8 @@ def test_bsb_verse_with_no_theographic_key_is_reported(export):
 
 def test_every_node_and_edge_has_source_and_licence(export):
     for path in (export / "data").rglob("*.json"):
+        if path.name == "search-index.json":
+            continue  # labels only; each node's source and licence are in its entity file
         for item in nodes_and_edges(read_json(path)):
             assert item.get("source") and item.get("licence"), (path.name, item)
 

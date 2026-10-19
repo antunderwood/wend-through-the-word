@@ -98,9 +98,12 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 62. **A Person's or Place's `name` is Theographic's `displayTitle`, not its `name`.** Reason: `displayTitle` tells apart people with the same name ("Abimelech (King of Gerar)"), and Theographic's `name` for Jacob (`israel_682`) is "Israel", while `displayTitle` is "Jacob (Israel)". A Person's `aliases` come from `alsoCalled`. Events keep `title`; People Groups use `groupName`.
 
-## 2026-10-19: Cross-references and chapter Ring 2 (#9)
+## 2026-10-19: Search index and credits (#5)
 
-Numbers start at 65, because ticket #5 records decisions 63 and 64.
+63. **Search index entries carry no `source` or `licence`.** Each entry is a label (ID, type, name, aliases) for an Entity whose file already carries them, so the provenance test skips `search-index.json`. Reason: repeating them on every entry adds size to the file the front end loads first, and the index is not a node or an edge.
+64. **The build stops when it reads a source that has no credit in `pipeline/credits.py`.** Easton's is credited as its own source whenever a Dictionary Entry ships. Reason: the credits file must list every source the build read (PRD 5, rule 6), so a new source cannot ship without its credit wording and link.
+
+## 2026-10-19: Cross-references and chapter Ring 2 (#9)
 
 65. **A Verse's Ring 1 in its chapter file holds every cross-reference with an end at that Verse, sorted by Votes.** Each entry is one edge: the other Verse Key, `direction` (`out` when this Verse is OpenBible's From verse, `in` otherwise), Votes as `weight`, and `to_end_key` for a range. When OpenBible has both A to B and B to A, A lists B twice, once in each direction, with their own Votes. Reason: the front end needs every cross-reference for Overflow lists and the Votes filter, Genesis fits (the largest chapter file is far below 500 KB), and keeping both directions keeps every OpenBible row as it is. The prototype kept the higher Votes of a pair; the front end can do that when it draws Ring 1.
 66. **The chapter Ring 2 sidecar (`{chapter}.ring2.json`) is keyed by the Verse Key of each cross-reference in the chapter's Ring 1.** Each key holds that Verse's top 10 cross-referenced Verses as `{id, weight}`: Votes, both directions, with the higher Votes when a pair has both. A range counts at its first verse (decision 52). The file names `source` and `licence` once, so the provenance test skips `{id, weight}` entries. Entities in a Verse's Ring 1 have no Ring 2 here yet: their top Neighbours depend on CO_MENTION and ranking (#8). Reason: keying by Ring 1 node, not by Verse, stores each node once per chapter, and 10 lets the browser filter and still show 3 (PRD 10.4).

@@ -49,6 +49,13 @@ def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
     assert not [r for r in rows if "mention" in r["cause"]]
 
 
+def test_a_search_for_abraham_returns_abraham_and_the_index_is_below_500_kb_compressed(genesis):
+    from test_search_and_credits import compressed_size, search, search_index
+
+    assert search(search_index(genesis), "Abraham") == ["person:abraham_58"]
+    assert compressed_size(genesis) < 500 * 1000
+
+
 def test_creation_in_4004_bc_is_exported_as_minus_4003(genesis):
     event = read_json(genesis / "data" / VERSION / "entity" / "event" / "1.json")
     assert event["event_year"] == -4003
