@@ -180,7 +180,7 @@ corrections.csv    id,field,was,value,evidence,note,reviewed,request
 
 ### Coordinates
 
-- Each coordinate records `coord_source`. Allowed values: OpenBible (CC BY points only), Pleiades, Wikidata, GeoNames.
+- Each coordinate records `coord_source`. Allowed values: OpenBible (CC BY points only), Pleiades, Wikidata, GeoNames, Curated (decision 89).
 - An OpenBible point whose `coordinates_source.type` is `osm`, or which came from the commercial source, is dropped before any lookup.
 
 ### Static export

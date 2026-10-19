@@ -79,8 +79,14 @@ def shipped_points(export):
 def openstreetmap_points(sources):
     """Coordinate source -> its points that come from OpenStreetMap: OpenBible modern records
     whose source or geometry is OpenStreetMap, Pleiades OpenStreetMap locations, and Wikidata
-    coordinates whose reference cites OpenStreetMap. GeoNames has none."""
-    points = {"OpenBible": set(), "Pleiades": set(), "Wikidata": set(), "GeoNames": set()}
+    coordinates whose reference cites OpenStreetMap. GeoNames and Curated have none."""
+    points = {
+        "OpenBible": set(),
+        "Pleiades": set(),
+        "Wikidata": set(),
+        "GeoNames": set(),
+        "Curated": set(),
+    }
     for line in (sources / "modern.jsonl").read_text().splitlines():
         rec = json.loads(line)
         if rec.get("coordinates_source", {}).get("type") == "osm" or "geometry_credit" in rec:
@@ -108,7 +114,13 @@ def openstreetmap_shipped(export, sources):
 
 def test_no_shipped_coordinate_has_an_openstreetmap_source(export):
     shipped = shipped_points(export)
-    assert {p["coord_source"] for p in shipped} <= {"OpenBible", "Pleiades", "Wikidata", "GeoNames"}
+    assert {p["coord_source"] for p in shipped} <= {
+        "OpenBible",
+        "Pleiades",
+        "Wikidata",
+        "GeoNames",
+        "Curated",
+    }
     assert not openstreetmap_shipped(export, FIXTURES)
     openbible = [p for p in shipped if p["coord_source"] == "OpenBible"]
     assert sorted(p["id"].split(":")[1] for p in openbible) == [

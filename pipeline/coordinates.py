@@ -7,6 +7,7 @@ identification's `score.time_total` (decision 60). Theographic coordinates never
 
 A dropped point (OpenStreetMap, commercial, or Google) is looked up again, offline, in Pleiades,
 then Wikidata, then GeoNames, by the IDs its OpenBible location cites (decisions 82 to 85).
+A reviewed `coordinates` row in the curated corrections sets or removes a point (decision 89).
 """
 
 import csv
@@ -46,8 +47,15 @@ def load(b):
         if e["type"] != "place":
             continue
         ob_ids = links.get(e["id"].split(":", 1)[1], [])
+        fix = next((r for r in b.corrections.get(e["id"], []) if r["field"] == "coordinates"), None)
         found = openbible_point(ob_ids, ancient, modern, wikidata)
-        if isinstance(found, str):
+        if fix and fix["value"]:  # the owner's point replaces any other (decision 89)
+            lat, lon = map(float, fix["value"].split(","))
+            e.update(lat=lat, lon=lon, coord_source="Curated")
+        elif fix:
+            cause = "point removed by a curated correction"
+            b.report("no_coordinate", place=e["id"], openbible=" ".join(ob_ids), cause=cause)
+        elif isinstance(found, str):
             b.report("no_coordinate", place=e["id"], openbible=" ".join(ob_ids), cause=found)
         elif found[2]:
             dropped.append((e, ob_ids, *found))
