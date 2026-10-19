@@ -574,6 +574,7 @@ async function refresh(focusChanged) {
 // The panel list belongs to listOwner. A click inside the list selects a node but keeps the list,
 // so the second click of a double click lands on the same item.
 let listOwner = START;
+const expanded = new Set(); // "owner|type" lists opened with "and N more"
 const kinIds = links => links.filter(l => l.type === "person" && l.edges.some(e => KIN.has(e.edge))).map(l => l.id);
 
 async function dispatch(a, keepList = false) {
@@ -686,8 +687,9 @@ function renderList() {
     if (!list.length) continue;
     const more = list.length - state.filters.k;
     h += `<div class="small" style="margin-top:6px"><b>${TYPE_NAME[ty]}</b> <span class="muted">(${list.length})</span></div>
-      <ul class="list">${list.slice(0, state.filters.k).map(l => item(l.id, FocusModel.relation(l, data.genderOf).text)).join("")}</ul>
-      ${more > 0 ? `<div class="muted small">and ${more} more</div>` : ""}`;
+      ${(() => { const key = `${id}|${ty}`, open = expanded.has(key), shown = open ? list : list.slice(0, state.filters.k);
+        return `<ol class="list">${shown.map(l => item(l.id, FocusModel.relation(l, data.genderOf).text)).join("")}</ol>
+      ${more > 0 ? `<a href="#" class="small" data-act="expand" data-v="${esc(key)}">${open ? "show fewer" : `and ${more} more`}</a>` : ""}`; })()}`;
   }
   return h;
 }
@@ -769,6 +771,7 @@ document.addEventListener("click", e => {
   else if (act === "prevVariant") cycle(-1);
   else if (act === "nextVariant") cycle(1);
   else if (act === "togglePanel") document.body.classList.toggle("collapsed");
+  else if (act === "expand") { expanded.has(t.dataset.v) ? expanded.delete(t.dataset.v) : expanded.add(t.dataset.v); renderUI(); }
 });
 document.addEventListener("keydown", e => {
   if (e.target.closest("input, select, textarea")) return;
