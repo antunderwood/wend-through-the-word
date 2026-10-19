@@ -1,0 +1,785 @@
+<!doctype html>
+<!--
+  PROTOTYPE. Throwaway. Answers one question for M3: what should navigating the Genesis graph look like in 2.5D?
+  Plan: Three variants of 2.5D navigation, switchable via ?variant=A|B|C, on the real Genesis export.
+  Run: from the repo root, `uv run python -m http.server 8000`, then open
+       http://localhost:8000/prototypes/navigation/?variant=A
+  Rules and data loading live in model.js (shared by all variants). Everything below is view code.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation prototype</title>
+<style>
+  :root {
+    --bg: #0d0f17; --panel: rgba(18, 21, 32, 0.9); --text: #e6e8f0; --muted: #9aa0b4; --line: rgba(255, 255, 255, 0.12);
+    --accent: #ffd27a; --shared: #4ff0e0; --pin: #ff9f6e;
+    --person: #6fa8dc; --place: #6cc4a1; --event: #e6b85c; --group: #b48ee0; --theme: #e0869b; --verse: #a9b1c6;
+  }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { display: block; touch-action: none; }
+  .labels { position: absolute; top: 0; left: 0; pointer-events: none; }
+  .nl { pointer-events: auto; cursor: pointer; white-space: nowrap; font-size: 12px; margin-top: 9px; padding: 0 3px;
+    border-radius: 3px; text-shadow: 0 0 3px #000, 0 0 6px #000; user-select: none; }
+  .nl.focus { font-size: 17px; font-weight: 650; color: var(--accent); text-align: center; white-space: normal; width: 240px; margin-top: 22px; }
+  .nl.focus small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+  .nl.overflow { color: var(--muted); font-style: italic; }
+  .nl.pinned { border: 1px solid var(--pin); color: var(--pin); }
+  .nl.pinring { font-size: 11px; color: var(--muted); }
+  .nl.shared { border: 1px solid var(--shared); }
+  .el { font-size: 10px; color: #c8cde0; opacity: 0.7; text-shadow: 0 0 3px #000; pointer-events: none; white-space: nowrap; }
+  .el.derived { font-style: italic; opacity: 0.5; }
+  .sector { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.25); pointer-events: none; }
+
+  #crumbs { position: fixed; top: 10px; left: 10px; right: 380px; display: flex; gap: 4px; align-items: center;
+    overflow-x: auto; white-space: nowrap; padding: 6px 8px; background: var(--panel); border-radius: 8px; border: 1px solid var(--line); }
+  body.collapsed #crumbs { right: 60px; }
+  .crumb-title { color: var(--muted); font-size: 12px; margin-right: 4px; }
+  .crumb { color: var(--text); text-decoration: none; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); font-size: 12px; opacity: 0.55; }
+  .crumb.drawn { opacity: 0.85; }
+  .crumb.current { border-color: var(--accent); color: var(--accent); opacity: 1; }
+  .crumb.sel { background: rgba(255, 255, 255, 0.12); }
+  .sep { color: var(--muted); font-size: 11px; }
+
+  #votesChip { position: fixed; top: 58px; left: 10px; max-width: 330px; padding: 8px 10px; background: var(--panel);
+    border-radius: 8px; border: 1px solid var(--line); font-size: 12px; }
+  #votesChip:empty { display: none; }
+  .votes input { width: 100%; }
+  #trimNote { position: fixed; left: 12px; bottom: 16px; font-size: 12px; color: var(--muted); }
+  #tooltip { position: fixed; pointer-events: none; padding: 6px 8px; background: rgba(0, 0, 0, 0.85); border: 1px solid var(--line);
+    border-radius: 6px; font-size: 12px; max-width: 320px; z-index: 5; }
+
+  #panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(360px, 92vw); box-sizing: border-box; padding: 12px 14px 90px;
+    overflow-y: auto; background: var(--panel); border-left: 1px solid var(--line); transition: transform 0.2s; z-index: 4; }
+  body.collapsed #panel { transform: translateX(100%); }
+  #panelToggle { position: fixed; top: 10px; right: 10px; z-index: 6; }
+  body:not(.collapsed) #panelToggle { right: min(370px, calc(92vw + 10px)); }
+  #panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 18px 0 6px; font-weight: 600; }
+  .proto { display: inline-block; background: #ff5c5c; color: #000; font-weight: 700; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
+  table.kv { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.kv td { padding: 2px 0; vertical-align: top; }
+  table.kv td:first-child { color: var(--muted); padding-right: 8px; white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .warn { color: #ff9f9f; }
+  button { font: inherit; font-size: 13px; color: var(--text); background: rgba(255, 255, 255, 0.08); border: 1px solid var(--line);
+    border-radius: 6px; padding: 4px 9px; cursor: pointer; }
+  button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.16); }
+  button:disabled { opacity: 0.35; cursor: default; }
+  button.on { border-color: var(--accent); color: var(--accent); }
+  .btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  ul.list, ol.list { margin: 4px 0 8px; padding-left: 20px; font-size: 13px; }
+  ul.list a, ol.list a { color: var(--text); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: baseline; }
+  .t-person { background: var(--person); } .t-place { background: var(--place); } .t-event { background: var(--event); }
+  .t-group { background: var(--group); } .t-theme { background: var(--theme); } .t-verse { background: var(--verse); }
+  a.lk { color: var(--text); }
+  blockquote { margin: 8px 0; padding-left: 10px; border-left: 3px solid var(--line); font-family: Georgia, "Times New Roman", serif; font-size: 15px; }
+  details p { font-size: 13px; }
+  .notice { font-size: 12px; color: var(--accent); height: 3.2em; overflow-y: auto; }
+  /* Fixed height so the list below never moves under the cursor between the two clicks of a double click. */
+  #pSel { height: 300px; overflow-y: auto; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+
+  #pill { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 7; display: flex; align-items: center; gap: 8px;
+    background: #fff; color: #000; border-radius: 999px; padding: 6px 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); font-weight: 650; }
+  #pill button { background: #000; color: #fff; border: 0; border-radius: 999px; width: 34px; height: 34px; font-size: 18px; padding: 0; }
+  #pill .proto { margin-left: 2px; }
+  #pillLabel { min-width: 150px; text-align: center; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="stage"></div>
+<nav id="crumbs" aria-label="Your Path"></nav>
+<div id="votesChip"></div>
+<div id="trimNote"></div>
+<div id="tooltip" hidden></div>
+<button id="panelToggle" data-act="togglePanel">Panel</button>
+<aside id="panel">
+  <div><span class="proto">PROTOTYPE</span> <span class="muted small">Throwaway. 2.5D navigation, variant <b id="pVariant"></b></span></div>
+  <div id="pHint" class="muted small" style="margin-top:6px"></div>
+  <p id="pNotice" class="notice"></p>
+  <section id="pSel"></section>
+  <section id="pList"></section>
+  <section id="pState"></section>
+  <section id="votesSlot"></section>
+  <section id="pPins"></section>
+  <section id="pPath"></section>
+</aside>
+<div id="pill"><span class="proto">PROTOTYPE</span>
+  <button data-act="prevVariant" aria-label="Previous variant">&larr;</button>
+  <span id="pillLabel"></span>
+  <button data-act="nextVariant" aria-label="Next variant">&rarr;</button>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+import { TYPES, TYPE_NAME, TYPE_PLURAL, ROLE_NAME, typeOf, FocusModel, createData } from "./model.js";
+
+const START = "person:abraham_58";
+const DOUBLE_CLICK_MS = 400;
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = sel => document.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// ---------- Data ----------
+const jsonCache = new Map();
+const getJSON = url => {
+  if (!jsonCache.has(url)) jsonCache.set(url, fetch(url).then(r => { if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }));
+  return jsonCache.get(url);
+};
+const data = createData(getJSON, "../../out/data");
+const label = id => {
+  if (typeOf(id) !== "overflow") return data.label(id);
+  const t = id.slice("overflow:".length);
+  return `+${lastScene?.overflow[t]?.length ?? 0} ${TYPE_PLURAL[t]}`;
+};
+
+// ---------- Look ----------
+const BG = 0x0d0f17, ACCENT = 0xffd27a, SHARED = 0x4ff0e0, PIN = 0xff9f6e;
+const TYPE_COLOUR = { person: 0x6fa8dc, place: 0x6cc4a1, event: 0xe6b85c, group: 0xb48ee0, theme: 0xe0869b, verse: 0xa9b1c6 };
+const TYPE_LETTER = { person: "P", place: "L", event: "E", group: "G", theme: "T", verse: "V" };
+const STYLE = {
+  focus: { size: 4.2, opacity: 1, labelled: true },
+  ring1: { size: 2.0, opacity: 0.95, labelled: true },
+  pinned: { size: 2.6, opacity: 1, labelled: true },
+  overflow: { size: 1.8, opacity: 0.75, labelled: true },
+  pinring: { size: 1.3, opacity: 0.8, labelled: false },
+  path: { size: 1.5, opacity: 0.45, labelled: false },
+  ring2: { size: 0.8, opacity: 0.32, labelled: false },
+};
+const EDGE = {
+  focus: { color: 0xc8cde0, opacity: 0.55 }, overflow: { color: 0x8a90a8, opacity: 0.25 },
+  path: { color: ACCENT, opacity: 0.5 }, pin: { color: PIN, opacity: 0.4 }, ring2: { color: 0x8a90a8, opacity: 0.14 },
+};
+function canvasTex(draw) {
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  draw(c.getContext("2d"));
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const discWith = text => canvasTex(g => {
+  g.fillStyle = "#fff"; g.beginPath(); g.arc(64, 64, 58, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(0,0,0,0.55)"; g.font = "bold 56px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, 64, 68);
+});
+const TEX = {
+  type: Object.fromEntries(TYPES.map(t => [t, discWith(TYPE_LETTER[t])])),
+  plus: discWith("+"),
+  ring: canvasTex(g => { g.strokeStyle = "#fff"; g.lineWidth = 9; g.beginPath(); g.arc(64, 64, 54, 0, Math.PI * 2); g.stroke(); }),
+  glow: canvasTex(g => {
+    const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    r.addColorStop(0, "rgba(255,255,255,0.8)"); r.addColorStop(0.35, "rgba(255,255,255,0.25)"); r.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  }),
+};
+
+// ---------- Variants: only camera, controls, layout and decoration differ ----------
+const W = (Math.PI * 2) / TYPES.length;   // one sector per node type
+const sectorAngle = (ti, j, m) => -Math.PI / 2 + ti * W + ((j + 0.5) / m - 0.5) * W * 0.85;
+const flat = (a, r, y = 0) => new THREE.Vector3(Math.cos(a) * r, y, Math.sin(a) * r);
+const sph = (az, el, r) => new THREE.Vector3(Math.cos(el) * Math.cos(az) * r, Math.sin(el) * r, Math.cos(el) * Math.sin(az) * r);
+const ring = (r, y, color, opacity) => new THREE.LineLoop(
+  new THREE.BufferGeometry().setFromPoints(Array.from({ length: 96 }, (_, i) => flat((i / 96) * Math.PI * 2, r, y))),
+  new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
+
+const VARIANTS = {
+  A: {
+    name: "Tilted plane",
+    hint: "A: one ground plane, camera fixed at about 50 degrees. Drag to pan, wheel or pinch to zoom. No rotation.",
+    setup(camera, controls) {
+      const tilt = THREE.MathUtils.degToRad(50), d = 95;
+      camera.position.set(0, Math.sin(tilt) * d, Math.cos(tilt) * d);
+      controls.enableRotate = false;
+      controls.screenSpacePanning = false;   // pan along the ground plane
+      controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
+      controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
+      controls.minDistance = 20; controls.maxDistance = 240;
+    },
+    decorate() {
+      const g = new THREE.Group();
+      const grid = new THREE.PolarGridHelper(40, 6, 4, 96, 0x3a4060, 0x262a3c);
+      grid.material.transparent = true; grid.material.opacity = 0.6;
+      g.add(grid);
+      return g;
+    },
+    centreFrom: p => new THREE.Vector3(p.x, 0, p.z),
+    place: {
+      focus: () => new THREE.Vector3(),
+      ring1: (a, j) => flat(a, 17 + (j % 2) * 4),
+      ring2: (a, rank) => flat(a, 32 + rank * 2.5),
+      path: i => new THREE.Vector3(-50 - i * 6, 0, 14 + i * 2),
+      pin: i => new THREE.Vector3(-26 + i * 26, 0, -62),   // far side of the plane, clear of the panel
+      pinRing: (p, ti, rank) => p.clone().add(flat(-Math.PI / 2 + ti * W + (rank - 1) * 0.3, 8)),
+      sector: a => flat(a, 42),
+    },
+  },
+  B: {
+    name: "Stacked discs",
+    hint: "B: Focus on top, Ring 1 on the disc below, Ring 2 on the lowest, wider disc. Drag to spin around the vertical axis, wheel or pinch to zoom.",
+    setup(camera, controls) {
+      const polar = THREE.MathUtils.degToRad(62), d = 105;
+      camera.position.set(0, Math.cos(polar) * d, Math.sin(polar) * d);
+      controls.enablePan = false;
+      controls.minPolarAngle = controls.maxPolarAngle = polar;   // turntable only
+      controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
+      controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
+      controls.minDistance = 25; controls.maxDistance = 240;
+    },
+    decorate() {
+      const g = new THREE.Group();
+      for (const [y, r] of [[0, 24], [-12, 40]]) {
+        const disc = new THREE.Mesh(new THREE.CircleGeometry(r, 96),
+          new THREE.MeshBasicMaterial({ color: 0x8090c0, transparent: true, opacity: 0.06, side: THREE.DoubleSide, depthWrite: false }));
+        disc.rotation.x = -Math.PI / 2; disc.position.y = y;
+        g.add(disc, ring(r, y, 0x5a6390, 0.5));
+      }
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -12, 0), new THREE.Vector3(0, 12, 0)]),
+        new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.25 })));
+      return g;
+    },
+    centreFrom: p => new THREE.Vector3(p.x, 0, p.z),
+    place: {
+      focus: () => new THREE.Vector3(0, 12, 0),
+      ring1: (a, j) => flat(a, 17 + (j % 2) * 4, 0),
+      ring2: (a, rank) => flat(a, 32 + rank * 2.5, -12),
+      path: i => new THREE.Vector3(-(7 + i * 6), 12 + (i + 1) * 3, 0),
+      pin: i => flat(-Math.PI / 2 + (i - 1) * 0.8, 50, 12),
+      pinRing: (p, ti, rank) => p.clone().add(flat(-Math.PI / 2 + ti * W + (rank - 1) * 0.3, 8, -4)),
+      sector: a => flat(a, 25, 0),
+    },
+  },
+  C: {
+    name: "Free orbit",
+    hint: "C (control case): a 3D layout. Drag to orbit freely, right drag to pan, wheel or pinch to zoom.",
+    setup(camera, controls) {
+      camera.position.set(30, 40, 78);
+      controls.minDistance = 15; controls.maxDistance = 260;
+    },
+    decorate: null,
+    centreFrom: p => p.clone(),
+    place: {
+      focus: () => new THREE.Vector3(),
+      ring1: (a, j) => sph(a, ((j % 3) - 1) * 0.4, 16 + (j % 2) * 3),
+      ring2: (a, rank, parent) => sph(a, Math.asin(THREE.MathUtils.clamp(parent.y / parent.length(), -1, 1)) + (rank - 1) * 0.14, 31 + rank * 2),
+      path: i => new THREE.Vector3(-1, -0.7, -0.8).normalize().multiplyScalar(44 + i * 5),
+      pin: i => new THREE.Vector3(-26 + i * 26, 34, -24),
+      pinRing: (p, ti, rank) => p.clone().add(sph(-Math.PI / 2 + ti * W + (rank - 1) * 0.3, (rank - 1) * 0.5, 8)),
+      sector: a => sph(a, 0, 24),
+    },
+  },
+};
+const VARIANT_KEYS = Object.keys(VARIANTS);
+
+// Positions relative to the scene centre, the same skeleton for every variant.
+function layout(sc, P) {
+  const rel = new Map(), r1 = new Map();
+  for (const n of sc.nodes) if (n.ring1) {
+    const a = sectorAngle(n.ring1.ti, n.ring1.pos, n.ring1.m);
+    r1.set(n.id, { a, m: n.ring1.m, p: P.ring1(a, n.ring1.pos) });
+  }
+  for (const n of sc.nodes) {
+    if (n.role === "focus") rel.set(n.id, P.focus());
+    else if (n.role === "ring1" || n.role === "overflow") rel.set(n.id, r1.get(n.id).p);
+    else if (n.role === "pinned") rel.set(n.id, P.pin(n.pinIndex));
+    else if (n.role === "path") rel.set(n.id, P.path(n.pathIndex));
+  }
+  for (const n of sc.nodes) {
+    if (n.role === "pinring") rel.set(n.id, P.pinRing(rel.get(n.pin), n.ti, n.rank));
+    else if (n.role === "ring2") {
+      const par = r1.get(n.via);
+      rel.set(n.id, P.ring2(par.a + (n.rank - 1) * (W * 0.85 / par.m) * 0.3, n.rank, par.p));
+    }
+  }
+  return rel;
+}
+
+// ---------- View: one three.js scene per variant; disposed and rebuilt on switch ----------
+function makeView(key, host, hooks) {
+  const V = VARIANTS[key];
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  host.appendChild(renderer.domElement);
+  const labels = new CSS2DRenderer();
+  labels.setSize(window.innerWidth, window.innerHeight);
+  labels.domElement.className = "labels";
+  host.appendChild(labels.domElement);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(BG);
+  scene.fog = new THREE.Fog(BG, 90, 240);
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 1000);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  V.setup(camera, controls);
+  controls.update();
+
+  const deco = V.decorate ? V.decorate() : new THREE.Group();
+  const sectors = [];
+  TYPES.forEach((t, ti) => {
+    const d = document.createElement("div"); d.className = "sector"; d.textContent = TYPE_PLURAL[t];
+    const o = new CSS2DObject(d); o.position.copy(V.place.sector(-Math.PI / 2 + ti * W)); deco.add(o); sectors.push(d);
+  });
+  scene.add(deco);
+  const world = new THREE.Group(); scene.add(world);
+
+  let centre = new THREE.Vector3();
+  let nodeObjs = new Map(), edgeObjs = [], faint = null, faintPairs = [], domEls = [];
+  let anim = null, glide = null, raf = 0, frames = 0, fpsT = performance.now();
+  const selRing = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.ring, color: 0xffffff, transparent: true, depthWrite: false }));
+  const SEG = 12, curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()), tmp = new THREE.Vector3();
+
+  function clear() {
+    for (const o of nodeObjs.values()) { world.remove(o.group); o.group.traverse(c => c.material?.dispose?.()); }
+    for (const o of edgeObjs) { world.remove(o.line); o.line.geometry.dispose(); o.line.material.dispose(); if (o.lab) world.remove(o.lab); }
+    if (faint) { world.remove(faint); faint.geometry.dispose(); faint.material.dispose(); faint = null; }
+    domEls.forEach(d => d.remove()); domEls = [];   // CSS2D elements stay in the DOM unless removed by hand
+    nodeObjs = new Map(); edgeObjs = []; faintPairs = [];
+  }
+
+  function nodeLabel(n) {
+    const d = document.createElement("div");
+    d.className = `nl ${n.role}${n.shared ? " shared" : ""}`;
+    if (n.role === "focus") d.innerHTML = `${esc(label(n.id))}<small>${esc(hooks.firstLine(n.id))}</small>`;
+    else d.textContent = (n.role === "pinned" ? "Pinned: " : "") + label(n.id);
+    d.addEventListener("pointerdown", e => e.stopPropagation());
+    d.addEventListener("click", e => { e.stopPropagation(); hooks.onClick(n.id); });
+    d.addEventListener("pointerenter", e => hooks.onHover(n, e.clientX, e.clientY));
+    d.addEventListener("pointerleave", () => hooks.onHover(null));
+    const o = new CSS2DObject(d); o.center.set(0.5, 0);
+    domEls.push(d);
+    return o;
+  }
+
+  function sprite(map, color, opacity, size, blending = THREE.NormalBlending) {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map, color, transparent: true, opacity, depthWrite: false, blending }));
+    s.scale.setScalar(size); return s;
+  }
+
+  function render(sc, opts = {}) {
+    const prev = new Map([...nodeObjs].map(([id, o]) => [id, o.group.position.clone()]));
+    let origin = null;
+    if (opts.focusChanged) {
+      const p = prev.get(sc.focus);
+      const next = p ? V.centreFrom(p) : centre.clone();
+      origin = p ? p.clone() : next.clone();   // new nodes grow out of the clicked node
+      startGlide(next);
+      centre = next;
+    }
+    clear();
+    const rel = layout(sc, V.place);
+    for (const n of sc.nodes) {
+      const st = STYLE[n.role];
+      const to = rel.get(n.id).clone().add(centre);
+      const from = origin ? origin.clone() : (prev.get(n.id) ?? to.clone());
+      const group = new THREE.Group(); group.position.copy(from);
+      if (n.role === "focus") group.add(sprite(TEX.glow, ACCENT, 0.55, st.size * 3.2, THREE.AdditiveBlending));
+      const main = sprite(n.role === "overflow" ? TEX.plus : TEX.type[n.type], n.role === "focus" ? ACCENT : TYPE_COLOUR[n.type], st.opacity, st.size);
+      main.userData.id = n.id; group.add(main);
+      if (n.shared) group.add(sprite(TEX.ring, SHARED, 0.95, st.size * 1.5));
+      if (n.role === "pinned") group.add(sprite(TEX.ring, PIN, 0.95, st.size * 1.5));
+      if (st.labelled || n.shared) group.add(nodeLabel(n));
+      world.add(group);
+      nodeObjs.set(n.id, { group, sprite: main, from, to, node: n, size: st.size, baseOpacity: st.opacity });
+    }
+    for (const e of sc.edges) {
+      if (!nodeObjs.has(e.a) || !nodeObjs.has(e.b)) continue;
+      if (e.kind === "ring2") { faintPairs.push(e); continue; }
+      const s = EDGE[e.kind];
+      const mat = e.dashed
+        ? new THREE.LineDashedMaterial({ color: s.color, transparent: true, opacity: s.opacity, dashSize: 0.7, gapSize: 0.5 })
+        : new THREE.LineBasicMaterial({ color: s.color, transparent: true, opacity: s.opacity });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array((SEG + 1) * 3), 3));
+      const line = new THREE.Line(geo, mat); line.frustumCulled = false;
+      world.add(line);
+      let lab = null;
+      if (e.label) {
+        const d = document.createElement("div"); d.className = `el${e.dashed ? " derived" : ""}`; d.textContent = e.label;
+        domEls.push(d); lab = new CSS2DObject(d); world.add(lab);
+      }
+      edgeObjs.push({ e, line, lab });
+    }
+    if (faintPairs.length) {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(faintPairs.length * 6), 3));
+      faint = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: EDGE.ring2.color, transparent: true, opacity: EDGE.ring2.opacity }));
+      faint.frustumCulled = false; world.add(faint);
+    }
+    anim = { t0: performance.now(), dur: REDUCED || (!origin && !prev.size) ? 0 : 650 };
+    if (!opts.focusChanged) deco.position.copy(centre);
+    updateEdges();
+  }
+
+  function updateEdges() {
+    for (const o of edgeObjs) {
+      const a = nodeObjs.get(o.e.a).group.position, b = nodeObjs.get(o.e.b).group.position;
+      curve.v0.copy(a); curve.v2.copy(b);
+      curve.v1.copy(a).add(b).multiplyScalar(0.5); curve.v1.y += a.distanceTo(b) * 0.08;   // slight curve
+      const arr = o.line.geometry.attributes.position.array;
+      for (let i = 0; i <= SEG; i++) { curve.getPoint(i / SEG, tmp); arr[i * 3] = tmp.x; arr[i * 3 + 1] = tmp.y; arr[i * 3 + 2] = tmp.z; }
+      o.line.geometry.attributes.position.needsUpdate = true;
+      if (o.line.material.isLineDashedMaterial) o.line.computeLineDistances();
+      if (o.lab) curve.getPoint(0.62, o.lab.position);   // nearer the Neighbour, to spread the labels
+    }
+    if (faint) {
+      const arr = faint.geometry.attributes.position.array;
+      faintPairs.forEach((e, i) => {
+        const a = nodeObjs.get(e.a).group.position, b = nodeObjs.get(e.b).group.position;
+        arr.set([a.x, a.y, a.z, b.x, b.y, b.z], i * 6);
+      });
+      faint.geometry.attributes.position.needsUpdate = true;
+    }
+  }
+
+  function startGlide(next) {
+    const delta = next.clone().sub(centre);
+    const T0 = controls.target.clone(), P0 = camera.position.clone();
+    glide = { t0: performance.now(), dur: REDUCED ? 0 : 750, T0, P0, T1: T0.clone().add(delta), P1: P0.clone().add(delta), D0: centre.clone(), D1: next.clone() };
+  }
+
+  const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    if (glide) {
+      const k = ease(glide.dur ? Math.min(1, (now - glide.t0) / glide.dur) : 1);
+      controls.target.lerpVectors(glide.T0, glide.T1, k);
+      camera.position.lerpVectors(glide.P0, glide.P1, k);
+      deco.position.lerpVectors(glide.D0, glide.D1, k);
+      if (k >= 1) glide = null;
+    }
+    if (anim) {
+      const k = ease(anim.dur ? Math.min(1, (now - anim.t0) / anim.dur) : 1);
+      for (const o of nodeObjs.values()) o.group.position.lerpVectors(o.from, o.to, k);
+      updateEdges();
+      if (k >= 1) anim = null;
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    labels.render(scene, camera);
+    frames++;
+    if (now - fpsT >= 1000) { hooks.onFps(Math.round((frames * 1000) / (now - fpsT))); frames = 0; fpsT = now; }
+  }
+  raf = requestAnimationFrame(frame);
+
+  // Picking: a click is a pointer down and up without a drag.
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  function pick(ev) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects([...nodeObjs.values()].map(o => o.sprite), false)[0];
+    return hit ? hit.object.userData.id : null;
+  }
+  let down = null, hovered = null;
+  const el = renderer.domElement;
+  const onDown = e => { down = { x: e.clientX, y: e.clientY }; };
+  const onUp = e => {
+    if (!down) return;
+    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y); down = null;
+    if (moved > 5) return;
+    const id = pick(e); if (id) hooks.onClick(id);
+  };
+  const onMove = e => {
+    if (down) return;
+    const id = pick(e);
+    if (hovered && hovered !== id) { const o = nodeObjs.get(hovered); if (o) o.sprite.material.opacity = o.baseOpacity; }
+    hovered = id;
+    el.style.cursor = id ? "pointer" : "";
+    if (!id) return hooks.onHover(null);
+    const o = nodeObjs.get(id); o.sprite.material.opacity = Math.max(0.95, o.baseOpacity);   // Ring 2 lights up on hover
+    hooks.onHover(o.node, e.clientX, e.clientY);
+  };
+  el.addEventListener("pointerdown", onDown);
+  el.addEventListener("pointerup", onUp);
+  el.addEventListener("pointermove", onMove);
+  const onResize = () => {
+    renderer.setSize(window.innerWidth, window.innerHeight); labels.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+  };
+  window.addEventListener("resize", onResize);
+
+  function setSelected(id) {
+    selRing.removeFromParent();
+    const o = nodeObjs.get(id);
+    if (o) { selRing.scale.setScalar(o.size * 1.8); o.group.add(selRing); }
+  }
+
+  function dispose() {
+    cancelAnimationFrame(raf);
+    clear();
+    sectors.forEach(d => d.remove());
+    window.removeEventListener("resize", onResize);
+    controls.dispose(); renderer.dispose();
+    renderer.domElement.remove(); labels.domElement.remove();
+  }
+  return { render, setSelected, dispose };
+}
+
+// ---------- App state (in memory only) ----------
+let state, lastScene, view, variant, fps = 0;
+let votesWhere = "scene";
+let sceneSeq = 0;
+const KIN = new Set(["PARENT_OF", "SPOUSE_OF", "SIBLING_OF", "HALF_SIBLING_OF", "CONCUBINE_OF"]);
+
+const hooks = {
+  onClick: id => clickNode(id),
+  onHover: (n, x, y) => {
+    const tip = $("#tooltip");
+    if (!n) { tip.hidden = true; return; }
+    let h = `<b>${esc(label(n.id))}</b> <span class="muted">${esc(rolesText(n))}</span>`;
+    if (n.role === "ring2") h += `<div class="small">${esc(label(n.id))} &rarr; ${esc(label(n.via))} &rarr; ${esc(label(state.focus))}</div>`;
+    if (n.role === "pinring") h += `<div class="small">Around the Pinned Node ${esc(label(n.pin))}</div>`;
+    tip.innerHTML = h; tip.hidden = false;
+    tip.style.left = `${x + 14}px`; tip.style.top = `${y + 14}px`;
+  },
+  onFps: v => { fps = v; const f = $("#fps"); if (f) f.textContent = v; },
+  firstLine: id => {
+    const r = data.rec(id)?.raw;
+    const text = r?.text_bsb ?? r?.dictionary_entry?.text ?? "";
+    const first = text.split(/(?<=\.)\s(?=[A-Z])/)[0];
+    return first.length > 90 ? `${first.slice(0, 88)}...` : first;
+  },
+};
+
+function rolesText(n) {
+  const parts = n.roles.map(r => ROLE_NAME[r]);
+  if (n.shared) parts.push("Shared Node");
+  return parts.join(", ");
+}
+
+async function refresh(focusChanged) {
+  const my = ++sceneSeq;
+  await Promise.all([state.focus, ...state.pins].map(data.load));
+  // Family words follow the Neighbour's gender, which is in the Neighbour's own file.
+  const F = data.rec(state.focus);
+  const kin = F.links.filter(l => l.type === "person").slice(0, state.filters.k).filter(l => l.edges.some(e => KIN.has(e.edge)));
+  await Promise.all(kin.map(l => data.load(l.id)));
+  if (my !== sceneSeq) return;
+  lastScene = FocusModel.scene(state, data.rec, data.genderOf);
+  view.render(lastScene, { focusChanged });
+  view.setSelected(state.selected);
+  renderUI();
+}
+
+// The panel list belongs to listOwner. A click inside the list selects a node but keeps the list,
+// so the second click of a double click lands on the same item.
+let listOwner = START;
+const kinIds = links => links.filter(l => l.type === "person" && l.edges.some(e => KIN.has(e.edge))).map(l => l.id);
+
+async function dispatch(a, keepList = false) {
+  const before = state;
+  state = FocusModel.reduce(state, a, label);
+  if (!keepList && ["select", "step", "focus"].includes(a.type)) listOwner = state.selected;
+  if (state.focus !== before.focus || state.pins !== before.pins || state.filters !== before.filters) {
+    await refresh(state.focus !== before.focus);
+  } else {
+    view.setSelected(state.selected);
+    renderUI();
+  }
+  // Family words in the lists need each listed person's gender.
+  const owner = typeOf(listOwner) === "overflow" ? null : await data.load(listOwner);
+  const rows = owner ? TYPES.flatMap(t => owner.links.filter(l => l.type === t).slice(0, state.filters.k)) : lastScene.overflow[listOwner.slice("overflow:".length)] || [];
+  const need = [state.selected, ...kinIds(rows)].filter(id => typeOf(id) !== "overflow" && !data.rec(id));
+  if (need.length) { await Promise.all(need.map(data.load)); renderUI(); }
+}
+
+function makeFocus(id) {
+  if (typeOf(id) === "overflow") return dispatch({ type: "notice", text: "An Overflow Node cannot be the Focus. Pick a node from its list." });
+  if (typeOf(id) === "verse" && !data.verseParts(id).inBuild) return dispatch({ type: "notice", text: `${label(id)} is outside Genesis, so it cannot be the Focus in this build.` });
+  return dispatch({ type: "focus", id });
+}
+
+// A click selects; two clicks on the same node within 400 ms move the Focus (native dblclick fails when the panel redraws).
+let lastClick = { id: null, t: 0 };
+function clickNode(id, fromList = false) {
+  const now = performance.now();
+  if (lastClick.id === id && now - lastClick.t < DOUBLE_CLICK_MS) { lastClick = { id: null, t: 0 }; makeFocus(id); }
+  else { lastClick = { id, t: now }; dispatch({ type: "select", id }, fromList); }
+}
+
+// ---------- UI ----------
+function renderUI() {
+  if (!lastScene) return;
+  renderCrumbs(); renderPanel(); renderVotes(); renderPill();
+  const h = lastScene.hidden, onlyFaint = h === lastScene.trimmed.ring2;
+  $("#trimNote").textContent = h ? `${h} ${onlyFaint ? "faint " : ""}node${h === 1 ? "" : "s"} hidden to keep the view fast` : "";
+}
+
+function renderCrumbs() {
+  const items = [state.focus, ...[...state.path].reverse()];
+  $("#crumbs").innerHTML = `<span class="crumb-title">Your Path</span>` + items.map((id, i) => {
+    const cls = ["crumb", i === 0 ? "current" : "", i > 0 && i <= FocusModel.SCENE_PATH ? "drawn" : "", id === state.selected ? "sel" : ""].join(" ");
+    const title = i === 0 ? "The Focus" : i <= FocusModel.SCENE_PATH ? "On Your Path, drawn in the scene" : "On Your Path, not drawn";
+    return `<a href="#" class="${cls}" data-id="${esc(id)}" title="${title}">${esc(label(id))}</a>`;
+  }).join(`<span class="sep">&lsaquo;</span>`);
+}
+
+function item(id, extra) {
+  return `<li><a href="#" class="lk" data-id="${esc(id)}"><span class="dot t-${typeOf(id)}"></span>${esc(label(id))}</a>${extra ? ` <span class="muted small">${esc(extra)}</span>` : ""}</li>`;
+}
+
+function yearText(y) { return y < 0 ? `${-y} BC` : `AD ${y}`; }
+
+function renderSelected() {
+  const id = state.selected, t = typeOf(id), sc = lastScene;
+  const node = sc.nodes.find(n => n.id === id);
+  const shownType = t === "overflow" ? id.slice("overflow:".length) : t;
+  let h = `<h2>Selected Node</h2><div style="font-size:17px"><span class="dot t-${shownType}"></span><b>${esc(label(id))}</b> <span class="muted small">${t === "overflow" ? "Overflow Node" : TYPE_NAME[t]}</span></div>`;
+  h += `<div class="muted small">${node ? `In the scene as: ${esc(rolesText(node))}` : "Not in the scene."}</div>`;
+  if (t === "overflow") return h + `<p class="small">Its list of the Focus's other ${TYPE_PLURAL[shownType]} is below. Opening it never adds nodes to the scene.</p>`;
+  const link = data.rec(state.focus)?.links.find(l => l.id === id);
+  if (link) h += `<div class="small">Relationship from the Focus: <b>${esc(FocusModel.relation(link, data.genderOf).text)}</b></div>`;
+  const seq = [...state.path, state.focus], i = seq.indexOf(id), pinned = state.pins.includes(id);
+  h += `<div class="btns">
+    <button data-act="makeFocus" data-id="${esc(id)}" ${id === state.focus ? "disabled" : ""}>Make Focus</button>
+    <button data-act="${pinned ? "unpin" : "pin"}" data-id="${esc(id)}" ${!pinned && state.pins.length >= FocusModel.MAX_PINS ? "disabled" : ""}>${pinned ? "Unpin" : "Pin"}</button>
+    <button data-act="prev" ${i <= 0 ? "disabled" : ""}>&larr; Prev</button>
+    <button data-act="next" ${i < 0 || i >= seq.length - 1 ? "disabled" : ""}>Next &rarr;</button></div>`;
+  if (i < 0) h += `<div class="muted small">Prev and Next walk Your Path; this node is not on it.</div>`;
+  const R = data.rec(id);
+  if (!R) return h + `<p class="muted">Loading...</p>`;
+  if (R.error) return h + `<p class="warn">Could not load: ${esc(R.error)}</p>`;
+  if (R.outside) return h + `<p class="muted small">Outside Genesis. This build holds Genesis only, so the verse cannot be opened.</p>`;
+  const d = R.raw, rows = [];
+  if (R.type === "verse") h += `<blockquote>${esc(d.text_bsb)}</blockquote><div class="muted small">Berean Standard Bible</div>`;
+  if (d.aliases?.length) rows.push(["Also called", d.aliases.join(", ")]);
+  if (d.gender) rows.push(["Gender", d.gender]);
+  if (d.event_year != null) rows.push(["Event Year", `${yearText(d.event_year)} (approx., Jones chronology)`]);
+  if (d.lat != null) rows.push(["Location", `${d.lat.toFixed(3)}, ${d.lon.toFixed(3)}`]);
+  if (R.type !== "verse") rows.push(["Linked verses", `${(d.verses || []).length} in Genesis`]);
+  if (rows.length) h += `<table class="kv">${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table>`;
+  if (d.dictionary_entry) h += `<details><summary class="small">Dictionary Entry (${esc(d.dictionary_entry.source)})</summary><p>${esc(d.dictionary_entry.text)}</p></details>`;
+  return h;
+}
+
+function renderList() {
+  const id = listOwner, sc = lastScene;
+  if (typeOf(id) === "overflow") {
+    const ty = id.slice("overflow:".length), list = sc.overflow[ty] || [];
+    return `<h2>Overflow list: ${esc(label(id))}</h2><div class="muted small">The rest of the Focus's ${TYPE_PLURAL[ty]}, by weight. Never added to the scene. Click selects; double click makes Focus.</div>
+      <ol class="list" start="${state.filters.k + 1}">${list.map(l => item(l.id, FocusModel.relation(l, data.genderOf).text)).join("")}</ol>`;
+  }
+  const R = data.rec(id);
+  if (!R || R.error || R.outside) return "";
+  // Neighbours in the order Ring 1 would use. The Verses here are how a reader opens a Verse.
+  let h = `<h2>Neighbours of ${esc(label(id))}</h2><div class="muted small">Top ${state.filters.k} of each type by weight. Click selects (this list stays); double click makes Focus.</div>`;
+  for (const ty of TYPES) {
+    const list = R.links.filter(l => l.type === ty && FocusModel.passes(l, state.filters));
+    if (!list.length) continue;
+    const more = list.length - state.filters.k;
+    h += `<div class="small" style="margin-top:6px"><b>${TYPE_NAME[ty]}</b> <span class="muted">(${list.length})</span></div>
+      <ul class="list">${list.slice(0, state.filters.k).map(l => item(l.id, FocusModel.relation(l, data.genderOf).text)).join("")}</ul>
+      ${more > 0 ? `<div class="muted small">and ${more} more</div>` : ""}`;
+  }
+  return h;
+}
+
+function renderPanel() {
+  const sc = lastScene, s = state;
+  $("#pVariant").textContent = `${variant} (${VARIANTS[variant].name})`;
+  $("#pHint").innerHTML = `${esc(VARIANTS[variant].hint)}<br>Click selects (the scene does not change). Double click or Make Focus moves the Focus. Left and Right keys switch variant.`;
+  $("#pNotice").textContent = s.notice;
+  $("#pSel").innerHTML = renderSelected();
+  $("#pList").innerHTML = renderList();
+  const tr = sc.trimmed;
+  $("#pState").innerHTML = `<h2>State</h2><table class="kv">
+    <tr><td>Focus</td><td><a href="#" class="lk" data-id="${esc(s.focus)}">${esc(label(s.focus))}</a></td></tr>
+    <tr><td>Selected Node</td><td>${esc(label(s.selected))}</td></tr>
+    <tr><td>Nodes in scene</td><td>${sc.count} of ${sc.limit} (wanted ${sc.demand})</td></tr>
+    <tr><td>Trimmed</td><td>${sc.hidden} (Ring 2 ${tr.ring2}, Your Path ${tr.path}, around pins ${tr.pinring})</td></tr>
+    <tr><td>Shared Nodes</td><td>${sc.shared.size}</td></tr>
+    <tr><td>Frame rate</td><td><span id="fps">${fps}</span> fps</td></tr></table>
+    <div class="small muted" style="margin-top:8px">Node limit</div>
+    <div class="btns">${[["Desktop", 500], ["Phone", 150], ["Stress test", 60]].map(([n, v]) =>
+      `<button data-act="limit" data-v="${v}" class="${s.filters.nodeLimit === v ? "on" : ""}">${n} (${v})</button>`).join("")}</div>
+    <div class="small muted">Votes slider placement</div>
+    <div class="btns">${[["scene", "In the scene"], ["panel", "In this panel"]].map(([v, n]) =>
+      `<button data-act="votesWhere" data-v="${v}" class="${votesWhere === v ? "on" : ""}">${n}</button>`).join("")}</div>`;
+  $("#pPins").innerHTML = `<h2>Pinned Nodes (${s.pins.length} of ${FocusModel.MAX_PINS})</h2>` + (s.pins.length
+    ? `<ul class="list">${s.pins.map(p => `<li><a href="#" class="lk" data-id="${esc(p)}"><span class="dot t-${typeOf(p)}"></span>${esc(label(p))}</a> <button data-act="unpin" data-id="${esc(p)}">Unpin</button></li>`).join("")}</ul>
+       <div class="small muted">Shared Nodes (cyan rings): ${[...sc.shared].map(label).map(esc).join(", ") || "none"}</div>`
+    : `<div class="muted small">None. Select a node and press Pin.</div>`);
+  const pathNewest = [...s.path].reverse();
+  $("#pPath").innerHTML = `<h2>Your Path (${s.path.length}, ${Math.min(s.path.length, FocusModel.SCENE_PATH)} drawn)</h2>` + (pathNewest.length
+    ? `<ol class="list">${pathNewest.map(id => item(id, "")).join("")}</ol>` : `<div class="muted small">Empty. Make another node the Focus.</div>`);
+}
+
+// The slider element is built once and moved between slots, so dragging it is never interrupted by a redraw.
+const votesBox = document.createElement("div");
+votesBox.className = "votes";
+votesBox.innerHTML = `<label class="small">Cross-references: Votes at least <b id="votesVal"></b>
+  <input id="votes" type="range" min="0" max="50" step="1"></label><div id="votesNote" class="muted small"></div>`;
+votesBox.querySelector("#votes").addEventListener("input", e => {
+  votesBox.querySelector("#votesVal").textContent = e.target.value;
+  dispatch({ type: "setFilter", key: "minVotes", value: +e.target.value });
+});
+function renderVotes() {
+  const slot = votesWhere === "scene" ? $("#votesChip") : $("#votesSlot");
+  const other = votesWhere === "scene" ? $("#votesSlot") : $("#votesChip");
+  if (votesBox.parentNode !== slot) { other.innerHTML = ""; slot.innerHTML = votesWhere === "panel" ? "<h2>Vote Limit</h2>" : ""; slot.appendChild(votesBox); }
+  const input = votesBox.querySelector("#votes");
+  if (document.activeElement !== input) input.value = state.filters.minVotes;
+  votesBox.querySelector("#votesVal").textContent = state.filters.minVotes;
+  const sc = lastScene;
+  votesBox.querySelector("#votesNote").textContent = sc.crossRefs || sc.hiddenVotes
+    ? `${sc.crossRefs} cross-references in the scene, ${sc.hiddenVotes} hidden by the Vote Limit.`
+    : "No cross-references near this Focus, so the slider changes nothing here.";
+}
+
+function renderPill() { $("#pillLabel").textContent = `${variant} (${VARIANTS[variant].name})`; }
+
+function setVariant(key) {
+  if (view) view.dispose();
+  variant = key;
+  const url = new URL(location.href); url.searchParams.set("variant", key); history.replaceState(null, "", url);
+  view = makeView(key, $("#stage"), hooks);
+  if (lastScene) { view.render(lastScene, {}); view.setSelected(state.selected); renderUI(); }
+}
+const cycle = dir => setVariant(VARIANT_KEYS[(VARIANT_KEYS.indexOf(variant) + dir + VARIANT_KEYS.length) % VARIANT_KEYS.length]);
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-act], [data-id]");
+  if (!t) return;
+  e.preventDefault();
+  const act = t.dataset.act, id = t.dataset.id;
+  if (!act) return clickNode(id, !!t.closest("#pList"));
+  if (act === "makeFocus") makeFocus(id);
+  else if (act === "pin" || act === "unpin") dispatch({ type: act, id });
+  else if (act === "prev" || act === "next") dispatch({ type: "step", dir: act === "prev" ? -1 : 1 });
+  else if (act === "limit") dispatch({ type: "setFilter", key: "nodeLimit", value: +t.dataset.v });
+  else if (act === "votesWhere") { votesWhere = t.dataset.v; renderUI(); }
+  else if (act === "prevVariant") cycle(-1);
+  else if (act === "nextVariant") cycle(1);
+  else if (act === "togglePanel") document.body.classList.toggle("collapsed");
+});
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, select, textarea")) return;
+  if (e.key === "ArrowLeft") cycle(-1);
+  else if (e.key === "ArrowRight") cycle(1);
+});
+
+// ---------- Boot ----------
+try {
+  await data.init();
+  state = FocusModel.initialState(START);
+  const want = (new URLSearchParams(location.search).get("variant") || "A").toUpperCase();
+  setVariant(VARIANTS[want] ? want : "A");
+  await refresh(false);
+} catch (err) {
+  document.body.insertAdjacentHTML("beforeend", `<div style="position:fixed;inset:30% 20%;padding:20px;background:#300;border:1px solid #f66;z-index:9">
+    Could not start: ${esc(err.message)}. Serve from the repo root with <code>uv run python -m http.server 8000</code> and open /prototypes/navigation/.</div>`);
+  throw err;
+}
+</script>
+</body>
+</html>
