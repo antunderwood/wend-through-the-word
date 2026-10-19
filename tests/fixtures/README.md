@@ -14,8 +14,8 @@ Changes from the sources:
 
 - KJV text is removed from `verses.json` (decision 42).
 - `bsb.txt` has one synthetic line, 3 John 1:15, to test a BSB verse with no Theographic key.
-- The entity files keep only records that a kept verse mentions, and each record's `verses` keeps only the kept verses.
-- Abraham (`abraham_58`) has one synthetic verse link, `recFixtureNoVerse`, to test a mention with no Verse Key.
+- The entity files keep the records that a kept verse mentions, and each record's `verses` keeps only the kept verses. They also keep the records that those records link to through an edge field (`father`, `mother`, `children`, `siblings`, the two half sibling fields, `partners`, `birthPlace`, `deathPlace`, `memberOf`, `participants`, `locations`), with no verses, to test stubs outside the book range. Edge fields keep only links to kept records.
+- Abraham (`abraham_58`) has one synthetic verse link, `recFixtureNoVerse`, to test a mention with no Verse Key, and one synthetic sibling link, `recFixtureNoRecord`, to test an edge whose other end does not exist.
 - Demetrius (`demetrius_1007`) has no `dictText`, but keeps `dictionaryText`, to test that no Dictionary Entry comes from `dictionaryText`.
 - The Tribe of Judah has one synthetic verse link, to Genesis 36:1, because no People Group has a real verse in the kept chapters.
 - Theographic coordinates in `places.json` (`latitude`, `openBibleLat`, `recogitoLat`, and the longitudes) are made up: -11.111111 and -22.222222. They can carry OpenStreetMap points (decision 41), and a test checks they never reach the export.
