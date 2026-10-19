@@ -114,7 +114,11 @@ def test_genesis_ships_the_real_curated_tables(genesis):
     for name in ("redundant", "no_longer_matches"):
         assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
     unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
-    assert [r["ids"] for r in unreviewed] == ["place:mount_of_olives_828 aliases"]
+    assert [r["ids"] for r in unreviewed] == [
+        "place:mount_of_olives_828 aliases",
+        "place:nile_895 coordinates",  # owner to confirm (decision 90)
+        "place:gihon_472 coordinates",
+    ]
 
 
 def test_genesis_verses_hold_3348_mentions_all_with_a_verse_key(genesis):
@@ -180,7 +184,7 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
     people = [read_json(p) for p in (entity / "person").glob("*.json")]
     people = [e for e in people if e["verses"]]  # the 352 in Genesis, not the stubs
     # God is in more Verses than anyone; cosine over whole-Bible Verse sets demotes him
-    # (decisions 20 and 92). Owner's expected result: about 19 of 352.
+    # (decisions 20 and 95). Owner's expected result: about 19 of 352.
     with_god = [e["id"] for e in people if "person:god_1324" in top_people(e)]
     assert len(with_god) <= len(people) // 10
     abraham = read_json(entity / "person" / "abraham_58.json")
@@ -194,9 +198,18 @@ def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(gen
     ]
 
 
-def test_genesis_tipnr_check_reports_43_disagreements(genesis):
+def test_genesis_tipnr_check_reports_48_disagreements(genesis):
     rows = read_tsv(genesis / "reports" / "tipnr_disagreements.tsv")
-    assert len(rows) == 43  # 46 without the curated partners, which settle 3 "partners" rows
+    # 46 without the curated partners, which settle 3 "partners" rows; 5 are on gender.
+    assert len(rows) == 48
+    # Theographic's own gender, before the curated correction (decision 88).
+    assert {
+        "person": "person:anah_247",
+        "tipnr_person": "Anah@Gen.36.2-1Ch",
+        "field": "gender",
+        "theographic": "Female",
+        "tipnr": "Male",
+    } in rows
     # Theographic has three Anahs where TIPNR has one; Theographic decides (decision 7).
     assert {r["person"] for r in rows if r["tipnr_person"].startswith("Anah@")} == {
         "person:anah_247",

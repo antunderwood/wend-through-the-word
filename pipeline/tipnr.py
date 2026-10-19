@@ -43,7 +43,7 @@ def people(path, books):
         key = f[0].split("=")[0]
         father, mother = f[2].split(" + ")
         r = out[key] = dict(zip(FIELDS, map(direct, (father, mother, f[3], f[4], f[5]))))
-        r["names"], r["verses"] = {norm(key.split("@")[0])}, set()
+        r["names"], r["verses"], r["gender"] = {norm(key.split("@")[0])}, set(), f[8]
         for sub in (line.split("\t") for line in lines if line.startswith("\u2013 ")):
             if sub[0] == "\u2013 Total" or len(sub) < 5:  # Total refs are abbreviated
                 continue
@@ -88,6 +88,7 @@ def load(b):
         r["id"]: r["fields"]["osisRef"] for r in json.loads(b.source("theo-verses").read_text())
     }
     match = {}  # Theographic Entity ID -> TIPNR key
+    gender = {}  # Theographic's own value, before curated corrections (decision 88)
     for r in json.loads(b.source("theo-people").read_text()):
         f = r["fields"]
         verses = {refs[v] for v in f.get("verses") or [] if v in refs}
@@ -102,6 +103,7 @@ def load(b):
         )
         if score:
             match[f"person:{f['personLookup']}"] = key
+        gender[f"person:{f['personLookup']}"] = f["gender"]
     matched = defaultdict(set)  # TIPNR key -> Theographic Entity IDs
     for entity_id, key in match.items():
         matched[key].add(entity_id)
@@ -126,10 +128,13 @@ def load(b):
             continue
         if len(matched[key]) > 1:  # Theographic has several People where TIPNR has one
             report(e, key, "identity", matched[key], [key])
+        sex = tipnr[key]["gender"]  # TIPNR's Type: Male, Female, or Group
+        if sex in ("Male", "Female") and sex != gender[e["id"]]:
+            report(e, key, "gender", [gender[e["id"]]], [sex])
         for field, theo in links(e).items():
             # Each TIPNR key as the Theographic People it matches; a key none matches stays a key.
             ids = [matched.get(k, {k}) for k in tipnr[key][field]]
             if not theo or not ids:
-                continue  # one side names no one: a gap, not a disagreement (decision 75)
+                continue  # one side names no one: a gap, not a disagreement (decision 86)
             if not all(i & theo for i in ids) or not theo <= set().union(*ids):
                 report(e, key, field, theo, set().union(*ids))

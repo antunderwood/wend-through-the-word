@@ -23,6 +23,17 @@ def test_a_tipnr_person_matched_by_verses_with_a_different_father_is_reported(ex
     } in disagreements(export, "person:serug_2503")
 
 
+def test_a_tipnr_person_matched_by_verses_with_a_different_gender_is_reported(export):
+    # Synthetic TIPNR Peleg is Female; Theographic Peleg is Male.
+    assert {
+        "person": "person:peleg_2308",
+        "tipnr_person": "Peleg@Gen.11.16-Luk",
+        "field": "gender",
+        "theographic": "Male",
+        "tipnr": "Female",
+    } in disagreements(export, "person:peleg_2308")
+
+
 def test_a_tipnr_person_that_matches_and_agrees_is_not_reported(export):
     # Synthetic TIPNR Reu names Peleg as father and Serug as child, as Theographic does.
     assert disagreements(export, "person:reu_2428") == []

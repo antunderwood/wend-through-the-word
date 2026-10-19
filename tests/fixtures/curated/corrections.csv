@@ -6,3 +6,5 @@ person:nobody_0,gender,Female,Male,Gen.11.27,Synthetic: an ID that is not in The
 person:daughter_of_lot_older_985,aliases,firstborn,,Gen.11.27,Synthetic: remove an alias of a stub,yes,
 person:daughter_of_lot_younger_984,aliases,daughters,younger daughter,Gen.11.27,Synthetic: replace an alias of a stub,yes,
 person:isaac_616,gender,Male,Female,Gen.25.19,Synthetic: not reviewed,no,
+place:babel_150,coordinates,,"32.5,44.4",Gen.11.9,Synthetic: set a point in place of the looked up one,yes,
+place:pau_927,coordinates,,,Gen.36.39,Synthetic: remove a point,yes,

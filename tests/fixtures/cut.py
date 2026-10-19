@@ -115,7 +115,7 @@ mentioned = {
     if in_range & set(r["fields"].get("verses") or [])
 }
 # A mentioned record also keeps its links to the kept verses outside the fixture books, so its
-# whole-Bible Verse set (decision 92) holds more than its Verses in range.
+# whole-Bible Verse set (decision 95) holds more than its Verses in range.
 for r in (r for rows in records.values() for r in rows):
     keep_ids = in_range | outside_ids if r["id"] in mentioned else in_range
     r["fields"]["verses"] = [v for v in r["fields"].get("verses") or [] if v in keep_ids]

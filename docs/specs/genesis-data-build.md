@@ -92,7 +92,7 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 51. As the owner, I want headings that are Theographic people or places removed, and listed in a report, so that no Entity is duplicated.
 52. As the owner, I want CO_MENTION edges derived for every pair of Entities that share a Verse by Mention or Filed Under, so that most People link to more than unranked Verses.
 53. As the owner, I want the CO_MENTION weight to be the cosine score, so that God is not the top Neighbour of everyone.
-54. As the owner, I want God in the top 6 People of at most 10% of Genesis People, and Abraham's top 6 People to be Isaac, Sarah, Heth, Abimelech, Nahor, and Lot, on the full Genesis data, so that I know the cosine weight works (decision 94).
+54. As the owner, I want God in the top 6 People of at most 10% of Genesis People, and Abraham's top 6 People to be Isaac, Sarah, Heth, Abimelech, Nahor, and Lot, on the full Genesis data, so that I know the cosine weight works (decision 97).
 55. As the owner, I want each CO_MENTION edge to carry its shared verse count, so that the front end can say "together in N verses".
 56. As the owner, I want TIPNR matched to Theographic by verse overlap, and a report of Genesis People where they disagree on identity or family links, so that I can find errors without shipping TIPNR.
 57. As the owner, I want no TIPNR data in the static export, so that I respect its request not to be reposted.
@@ -105,7 +105,7 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 61. As a front end developer, I want one entity file for each Entity, with its facts, its Neighbours sorted by weight, and the Overflow count for each type, so that an Entity Focus needs one fetch.
 62. As a front end developer, I want the top 10 Neighbours of each Ring 1 node inside the entity file, so that the browser can filter them and show 3 as Ring 2 with no second fetch.
 63. As a front end developer, I want each Neighbour to carry its ID, type, edge type, direction, and weight, so that I can rank and label it.
-64. As a front end developer, I want the Neighbours of each type ranked by weight alone, with an explicit edge as a label and not a priority, so that Ring 1 shows the strongest links (decision 91).
+64. As a front end developer, I want the Neighbours of each type ranked by weight alone, with an explicit edge as a label and not a priority, so that Ring 1 shows the strongest links (decision 94).
 65. As a front end developer, I want Verse Neighbours of an Entity ranked by the number of other Entities in the Verse, so that the heuristic in PRD 10.4 is applied once at build time.
 66. As a front end developer, I want each Person's gender in the export, so that Relationship words follow the Neighbour's gender.
 67. As a front end developer, I want Themes stored as Entities under the same layout, so that I handle one file shape.
@@ -144,8 +144,8 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 ### Ranking and weights
 
 - Weight of a CROSS_REF edge: its Votes.
-- Weight of a CO_MENTION edge: shared Verses divided by the square root of (Verses of A times Verses of B). The Verse set of an Entity is the union of its Mention and Filed Under Verses, across the whole Bible, so weights do not change when the book range grows. A pair gets the edge only when it shares a Verse in the book range, and its shared verse count holds only those (decision 92).
-- Neighbour order: weight, descending. An explicit relationship edge is a label, not a priority; the prototype's "explicit edges first" rule is dropped (decision 91). When one pair has several edges (for example SPOUSE_OF and CO_MENTION), they are one Neighbour with a combined edge type, as in the prototype.
+- Weight of a CO_MENTION edge: shared Verses divided by the square root of (Verses of A times Verses of B). The Verse set of an Entity is the union of its Mention and Filed Under Verses, across the whole Bible, so weights do not change when the book range grows. A pair gets the edge only when it shares a Verse in the book range, and its shared verse count holds only those (decision 95).
+- Neighbour order: weight, descending. An explicit relationship edge is a label, not a priority; the prototype's "explicit edges first" rule is dropped (decision 94). When one pair has several edges (for example SPOUSE_OF and CO_MENTION), they are one Neighbour with a combined edge type, as in the prototype.
 - Verse Neighbours of an Entity: weight is the number of other Entities in that Verse.
 - Ties break on ID, so the output is stable.
 
@@ -180,7 +180,7 @@ corrections.csv    id,field,was,value,evidence,note,reviewed,request
 
 ### Coordinates
 
-- Each coordinate records `coord_source`. Allowed values: OpenBible (CC BY points only), Pleiades, Wikidata, GeoNames.
+- Each coordinate records `coord_source`. Allowed values: OpenBible (CC BY points only), Pleiades, Wikidata, GeoNames, Curated (decision 89).
 - An OpenBible point whose `coordinates_source.type` is `osm`, or which came from the commercial source, is dropped before any lookup.
 
 ### Static export
@@ -207,7 +207,7 @@ Plain files in one reports folder: verse mismatches, dropped edges (no source), 
 - **Fixtures.** A few hand-cut chapters (for example Genesis 11, 16, 25, 26, and 36, and 3 John 1) with matching slices of BSB, Theographic, OpenBible cross-references and geocoding, Nave's, and copies of the curated tables. The TIPNR fixture is synthetic, because TIPNR asks not to be reposted. Fixture data keeps its source licence; a README in the fixture folder says so.
 - **Cases the fixtures must cover:** each verse exception; a mention with no BSB key; an OpenStreetMap point that is re-sourced and one that is not found; a Nave's heading that matches a Person; a partner pair for each relation value, an uncurated pair, and an unreviewed row; a correction that is redundant and one that no longer matches; a curated row with no evidence (the build fails); an oversized file that is split or trimmed; a hub Entity in enough Verses to check that cosine weight demotes it.
 - **Determinism test.** Two builds of the same fixtures give byte-identical output.
-- **Full Genesis acceptance run.** A slow test, run locally and before each milestone note, on the real downloaded sources. It checks the counts in PRD section 12 (50 chapters, 1,533 Verses), that God is in the top 6 People of at most 10% of Genesis People, that Abraham's top 6 People are Isaac, Sarah, Heth, Abimelech, Nahor, and Lot (decision 94), and that every file passes the size limit. It is skipped when the sources are missing, so CI stays offline.
+- **Full Genesis acceptance run.** A slow test, run locally and before each milestone note, on the real downloaded sources. It checks the counts in PRD section 12 (50 chapters, 1,533 Verses), that God is in the top 6 People of at most 10% of Genesis People, that Abraham's top 6 People are Isaac, Sarah, Heth, Abimelech, Nahor, and Lot (decision 97), and that every file passes the size limit. It is skipped when the sources are missing, so CI stays offline.
 - **Prior art.** There are no tests in the repository yet. The prototype's `build_data.py` on the `prototype/focus-model` branch shows how the sources are read, and its `FocusModel` shows what the front end expects from the data.
 
 ## Out of Scope
