@@ -94,7 +94,7 @@ A node the reader keeps on screen while the Focus changes, to compare it with th
 _Avoid_: Bookmark, favourite
 
 **Shared Node**:
-A node in Ring 1 or around a Pinned Node that is linked to both the Focus and a Pinned Node.
+A node in Ring 1 or around a Pinned Node that is in the top K of its type for both the Focus and that Pinned Node (decision 119).
 
 **Your Path**:
 Every node that has been the Focus this session, in order of the latest visit. The last five are drawn in the scene as small dim nodes joined to the current Focus; the breadcrumb row shows all of them.

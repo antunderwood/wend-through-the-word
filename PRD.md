@@ -325,15 +325,15 @@ Release order: desktop first, then mobile. The desktop release uses a mouse and 
 
 - TypeScript.
 - Svelte 5 with Vite. Do not use SvelteKit in version 1.
-- `3d-force-graph` (Three.js and WebGL) for the 3D graph view. Use it directly, with no wrapper library.
+- three.js (WebGL) for the graph view, used directly, as a pinned npm dependency. No force layout library (decision 116).
 - Cloudflare Workers static assets for hosting.
 
 Rules:
 
-1. Write the graph code as its own module. The module does not import Svelte. Its interface is `setFocus`, `setFilters`, and `onNodeClick`.
+1. Write the graph code as its own module. The module does not import Svelte. It draws a scene from the Focus Model; its interface is `render`, `setView`, `onNodeClick`, `onNodeDoubleClick`, and `onHover` (`docs/specs/navigation.md`).
 2. Svelte 5 uses a reactivity model called runes. Many older examples show the old model. Check every example against the Svelte 5 documentation.
 3. Keep the graph data object stable. Do not create a new data object when only the view state changes. A new data object can restart the force simulation.
-4. The M3 node limit test page may use plain TypeScript. Add Svelte for the panels at M4.
+4. The M3 node limit test page may use plain TypeScript. Svelte runs the M3 panels, search, and Your Path bar (decision 117).
 
 ### 10.4 Visual design and disclosure rules (decided)
 
@@ -342,7 +342,7 @@ The look must be modern. Do not use the default ball-and-stick style of a force 
 Decisions:
 
 1. Moving the focus replaces the view. A click only selects a node (section 10.2).
-2. The reader can choose the view: tilted plane, stacked discs, or free orbit (decision 114). The default is a 2.5D view, chosen from the M3 navigation prototype's ABC test. The focus model prototype suggests full 3D is likely confusing (`docs/prototypes/focus-model.md`).
+2. The reader can choose the view: tilted plane, stacked discs, or free orbit (decision 114). The default is the tilted plane (decision 118). The focus model prototype suggests full 3D is likely confusing (`docs/prototypes/focus-model.md`).
 3. The dark theme comes first. The light theme is later.
 
 #### Disclosure rings
@@ -364,7 +364,7 @@ Rules:
 4. A hover over a ring 2 node shows its label and its path to the focus node. The node returns to faint when the pointer leaves.
 5. When a node becomes the new focus, the old focus joins your path. The old ring 1 fades out. New nodes grow out of the clicked node.
 6. Your path holds every focus node of the session, each node once (the latest visit counts). The scene draws only the last 5, as small dim nodes on one path line to the focus. The breadcrumb row and Prev and Next cover the whole path; the row scrolls and shows the newest first. A click on either selects that node. Prev and Next in the detail panel step along your path. "Make focus" on a trail node goes back to it.
-7. A user can pin up to 3 nodes. A pinned node stays in the view when the focus changes. It brings its top 3 neighbours of each type, with no ring 2. Nodes in ring 1 or around a pin that link to both the focus and a pin are highlighted as shared. Use this to compare nodes.
+7. A user can pin up to 3 nodes. A pinned node stays in the view when the focus changes. It brings its top 3 neighbours of each type, with no ring 2. Nodes in ring 1 or around a pin that are in the top K of their type for both the focus and a pin are highlighted as shared (decision 119). Use this to compare nodes.
 8. The scene never shows more nodes than the node limit from the M3 test. Nodes on your path, pinned nodes, and the neighbours around pins, count toward the limit. Trim ring 2 first, then the oldest nodes on your path, then the neighbours around pins. Never trim the focus, pinned nodes, ring 1, or overflow nodes. Within ring 2, and within the neighbours around pins, trim round robin: every parent's third neighbour goes before any second, and every second before any first. Within a round, the parent ranked lowest in its type list loses first. Do not compare weights across types. When nodes are trimmed, a quiet note in a corner of the scene says how many, for example "39 faint nodes hidden to keep the view fast".
 9. Test the rules first with hub nodes that have thousands of links, for example Jesus and Jerusalem.
 
@@ -393,7 +393,7 @@ Rules:
 
 1. Pin the focus node at the centre.
 2. Place ring 1 nodes in sectors by type around the focus node. A user then learns where to look for each type.
-3. Let ring 2 nodes drift outward on a weak force.
+3. Place ring 2 nodes on an outer band near their ring 1 parent. No force simulation (decision 116).
 4. Keep node positions stable between focus changes. Fix the ring 1 positions during a transition, so the force engine does not fight the animation.
 
 #### Page design
@@ -491,8 +491,8 @@ The Genesis prototype is complete when all of these are true.
 | M0 | GitHub repository (private until M5, decision 47) with the "Correction request" issue form, licence check, `docs/licences.md`, download script. |
 | M1 | BSB, Theographic, and the verse exceptions for Genesis, with the mismatch report |
 | M2 | Cross-references, geocoding with re-sourced coordinates, the TIPNR check, Nave's themes, CO_MENTION edges, and the static export for Genesis (spec: `docs/specs/genesis-data-build.md`) |
-| M3 | A UI prototype of navigation in 2.5D (select, make focus, your path, pins, camera, orbit or not), building on `docs/prototypes/focus-model.md`. A minimal 3D page. Run the node limit test. Test the disclosure rings, the 2.5D tilt, and the node look from section 10.4 on hub nodes. |
-| M4 | Reader panel, detail panel, search, filters, shareable URLs, "Suggest a correction" links, and journey notes with download (decision 112) |
+| M3 | The navigation prototype (done, `docs/prototypes/navigation.md`), then the desktop journey page: three selectable views, the scene, search, the Your Path bar, and the panel parts the journey uses (decision 117). Run the node limit test on hub nodes (spec: `docs/specs/navigation.md`). |
+| M4 | Reader panel, the full detail panel, filters, the credits page, shareable URLs, "Suggest a correction" links, and journey notes with download (decision 112) |
 | M5 | Cloudflare deploy with static assets and browser search. No Worker script. The repository becomes public. |
 | M6 | Run the pipeline for the whole Bible. Review data quality. |
 | M7 | Mobile release: touch controls, a narrow layout, and the lower node limit |
