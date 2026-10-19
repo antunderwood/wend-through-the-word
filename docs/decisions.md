@@ -45,9 +45,22 @@ Each entry has a date and a reason. Terms follow `GLOSSARY.md`.
 36. **HALF_SIBLING_OF ships only when Theographic gives it.** The build does not derive it from shared parents. Reason: Theographic decides identity and family links (decision 7). Derived links would depend on how complete its parent data is. If Theographic has no such field, "half-brother" and "half-sister" leave PRD 10.4. Checked 2026-10-19: Theographic has `halfSiblingsSameFather` (111 people) and `halfSiblingsSameMother` (3 people), so HALF_SIBLING_OF ships from those fields and "half-brother" and "half-sister" stay.
 37. **The static export moves from M3 to M2, and the build has one test seam.** Tests run the build command on fixture sources and check only the static export and the reports. Reason: the export is the contract with the front end. Tests on internal modules or the SQLite store would break when internals change. Spec: `docs/specs/genesis-data-build.md`.
 
+## 2026-10-19: Licence check (M0)
+
+Source: `docs/licences.md`.
+
+38. **Easton's ships as public domain.** Licence field: "Public domain (1897)". Reason: the author died in 1894. CCEL asks for permission to republish its editions, but that is a site policy, not a licence term on the text, and we take plain text through Theographic. The owner accepts the remaining risk.
+39. **The 11 commercial OpenBible points are dropped and re-sourced.** `custom_lonlat` is not used. Reason: their licence is not stated. No licence, no ship.
+40. **The 6 Google sourced OpenBible points are dropped and re-sourced.** Reason: Google's terms restrict copying map data, whatever OpenBible's readme says. Six places is a small cost.
+41. **No Theographic coordinate field ships.** Reason: Theographic's `latitude` and `longitude` are chosen from OpenBible and Recogito, so they can carry OpenStreetMap points.
+42. **No KJV text goes into the export or the fixtures.** Reason: Theographic `verses.json` holds KJV text, and its UK status (Crown rights, managed by Cambridge University Press) is unverified. We do not need it.
+43. **A Wikidata coordinate whose reference says it came from OpenStreetMap is not used.** Reason: CC0 on Wikidata does not clean ODbL data copied into it.
+44. **Fixtures use made-up coordinates for OpenStreetMap records.** The source type stays "osm". Reason: a real OpenStreetMap point in a public repository is ODbL data, even if it never ships.
+45. **The credits page says the data is modified and links to Theographic's source bibliography.** Reason: CC BY-SA 4.0 section 3(a)(1)(B) requires a modification notice, and Theographic asks users to credit its original sources.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
-**Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm", all precise and local geometry, and 11 points from a commercial source.
+**Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
 
 **Decision.** The build drops these coordinates. It looks up the same places in Pleiades (CC BY), then Wikidata (CC0), then GeoNames (CC BY 4.0). Each coordinate records its source. Places with no match go to the "no coordinates" report.
 
@@ -56,4 +69,4 @@ Each entry has a date and a reason. Terms follow `GLOSSARY.md`.
 - Ship a separate ODbL file and join it in the browser. Rejected: a second licence and more front end code for 51 places.
 - Treat the 51 points as an "insubstantial" extract. Rejected: it depends on guidance we have not checked, and it does not cover the geometry.
 
-**Note.** The split between the CC BY parts and the ODbL parts is our reading of the OpenBible readme. The readme does not state it. Record this in `docs/licences.md` in M0. This is not legal advice.
+**Note.** The readme states that OpenStreetMap data is ODbL 1.0. It does not state which fields hold OpenStreetMap data; that mapping is our reading (corrected 2026-10-19, see `docs/licences.md`, section 4). This is not legal advice.

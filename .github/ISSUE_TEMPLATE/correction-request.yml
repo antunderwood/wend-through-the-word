@@ -1,0 +1,65 @@
+# The field IDs are stable. "Suggest a correction" links in the app prefill
+# node_ids, current_value, data_version, and page_url through URL query parameters.
+# Do not rename them.
+name: Correction request
+description: Suggest a change to a relationship, an entity fact, or a verse link.
+title: "Correction: "
+labels: ["correction-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every request needs at least one verse as evidence. No verse, no change.
+
+        The Bible text (Berean Standard Bible) and the Easton's dictionary articles are fixed texts. We cannot change them. Send issues with the BSB wording to the publisher: https://berean.bible
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong?
+      options:
+        - A relationship (for example, a wrong or missing family link)
+        - An entity fact (for example, gender, name, aliases, place, or year)
+        - A verse link (for example, a verse names someone but has no link)
+    validations:
+      required: true
+  - type: input
+    id: node_ids
+    attributes:
+      label: Node IDs
+      description: Filled in by the app. For example, person:anah_247.
+    validations:
+      required: true
+  - type: input
+    id: current_value
+    attributes:
+      label: What the app shows now
+  - type: textarea
+    id: correction
+    attributes:
+      label: What it should be
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence verses
+      description: At least one verse, for example Gen 36:24. Say what the verse shows.
+    validations:
+      required: true
+  - type: input
+    id: data_version
+    attributes:
+      label: Data version
+      description: Filled in by the app.
+  - type: input
+    id: page_url
+    attributes:
+      label: Page URL
+      description: Filled in by the app.
+  - type: checkboxes
+    id: licence
+    attributes:
+      label: Licence
+      options:
+        - label: I agree that my suggestion may be included in the dataset under CC BY-SA 4.0.
+          required: true

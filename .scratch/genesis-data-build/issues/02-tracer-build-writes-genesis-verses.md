@@ -10,7 +10,7 @@ Verse Keys are Theographic's `verseID` (`BBCCCVVV`), with no mapping table. Vers
 
 - [ ] `build` reads only local files and never touches the network
 - [ ] Tests run only the `build` entry point on fixtures, and assert only on the export and the reports. No test imports a pipeline module or reads the SQLite store
-- [ ] The fixture folder holds hand-cut chapters (Genesis 11, 16, 25, 26, 36, and 3 John 1), and a README says each excerpt keeps its source licence
+- [ ] The fixture folder holds hand-cut chapters (Genesis 11, 16, 25, 26, 36, and 3 John 1), and a README says each excerpt keeps its source licence. No fixture holds KJV text from Theographic (decision 42)
 - [ ] `index.json` holds the book list, counts, build date (from the config), data version, and licences
 - [ ] The data version is part of every data file path
 - [ ] Every Verse in the export carries a `source` and a `licence`. A test checks this for every node and edge in the export, so later tickets are covered too

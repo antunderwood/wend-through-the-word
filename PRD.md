@@ -58,7 +58,7 @@ These rules are fixed for version 1.
 5. Do not store the text of a copyrighted translation. Fetch it live and show it only.
 6. A credits page lists every source, its licence, and its link.
 7. Read the LICENSE file of each repository before ingest. Record the result in `docs/licences.md`.
-8. Do not ship ODbL data. OpenBible.info coordinates that come from OpenStreetMap are dropped. The build looks these places up again in Pleiades, then Wikidata, then GeoNames. Each coordinate records its own source.
+8. Do not ship ODbL data. OpenBible.info coordinates that come from OpenStreetMap, from a commercial source, or from Google are dropped. Theographic's own coordinate fields never ship. The build looks these places up again in Pleiades, then Wikidata, then GeoNames. Each coordinate records its own source.
 9. Do not ship raw TIPNR data. TIPNR is used only as a build-time check (section 9).
 
 ## 6. Data sources
@@ -69,12 +69,12 @@ These rules are fixed for version 1.
 |---|---|---|---|---|
 | Berean Standard Bible (BSB) | Main text | CC0 | Text, JSON, SQLite | berean.bible; scrollmapper/bible_databases; bible.helloao.org |
 | Theographic Bible Metadata | People, places, events, people groups, verse links, family links, Easton's text (`dictText`). Identity authority for entities. It has no periods table. | CC BY-SA 4.0 | JSON, CSV, Neo4j dump | github.com/robertrouse/theographic-bible-metadata |
-| OpenBible.info cross-references | Verse to verse edges, with vote scores | CC BY | Tab separated text in zip | openbible.info/labs/cross-references |
+| OpenBible.info cross-references | Verse to verse edges, with vote scores | CC BY 4.0 | Tab separated text in zip | openbible.info/labs/cross-references |
 | OpenBible.info geocoding | Place coordinates and confidence. CC BY points only (section 5, rule 8). | CC BY 4.0 (OpenStreetMap parts: ODbL, not used) | JSON lines, GeoJSON | github.com/openbibleinfo/Bible-Geocoding-Data |
-| Pleiades, Wikidata, GeoNames | Replacement coordinates for the places whose OpenBible point came from OpenStreetMap | CC BY, CC0, CC BY 4.0 | Various | pleiades.stoa.org; wikidata.org; geonames.org |
+| Pleiades, Wikidata, GeoNames | Replacement coordinates for the places whose OpenBible point came from OpenStreetMap | CC BY 3.0, CC0, CC BY 4.0 | Various | pleiades.stoa.org; wikidata.org; geonames.org |
 | STEPBible TIPNR | Build-time check of identity and family links. Nothing ships. | CC BY 4.0 (asks that the file is not reposted) | Tab separated text | github.com/STEPBible/STEPBible-Data |
-| Nave's Topical Bible | Themes and Filed Under links. Headings that are people or places are removed. | Public domain text; dataset CC BY 4.0 (README) | CSV | github.com/BradyStephenson/bible-data; alternative: github.com/neuu-org/bible-topics-dataset |
-| Easton's Bible Dictionary | Dictionary Entry for entities, taken from Theographic `dictText` | Public domain | JSON | Through Theographic |
+| Nave's Topical Bible | Themes and Filed Under links. Headings that are people or places are removed. | Dataset CC BY 4.0 (LICENSE and README) | CSV | github.com/BradyStephenson/bible-data; alternative: github.com/neuu-org/bible-topics-dataset |
+| Easton's Bible Dictionary | Dictionary Entry for entities, taken from Theographic `dictText` | Public domain (1897 text; decision 38) | JSON | Through Theographic |
 
 ### 6.2 Optional sources (phase 2)
 
@@ -223,7 +223,7 @@ Checked on 2026-10-17 against the Cloudflare documentation. Check again before l
 | Workers CPU time | 10 ms for each request | developers.cloudflare.com/workers/platform/limits |
 | Workers subrequests | 50 for each request | developers.cloudflare.com/workers/about/limits |
 | Static asset requests | Free and unlimited | developers.cloudflare.com/workers/about/pricing |
-| Static asset files | 20,000 for each Worker version; 25 MiB for each file (checked 2026-10-18) | developers.cloudflare.com/workers/static-assets/billing-and-limitations |
+| Static asset files | 20,000 for each Worker version; 25 MiB for each file (checked 2026-10-19) | developers.cloudflare.com/workers/platform/limits#static-assets |
 | D1 rows read | 5 million per day | developers.cloudflare.com/d1/platform/pricing |
 | D1 rows written | 100,000 per day | developers.cloudflare.com/d1/platform/pricing |
 | D1 storage | 5 GB in total, for all databases | developers.cloudflare.com/d1/platform/pricing |
@@ -232,13 +232,13 @@ Since 1 September 2026, D1 queries fail when the account passes a daily limit. T
 
 A D1 read counts every row that a query scans. The size of the row does not matter.
 
-These values come from secondary sources. Check them on the official pages in M0.
+These values were checked on the official pages on 2026-10-19 (`docs/licences.md`, section 6).
 
-| Item | Value from the secondary source |
+| Item | Free limit |
 |---|---|
 | KV reads | 100,000 per day |
-| KV writes | 1,000 per day (the source says the quotas rose in February 2026, with no new numbers) |
-| R2 storage | 10 GB |
+| KV writes | 1,000 per day (no rise is shown on the official pages) |
+| R2 storage | 10 GB-month |
 | R2 operations | 1 million Class A and 10 million Class B per month |
 | R2 egress | No fee |
 | Workers Paid plan | About USD 5 per month. It removes the Worker and D1 daily limits. |

@@ -11,4 +11,5 @@
 - [ ] A fixture OpenStreetMap Place that Pleiades knows gets a Pleiades coordinate
 - [ ] A fixture OpenStreetMap Place that no source knows has no coordinate and is in the no-coordinate report
 - [ ] The lookup order is Pleiades, then Wikidata, then GeoNames
+- [ ] A Wikidata coordinate whose reference says it came from OpenStreetMap is not used (decision 43)
 - [ ] The credits list each lookup source with its licence
