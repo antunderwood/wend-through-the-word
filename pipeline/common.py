@@ -17,6 +17,7 @@ class Build:
         self.out = Path(cfg["out"])
         self.used = set()  # source names read by this build, for index.json and credits
         self.reports = {}  # report name -> (header, rows); every declared report is written
+        self.size_limit = cfg.get("size_limit", SIZE_LIMIT)  # lower only in tests
 
     def source(self, name):
         """Path of a downloaded source. Records that this build used it."""
@@ -33,9 +34,13 @@ class Build:
         self.reports[name][1].append(row)
 
 
+def to_json(data):
+    return json.dumps(data, ensure_ascii=False, sort_keys=True, indent=1) + "\n"
+
+
 def write_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, sort_keys=True, indent=1) + "\n")
+    path.write_text(to_json(data))
 
 
 def write_tsv(path, header, rows):

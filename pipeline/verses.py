@@ -1,6 +1,6 @@
-"""Verses from the BSB text, keyed by Theographic's verseID. Sets `b.books`, `b.chapters`, and
+"""Verses from the BSB text, keyed by Theographic's verseID. Sets `b.books`, `b.chapters`,
 `b.verse_recs` (every Theographic verse record ID -> its Verse, or None outside the book range),
-and `b.verse_keys` (every Theographic OSIS label -> its Verse Key, in or out of the range)."""
+and `b.verse_keys` (every Theographic osisRef -> its Verse Key, in the book range or not)."""
 
 import json
 import re
@@ -9,6 +9,7 @@ from collections import defaultdict
 
 # Verse exceptions (PRD 7.1). This is the one place they live.
 BSB_BOOK_NAMES = {"Psalm": "Psalms"}  # BSB book name -> Theographic bookName
+REMAP = {"3John.1.15": "3John.1.14"}  # OpenBible ref -> Theographic osisRef; the only data change
 NOTES = {  # noted, not changed
     "Rev.12.17": "ends at a different point in the BSB and the KJV",
     "Ps": "the BSB puts Psalm titles in verse 1",
