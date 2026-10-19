@@ -7,6 +7,7 @@ Small slices of the real sources, cut by `cut.py` from a full download. Each sli
 | `sources/bsb.txt` | Berean Standard Bible, bereanbible.com/bsb.txt | CC0 1.0 (public domain) |
 | `sources/books.json`, `sources/verses.json`, `sources/people.json`, `sources/places.json`, `sources/events.json`, `sources/peopleGroups.json`, `sources/bible-places.geojson` | Theographic Bible Metadata, github.com/robertrouse/theographic-bible-metadata | CC BY-SA 4.0 |
 | `sources/ancient.jsonl`, `sources/modern.jsonl` | OpenBible.info Bible Geocoding Data, github.com/openbibleinfo/Bible-Geocoding-Data (commit `7eb18a5`) | CC BY 4.0 |
+| `sources/TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt` | Synthetic, written by hand in the TIPNR format (github.com/STEPBible/STEPBible-Data). Holds no real TIPNR rows | Our own test data, MIT |
 
 Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 17:20 to 22; 3 John 1.
 
@@ -23,5 +24,7 @@ Changes from the sources:
 - `ancient.jsonl` keeps the records the kept places link to, without `verses`, `extra`, `media`, and `identification_sources`. `modern.jsonl` keeps the records they resolve to, and their `root` records.
 - Synthetic changes to modern records, to test the drop rules: Kadesh's (Ain el Qudeirat) source type is "osm"; Esek's has a `custom_lonlat` (commercial); Mamre's source type is "google_maps"; Shur's has no `coordinates_source` and a `root` that is Kadesh's record.
 - Every modern record whose point the build drops (OpenStreetMap source or geometry, commercial, Google, or a `root` point) has made-up coordinates, 1.111111 and 2.222222, also in the ancient records that resolve to it. Any `custom_lonlat` is 5.555555,6.666666 (decision 44).
+
+The TIPNR fixture is not cut by `cut.py`. It is written by hand (licences.md, section 5, rule 4), with CRLF line ends like the real file. It has three synthetic People, Peleg, Reu, and Serug, whose references are Genesis 11 verses, and one Place record that the check skips. Each record says "Synthetic TIPNR record, written for tests" and has a made-up Strong's number (`HX001` to `HX004`). Reu agrees with Theographic. Serug names Peleg, not Reu, as his father, to test the disagreement report. Peleg has one reference with a letter suffix and one LXX reference.
 
 Rules for later fixtures are in `docs/licences.md`, section 5. In short: the TIPNR fixture is synthetic, and OpenStreetMap records use made-up coordinates.

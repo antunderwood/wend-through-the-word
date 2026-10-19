@@ -1,12 +1,14 @@
 """Slow acceptance run on the real downloaded sources. Skipped when they are missing (CI)."""
 
 import os
+import re
 from collections import Counter
 from pathlib import Path
 
 import pytest
-from conftest import VERSION, read_json, read_tsv, run_build
+from conftest import FIXTURES, VERSION, read_json, read_tsv, run_build
 from test_coordinates import openstreetmap_points, shipped_points
+from test_tipnr import TIPNR
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 
@@ -111,3 +113,25 @@ def test_every_genesis_place_has_a_cc_by_point_or_is_in_the_no_coordinate_report
     assert report["place:galeed_432"] == "no OpenBible link"
     assert report["place:eden_354"] == "OpenBible gives no point"
     assert report["place:euphrates_421"] == "OpenBible point dropped: OpenStreetMap geometry"
+
+
+def test_genesis_tipnr_check_reports_46_disagreements(genesis):
+    rows = read_tsv(genesis / "reports" / "tipnr_disagreements.tsv")
+    assert len(rows) == 46
+    # Theographic has three Anahs where TIPNR has one; Theographic decides (decision 7).
+    assert {r["person"] for r in rows if r["tipnr_person"].startswith("Anah@")} == {
+        "person:anah_247",
+        "person:anah_248",
+        "person:anah_249",
+    }
+
+
+def test_no_genesis_file_holds_a_tipnr_record_key(genesis):
+    key = re.compile(r"\w@[1-3A-Z][a-z]{2}\.\d+\.\d+")  # "Abraham@Gen.11.26-1Pe"
+    assert not [p for p in (genesis / "data").rglob("*.json") if key.search(p.read_text())]
+
+
+def test_the_tipnr_fixture_holds_no_line_of_the_real_file():
+    real = set((SOURCES / TIPNR).read_text(encoding="utf-8").splitlines())
+    fixture = (FIXTURES / TIPNR).read_text(encoding="utf-8").splitlines()
+    assert not [line for line in fixture if line in real and not line.startswith("$==")]
