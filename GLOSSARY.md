@@ -13,6 +13,14 @@ One verse of the Bible, identified by its Verse Key. A Verse is not an Entity.
 The number of a verse in English verse numbering, as book, chapter and verse (Genesis 1:1 is 01001001). The Berean Standard Bible and the KJV share these numbers.
 _Avoid_: Verse ID, reference (for the key itself)
 
+**Cross-reference**:
+A link from one Verse to a related Verse, from OpenBible.info, such as Gen 1:1 to Ps 115:15.
+_Avoid_: Parallel, related verse
+
+**Votes**:
+The net number of readers on OpenBible.info who found a Cross-reference helpful (up votes minus down votes). It measures usefulness to readers, not scholarly strength. The Vote Limit hides Cross-references below a chosen number.
+_Avoid_: Score, weight, rating
+
 **Dictionary Entry**:
 The article on an Entity from Easton's Bible Dictionary (1897), always shown with that name. Not every Entity has one.
 _Avoid_: Summary, description
@@ -44,6 +52,21 @@ _Avoid_: Mention (for Themes), about, tagged
 A derived link between two Entities of any type that share at least one Verse, by Mention or Filed Under. Its weight grows with the Verses they share and is scaled down for Entities that appear very often, so that God does not become the top Neighbour of everyone.
 _Avoid_: Shared verses, co-occurrence
 
+**Relationship**:
+How a Neighbour stands to a node, read from that node: Isaac is Abraham's son, Abraham is Isaac's father. Family words follow the Neighbour's gender. Partners are husband or wife when a verse calls them so, concubine when a verse calls her that (both words when the text uses both), and partner otherwise.
+
+**Possibly Same Person**:
+A link between two People whom a tradition reads as one person but the text does not, such as Anah and Beeri. Both stay separate People.
+_Avoid_: Alias, merge, duplicate
+
+**Correction Request**:
+A reader's suggestion to change a Relationship, an Entity fact, or a verse link, citing at least one Evidence Verse. The owner accepts or declines it.
+_Avoid_: Bug report, feedback, edit
+
+**Evidence Verse**:
+The verse cited as proof for a curated Relationship, such as Gen 11:29 for Abraham and Sarah.
+_Avoid_: Edge (for what the reader sees), connection
+
 **Neighbour**:
 A node directly linked to another node by a source link or a Co-mention.
 
@@ -51,6 +74,10 @@ A node directly linked to another node by a source link or a Co-mention.
 
 **Focus**:
 The one node the view is centred on.
+
+**Selected Node**:
+The node shown in the detail panel. Selecting a node never changes the scene; it may be the Focus, any node on screen, or a node on Your Path.
+_Avoid_: Active node, current node
 
 **Ring 1**:
 The top Neighbours of the Focus, by weight, for each node type.
@@ -63,9 +90,12 @@ A single node standing for the remaining Neighbours of one type that did not fit
 _Avoid_: Group, cluster
 
 **Pinned Node**:
-A node the reader keeps on screen while the Focus changes, to compare it with the new Focus. At most three; a Pinned Node brings no Neighbours of its own.
+A node the reader keeps on screen while the Focus changes, to compare it with the new Focus. At most three. Each brings its own closest Neighbours, but no Ring 2.
+
+**Shared Node**:
+A node in Ring 1 or around a Pinned Node that is linked to both the Focus and a Pinned Node.
 _Avoid_: Bookmark, favourite
 
-**Trail**:
-The last five Focus nodes, kept in the scene as small dim nodes joined by a path to the current Focus, and shown as a breadcrumb row.
-_Avoid_: Breadcrumb (as a separate concept), history
+**Your Path**:
+Every node that has been the Focus this session, in order of the latest visit. The last five are drawn in the scene as small dim nodes joined to the current Focus; the breadcrumb row shows all of them.
+_Avoid_: Trail (the earlier name), breadcrumb (as a separate concept), history

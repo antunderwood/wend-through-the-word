@@ -21,6 +21,7 @@ The data comes from open sources. The data is stored in a graph model. The graph
 5. Show a plain text view of every node, so a user can read without the graph.
 6. Run on the Cloudflare free tier.
 7. Support the whole Bible. Build the Genesis prototype first.
+8. Let readers request corrections to the data, with a verse as evidence (section 10.5).
 
 ## 3. Non-goals for version 1
 
@@ -139,6 +140,9 @@ Event years follow the chronology of Floyd Nolen Jones. The interface shows them
 | CO_MENTION | Entity | Entity | weight, shared_verses (derived by the build) |
 | PARENT_OF | Person | Person | role (father or mother), source |
 | PARTNER_OF | Person | Person | source |
+| SPOUSE_OF | Person (man) | Person (woman) | source, evidence (verse) |
+| CONCUBINE_OF | Person (man) | Person (woman) | source, evidence (verse) |
+| POSSIBLY_SAME_AS | Person | Person | source, evidence (verses), note |
 | SIBLING_OF | Person | Person | source |
 | PARTICIPATED_IN | Person | Event | source |
 | OCCURRED_AT | Event | Place | source |
@@ -272,6 +276,11 @@ pipeline/
   co_mention.py        derived CO_MENTION edges with cosine weight
   check_tipnr.py       match TIPNR to Theographic by verse overlap; report disagreements
   validate.py          checks (section 12)
+  curated/             owner-reviewed tables, each row with an evidence verse and a reviewed flag:
+    partners.csv       spouse, concubine, partner, or none for each Theographic partner pair
+    possibly_same.csv  POSSIBLY_SAME_AS links (people a tradition reads as one person)
+    corrections.csv    fixes to Theographic attributes, for example gender
+                       every curated table has a `request` column: the URL of the correction request, or empty
   export_static.py     write JSON files
 docs/licences.md
 tests/
@@ -292,22 +301,23 @@ Release order: desktop first, then mobile. The desktop release uses a mouse and 
 ### 10.1 Views
 
 1. **Graph view:** A 3D force directed graph. The centre node is the current focus. The view shows its neighbours.
-2. **Reader panel:** The BSB text of the selected chapter. A click on a verse sets it as the focus.
+2. **Reader panel:** The BSB text of the selected chapter. A click on a verse selects it. A double click sets it as the focus.
 3. **Detail panel:** The Dictionary Entry (when there is one) and facts for the selected node, with a list of linked verses.
 4. **Search box:** Finds an entity, a theme, or a verse reference. Search runs in the browser over `/data/search-index.json`. It matches names and aliases only. Verse text search is phase 2.
-5. **Filter panel:** Node type toggles, a minimum vote slider for cross-references, and a book filter. The filters apply in the browser to the data already loaded.
+5. **Filter panel:** Node type toggles, a minimum vote slider for cross-references, and a book filter. The filters apply in the browser to the data already loaded. The vote slider has a short explanation beside it: "Votes: how many OpenBible.info readers found this link helpful. It shows popularity, not scholarly strength." With an entity as the focus, the slider says that it only changes ring 2.
 6. **Credits page:** All sources and licences.
 
 ### 10.2 Behaviour
 
-1. A click on a node makes it the focus. The graph loads its neighbours.
-2. A double click opens the detail panel.
-3. Node colour shows node type. Node size shows the number of links.
-4. The graph uses a smooth animation when the focus changes.
-5. A user can turn off animation. The application also respects the `prefers-reduced-motion` setting.
-6. The URL holds the current focus and filters. A user can share the URL.
-7. A 2D fallback list shows the same neighbours. It is used on devices without WebGL.
-8. Entity pages can be read without WebGL. Add basic accessibility: keyboard focus, text labels, and colour contrast.
+1. A click on a node selects it. The detail panel shows the selected node. The scene does not change.
+2. A double click on a node, or the "Make focus" button in the detail panel, makes it the focus. The graph loads its neighbours.
+3. The detail panel has Prev and Next buttons. They step the selection along your path. They do not change the focus.
+4. Node colour shows node type. Node size shows the number of links.
+5. The graph uses a smooth animation when the focus changes.
+6. A user can turn off animation. The application also respects the `prefers-reduced-motion` setting.
+7. The URL holds the current focus and filters. A user can share the URL.
+8. A 2D fallback list shows the same neighbours. It is used on devices without WebGL.
+9. Entity pages can be read without WebGL. Add basic accessibility: keyboard focus, text labels, and colour contrast.
 
 ### 10.3 Technology (decided)
 
@@ -329,8 +339,8 @@ The look must be modern. Do not use the default ball-and-stick style of a force 
 
 Decisions:
 
-1. A click replaces the view. The clicked node becomes the new focus.
-2. The view uses limited tilt (2.5D) by default. A user can still orbit with a mouse drag.
+1. Moving the focus replaces the view. A click only selects a node (section 10.2).
+2. The view uses limited tilt (2.5D) by default. Whether a mouse drag may still orbit in full 3D is decided in the M3 navigation prototype. The focus model prototype suggests full 3D is likely confusing (`docs/prototypes/focus-model.md`).
 3. The dark theme comes first. The light theme is later.
 
 #### Disclosure rings
@@ -340,20 +350,20 @@ Decisions:
 | Focus | The selected node | Full size, with a label and the first line of its Dictionary Entry |
 | Ring 1 | Direct neighbours, the top K by weight | Full labels |
 | Ring 2 | Up to 3 neighbours of each ring 1 node, after filters (about 108 at most) | Faint and small, with no labels. They show the shape of the graph. |
-| Trail | The last 5 focus nodes | Small and dim, joined by one path line to the focus |
-| Pinned | Up to 3 nodes chosen by the user | Normal size, with edges to the nodes on screen |
+| Your path | Every focus node of the session; the scene draws the last 5 | Small and dim, joined by one path line to the focus |
+| Pinned | Up to 3 nodes chosen by the user, each with its top 3 neighbours of each type (no ring 2) | Normal size. Shared nodes (linked to the focus and a pin) are highlighted. |
 | Hidden | All other nodes | Not drawn |
 
 Rules:
 
 1. Show the top K neighbours of each type. The default K is 6. Tune K in M3.
 2. The weight is the cross-reference vote score for verse to verse links, and the CO_MENTION cosine score for entity to entity links. Explicit edges (for example PARENT_OF) come first. For an entity focus, verse neighbours rank by the number of other entities in the verse. This is a heuristic.
-3. Put the remaining neighbours of one type into one Overflow Node, for example "+42 places". A click on it lists those neighbours in the detail panel. It never adds nodes to the scene. A click on a list item makes it the focus.
+3. Put the remaining neighbours of one type into one Overflow Node, for example "+42 places". A click on it lists those neighbours in the detail panel. It never adds nodes to the scene. A click on a list item selects it. A double click makes it the focus.
 4. A hover over a ring 2 node shows its label and its path to the focus node. The node returns to faint when the pointer leaves.
-5. A click on a node makes it the new focus. The old focus joins the trail. The old ring 1 fades out. New nodes grow out of the clicked node.
-6. The trail is drawn in the scene: the last 5 focus nodes stay as small dim nodes on one path line to the focus. A breadcrumb row shows the same 5 nodes. A click on either goes back to that node.
-7. A user can pin up to 3 nodes. A pinned node stays in the view when the focus changes. It shows edges to the nodes on screen, but it brings no neighbours of its own. Use this to compare nodes.
-8. The scene never shows more nodes than the node limit from the M3 test. Trail and pinned nodes count toward the limit.
+5. When a node becomes the new focus, the old focus joins your path. The old ring 1 fades out. New nodes grow out of the clicked node.
+6. Your path holds every focus node of the session, each node once (the latest visit counts). The scene draws only the last 5, as small dim nodes on one path line to the focus. The breadcrumb row and Prev and Next cover the whole path; the row scrolls and shows the newest first. A click on either selects that node. Prev and Next in the detail panel step along your path. "Make focus" on a trail node goes back to it.
+7. A user can pin up to 3 nodes. A pinned node stays in the view when the focus changes. It brings its top 3 neighbours of each type, with no ring 2. Nodes in ring 1 or around a pin that link to both the focus and a pin are highlighted as shared. Use this to compare nodes.
+8. The scene never shows more nodes than the node limit from the M3 test. Nodes on your path, pinned nodes, and the neighbours around pins, count toward the limit. Trim ring 2 first, then the oldest nodes on your path, then the neighbours around pins. Never trim the focus, pinned nodes, ring 1, or overflow nodes. Within ring 2, and within the neighbours around pins, trim round robin: every parent's third neighbour goes before any second, and every second before any first. Within a round, the parent ranked lowest in its type list loses first. Do not compare weights across types. When nodes are trimmed, a quiet note in a corner of the scene says how many, for example "39 faint nodes hidden to keep the view fast".
 9. Test the rules first with hub nodes that have thousands of links, for example Jesus and Jerusalem.
 
 #### Node look
@@ -372,6 +382,10 @@ Rules:
 3. Use one muted colour for each edge type, or a gradient between the two end nodes.
 4. Show moving particles on the focus node edges only, to show direction (for example "parent of").
 5. Show only cross-reference edges above the vote threshold. Fade the others out.
+6. Edges that touch the focus carry a text label at their midpoint. Other edges show their label on hover only.
+7. The label is the relationship read from the focus: father, mother, son, daughter, brother, sister, half-brother, half-sister, partner, birthplace, took part, member of. Family words follow the neighbour's gender. Unknown gender uses parent, child, or sibling. Theographic's `partners` field does not separate wives from concubines, so a curated table (`pipeline/curated/partners.csv`) decides. The label is husband or wife when a BSB verse calls them so. It is concubine (read from the man) when a verse calls her that; read from her, he is "partner" (or "husband" when a verse also says wife). When the text uses both words, both are shown, for example Hagar, Keturah, and Bilhah: "wife, concubine". It is partner when no verse says either. Each curated row has an evidence verse, shown in the detail panel. The owner reviews every row before it ships.
+8. A link that is only a co-mention is a dashed line labelled "together in N verses".
+9. The build must keep the direction of PARENT_OF, BORN_AT, DIED_AT, PARTICIPATED_IN, OCCURRED_AT, and MEMBER_OF.
 
 #### Layout
 
@@ -391,6 +405,42 @@ Rules:
 #### Data needed from the build
 
 Each entity file lists its neighbours, sorted by weight. Each neighbour has an ID, a type, an edge type, and a weight value. The build also writes the overflow counts for each type, for the Overflow Nodes. For each ring 1 node, the file holds its top 10 neighbours. The browser filters these and shows 3 as ring 2.
+
+### 10.5 Correction requests
+
+The data has errors. Readers can ask for a correction. The owner reviews each request. Version 1 stays static: there is no form on the site.
+
+**Channel**
+
+1. The primary channel is a GitHub Issue Form ("Correction request") in the public repository.
+2. The fallback is email to a project-only address (not a personal address). The owner copies each email into a GitHub issue without the sender's name or address, then deletes the email. The page says this before the reader writes.
+3. Both channels state: "By submitting, you agree that your suggestion may be included in the dataset under CC BY-SA 4.0."
+
+**Entry points**
+
+1. The detail panel has a "Suggest a correction" button for the selected node.
+2. Each relationship, fact, and linked verse in the detail panel has a small "Suggest a correction" link.
+3. The link opens the issue form with these fields filled in: the node IDs, the current label or value, the data version (from `index.json`), and the page URL. The reader adds the correction and at least one evidence verse.
+4. The email link uses the same text in a `mailto:` body.
+
+**Scope**
+
+| A reader can ask to correct | Examples |
+|---|---|
+| Relationships | A wrong or missing link or label: "Anah and Beeri are not partners", "Lot is Abraham's nephew" |
+| Entity facts | Gender, name, aliases, place coordinates, Event Year, Possibly Same Person links |
+| Verse links | A verse names someone but has no link (for example Gen 22:2 "God said"), or a link is wrong |
+
+Source texts are out of scope. The BSB wording and Easton's articles are fixed public domain texts. The form says so and links to the BSB publisher for text issues.
+
+**Rules**
+
+1. Every request must cite at least one verse as evidence. No verse, no change.
+2. The owner accepts or declines each request, with a short reason in the issue.
+3. An accepted request becomes a row in a curated table (`pipeline/curated/`). Each row has a `request` column with the issue URL. Rows the owner adds without a request leave it empty.
+4. When the request fixes a plain error in Theographic, the owner also opens an issue on the Theographic repository that links to ours. Editorial choices (the wife and concubine rule, Possibly Same Person links) stay local.
+5. After each Theographic refresh, the build reports curated rows that are now redundant (upstream has the same fix) or that no longer match (an ID or value changed). It never applies a row that no longer matches.
+6. The detail panel shows a corrected item with a note and a link, for example: "Corrected after review: gender (Gen 36:24). Request #12." The 3D scene shows no mark.
 
 ## 11. Performance targets
 
@@ -426,18 +476,21 @@ The Genesis prototype is complete when all of these are true.
 13. Genesis themes from Nave's load as FILED_UNDER links. No theme has the name of a Theographic person or place. The report lists the removed headings.
 14. The search index file is below the size limit. A search for "Abraham" returns the correct entity.
 15. A focus view of one Genesis person shows the focus node, up to K neighbours of each type in ring 1, and faint ring 2 nodes. The remaining neighbours appear as Overflow Nodes. God is not in ring 1 for Abraham.
-16. A click on a node replaces the view, adds the old focus to the trail in the scene, and keeps the pinned nodes. A click on a trail node or a crumb goes back.
+16. A click on a node shows it in the detail panel and does not change the scene. A double click replaces the view, adds the old focus to your path in the scene, and keeps the pinned nodes. Prev and Next read along your path without moving the focus.
 17. The TIPNR check report lists Genesis people where TIPNR and Theographic disagree on identity or family links.
+18. The detail panel has "Suggest a correction" links. Each link opens the issue form with the node IDs, the current value, the data version, and the page URL filled in.
+19. A corrected item shows its correction note, evidence verse, and request link in the detail panel.
+20. The build reports curated rows that are redundant or no longer match after a source refresh. A test checks that a row that no longer matches is not applied.
 
 ## 13. Milestones
 
 | Milestone | Content |
 |---|---|
-| M0 | Repository, licence check, `docs/licences.md`, download script. |
+| M0 | Public GitHub repository with the "Correction request" issue form, licence check, `docs/licences.md`, download script. |
 | M1 | BSB, Theographic, and the verse exceptions for Genesis, with the mismatch report |
 | M2 | Cross-references, geocoding with re-sourced coordinates, the TIPNR check, Nave's themes, and CO_MENTION edges for Genesis |
-| M3 | Static export and a minimal 3D page. Run the node limit test. Test the disclosure rings, the 2.5D tilt, and the node look from section 10.4 on hub nodes. |
-| M4 | Reader panel, detail panel, search, filters, and shareable URLs |
+| M3 | A UI prototype of navigation in 2.5D (select, make focus, your path, pins, camera, orbit or not), building on `docs/prototypes/focus-model.md`. Static export and a minimal 3D page. Run the node limit test. Test the disclosure rings, the 2.5D tilt, and the node look from section 10.4 on hub nodes. |
+| M4 | Reader panel, detail panel, search, filters, shareable URLs, and "Suggest a correction" links |
 | M5 | Cloudflare deploy with static assets and browser search. No Worker script. |
 | M6 | Run the pipeline for the whole Bible. Review data quality. |
 | M7 | Mobile release: touch controls, a narrow layout, and the lower node limit |
@@ -465,6 +518,9 @@ The Genesis prototype is complete when all of these are true.
 | D1 daily limits are reached (5 million reads, 100,000 writes) | D1 queries fail until 00:00 UTC | Use D1 for optional features only. Index every query. Load large tables in batches. |
 | Static asset limits change | A deploy may fail | 20,000 files and 25 MiB for each file (checked 2026-10-18). Recheck before launch. |
 | KV and R2 limits come from secondary sources | Wrong budget | Check the official pages in M0 |
+| Readers without a GitHub account do not report errors | Fewer corrections | Email fallback to a project-only address |
+| Correction requests are spam or opinion | Owner time | A verse is required. The owner can decline with a reason. |
+| Email requests carry personal data | Privacy | Copy into GitHub without name or address. Delete the email. |
 | A client side search index is too large | Slow first load | Index names and aliases only. Split the index by type if it passes 500 KB compressed. |
 
 ## 15. Open questions
@@ -481,6 +537,7 @@ The Genesis prototype is complete when all of these are true.
 10. Paid plan: stay on the free tier at first. The owner decides on the paid plan later. (Decided.)
 11. Visual references: decide from the node look prototype in M3. (Deferred.)
 12. Does the owner want the whole-graph overview (cosmos.gl, 2D) in phase 2? The recommendation is yes, after M7. (Open.)
+13. Which project-only email address receives correction requests? (Open.)
 
 ## 16. Instructions for Claude Code
 
