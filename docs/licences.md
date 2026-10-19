@@ -13,7 +13,7 @@ Quotes are copied from the upstream text on the date checked. Where we could not
 | Source | What we use | Licence as stated | Ships in the dataset | Checked |
 |---|---|---|---|---|
 | Berean Standard Bible (BSB) | Verse text | Dedicated to the public domain, linked to CC0 1.0 | Yes | 2026-10-19 |
-| Theographic Bible Metadata | People, places, events, people groups, verse links, family links, Easton's text | CC BY-SA 4.0 | Yes | 2026-10-19 |
+| Theographic Bible Metadata | People, places, events, people groups, verse links, family links, Easton's text, links from places to OpenBible.info records | CC BY-SA 4.0 | Yes | 2026-10-19 |
 | Easton's Bible Dictionary (through Theographic) | Dictionary Entry text | Not stated by Theographic. CCEL marks it "Public Domain". See notes. | Yes | 2026-10-19 |
 | OpenBible.info cross-references | Verse to verse edges and votes | CC BY 4.0 (page links to the 4.0 licence) | Yes | 2026-10-19 |
 | OpenBible.info geocoding | Place coordinates and confidence | CC BY 4.0; OpenStreetMap data is ODbL 1.0 | Yes, CC BY points only | 2026-10-19 |
@@ -85,6 +85,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 
 - URL: https://github.com/robertrouse/theographic-bible-metadata (branch `master`, commit `52e049e`, 2026-10-14).
 - Use: people, places, events, people groups, verse links, family links, and Easton's text (`dictText`). Theographic decides entity identity.
+- Also `geo/bible-places.geojson` (Linked Places Format, same repository and licence, checked 2026-10-19). The build reads only each feature's `links`, to join a Theographic place to its OpenBible.info record (decision 56). The feature's `geometry` is a Theographic coordinate and never ships (decision 41); the fixture copy has `geometry` set to null.
 - Licence as stated: CC BY-SA 4.0.
 - Where stated:
   - `LICENSE` file: the full text of "Attribution-ShareAlike 4.0 International".
@@ -163,6 +164,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Date checked: 2026-10-19.
 - Conditions: attribution to Pleiades and its contributors, with a link. The datasets README says: "we encourage use and citation of numbered releases". Record the release number we use.
 - Notes: the PRD says "CC BY" with no version. The version is 3.0.
+- Download: the daily locations dump, https://atlantides.org/downloads/pleiades/dumps/pleiades-locations-latest.csv.gz. It has no release number, so the manifest's date and SHA-256 identify the version we use. Some Pleiades locations are based on OpenStreetMap, and a place's own point blends them in; the build uses only the other locations (decision 84).
 
 ### 3.7 Wikidata
 
@@ -173,7 +175,8 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Wikidata:Licensing: "All data in Wikidata has a CC0 license."
 - Date checked: 2026-10-19.
 - Conditions: none. We still record Wikidata as the source of each coordinate.
-- Notes: coordinates (property P625) are structured data, so they are CC0. UNVERIFIED: whether any Wikidata coordinate we use was copied from OpenStreetMap. Wikidata's licence statement does not tell us where each value came from. We did not check the references on individual coordinates.
+- Notes: coordinates (property P625) are structured data, so they are CC0. Wikidata's licence statement does not tell us where each value came from, so the build checks the references on each coordinate (decisions 43 and 58). Limitation: a coordinate "imported from" a Wikipedia may itself have come from OpenStreetMap; its reference cannot show that.
+- Download: one SPARQL query to https://query.wikidata.org/sparql, saved as `wikidata-coords.json`, with the query saved as `wikidata-query.sparql` and its SHA-256 in the manifest (decisions 83 and 108).
 
 ### 3.8 GeoNames
 
@@ -186,7 +189,7 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
   - Export page, "Terms and Conditions": "You should give credit to GeoNames when using data or web services with a link or another reference to GeoNames." and "commercial usage is allowed".
 - Date checked: 2026-10-19.
 - Conditions: credit GeoNames with a link.
-- Notes: the free web service has a limit: "10,000 credits daily limit per application (identified by the parameter 'username'), the hourly limit is 1000 credits." This matters only if `download` uses the web service and not the dump files. UNVERIFIED: which method M2 will use.
+- Notes: the free web service has a limit: "10,000 credits daily limit per application (identified by the parameter 'username'), the hourly limit is 1000 credits." This does not apply: `download` uses the dump files, one per country for 22 Bible lands plus `no-country.zip` (decision 83).
 
 ### 3.9 STEPBible TIPNR
 
@@ -252,8 +255,11 @@ The mapping from the licence statement to fields is our reading of the field doc
 
 - It drops every coordinate in the ODbL group and the commercial group (decision 39). It does not use `custom_lonlat`.
 - It drops the 6 points whose source type is "google_maps" or "google_earth_community" (decision 40). Google's terms restrict copying map data, whatever the readme says.
+- It drops points whose location has OpenStreetMap geometry (`geometry_credit` "osm"), whatever its `coordinates_source` (decision 57). The point may be computed from that geometry.
+- A location with no `coordinates_source` takes its point from its `root` location, so the build checks the root by the same rules.
 - It ships points only. No geometry files ship.
-- It looks up dropped places in Pleiades, then Wikidata, then GeoNames. Each coordinate records `coord_source`.
+- It drops points whose source is a Wikidata item with a coordinate that cites OpenStreetMap (decision 58).
+- It looks up dropped places in Pleiades, then Wikidata, then GeoNames (decisions 82 to 85). Each coordinate records `coord_source`. It skips Pleiades locations based on OpenStreetMap and Wikidata coordinates whose reference cites OpenStreetMap (decision 43).
 - A test fails if any shipped coordinate has an OpenStreetMap source (spec, user story 49).
 
 ### Why

@@ -11,6 +11,7 @@ import hashlib
 import json
 import shutil
 import sys
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -20,9 +21,37 @@ GEO = "https://raw.githubusercontent.com/openbibleinfo/Bible-Geocoding-Data/main
 TIPNR = (
     "TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt"
 )
+PLEIADES = "https://atlantides.org/downloads/pleiades/dumps"
+WIKIDATA = "https://query.wikidata.org/sparql"
+# GeoNames files for the Bible lands, one per country; the whole world file is 422 MB.
+# "no-country" holds seas and regions such as the Arabian Peninsula.
+GEONAMES = [
+    "IL",
+    "PS",
+    "JO",
+    "LB",
+    "SY",
+    "IQ",
+    "IR",
+    "EG",
+    "SD",
+    "ET",
+    "ER",
+    "SA",
+    "YE",
+    "OM",
+    "KW",
+    "TR",
+    "CY",
+    "GR",
+    "IT",
+    "MT",
+    "LY",
+    "ES",
+    "no-country",
+]
 
-# name: (url, licence). The file name is the last part of the URL.
-# ponytail: Pleiades, Wikidata, and GeoNames lookups are added in M2, when the coordinate step needs them.
+# name: (url, licence). The file name is the last part of the URL, or in FILE_NAMES.
 SOURCES = {
     "bsb": ("https://bereanbible.com/bsb.txt", "CC0 1.0"),
     "crossrefs": ("https://a.openbible.info/data/cross-references.zip", "CC BY 4.0"),
@@ -30,17 +59,72 @@ SOURCES = {
         f"theo-{t}": (f"{THEO}/{t}.json", "CC BY-SA 4.0")
         for t in ("books", "verses", "people", "places", "events", "peopleGroups", "easton")
     },
+    # Links only: joins a Theographic place to its OpenBible record (decision 56).
+    "theo-geo": (f"{THEO.removesuffix('/json')}/geo/bible-places.geojson", "CC BY-SA 4.0"),
     **{f"geo-{t}": (f"{GEO}/{t}.jsonl", "CC BY 4.0") for t in ("ancient", "modern", "source")},
     "tipnr": (f"{STEP}/{TIPNR.replace(' ', '%20')}", "CC BY 4.0"),
     "naves": (
         "https://raw.githubusercontent.com/BradyStephenson/bible-data/main/NavesTopicalDictionary.csv",
         "CC BY 4.0",
     ),
+    # Lookups for Places whose OpenBible point is dropped (record "OpenStreetMap coordinates").
+    # Pleiades locations, not places: a place's point blends in its OpenStreetMap locations.
+    "pleiades-locations": (f"{PLEIADES}/pleiades-locations-latest.csv.gz", "CC BY 3.0"),
+    # The P625 statements of the Wikidata items that OpenBible's modern locations cite.
+    # Its query is built from geo-modern, so it must come after it.
+    "wikidata-coords": (WIKIDATA, "CC0 1.0"),
+    **{
+        f"geonames-{c}": (f"https://download.geonames.org/export/dump/{c}.zip", "CC BY 4.0")
+        for c in GEONAMES
+    },
 }
+FILE_NAMES = {WIKIDATA: "wikidata-coords.json"}
+QUERY_FILE = "wikidata-query.sparql"  # saved next to its result, so it can be run again
+HEADERS = {"User-Agent": "wend-through-the-word (github.com/antunderwood/wend-through-the-word)"}
+# Every coordinate statement with its rank and references, and the Pleiades and GeoNames IDs.
+WIKIDATA_QUERY = """SELECT ?item ?st ?lat ?lon ?rank ?refProp ?refVal ?pleiades ?geonames WHERE {
+  VALUES ?item { %s }
+  OPTIONAL { ?item wdt:P1584 ?pleiades . }
+  OPTIONAL { ?item wdt:P1566 ?geonames . }
+  OPTIONAL {
+    ?item p:P625 ?st . ?st psv:P625 ?v ; wikibase:rank ?rank .
+    ?v wikibase:geoLatitude ?lat ; wikibase:geoLongitude ?lon .
+    OPTIONAL { ?st prov:wasDerivedFrom ?ref . ?ref ?refProp ?refVal . }
+  }
+}"""
 
 
 def file_name(url):
-    return urllib.request.url2pathname(url.rsplit("/", 1)[1])
+    return FILE_NAMES.get(url) or urllib.request.url2pathname(url.rsplit("/", 1)[1])
+
+
+def wikidata_ids(dest):
+    """The Wikidata items that OpenBible's modern locations cite, as their source or as a
+    secondary source. Read from the downloaded file, so they do not depend on the build."""
+    ids = set()
+    for line in (dest / file_name(SOURCES["geo-modern"][0])).read_text().splitlines():
+        rec = json.loads(line)
+        for ref in [rec.get("coordinates_source", {}), *rec.get("secondary_sources", [])]:
+            if ref.get("type") == "wikidata":
+                ids.add(ref["id"])
+    return sorted(ids)
+
+
+def wikidata_query(dest):
+    """The SPARQL query for wikidata-coords. Saved as QUERY_FILE in `dest`."""
+    if not (dest / file_name(SOURCES["geo-modern"][0])).exists():
+        sys.exit("wikidata-coords: its query is built from geo-modern, so get geo-modern first")
+    query = WIKIDATA_QUERY % " ".join(f"wd:{q}" for q in wikidata_ids(dest))
+    (dest / QUERY_FILE).write_text(query)
+    return query
+
+
+def request(name, url, dest):
+    if name != "wikidata-coords":
+        return urllib.request.Request(url, headers=HEADERS)
+    query = wikidata_query(dest)
+    headers = HEADERS | {"Accept": "application/sparql-results+json"}
+    return urllib.request.Request(url, urllib.parse.urlencode({"query": query}).encode(), headers)
 
 
 def record(manifest, name, path, how):
@@ -53,6 +137,9 @@ def record(manifest, name, path, how):
         "date": datetime.date.today().isoformat(),
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
     }
+    if name == "wikidata-coords":  # PRD 9 rule 3: the query too, so the file can be fetched again
+        query = wikidata_query(path.parent).encode()
+        manifest[name] |= {"query": QUERY_FILE, "query_sha256": hashlib.sha256(query).hexdigest()}
 
 
 def main(argv=None):
@@ -84,8 +171,8 @@ def main(argv=None):
             path = args.dest / file_name(url)
             print(f"{name}: {url}")
             try:
-                req = urllib.request.Request(url, headers={"User-Agent": "wend-through-the-word"})
-                with urllib.request.urlopen(req, timeout=60) as r, open(path, "wb") as f:
+                req = request(name, url, args.dest)
+                with urllib.request.urlopen(req, timeout=120) as r, open(path, "wb") as f:
                     shutil.copyfileobj(r, f)
             except OSError as e:
                 failed.append(f"{name}: {e}")

@@ -1,0 +1,24 @@
+Synthetic test file in the TIPNR format. Written by hand for the tests of wend-through-the-word;
+it holds no real TIPNR rows (docs/licences.md, section 5, rule 4).
+$==========PERSON(s)
+A preamble section header, as in the real file: the parser starts at the first record.
+$========== PERSON(s)
+Peleg@Gen.11.16-Luk=HX001	Synthetic TIPNR record, written for tests	 + 					#Synthetic summary	Female																													
+– Named	Peleg@Gen.11.16-Luk	HX001«HX001=synthetic	Peleg	Gen.11.16; Gen.11.17; Gen.11.18; Gen.11.19a; LXX Gen.11.20
+– Total	Peleg	Peleg	HX001	Gen.11.16ff
+@Brief= Synthetic TIPNR record, written for tests.
+$========== PERSON(s)
+Reu@Gen.11.18-Luk=HX002	Synthetic TIPNR record, written for tests	Peleg@Gen.11.16-Luk + 			Serug@Gen.11.20-Luk		#Synthetic summary	Male																													
+– Named	Reu@Gen.11.18-Luk	HX002«HX002=synthetic	Reu	Gen.11.18; Gen.11.19; Gen.11.20; Gen.11.21
+– Total	Reu	Reu	HX002	Gen.11.18ff
+@Brief= Synthetic TIPNR record, written for tests.
+$========== PERSON(s)
+Serug@Gen.11.20-Luk=HX003	Synthetic TIPNR record, written for tests	Peleg@Gen.11.16-Luk + 					#Synthetic summary	Male																													
+– Named	Serug@Gen.11.20-Luk	HX003«HX003=synthetic	Serug	Gen.11.20; Gen.11.21; Gen.11.22; Gen.11.23
+– Total	Serug	Serug	HX003	Gen.11.20ff
+@Brief= Synthetic TIPNR record, written for tests.
+$========== PLACE
+Ur@Gen.11.28=HX004	Synthetic TIPNR record, written for tests						#Synthetic summary																														
+– Named	Ur@Gen.11.28	HX004«HX004=synthetic	Ur	Gen.11.28; Gen.11.31
+– Total	Ur	Ur	HX004	Gen.11.28ff
+@Brief= Synthetic TIPNR record, written for tests.
