@@ -13,7 +13,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recM0DIc9X9mQEoFC"
+    "recM0DIc9X9mQEoFC",
+    "reclpOrKQ1JmXvT7w"
    ],
    "father": [
     "recuAalSpGhVahIhx"
@@ -125,6 +126,45 @@
     "recqKRXl1SFEBbRCQ",
     "recQqgIEfdUh7aZVZ",
     "recBt5W9kVMB5yCD1",
+    "recqRNHrMuOTUtiyv",
+    "recuKdy92MLDv5bdf",
+    "recURqPKrHTWA9fFQ",
+    "recnU5O25pWd2nJcE",
+    "receqWXg4BrXNJEyV",
+    "rec7PncKMUP0vBN6G",
+    "recBobsQ88siJjIJ6",
+    "receGypmap55DKl62",
+    "recnKZROTFYtklCn0",
+    "rec1xvxm1yirae0oj",
+    "recr04gIN2TjjiEV8",
+    "recfJRFadgMjovTna",
+    "recZLdBTQ6r3hF7f3",
+    "recvsFijaPX99FIfD",
+    "recBrZxHPGPNfrCGp",
+    "reckFxjsPHv9HGjV9",
+    "recgxJc9pzswqvFRt",
+    "recoyoJYmHzjSPyeW",
+    "recNHjwf6WC9kMyQX",
+    "recoglCd5inbUnwMN",
+    "recR4vA0G4YJhFYaN",
+    "recivpzeOhyssQFcQ",
+    "recSLsAAdClOiDnMC",
+    "recWEU4gAFt4g59sG",
+    "recpd3HWBKOU63udg",
+    "recF9tYnY3DW5PkCi",
+    "reciWYzBchVGAfrsR",
+    "recS4rwrJzmAEHxAa",
+    "rech9JoYI4KHU7c39",
+    "recoHjw75mrm2EYPv",
+    "recAhCFnI3HU4w6ER",
+    "rechRZKGYhYMFqlql",
+    "rec9FUosaKAyShfiO",
+    "recoEMV7KHlakh0M0",
+    "recOCXYhIdEHN2EbK",
+    "recoArvvow9ZqHPWr",
+    "recTujePA8J0AVFIo",
+    "recmkXk4YsOuXCWct",
+    "recLBrNWb30JxW1z5",
     "recFixtureNoVerse"
    ],
    "father": [
@@ -319,7 +359,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recjDiiGthJPp0Gvs"
+    "recjDiiGthJPp0Gvs",
+    "reciKbKzqq4IXrMxq"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -495,7 +536,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "reclCXHQzWWzcs4nJ"
+    "reclCXHQzWWzcs4nJ",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "rec18ALrKRV4whrgb"
@@ -525,7 +567,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec0d6cl0Cone8Ds0"
+    "rec0d6cl0Cone8Ds0",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recl1WPeQDwuZjXx4"
@@ -562,7 +605,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recSDcEW8b1fkrzpC"
+    "recSDcEW8b1fkrzpC",
+    "recAmtKDk24oPFt5l"
    ],
    "minYear": -1852,
    "maxYear": -1616,
@@ -586,7 +630,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recR1jQMRWj4L9IK0"
+    "recR1jQMRWj4L9IK0",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "reclK7fHzOIxFQf6F"
@@ -619,7 +664,15 @@
    "verseCount": 22,
    "verses": [
     "recKVWDulm9S6ak8B",
-    "recnFznt6f9LRRts3"
+    "recnFznt6f9LRRts3",
+    "recZqYUDPJoHHthyc",
+    "recCxolNz7JsBtTWp",
+    "recHkkHuDfU2HULj3",
+    "rece1hrUdXozuaX4W",
+    "recb0F6jUcnJtdUwG",
+    "recIfAY7bYbEw9a7d",
+    "recASSvFAFNVJ4ruQ",
+    "rec8RTZBh3BqLQfoP"
    ],
    "mother": [
     "recxozyu7lEjszRf6"
@@ -742,7 +795,9 @@
    "verses": [
     "reckdDgj7yX95wCU9",
     "recOCdotNozlazH1F",
-    "recjkLOyYsKJX6bTN"
+    "recjkLOyYsKJX6bTN",
+    "rec0WHSsCUMHiMsiG",
+    "recyfhUwJtYwEA4TP"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -783,7 +838,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "reclCXHQzWWzcs4nJ"
+    "reclCXHQzWWzcs4nJ",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "rec18ALrKRV4whrgb"
@@ -852,7 +908,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recBwMatgb3FXvmfU"
+    "recBwMatgb3FXvmfU",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recSiSW57dddI3uh2"
@@ -937,7 +994,11 @@
     "recf8B2rRDQocOCUd",
     "recbvpTzRQ5suZz0S",
     "recHcYV8A7aqySYjg",
-    "reco0pi1TPgqhAmEY"
+    "reco0pi1TPgqhAmEY",
+    "recbyeZfHxPlPlZvG",
+    "rechP2NcqwYYvmxvM",
+    "recxb346nReABq6ZJ",
+    "recyFSy7RXmsOC7ly"
    ],
    "father": [
     "recOCbR2kuXoxyvkq"
@@ -1146,7 +1207,8 @@
    "verseCount": 4,
    "verses": [
     "recio9cFWeprQtJ41",
-    "recW4NMTQr9CTxdJ5"
+    "recW4NMTQr9CTxdJ5",
+    "recF2ozEDVspemDD5"
    ],
    "father": [
     "reca2hKoAnJq9vfQi"
@@ -1301,7 +1363,8 @@
    "verseCount": 4,
    "verses": [
     "recrrqxKMzHSBq2we",
-    "rec3IHTEbUU2tepoq"
+    "rec3IHTEbUU2tepoq",
+    "recq7RKTjL4jogM4R"
    ],
    "father": [
     "recEQFL0coGYW9r6v"
@@ -1433,7 +1496,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recrrqxKMzHSBq2we"
+    "recrrqxKMzHSBq2we",
+    "recq7RKTjL4jogM4R"
    ],
    "children": [
     "recq108iK9IWsxfWI"
@@ -1559,7 +1623,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec0d6cl0Cone8Ds0"
+    "rec0d6cl0Cone8Ds0",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recl1WPeQDwuZjXx4"
@@ -1684,7 +1749,12 @@
     "rec40N0VRxv1rfoq6",
     "recEpdYayiot5coZb",
     "recWQErWiiWeDSibn",
-    "rec2ZdatdM3U9Y06g"
+    "rec2ZdatdM3U9Y06g",
+    "recmCcMNHILXgcKGn",
+    "recVnQp8wOaM9jml5",
+    "recvsFijaPX99FIfD",
+    "recao37fOxhC4Mxbe",
+    "recWf7vnc8qSI4ut0"
    ],
    "father": [
     "recN6jpLG2OGhtemf"
@@ -1738,7 +1808,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec5qyCXE7a38fUX0"
+    "rec5qyCXE7a38fUX0",
+    "recyfhUwJtYwEA4TP"
    ],
    "father": [
     "recSb23V3EQtfldTc"
@@ -1986,7 +2057,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec1kNAE5GK2YJBvl"
+    "rec1kNAE5GK2YJBvl",
+    "recoyoJYmHzjSPyeW"
    ],
    "father": [
     "recmpdfUzrmaZA843"
@@ -2136,7 +2208,9 @@
    "verses": [
     "recLYhe4C5F43zL02",
     "recBwMatgb3FXvmfU",
-    "recQtFuDDEwzbkbdH"
+    "recQtFuDDEwzbkbdH",
+    "rec0WHSsCUMHiMsiG",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -2183,7 +2257,8 @@
    "verses": [
     "recLYhe4C5F43zL02",
     "rec5qyCXE7a38fUX0",
-    "recQtFuDDEwzbkbdH"
+    "recQtFuDDEwzbkbdH",
+    "rec0WHSsCUMHiMsiG"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -2226,7 +2301,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recOCdotNozlazH1F"
+    "recOCdotNozlazH1F",
+    "recyfhUwJtYwEA4TP"
    ],
    "father": [
     "recZwlJk5ecgPZaeX"
@@ -2257,7 +2333,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recm2HHxZ8DAWypIG"
+    "recm2HHxZ8DAWypIG",
+    "recTxka3V63RePBzU"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -2297,7 +2374,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recR1jQMRWj4L9IK0"
+    "recR1jQMRWj4L9IK0",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "reclK7fHzOIxFQf6F"
@@ -2345,7 +2423,11 @@
     "recgEXHdSBPj6sGT8",
     "recCL2kJz5UKBnIR7",
     "recZPXNOJmOJvUAgg",
-    "recL4AgRX5TOXgQrV"
+    "recL4AgRX5TOXgQrV",
+    "receiQtS65ifjV23O",
+    "rechP2NcqwYYvmxvM",
+    "recAl0yjnoqRVmnnF",
+    "reco6LBtI8lF6jXcB"
    ],
    "father": [
     "recMoCCDPVw5IzYq8"
@@ -2456,7 +2538,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recM0DIc9X9mQEoFC"
+    "recM0DIc9X9mQEoFC",
+    "reclpOrKQ1JmXvT7w"
    ],
    "father": [
     "recuAalSpGhVahIhx"
@@ -2493,7 +2576,9 @@
     "recJelx2tu0J23pmr",
     "recKVWDulm9S6ak8B",
     "reccPnYCaJ5wQHljE",
-    "recnFznt6f9LRRts3"
+    "recnFznt6f9LRRts3",
+    "recJJ7Zi4ztPTyFxj",
+    "recASSvFAFNVJ4ruQ"
    ],
    "mother": [
     "recaIkMXdattSy58r"
@@ -2580,7 +2665,9 @@
    "gender": "Female",
    "verseCount": 3,
    "verses": [
-    "recM0DIc9X9mQEoFC"
+    "recM0DIc9X9mQEoFC",
+    "reclpOrKQ1JmXvT7w",
+    "recH7Bp3oQJpO8iuv"
    ],
    "father": [
     "recuAalSpGhVahIhx"
@@ -2614,7 +2701,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recM0DIc9X9mQEoFC"
+    "recM0DIc9X9mQEoFC",
+    "reclpOrKQ1JmXvT7w"
    ],
    "father": [
     "recuAalSpGhVahIhx"
@@ -2717,7 +2805,41 @@
     "recxRZ6c8vCTrnKzx",
     "recrrqxKMzHSBq2we",
     "recSDcEW8b1fkrzpC",
-    "recpqe9vyiGF47SHK"
+    "recpqe9vyiGF47SHK",
+    "recVnQp8wOaM9jml5",
+    "recLT83bc2vimFgVX",
+    "recXf7Kuzu9dhCd58",
+    "reckNhUzDYdjkuVFg",
+    "rec1JdBbkPmVnGSCw",
+    "reclpsHXbYiWU590E",
+    "recu7ZGuh9NhYU4nx",
+    "recDvhkJ1ljDe9iTt",
+    "recl2Udl7JwwAdsM5",
+    "recWnIqeuXojgrKnF",
+    "recRojD1tClUsUHwf",
+    "recccwg5zpYT3NjCU",
+    "recNHjwf6WC9kMyQX",
+    "recJJ7Zi4ztPTyFxj",
+    "recAmtKDk24oPFt5l",
+    "reclMzKW4atnMtjoP",
+    "recGhKFfl1na7Hb1k",
+    "reckhKYo4jkZ8ZdLF",
+    "recnPSq3Ki8WiZg1Z",
+    "recf3M4ShmGdVNoco",
+    "recLlLBdugKc7Ve9T",
+    "recZ630Vh9pyR2pYa",
+    "recEATO6Ir3TJymnU",
+    "reciIjPYVC8mQ4mJK",
+    "rect5mNiIhnLMHiEW",
+    "reccSCNntOYiHnnY2",
+    "recVLgxoPmytx9VGV",
+    "reckT5Zxv4PLhItXU",
+    "reczEnMKFRXohFDSQ",
+    "recPlzx1TswhLOvdS",
+    "recwx5yitmXnMS4vm",
+    "recMNtkcprABWn81w",
+    "recmEiQ1zH25jJ5OR",
+    "rec20Si67i8jmgKfT"
    ],
    "mother": [
     "recZb9e7YIG9qh2qX"
@@ -2770,7 +2892,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec5qyCXE7a38fUX0"
+    "rec5qyCXE7a38fUX0",
+    "recyfhUwJtYwEA4TP"
    ],
    "father": [
     "recSb23V3EQtfldTc"
@@ -2848,7 +2971,9 @@
    "verses": [
     "recLYhe4C5F43zL02",
     "rec0d6cl0Cone8Ds0",
-    "recQtFuDDEwzbkbdH"
+    "recQtFuDDEwzbkbdH",
+    "rec0WHSsCUMHiMsiG",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -3030,7 +3155,8 @@
    "verseCount": 3,
    "verses": [
     "recJelx2tu0J23pmr",
-    "recnFznt6f9LRRts3"
+    "recnFznt6f9LRRts3",
+    "recASSvFAFNVJ4ruQ"
    ],
    "father": [
     "rec5NX8uW1K4csGEj"
@@ -3114,7 +3240,172 @@
    "events": "The Holy Spirit comes, Believers pray for boldness, Ananias and Sapphira lie to God, Jesus ascends to Heaven, The Holy Spirit is promised, God creates all things, God creates man and woman, Man falls into sin, God instructs Noah to build the ark, God decides to destroy every living thing, Noahic Covenant",
    "verseCount": 8587,
    "verses": [
+    "recGhKFfl1na7Hb1k",
+    "recWQYq1MbjDFCGvC",
+    "rec8NNfhluCeQX1ST",
+    "recja0tr4aeFoDut4",
+    "recBI2Tlo8vlHIhq0",
+    "recLk7Kc8Fr0sKFs5",
+    "recgmPjTYXqPT1Qsw",
+    "rec10x0vNSaBUvMNb",
+    "rec0pbfBY8TEdluUf",
+    "recB8vVKgs2eY1HOw",
+    "rec6NsOo88KGSdjZr",
+    "recbYRpz3IywU1lJq",
+    "rectRAJv96aszhmC7",
+    "reczybW3tJqpci9pG",
+    "recsClpBQqQtm9LTF",
+    "recVDSkNDzkZC5Ttr",
+    "recBrZxHPGPNfrCGp",
+    "recuBvdB88ZCjSG9j",
+    "recdi9ZHaap13u2IA",
+    "reckJoZWmKQtzLWqH",
+    "recOerL2I75VPxgBo",
+    "recPRV8MLEkZeaqU5",
+    "recuRPEbGO15hceho",
+    "rec1miwoJkEA1OeQN",
+    "recKs3nlOxZanT4PC",
+    "rectnHHljaGpe7iKx",
+    "recY9cuzbNIFLfSg1",
+    "recAqCON4DUZVUjkT",
+    "recP0wmSMCfFl9Pww",
+    "recPUMrW3fIulPB7E",
+    "recu5JPsAvtINNYsl",
+    "recIfAY7bYbEw9a7d",
+    "recYspZAskcDL9pF7",
+    "recl3eakh4kgTEaGe",
+    "recGJTzFNdq0lzrOU",
+    "recZr3ctLrLMtUHOs",
+    "rec4RFl6NxZ1ryFBE",
+    "recvOCgSmejtXg0XE",
+    "recMOhR3w2ulLH9jx",
+    "recqymkGCHOe1kUWt",
+    "recwemqdlR0d4neIa",
+    "recx3RViSF9TaO0rU",
+    "recXCQYet7pM9Qyr5",
+    "recjBSDPHiomAUsaT",
+    "reckEnKBPF4bCzodC",
+    "recAeQ9dKsSqW9cwb",
+    "recajSbcvZwLBZeh3",
+    "recFc4IXZc0kS7DfW",
+    "recHZZjHAWqaF7GY8",
+    "rec9Cu9vdujqgsNDg",
+    "recCMQ0KALxK9CeT0",
+    "rec9cEa9ntFjFCreI",
+    "rec1XHrikq2uuLDq4",
+    "rec9G5n92Nv2mDoLs",
+    "recMuoqjvb7j9PfYD",
+    "rech6nu8aiFlBpGEW",
+    "recq132e9JarpFVHI",
+    "recGsZpY2lph8rfo7",
+    "recw48FJwKPXehhBv",
+    "recBL5ADIr0rrpq82",
+    "recw3o58caAUaQMVU",
+    "recPnf2PhuQ91ebcP",
+    "recqzsvULD8BeYF6A",
+    "reczYbHBXUAxnglOX",
+    "recdSLhRgKX46HYgT",
+    "recQ12SpLLBN3ZTcc",
+    "recbM0SXSkDPhJPzx",
+    "rec2U6LTfN1uHRpkK",
+    "rec7iY8ol2TUaDPAT",
+    "recjdyMIZztASvt0q",
+    "recToMH7rYeGFTFQx",
+    "recLdPSO0vfXktw93",
+    "recHZibmYN77ZISKN",
+    "recfViBx7nhrftAhW",
+    "recYOUWqRgUHxA1Pw",
+    "recZgZ2NeJtMQ68ZQ",
+    "recl2Udl7JwwAdsM5",
+    "recY0chjXf3r9QIUW",
+    "recxH5Nqp8Z7GPV2G",
+    "rece68HCNUr2Jp32M",
     "recCHKqhwgY0oX6aI",
+    "reccP4PQZxVMXpLw9",
+    "rec0FgwV9n1pdYCfr",
+    "recoKePsPulA6JwL9",
+    "rec4cCqcVt3upLN6t",
+    "recR3ReTegXlDVw54",
+    "recCNtemZnFcsY97b",
+    "recznJE6P3kf8O162",
+    "recOnBSTbVNM5NCra",
+    "recDH86OBRdHcZj4a",
+    "recS4rwrJzmAEHxAa",
+    "rech9JoYI4KHU7c39",
+    "recAhCFnI3HU4w6ER",
+    "reckhCWrfGtqEDAAQ",
+    "recQSCmohvHPPUknN",
+    "reczEnMKFRXohFDSQ",
+    "recNJciEtLlcUNx6w",
+    "rec4h9CJEl5eelj20",
+    "recEAXPoluvXLlPWI",
+    "rec3nVjILquPtRpvg",
+    "recaxV97jARb5h4Xj",
+    "rec1B91hjrXsshxQp",
+    "recGOySOxovQyqooG",
+    "recOHYLf9r43Wfitk",
+    "receGypmap55DKl62",
+    "recde9kbr9aK30sPr",
+    "recTOPjNmwsTWgFft",
+    "reclpsHXbYiWU590E",
+    "recXlBsXh1eXbM90v",
+    "recPJiwEQiWHHZGp0",
+    "recb0F6jUcnJtdUwG",
+    "recs3AvHa0NO0TIFC",
+    "recwqcGHZZuYBDAW3",
+    "recXMICo7InDLyYAy",
+    "recr04gIN2TjjiEV8",
+    "recH6o7NbYNL5t0dt",
+    "recoYWp8RcAFUx9f2",
+    "recfJRFadgMjovTna",
+    "recIaMcxUHCVf7mrs",
+    "recnKZROTFYtklCn0",
+    "recgRVaKkcwqn8lwG",
+    "recRevmxyYM3qGhLI",
+    "rec1xvxm1yirae0oj",
+    "rec0zV7JCpIXUV6fG",
+    "recid5Nyy87cnQUOf",
+    "recnS9eh7DLqGjONu",
+    "recHch9tiqzFffcKX",
+    "recywpHNXk4mMHMJn",
+    "recXexlugfx7pZ8iy",
+    "recYoSLwfcc5PzCUk",
+    "recQtB5zNHBgRcABy",
+    "recCxolNz7JsBtTWp",
+    "recQd9euu4ewG1iKD",
+    "recP431OOavRBiE3M",
+    "recoHvlKzRZ8xYKcA",
+    "reczReYb70SVBjEY6",
+    "recps2KmqtM4u4ysH",
+    "recYlzIfO0wop5Lj8",
+    "recKDjYbCPx3RKuYy",
+    "recqRNHrMuOTUtiyv",
+    "recawaC2wnO9GTTlU",
+    "recA7k42w8T7NtoGK",
+    "recuKdy92MLDv5bdf",
+    "rec8WlLH3ewD8MyXH",
+    "rec7PncKMUP0vBN6G",
+    "recwBWJab4BzPEskA",
+    "recURqPKrHTWA9fFQ",
+    "recFKlrEouhDYOCgI",
+    "recnU5O25pWd2nJcE",
+    "recWf7vnc8qSI4ut0",
+    "rec0QR5JjY56RmHrs",
+    "rect5mNiIhnLMHiEW",
+    "reccSCNntOYiHnnY2",
+    "recVLgxoPmytx9VGV",
+    "recYtFPNowstsvqJF",
+    "recpdtyoEwzzaAQms",
+    "recm6JMrinn8zurgE",
+    "rechcgduADigPRjJg",
+    "recvSQPrn4AY2ueIU",
+    "rec6RY63zXE1vViDN",
+    "recaXouNHA6ykjBnP",
+    "recyXYxSkRZFQBsXN",
+    "recfUtQrvsPLFXiHs",
+    "recOCXYhIdEHN2EbK",
+    "rec9FUosaKAyShfiO",
+    "recoyh6byTxBaoz8n",
     "rec4jHwU9G7mJO5Gc",
     "reczWTm8IF3RW2RSI",
     "recS6fO8Zcm4ThbSh",
@@ -3136,7 +3427,186 @@
     "recBt5W9kVMB5yCD1",
     "recO4tmJJ7hdS373C",
     "rec2ASXGrIzewJJqk",
-    "recCVryjHHZk0iDw9"
+    "recCVryjHHZk0iDw9",
+    "recgVf7IkDsybTBTj",
+    "rec6JQlrkQ8paA3Bj",
+    "recSwdcLttBTbQv4x",
+    "rec1PYpR3tpvk79y6",
+    "recrv2eLllyLQNlMn",
+    "recsa32w8eqC5doD1",
+    "recTujePA8J0AVFIo",
+    "reciwyB7UBdtJQoZ4",
+    "recFg0vyADY0D3XLt",
+    "recvg4Yv659Tmf97J",
+    "recyUn8Url5r0KHSJ",
+    "recudabgdeYtORU1W",
+    "recao37fOxhC4Mxbe",
+    "recjyP2zcYlTz8xif",
+    "recReVSgpDiPFf0mM",
+    "rec0qr8BPAHi2vFlm",
+    "recqwbP6WViwS0cWK",
+    "recSzhWJQTb5XbpfY",
+    "recYZ2WcvXyv11IiU",
+    "recFG7cvMNdKqyUGT",
+    "rec5NPFIQHTb8R9te",
+    "rec4IxRJ6ArN4Nema",
+    "recpoVOlGBVK7frsk",
+    "rec377JSwkkGn3gg9",
+    "recW6C9G9hf5HDsqw",
+    "rec8dMhhB0mIZdFVM",
+    "recisE28EE6ug6FF8",
+    "recH7Bp3oQJpO8iuv",
+    "rec0JhYpX2HzYhg5q",
+    "recZRazVm6UFG6FjY",
+    "recirp4yj0bh50Jop",
+    "rec5XzkqZRWe41gm9",
+    "recKwZJrvEQck0T9p",
+    "recWmUdc14tDMbkzY",
+    "recrlmlUR9mcBJEGz",
+    "rec2Zkx6lGplOtSGo",
+    "recdOpZiyqrosiAiw",
+    "recSGLzIPP9tGbfAU",
+    "rechWHUlNFogK4iwB",
+    "recBNnk6QBCPCwzCE",
+    "recZ630Vh9pyR2pYa",
+    "recq9OR2088PdXZ9W",
+    "recf3M4ShmGdVNoco",
+    "rec1JC5g6tKIP1bNi",
+    "recijeEJyUcgK2SNm",
+    "rec2O6Mvb5g2niuQc",
+    "recv1om2pZspbjoTC",
+    "rec8QLqbCNqhVw2fv",
+    "recAmeTBiKKwa9996",
+    "recQW6x7NJTTLCrds",
+    "recIFGTXw7IvXeWO4",
+    "recAFzEIty8DLxYwh",
+    "recVKG1uU1HLEjK6s",
+    "rec35S0OBErZRKL7E",
+    "recCScAYz9IEr03mo",
+    "recBeY2GZFcjtUbYM",
+    "recpZBMh1emZKKFwu",
+    "recIyAZX56ehqmKLr",
+    "recSuBfk1Bo2LrIds",
+    "recbD7rb2YbFnOMwr",
+    "recaN5P3p8A1JUSYs",
+    "recl8P1lImIU14o3c",
+    "recFcvlEmjbpb6YrT",
+    "recz5eJgwYeQ48AOU",
+    "recCo8RtTvL2cvutQ",
+    "recNHwutKxEiliI39",
+    "recmMtDTf39agJRtu",
+    "rec4OmXaBjKJoX63O",
+    "recGpA5m64cpa8kYO",
+    "recL8zCgBBteUCmgt",
+    "recDCO3jnovbTwtqW",
+    "rec8tOspuzR6Lfkdo",
+    "rec0EAhpqf5VmyyBR",
+    "recuPJTDMw4vR2pyG",
+    "recfEdMGwm66NBm6k",
+    "recZLdBTQ6r3hF7f3",
+    "recErtKSTxKlF7j2S",
+    "recnie1G6qZlmXkHF",
+    "rec3mVUmL7V9GQ6qV",
+    "recKavvAmAGL0IUU5",
+    "rec6HZeEkoiX2iSI1",
+    "recEpxUvvW4lS69pF",
+    "recaWksCkiJpezlo5",
+    "recIg6i7ha15T5q5X",
+    "recpCn9M3syZ8sgoJ",
+    "recTcuJpgcN2nFJ5a",
+    "recyfGW52YtMEr1q2",
+    "rec0OmkBbUlr2gWCL",
+    "recvdX3QQfxbK1ygW",
+    "reclozGTqctyWJHC3",
+    "recLealABJfpX0Bd2",
+    "recaH578aEVKIPovz",
+    "recxghE8zO50ify2W",
+    "recpbSuyzES7hKMTy",
+    "recyhl0aaBkpYA0Qv",
+    "recW7NXhDpLqkTOVt",
+    "receclkzK9qauAVWK",
+    "recZbY9MqpMT20YVd",
+    "recCgvQIIIMZrTMzo",
+    "recweQ2oa0pGqXTEa",
+    "reco7HZ5VtCYp7PLm",
+    "recrPnkEuuhMOdkLS",
+    "recQ8It4RqGjOqdv8",
+    "recyvtGl0DIEFYv7g",
+    "recZfsBtr6WQ9RTse",
+    "recLBwo4gwRhfgZwT",
+    "recwx5yitmXnMS4vm",
+    "reczOYkVTRiAIogae",
+    "rec2ZN2DYy2tFEelB",
+    "rec07iRNTArzlJnfM",
+    "recEBk6kOWw9L7L5F",
+    "recWEU4gAFt4g59sG",
+    "recR4vA0G4YJhFYaN",
+    "rec9k3TkLX5Ue7XJW",
+    "recpNdyqSnZMcUrng",
+    "recd3xbQ1pyXMQpIg",
+    "recGH1m6MAFWaBq7a",
+    "recPzDNQ9bxXChhGD",
+    "rec9hZd6obvsvfxgu",
+    "recrfzKuq8zZKm9dp",
+    "recLCrnxYlrSyHdjN",
+    "recNWMkUSFGrdvg1R",
+    "recwrAY7zNpQ7MD3g",
+    "recuYwFdNIKmmjDVi",
+    "recYHspACz3WTJZOX",
+    "recJktSCWMwjMtQZf",
+    "recwKtXkFPOFckPXj",
+    "recrc89uAurzG5SR4",
+    "recIwsiNwh6tOz8Rj",
+    "recOUp2hhieGKLf9g",
+    "recT9mvj8yZnWQnEs",
+    "recrxqJbC70xDqxHX",
+    "recPEa0Pe1fDQMFtp",
+    "recAPyICTFLswM8if",
+    "recHVo4fVmVUx0CCv",
+    "recVuz6VzmiRBxBwJ",
+    "recAj6NYeahVQnFGl",
+    "recxbBGg8jV5qnP8A",
+    "rec9YpO0M3ZRcXHSq",
+    "reckTrUK0DqPX0Y6Y",
+    "rec7tyjkODe0a8jhM",
+    "recxwuEr19fuwN1Lt",
+    "recWEo4302MYnKN3t",
+    "recljOnTrBdt8xxHY",
+    "rec2ur6GCOHZX9yzU",
+    "rec0JNP4dSUdONs02",
+    "reccIa3dSlOHfK9UT",
+    "recEoErXG8UQzC6sX",
+    "recEiLg1wbY3Oitqv",
+    "rec0Ae1DSGJ1W9MX4",
+    "recBzvfM2ZlS91Oc7",
+    "reccLCD0GIj957JpB",
+    "recGTxmjaeFvLUrDb",
+    "recWNTyRmI2MWpagP",
+    "recuNaFF1adLjZ1Qf",
+    "rec7xqT7y5xTprl1w",
+    "recEwG894taanF59t",
+    "recn8JTcXOmEWNoHD",
+    "recpss9L0NOWcR6XS",
+    "recMzNrpvuO9sSDOZ",
+    "recYuO4GMj8g8G9sX",
+    "recxirMpf64KJTcFG",
+    "recgxnN34o3yhsjy5",
+    "recvdHyqnX7aeTbo5",
+    "recMhcvs4HKMMBC7T",
+    "recwBYMvkaxqjEPEf",
+    "recgduNeqghmItdQH",
+    "recgLxKxhs0MFI9pt",
+    "recE1nPwLhxWlqxVB",
+    "recWBLcu9ibJJWG5y",
+    "recb1Mxpb74DNy28k",
+    "recqjl9XXYTAKl1n9",
+    "rec5DnsH7038JxLH3",
+    "recOV6VVAPs1IcURH",
+    "recDmmsB1XpPX164s",
+    "recJwBSdO9T6wmuN4",
+    "rec92kXh0i6yXRoi2",
+    "reclAdlZ3QxEpbHq8",
+    "recvGbAio72h63lW7"
    ],
    "children": [
     "recyYgUiSETdWFgEP",
@@ -3187,7 +3657,8 @@
    "verseCount": 4,
    "verses": [
     "recANmGRGZAfJncX3",
-    "recWl9OLsxnGByZGW"
+    "recWl9OLsxnGByZGW",
+    "recZeu4DsDwwaEn1Z"
    ],
    "father": [
     "rec97ngbkDcdlxQ0h"
@@ -3222,7 +3693,9 @@
    "gender": "Male",
    "verseCount": 3,
    "verses": [
-    "recW4NMTQr9CTxdJ5"
+    "recW4NMTQr9CTxdJ5",
+    "recF2ozEDVspemDD5",
+    "recAmtKDk24oPFt5l"
    ],
    "eastons": [
     "recn8TZUWLxYyQC45"
@@ -3257,7 +3730,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recMqBLUvolEpSPkB"
+    "recMqBLUvolEpSPkB",
+    "recTxka3V63RePBzU"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -3310,7 +3784,9 @@
     "recMzhbWygCBCsFIf",
     "rec4UYC9gJdbLPP9t",
     "recd9JbWH8ezrDBMH",
-    "recGNeqHzuwpVVw6I"
+    "recGNeqHzuwpVVw6I",
+    "recvBQnFWBeYhk7vO",
+    "recd9e0zIvPRZTCWs"
    ],
    "children": [
     "recvV3hxT3VINGuwx"
@@ -3535,7 +4011,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec5qyCXE7a38fUX0"
+    "rec5qyCXE7a38fUX0",
+    "recyfhUwJtYwEA4TP"
    ],
    "father": [
     "recSb23V3EQtfldTc"
@@ -3567,7 +4044,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recM0DIc9X9mQEoFC"
+    "recM0DIc9X9mQEoFC",
+    "reclpOrKQ1JmXvT7w"
    ],
    "father": [
     "recuAalSpGhVahIhx"
@@ -3688,7 +4166,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recNMmNB6bQHxmM97"
+    "recNMmNB6bQHxmM97",
+    "recM8JEaKggcjezUh"
    ],
    "father": [
     "recDVPMfLcfConM50"
@@ -3718,7 +4197,8 @@
    "verseCount": 3,
    "verses": [
     "recNMmNB6bQHxmM97",
-    "recQtFuDDEwzbkbdH"
+    "recQtFuDDEwzbkbdH",
+    "recM8JEaKggcjezUh"
    ],
    "father": [
     "recDVPMfLcfConM50"
@@ -3750,7 +4230,8 @@
    "verseCount": 4,
    "verses": [
     "recD1RqgTa96XU39R",
-    "recANmGRGZAfJncX3"
+    "recANmGRGZAfJncX3",
+    "rec0aylbZWjnzSGfY"
    ],
    "minYear": -1852,
    "maxYear": -1784,
@@ -3815,7 +4296,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recpqe9vyiGF47SHK"
+    "recpqe9vyiGF47SHK",
+    "reclMzKW4atnMtjoP"
    ],
    "eastons": [
     "recH0EM8PdHH6ddFB"
@@ -3877,7 +4359,36 @@
     "recEk4Nxuj2S31ugV",
     "recdXTbwp9iyRjfHa",
     "recFZYOeb8X9pyBZE",
-    "recJm3VY7ct1oYvLL"
+    "recJm3VY7ct1oYvLL",
+    "recqRNHrMuOTUtiyv",
+    "recuKdy92MLDv5bdf",
+    "recURqPKrHTWA9fFQ",
+    "recnU5O25pWd2nJcE",
+    "receqWXg4BrXNJEyV",
+    "rec7PncKMUP0vBN6G",
+    "recBobsQ88siJjIJ6",
+    "receGypmap55DKl62",
+    "recnKZROTFYtklCn0",
+    "rec1xvxm1yirae0oj",
+    "recr04gIN2TjjiEV8",
+    "recfJRFadgMjovTna",
+    "recvsFijaPX99FIfD",
+    "recDvhkJ1ljDe9iTt",
+    "recBrZxHPGPNfrCGp",
+    "recgxJc9pzswqvFRt",
+    "recNHjwf6WC9kMyQX",
+    "recoglCd5inbUnwMN",
+    "recivpzeOhyssQFcQ",
+    "recrofmQMyFGYVPRh",
+    "recWEU4gAFt4g59sG",
+    "reciWYzBchVGAfrsR",
+    "recoHjw75mrm2EYPv",
+    "recAhCFnI3HU4w6ER",
+    "rechRZKGYhYMFqlql",
+    "recQdMKhmYMMovI8a",
+    "recSZQHTM2MB7KQCs",
+    "rec1tyhPJ8blq9VMM",
+    "recLBrNWb30JxW1z5"
    ],
    "mother": [
     "rechda7WMDuW1jBTq"
@@ -3971,7 +4482,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recD653dcCCe7tlL5"
+    "recD653dcCCe7tlL5",
+    "recoyoJYmHzjSPyeW"
    ],
    "mother": [
     "recr0xWgepJBPsiGH"
@@ -4027,7 +4539,10 @@
     "recjDiiGthJPp0Gvs",
     "recl8umv7anWBPO4d",
     "rec8W0QGsomNEfq8r",
-    "recNKzc1Y2jI89AJZ"
+    "recNKzc1Y2jI89AJZ",
+    "recgxJc9pzswqvFRt",
+    "reciKbKzqq4IXrMxq",
+    "recNiYjdcGvTma8aK"
    ],
    "mother": [
     "recL1zd3NT68owBAG"
@@ -4112,7 +4627,54 @@
     "recKN0KeTi11uxzud",
     "recmY4BRLoklAYX3N",
     "rec2ZdatdM3U9Y06g",
-    "recxRZ6c8vCTrnKzx"
+    "recxRZ6c8vCTrnKzx",
+    "recqWpJgCvTnPl0Mu",
+    "recDbN1xhWAh70bDh",
+    "recKDjYbCPx3RKuYy",
+    "recqRNHrMuOTUtiyv",
+    "recuKdy92MLDv5bdf",
+    "recrYggNyImG4whth",
+    "recURqPKrHTWA9fFQ",
+    "recnU5O25pWd2nJcE",
+    "recWYvVrRhConz6wd",
+    "recZqYUDPJoHHthyc",
+    "recQd9euu4ewG1iKD",
+    "recP431OOavRBiE3M",
+    "recawaC2wnO9GTTlU",
+    "receqWXg4BrXNJEyV",
+    "rec7PncKMUP0vBN6G",
+    "recBobsQ88siJjIJ6",
+    "reccwoBABbxtCFqnn",
+    "recpNdyqSnZMcUrng",
+    "recdmOirsMJM5cN8P",
+    "reccY8We3V0uOaKXG",
+    "reciMm8xsCmhVVU5q",
+    "receGypmap55DKl62",
+    "recnKZROTFYtklCn0",
+    "rec1xvxm1yirae0oj",
+    "recr04gIN2TjjiEV8",
+    "recCKkt1vFvajVn3K",
+    "recfJRFadgMjovTna",
+    "recGzF3eFVV7sNK8p",
+    "recDvhkJ1ljDe9iTt",
+    "reclozGTqctyWJHC3",
+    "receclkzK9qauAVWK",
+    "recKavvAmAGL0IUU5",
+    "rec0OmkBbUlr2gWCL",
+    "recq7RKTjL4jogM4R",
+    "rec7tyjkODe0a8jhM",
+    "rec5NPFIQHTb8R9te",
+    "rec4IxRJ6ArN4Nema",
+    "receNhzOos85Stcr7",
+    "recSLsAAdClOiDnMC",
+    "recwx5yitmXnMS4vm",
+    "recWEU4gAFt4g59sG",
+    "reciWYzBchVGAfrsR",
+    "recoHjw75mrm2EYPv",
+    "recIqV3olL0Eorig1",
+    "recAhCFnI3HU4w6ER",
+    "recmEiQ1zH25jJ5OR",
+    "rec1tyhPJ8blq9VMM"
    ],
    "mother": [
     "recZb9e7YIG9qh2qX"
@@ -4253,7 +4815,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec5qyCXE7a38fUX0"
+    "rec5qyCXE7a38fUX0",
+    "recyfhUwJtYwEA4TP"
    ],
    "father": [
     "recSb23V3EQtfldTc"
@@ -4286,7 +4849,8 @@
    "verses": [
     "recWQErWiiWeDSibn",
     "recpiIYpZ1nLHBzDZ",
-    "recTHzdh49fCSIk9R"
+    "recTHzdh49fCSIk9R",
+    "recJJ7Zi4ztPTyFxj"
    ],
    "mother": [
     "recpvQCt0PY7dySM7"
@@ -4492,8 +5056,115 @@
    "events": "Jesus ascends to Heaven, The Holy Spirit is promised, God creates all things",
    "verseCount": 1831,
    "verses": [
+    "reczIhmxoqJblJNDj",
+    "rectcydStJCz4DIDR",
+    "recIC8h9p8nW1huBj",
+    "recWAbampkNBFUG9q",
+    "recuppi7MQnbIB7zt",
+    "recLk7Kc8Fr0sKFs5",
+    "recvFsESmBmYk9Wms",
+    "recctO8VHM8rqJUT3",
+    "recdShT41U198HVNt",
+    "reccycVOC8eZefApG",
+    "recpUQWxP7L2PpgPC",
+    "recfUTafgq3Agqi1w",
+    "recB8vVKgs2eY1HOw",
+    "rectRAJv96aszhmC7",
+    "recPRV8MLEkZeaqU5",
+    "recURa6Lw8d3vYt2T",
+    "recOEZYjXwiPjbALr",
+    "recOitqo0LeeJwa86",
+    "recJEyE8CN6aKcOzd",
+    "recajSbcvZwLBZeh3",
+    "recIlznqd9bkAFfvw",
+    "rech1N6JsDjfBCcpZ",
+    "rec9Cu9vdujqgsNDg",
+    "recsJlHz7pow7xV5X",
+    "recCMQ0KALxK9CeT0",
+    "rec1XHrikq2uuLDq4",
+    "recZ3cz4LOcbestxx",
+    "recjmhvy9wNr8s47M",
+    "recwD5MZDFutxjEwD",
+    "recjUVTDiJoEekP4J",
+    "recxH5Nqp8Z7GPV2G",
+    "recAyuysTpyVNZF9Z",
+    "rece68HCNUr2Jp32M",
+    "recgRV95UghvfaNV7",
+    "rec0FgwV9n1pdYCfr",
+    "recdqvXkPjbT1iv6a",
+    "recoKePsPulA6JwL9",
+    "rec0mI7lPwtPZAId1",
+    "recdYThyr2aTNLSmW",
+    "recaccIdFEODpICMA",
+    "rec4h9CJEl5eelj20",
+    "recwxuYY0r0j1lqHn",
+    "recANOD7fmMaeWsfP",
+    "rec7SCNr7vQGGX99i",
+    "recaxV97jARb5h4Xj",
+    "recUZ2kfvhFGHBhIA",
+    "recdTkKedAaJW7PYI",
+    "recXexlugfx7pZ8iy",
+    "recfnPAYdMtoGqpUG",
+    "recYoSLwfcc5PzCUk",
+    "recaW1QC4gdR46eHr",
+    "recoEMV7KHlakh0M0",
+    "reckwMvemcHLtL6O3",
+    "recErXw6ALvHNxzY8",
+    "recSPqc6CGa36PBYM",
+    "recokz4M9xhGrAi71",
+    "recReM6W9VNx4fz9F",
+    "recKwZJrvEQck0T9p",
+    "rec2BlaJfZNz3VBLP",
+    "recaN5P3p8A1JUSYs",
+    "recl8P1lImIU14o3c",
+    "recpRrRTtGEeGBxVt",
+    "recCJTwWtq9qtoJDu",
+    "recCo8RtTvL2cvutQ",
+    "recNHwutKxEiliI39",
+    "recrqgX90EbfL11Xq",
+    "recoBMVtmXrvzhXzb",
+    "rec4OmXaBjKJoX63O",
+    "recGpA5m64cpa8kYO",
+    "recG6VQvkXMhlYAa8",
+    "rec8tOspuzR6Lfkdo",
+    "recHLvl3QfQBgpoYp",
+    "recPaFEDbbhuMhryR",
+    "recfxp7CONO7KBhm8",
+    "rec1GuP8HvCuWb2kb",
+    "recHxFGvMPafCLscP",
+    "recEGX8UfMC0gdoBX",
+    "recW2MpL4voiPCgMV",
+    "recw1H1yEyEAirQVy",
+    "reczz3uBeQNfX2pXT",
+    "reclTqSMTpKnznIRH",
+    "rechTTcA2uRruYuZq",
+    "recLBwo4gwRhfgZwT",
+    "recIIqqSpqaPSHaAO",
+    "rec07iRNTArzlJnfM",
+    "recW8QSo6dkJl598u",
+    "rec3q5tDObbCsfacU",
+    "reczKP5M0lrEl9kL9",
+    "rec9uTpm5qt5X5mSX",
+    "recTcENk3vVEJUALr",
     "recc5faAV0NTEVOLz",
-    "recNT6ykmkNInmgeC"
+    "recNT6ykmkNInmgeC",
+    "reccY8We3V0uOaKXG",
+    "recm3mpCwLc5C91E5",
+    "recH13xrzYiKI46MP",
+    "recyukuwqvtkEEwdP",
+    "recTgn3U2ivSPlEdp",
+    "recWnhat0U8NK0qrP",
+    "recdIQTsvEq87tMH5",
+    "recRE433KaBrzQqTV",
+    "recSBXcNoHYC0KVPN",
+    "recYuO4GMj8g8G9sX",
+    "recxirMpf64KJTcFG",
+    "recgxnN34o3yhsjy5",
+    "rec7uvwaNaC6eKX82",
+    "recKDMlRTkZYLNXUj",
+    "recJureQFmNCp5aXY",
+    "recgduNeqghmItdQH",
+    "recaCGjKJJlL1AtXb"
    ],
    "mother": [
     "recnheSkryxih4g9J"
@@ -4640,7 +5311,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recSDcEW8b1fkrzpC"
+    "recSDcEW8b1fkrzpC",
+    "recAmtKDk24oPFt5l"
    ],
    "eastons": [
     "recyqmwtsQa7PZhGU"
@@ -4669,7 +5341,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recMqBLUvolEpSPkB"
+    "recMqBLUvolEpSPkB",
+    "recNiYjdcGvTma8aK"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -4717,7 +5390,8 @@
    "verses": [
     "recWQErWiiWeDSibn",
     "recpiIYpZ1nLHBzDZ",
-    "recTHzdh49fCSIk9R"
+    "recTHzdh49fCSIk9R",
+    "recJJ7Zi4ztPTyFxj"
    ],
    "mother": [
     "recpvQCt0PY7dySM7"
@@ -4805,7 +5479,8 @@
    "verseCount": 4,
    "verses": [
     "rec3IHTEbUU2tepoq",
-    "recD1RqgTa96XU39R"
+    "recD1RqgTa96XU39R",
+    "rec0aylbZWjnzSGfY"
    ],
    "father": [
     "recJxKJfpBBtCwLxm"
@@ -4840,7 +5515,8 @@
    "verseCount": 3,
    "verses": [
     "recD653dcCCe7tlL5",
-    "rec1kNAE5GK2YJBvl"
+    "rec1kNAE5GK2YJBvl",
+    "recoyoJYmHzjSPyeW"
    ],
    "mother": [
     "recr0xWgepJBPsiGH"
@@ -5195,7 +5871,16 @@
    "gender": "Male",
    "verseCount": 10,
    "verses": [
-    "recjDiiGthJPp0Gvs"
+    "recjDiiGthJPp0Gvs",
+    "reciKbKzqq4IXrMxq",
+    "recjBkONCyyQ5XvWC",
+    "recjyP2zcYlTz8xif",
+    "recReVSgpDiPFf0mM",
+    "recG90iO2RgaQbdz8",
+    "recaSAP9EhjRKNSMM",
+    "recVwdz6BitdEunLh",
+    "recq9OR2088PdXZ9W",
+    "recsOwiAgUgJYICW0"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -5241,7 +5926,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recMqBLUvolEpSPkB"
+    "recMqBLUvolEpSPkB",
+    "recNiYjdcGvTma8aK"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -5339,7 +6025,8 @@
    "verseCount": 3,
    "verses": [
     "recJelx2tu0J23pmr",
-    "reccPnYCaJ5wQHljE"
+    "reccPnYCaJ5wQHljE",
+    "recASSvFAFNVJ4ruQ"
    ],
    "father": [
     "rec5NX8uW1K4csGEj"
@@ -5401,7 +6088,9 @@
    "verseCount": 4,
    "verses": [
     "recIrbQVTdfJc0cBM",
-    "recM0DIc9X9mQEoFC"
+    "recM0DIc9X9mQEoFC",
+    "recoyoJYmHzjSPyeW",
+    "reclpOrKQ1JmXvT7w"
    ],
    "children": [
     "recuAalSpGhVahIhx",
@@ -5443,7 +6132,8 @@
    "verses": [
     "recWQErWiiWeDSibn",
     "recpiIYpZ1nLHBzDZ",
-    "recTHzdh49fCSIk9R"
+    "recTHzdh49fCSIk9R",
+    "recJJ7Zi4ztPTyFxj"
    ],
    "mother": [
     "recpvQCt0PY7dySM7"
@@ -5744,7 +6434,9 @@
    "verseCount": 34,
    "verses": [
     "recuJqyP43vbWJbzj",
-    "rec6WN4WoQ5d67omJ"
+    "rec6WN4WoQ5d67omJ",
+    "recyUtZArCl1dhK3q",
+    "recFgu4OYmki2V4sL"
    ],
    "father": [
     "recAZ1svRqs8DDACR"
@@ -5794,7 +6486,9 @@
    "verses": [
     "reckdDgj7yX95wCU9",
     "recNMmNB6bQHxmM97",
-    "recjkLOyYsKJX6bTN"
+    "recjkLOyYsKJX6bTN",
+    "rec0WHSsCUMHiMsiG",
+    "recM8JEaKggcjezUh"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -5878,7 +6572,8 @@
    "events": "Lydia's Conversion, Paul and Silas released",
    "verseCount": 4,
    "verses": [
-    "recNMmNB6bQHxmM97"
+    "recNMmNB6bQHxmM97",
+    "recM8JEaKggcjezUh"
    ],
    "eastons": [
     "recWFofUNiONgsFJd"
@@ -5955,7 +6650,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recpqe9vyiGF47SHK"
+    "recpqe9vyiGF47SHK",
+    "reclMzKW4atnMtjoP"
    ],
    "minYear": -1852,
    "maxYear": -1616,
@@ -5978,7 +6674,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recR1jQMRWj4L9IK0"
+    "recR1jQMRWj4L9IK0",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "reclK7fHzOIxFQf6F"
@@ -6067,7 +6764,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recm2HHxZ8DAWypIG"
+    "recm2HHxZ8DAWypIG",
+    "recTxka3V63RePBzU"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -6113,7 +6811,8 @@
    "gender": "Female",
    "verseCount": 2,
    "verses": [
-    "recW4NMTQr9CTxdJ5"
+    "recW4NMTQr9CTxdJ5",
+    "recF2ozEDVspemDD5"
    ],
    "father": [
     "recseUUFtC0w1sguT"
@@ -6142,7 +6841,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recD653dcCCe7tlL5"
+    "recD653dcCCe7tlL5",
+    "recoyoJYmHzjSPyeW"
    ],
    "mother": [
     "recr0xWgepJBPsiGH"
@@ -6188,7 +6888,8 @@
    "gender": "Female",
    "verseCount": 2,
    "verses": [
-    "recW4NMTQr9CTxdJ5"
+    "recW4NMTQr9CTxdJ5",
+    "recF2ozEDVspemDD5"
    ],
    "mother": [
     "recMd2rffhZH7Vn9z"
@@ -6223,7 +6924,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recW4NMTQr9CTxdJ5"
+    "recW4NMTQr9CTxdJ5",
+    "recF2ozEDVspemDD5"
    ],
    "children": [
     "recMd2rffhZH7Vn9z"
@@ -6255,7 +6957,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recjDiiGthJPp0Gvs"
+    "recjDiiGthJPp0Gvs",
+    "reciKbKzqq4IXrMxq"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -6335,7 +7038,20 @@
    "verses": [
     "recD653dcCCe7tlL5",
     "recM0DIc9X9mQEoFC",
-    "recANmGRGZAfJncX3"
+    "recANmGRGZAfJncX3",
+    "recqCS4JGxazj0QlG",
+    "recnRD5weFzGQOCWj",
+    "recQd9euu4ewG1iKD",
+    "rec3tXOqtIGYztAl0",
+    "rec8r1x817XFSHsxT",
+    "rect4qbeinkzSwR4A",
+    "reclozGTqctyWJHC3",
+    "recx1GpaeoMejdtmr",
+    "recC5fMibyZ8g6Pbu",
+    "recoyoJYmHzjSPyeW",
+    "reclpOrKQ1JmXvT7w",
+    "recH7Bp3oQJpO8iuv",
+    "recseSnbmdpnTW4gT"
    ],
    "mother": [
     "recr0xWgepJBPsiGH"
@@ -6435,7 +7151,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recm2HHxZ8DAWypIG"
+    "recm2HHxZ8DAWypIG",
+    "recTxka3V63RePBzU"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -6520,7 +7237,8 @@
    "verseCount": 3,
    "verses": [
     "recf4XEC37dQ056G2",
-    "recSxpypJLin73UlB"
+    "recSxpypJLin73UlB",
+    "rec4Olr2Qk6OLweOZ"
    ],
    "father": [
     "recCBlNIAf0HhjdVO"
@@ -6552,7 +7270,17 @@
    "gender": "Male",
    "verseCount": 149,
    "verses": [
-    "recANmGRGZAfJncX3"
+    "recANmGRGZAfJncX3",
+    "recVnQp8wOaM9jml5",
+    "rec3tXOqtIGYztAl0",
+    "reccY8We3V0uOaKXG",
+    "rec7KGzavR0Wcnmvw",
+    "recWrz3p8Be8mK1co",
+    "recHbJiL6VLW7f8ve",
+    "recda9fyQopCOKOyK",
+    "recL68xrlP1S4PybE",
+    "recnPSq3Ki8WiZg1Z",
+    "recCw2CGDJJKv3CfP"
    ],
    "mother": [
     "recTIFScdQ1oAXVlB"
@@ -6596,7 +7324,8 @@
    "verseCount": 3,
    "verses": [
     "recf4XEC37dQ056G2",
-    "recSxpypJLin73UlB"
+    "recSxpypJLin73UlB",
+    "rec4Olr2Qk6OLweOZ"
    ],
    "father": [
     "recCBlNIAf0HhjdVO"
@@ -6644,7 +7373,10 @@
     "recA05ZgcwcTQiJHT",
     "rec8luMTcPmLc3az3",
     "recM4Un6cMI93tzl2",
-    "recGnIv3oR4SzTzJb"
+    "recGnIv3oR4SzTzJb",
+    "recZLdBTQ6r3hF7f3",
+    "rec1npyfjaKz8wLBt",
+    "reciWYzBchVGAfrsR"
    ],
    "father": [
     "rec5I7GZ9sLwh0hI2"
@@ -6747,7 +7479,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recMqBLUvolEpSPkB"
+    "recMqBLUvolEpSPkB",
+    "recNiYjdcGvTma8aK"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -6848,7 +7581,9 @@
    "verseCount": 5,
    "verses": [
     "recjDiiGthJPp0Gvs",
-    "recNKzc1Y2jI89AJZ"
+    "recNKzc1Y2jI89AJZ",
+    "reciKbKzqq4IXrMxq",
+    "recaSAP9EhjRKNSMM"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -6950,7 +7685,8 @@
    "verseCount": 3,
    "verses": [
     "recJelx2tu0J23pmr",
-    "reccPnYCaJ5wQHljE"
+    "reccPnYCaJ5wQHljE",
+    "recASSvFAFNVJ4ruQ"
    ],
    "father": [
     "rec5NX8uW1K4csGEj"
@@ -6990,7 +7726,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recR1jQMRWj4L9IK0"
+    "recR1jQMRWj4L9IK0",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "reclK7fHzOIxFQf6F"
@@ -7033,7 +7770,9 @@
     "recZPXNOJmOJvUAgg",
     "recL4AgRX5TOXgQrV",
     "recDyjfZrrWS53nKD",
-    "recZIwkbdM7Db3BUo"
+    "recZIwkbdM7Db3BUo",
+    "recAl0yjnoqRVmnnF",
+    "reco6LBtI8lF6jXcB"
    ],
    "father": [
     "recRO35quNb37mHVy"
@@ -7315,7 +8054,8 @@
     "recDyjfZrrWS53nKD",
     "recZIwkbdM7Db3BUo",
     "rec4jlRgJz9BK5DOB",
-    "rec8bHkNLK6SPQRbp"
+    "rec8bHkNLK6SPQRbp",
+    "reco6LBtI8lF6jXcB"
    ],
    "father": [
     "recIkDyjqErbTqdt0"
@@ -7412,7 +8152,9 @@
     "recfu2sjH6uD7oY9k",
     "recnYAR18aDiYFdxY",
     "recf4XEC37dQ056G2",
-    "recSxpypJLin73UlB"
+    "recSxpypJLin73UlB",
+    "recJJ7Zi4ztPTyFxj",
+    "rec4Olr2Qk6OLweOZ"
    ],
    "mother": [
     "receS32JnSfTDEwQR"
@@ -7500,7 +8242,10 @@
     "recHcYV8A7aqySYjg",
     "reco0pi1TPgqhAmEY",
     "recgEXHdSBPj6sGT8",
-    "recCL2kJz5UKBnIR7"
+    "recCL2kJz5UKBnIR7",
+    "rechP2NcqwYYvmxvM",
+    "recxb346nReABq6ZJ",
+    "reco6LBtI8lF6jXcB"
    ],
    "father": [
     "recxe1obdXUDGPcZT"
@@ -7542,7 +8287,9 @@
    "verseCount": 4,
    "verses": [
     "recWl9OLsxnGByZGW",
-    "recvRaInNksbQKIeF"
+    "recvRaInNksbQKIeF",
+    "recZeu4DsDwwaEn1Z",
+    "recFGvBT6f2aaZouu"
    ],
    "minYear": -1852,
    "maxYear": -1700,
@@ -7579,7 +8326,8 @@
     "recNgCd4ZZzGZWPGi",
     "recMzhbWygCBCsFIf",
     "recpKWNZMIaN4qlz4",
-    "recGNeqHzuwpVVw6I"
+    "recGNeqHzuwpVVw6I",
+    "recMG5oyRKuVY0L29"
    ],
    "father": [
     "recXBYSWubfkpqNQm"
@@ -7629,7 +8377,8 @@
    "verses": [
     "reckdDgj7yX95wCU9",
     "recLYhe4C5F43zL02",
-    "recQtFuDDEwzbkbdH"
+    "recQtFuDDEwzbkbdH",
+    "rec0WHSsCUMHiMsiG"
    ],
    "children": [
     "recDVPMfLcfConM50",
@@ -7677,7 +8426,9 @@
     "rec4jlRgJz9BK5DOB",
     "rec8bHkNLK6SPQRbp",
     "recA05ZgcwcTQiJHT",
-    "rec8luMTcPmLc3az3"
+    "rec8luMTcPmLc3az3",
+    "rec1npyfjaKz8wLBt",
+    "reco6LBtI8lF6jXcB"
    ],
    "father": [
     "recmCYRmiSdCy63Fc"
@@ -7719,7 +8470,8 @@
    "verseCount": 3,
    "verses": [
     "recf4XEC37dQ056G2",
-    "recSxpypJLin73UlB"
+    "recSxpypJLin73UlB",
+    "rec4Olr2Qk6OLweOZ"
    ],
    "father": [
     "recCBlNIAf0HhjdVO"
@@ -7760,7 +8512,8 @@
    "verseCount": 4,
    "verses": [
     "recvRaInNksbQKIeF",
-    "recio9cFWeprQtJ41"
+    "recio9cFWeprQtJ41",
+    "recFGvBT6f2aaZouu"
    ],
    "eastons": [
     "recALFJf6A4HEzHxQ"
@@ -7791,7 +8544,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec1kNAE5GK2YJBvl"
+    "rec1kNAE5GK2YJBvl",
+    "recoyoJYmHzjSPyeW"
    ],
    "father": [
     "recmpdfUzrmaZA843"
@@ -7836,7 +8590,10 @@
    "verseCount": 17,
    "verses": [
     "recf8B2rRDQocOCUd",
-    "recbvpTzRQ5suZz0S"
+    "recbvpTzRQ5suZz0S",
+    "recbyeZfHxPlPlZvG",
+    "recxb346nReABq6ZJ",
+    "recyFSy7RXmsOC7ly"
    ],
    "father": [
     "recVMHzYdllgvTo09"
@@ -7892,7 +8649,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recR1jQMRWj4L9IK0"
+    "recR1jQMRWj4L9IK0",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "reclK7fHzOIxFQf6F"
@@ -7926,7 +8684,9 @@
    "verses": [
     "reckdDgj7yX95wCU9",
     "recR1jQMRWj4L9IK0",
-    "recjkLOyYsKJX6bTN"
+    "recjkLOyYsKJX6bTN",
+    "rec0WHSsCUMHiMsiG",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -7976,7 +8736,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recD653dcCCe7tlL5"
+    "recD653dcCCe7tlL5",
+    "recoyoJYmHzjSPyeW"
    ],
    "mother": [
     "recr0xWgepJBPsiGH"
@@ -8212,7 +8973,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recMqBLUvolEpSPkB"
+    "recMqBLUvolEpSPkB",
+    "recTxka3V63RePBzU"
    ],
    "father": [
     "recvV3hxT3VINGuwx"
@@ -8253,7 +9015,8 @@
    "verseCount": 3,
    "verses": [
     "recJelx2tu0J23pmr",
-    "reccPnYCaJ5wQHljE"
+    "reccPnYCaJ5wQHljE",
+    "recASSvFAFNVJ4ruQ"
    ],
    "father": [
     "rec5NX8uW1K4csGEj"
@@ -8329,7 +9092,10 @@
     "recuJqyP43vbWJbzj",
     "recBtcagpUh0WBQFF",
     "rec6WN4WoQ5d67omJ",
-    "rec4248MQbeZWPPQk"
+    "rec4248MQbeZWPPQk",
+    "recZLdBTQ6r3hF7f3",
+    "rec1npyfjaKz8wLBt",
+    "reciWYzBchVGAfrsR"
    ],
    "father": [
     "recyVuQvM4Ue7gOd4"
@@ -8421,6 +9187,8 @@
    "gender": "Female",
    "verseCount": 3,
    "verses": [
+    "recM8JEaKggcjezUh",
+    "recASSvFAFNVJ4ruQ",
     "recKVWDulm9S6ak8B"
    ],
    "father": [
@@ -8464,7 +9232,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recSDcEW8b1fkrzpC"
+    "recSDcEW8b1fkrzpC",
+    "recAmtKDk24oPFt5l"
    ],
    "eastons": [
     "recs2vkD5U4BbizOp"
@@ -8493,7 +9262,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recBwMatgb3FXvmfU"
+    "recBwMatgb3FXvmfU",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recSiSW57dddI3uh2"
@@ -8530,7 +9300,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "rec0d6cl0Cone8Ds0"
+    "rec0d6cl0Cone8Ds0",
+    "recMQQFy2mhMnFrQP"
    ],
    "father": [
     "recl1WPeQDwuZjXx4"
@@ -8669,7 +9440,8 @@
    "verseCount": 3,
    "verses": [
     "recJelx2tu0J23pmr",
-    "reccPnYCaJ5wQHljE"
+    "reccPnYCaJ5wQHljE",
+    "recASSvFAFNVJ4ruQ"
    ],
    "father": [
     "rec5NX8uW1K4csGEj"
@@ -8704,7 +9476,8 @@
    "verseCount": 3,
    "verses": [
     "recf4XEC37dQ056G2",
-    "recSxpypJLin73UlB"
+    "recSxpypJLin73UlB",
+    "rec4Olr2Qk6OLweOZ"
    ],
    "father": [
     "recCBlNIAf0HhjdVO"
@@ -8802,7 +9575,9 @@
    "verses": [
     "reckdDgj7yX95wCU9",
     "reclCXHQzWWzcs4nJ",
-    "recjkLOyYsKJX6bTN"
+    "recjkLOyYsKJX6bTN",
+    "rec0WHSsCUMHiMsiG",
+    "recRODu9Qady5JNLU"
    ],
    "father": [
     "recOX7bzog0NALtK7"
@@ -8924,7 +9699,8 @@
    "gender": "Male",
    "verseCount": 2,
    "verses": [
-    "recD653dcCCe7tlL5"
+    "recD653dcCCe7tlL5",
+    "recoyoJYmHzjSPyeW"
    ],
    "mother": [
     "recr0xWgepJBPsiGH"

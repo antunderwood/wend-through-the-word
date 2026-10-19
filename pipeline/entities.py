@@ -1,4 +1,5 @@
-"""People, Places, Events, and People Groups from Theographic. Sets `b.entities` (ID -> Entity).
+"""People, Places, Events, and People Groups from Theographic. Sets `b.entities` (ID -> Entity)
+and `b.verse_sets` (ID -> whole-Bible Verse Keys, for each Entity in the book range).
 
 Theographic decides identity: one record is one Entity, and no two are merged (decision 7).
 An Entity is in the book range when one of its `verses` is.
@@ -48,6 +49,7 @@ def facts(kind, f, titles):
 
 def load(b):
     b.entities = {}
+    b.verse_sets = {}  # Entity ID -> Verse Keys of every Verse it is linked to, in range or not
     for verses in b.chapters.values():
         for verse in verses:
             verse["mentions"] = []
@@ -64,6 +66,9 @@ def load(b):
             in_range = [b.verse_recs[v] for v in f.get("verses") or [] if b.verse_recs.get(v)]
             if not in_range:
                 continue
+            # Whole-Bible Verse set for the Co-mention weight (decision 95). Themes (#12) add
+            # their Filed Under Verses here.
+            b.verse_sets[entity_id] = {b.rec_keys[v] for v in f["verses"] if v in b.rec_keys}
             theographic = {"source": "Theographic", "licence": b.licence(source)}
             b.entities[entity_id] = {
                 "id": entity_id,

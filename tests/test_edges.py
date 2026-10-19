@@ -13,23 +13,20 @@ def neighbour(export, entity_id, other_id):
 
 
 def test_parent_and_child_each_read_the_link_from_their_own_end(export):
+    father = {"edge": "PARENT_OF", "role": "father", **THEOGRAPHIC}
     isaac = neighbour(export, "person:abraham_58", "person:isaac_616")
-    assert isaac == {
-        "id": "person:isaac_616",
-        "type": "person",
-        "weight": 0,
-        "edges": [{"edge": "PARENT_OF", "direction": "out", "role": "father", **THEOGRAPHIC}],
-    }
+    assert (isaac["id"], isaac["type"]) == ("person:isaac_616", "person")
+    assert {**father, "direction": "out"} in isaac["edges"]
     abraham = neighbour(export, "person:isaac_616", "person:abraham_58")
-    assert abraham["edges"] == [
-        {"edge": "PARENT_OF", "direction": "in", "role": "father", **THEOGRAPHIC}
-    ]
+    assert {**father, "direction": "in"} in abraham["edges"]
     sarah = neighbour(export, "person:isaac_616", "person:sarah_2473")
-    assert sarah["edges"][0]["role"] == "mother"
+    assert [e.get("role") for e in sarah["edges"] if e["edge"] == "PARENT_OF"] == ["mother"]
 
 
 def edge_types(export, entity_id, other_id):
-    return [(e["edge"], e["direction"]) for e in neighbour(export, entity_id, other_id)["edges"]]
+    """The explicit edges of a Neighbour, without the CO_MENTION (#8) that most pairs also have."""
+    edges = neighbour(export, entity_id, other_id)["edges"]
+    return [(e["edge"], e["direction"]) for e in edges if e["edge"] != "CO_MENTION"]
 
 
 def test_half_siblings_come_only_from_theographic_half_sibling_fields(export):

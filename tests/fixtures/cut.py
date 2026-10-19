@@ -107,9 +107,18 @@ THEO_COORDS = dict.fromkeys(("latitude", "openBibleLat", "recogitoLat"), LAT)
 THEO_COORDS |= dict.fromkeys(("longitude", "openBibleLong", "recogitoLon"), LON)
 NAMES = ("people.json", "places.json", "events.json", "peopleGroups.json")
 records = {name: json.loads((src / name).read_text()) for name in NAMES}
+in_range, outside_ids = set(kept.values()), {r["id"] for r in ends}
+mentioned = {
+    r["id"]
+    for rows in records.values()
+    for r in rows
+    if in_range & set(r["fields"].get("verses") or [])
+}
+# A mentioned record also keeps its links to the kept verses outside the fixture books, so its
+# whole-Bible Verse set (decision 95) holds more than its Verses in range.
 for r in (r for rows in records.values() for r in rows):
-    r["fields"]["verses"] = [v for v in r["fields"].get("verses") or [] if v in kept.values()]
-mentioned = {r["id"] for rows in records.values() for r in rows if r["fields"]["verses"]}
+    keep_ids = in_range | outside_ids if r["id"] in mentioned else in_range
+    r["fields"]["verses"] = [v for v in r["fields"].get("verses") or [] if v in keep_ids]
 linked = {
     rec
     for rows in records.values()

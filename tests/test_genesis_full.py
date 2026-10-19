@@ -62,7 +62,9 @@ def test_genesis_half_siblings_are_the_242_links_theographic_gives(genesis):
     assert sum(x["edge"] == "HALF_SIBLING_OF" for x in half) == 242
     isaac = read_json(entity / "person" / "isaac_616.json")
     assert sorted(
-        n["id"] for n in isaac["neighbours"] if n["edges"][0]["edge"] == "HALF_SIBLING_OF"
+        n["id"]
+        for n in isaac["neighbours"]
+        if any(x["edge"] == "HALF_SIBLING_OF" for x in n["edges"])
     ) == [
         "person:ishbak_620",
         "person:ishmael_630",
@@ -98,7 +100,8 @@ def test_genesis_ships_the_real_curated_tables(genesis):
 
     def edges(a, b):
         n = [n for n in read_json(entity / f"{a}.json")["neighbours"] if n["id"] == f"person:{b}"]
-        return [(e["edge"], [v["label"] for v in e.get("evidence", [])]) for e in n[0]["edges"]]
+        explicit = [e for e in n[0]["edges"] if e["edge"] != "CO_MENTION"]
+        return [(e["edge"], [v["label"] for v in e.get("evidence", [])]) for e in explicit]
 
     assert edges("abraham_58", "sarah_2473") == [("SPOUSE_OF", ["Gen.11.29"])]
     both = ["Gen.16.3", "Gen.25.6"]
@@ -172,6 +175,27 @@ def test_genesis_verses_hold_every_cross_reference_with_an_end_in_genesis(genesi
     assert not read_tsv(genesis / "reports" / "split_or_trimmed.tsv")
     rows = read_tsv(genesis / "reports" / "verse_mismatches.tsv")
     assert not [r for r in rows if "cross-reference" in r["cause"]]
+
+
+def test_cosine_keeps_god_out_of_most_top_6_people_and_ranks_abrahams_people(genesis):
+    from test_comention import top_people
+
+    entity = genesis / "data" / VERSION / "entity"
+    people = [read_json(p) for p in (entity / "person").glob("*.json")]
+    people = [e for e in people if e["verses"]]  # the 352 in Genesis, not the stubs
+    # God is in more Verses than anyone; cosine over whole-Bible Verse sets demotes him
+    # (decisions 20 and 95). Owner's expected result: about 19 of 352.
+    with_god = [e["id"] for e in people if "person:god_1324" in top_people(e)]
+    assert len(with_god) <= len(people) // 10
+    abraham = read_json(entity / "person" / "abraham_58.json")
+    assert top_people(abraham) == [
+        "person:isaac_616",
+        "person:sarah_2473",
+        "person:heth_1510",
+        "person:abimelech_40",
+        "person:nahor_2143",
+        "person:lot_1830",
+    ]
 
 
 def test_genesis_tipnr_check_reports_48_disagreements(genesis):

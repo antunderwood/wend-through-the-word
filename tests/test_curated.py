@@ -17,8 +17,9 @@ def entity(export, entity_id):
 
 
 def edges(export, entity_id, other_id):
+    """The explicit edges of a Neighbour, without the CO_MENTION (#8) that most pairs also have."""
     n = [n for n in entity(export, entity_id)["neighbours"] if n["id"] == other_id]
-    return n[0]["edges"] if n else []
+    return [e for e in n[0]["edges"] if e["edge"] != "CO_MENTION"] if n else []
 
 
 def evidence(*labels):
