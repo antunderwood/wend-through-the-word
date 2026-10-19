@@ -342,7 +342,7 @@ The look must be modern. Do not use the default ball-and-stick style of a force 
 Decisions:
 
 1. Moving the focus replaces the view. A click only selects a node (section 10.2).
-2. The view uses limited tilt (2.5D) by default. Whether a mouse drag may still orbit in full 3D is decided in the M3 navigation prototype. The focus model prototype suggests full 3D is likely confusing (`docs/prototypes/focus-model.md`).
+2. The reader can choose the view: tilted plane, stacked discs, or free orbit (decision 114). The default is a 2.5D view, chosen from the M3 navigation prototype's ABC test. The focus model prototype suggests full 3D is likely confusing (`docs/prototypes/focus-model.md`).
 3. The dark theme comes first. The light theme is later.
 
 #### Disclosure rings
