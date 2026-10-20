@@ -3,6 +3,7 @@
   import { createData, type Data } from "./data";
   import { createGraph, type Graph } from "./graph";
   import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene } from "./model";
+  import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
   const START = "person:abraham_58";
@@ -71,8 +72,7 @@
         graph.onNodeClick((id) => apply({ type: "select", id }));
         graph.onNodeDoubleClick(makeFocus);
         graph.render(sc, model.selected);
-        // Test only until search (#22): wendFocus makes any Entity or Verse the Focus.
-        Object.assign(window, { wendGraph: graph, wendFocus: makeFocus }); // test-only hooks for the browser tests
+        Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
       } catch (e) {
         error = `Could not load the data: ${(e as Error).message}`;
       }
@@ -83,6 +83,7 @@
 
 <div class="stage" bind:this={host}></div>
 {#if sc && data}
+  <Search {data} onchoose={makeFocus} />
   <aside class="panel" aria-label="Selected Node">
     <h2>{label(selected)}</h2>
     <p class="muted">{selectedType}</p>
