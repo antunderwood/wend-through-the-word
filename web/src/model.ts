@@ -26,8 +26,11 @@ export const typeOf = (id: Id): NodeType | "overflow" =>
   /^\d{8}$/.test(id) ? "verse" : (id.slice(0, id.indexOf(":")) as NodeType | "overflow");
 
 // direction "out": the link owner is the source (owner PARENT_OF neighbour, so the neighbour is the
-// child). role on PARENT_OF is the parent's word (father or mother).
-export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number };
+// child). role on PARENT_OF is the parent's word (father or mother). An edge from the export says
+// where it came from; a curated one also has a note, Evidence Verses, and a request (decision 75).
+export type Evidence = { verse_key: Id; label: string };
+export type Curated = { source: string; licence: string; note: string; evidence: Evidence[]; request: string | null };
+export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number } & Partial<Curated>;
 export type Link = { id: Id; type: NodeType; weight: number; edges: Edge[] };
 // A loaded node: links sorted by weight, then ID; ring2 maps a Ring 1 ID to its stored top 10.
 // text is a Verse's BSB text or an Entity's Dictionary Entry.

@@ -3,7 +3,7 @@
   import { createData, fetchJSON, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
@@ -30,6 +30,7 @@
   let neighboursOf = $state(START);
   let versesOf = $state(START);
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
+  let selectedBox = $state<HTMLElement>();
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -65,7 +66,10 @@
     if (a.type === "clearPath") next = afterClear(next, onScreen!);
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") neighboursOf = next.selected;
-      if (from !== "verses") versesOf = next.selected;
+      if (from !== "verses") {
+        versesOf = next.selected;
+        selectedBox?.scrollTo(0, 0); // read from the name down, not from where a long entry was left
+      }
     }
     model = next;
     graph?.render(onScreen!, model.selected);
@@ -115,6 +119,20 @@
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data?.record(model.focus)?.links.find((l) => l.id === selected));
+  const linkWords = $derived(link && relation(link, data!.genderOf, plainName(model.focus)));
+  // The edges that give the words: the Co-mention for "together in N verses", else the others.
+  const linkEdges = $derived(link?.edges.filter((e) => (e.edge === "CO_MENTION") === linkWords!.derived) ?? []);
+
+  // "Theographic, CC BY-SA 4.0"; a derived link has two sources, each with its own licence.
+  function credit(edges: { source?: string; licence?: string }[]) {
+    const each = edges.flatMap((e) => {
+      const licences = e.licence?.split("; ") ?? [];
+      return e.source?.split("; ").map((s, i) => `${s}, ${licences[i]}`) ?? [];
+    });
+    return [...new Set(each)].join("; ");
+  }
+  // Evidence Verses by reference, "Gen 36:24", as the rest of the page names Verses.
+  const cited = (evidence: Evidence[]) => evidence.map((v) => data!.label(v.verse_key)).join(", ");
 
   // An unlabelled node names itself on hover; Ring 2 also shows its way to the Focus.
   function showTip(n: SceneNode | null, x: number, y: number) {
@@ -144,6 +162,11 @@
         .filter((o) => o !== versesOf && isEntity(versesOf) && isEntity(o))
         .map(async (o) => ({ with: o, verses: await data!.shared(o, versesOf) })),
     );
+  });
+  // The facts, corrections, and Dictionary Entry of the Selected Node, when it is an Entity.
+  const details = $derived.by(() => {
+    retries;
+    return isEntity(selected) ? data!.details(selected) : undefined;
   });
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
@@ -216,10 +239,12 @@
       <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
     {/if}
     <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
-    <section class="selected">
+    <section class="selected" bind:this={selectedBox}>
       <h2>{label(selected)}</h2>
-      <p class="muted">{selectedType}</p>
-      <p>{#if link}Relationship: <b>{relation(link, data.genderOf, plainName(model.focus)).text}</b>{/if}</p>
+      <p class="muted">{selectedType}{#await details then d}{#if d}, from {credit([d])}{/if}{/await}</p>
+      <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
+           that item goes after it. -->
+      <p>{#if link}Relationship: <b>{linkWords!.text}</b> <small class="source">{credit(linkEdges)}</small>{/if}</p>
       {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
       {#if model.pins.includes(selected)}
@@ -243,23 +268,64 @@
       {:catch e}
         {@render failed("the shared verses", e)}
       {/await}
+      <!-- Below the shared Verses, whose list must not move between the two clicks of a double
+           click: what the Selected Node's own data says, which a click on a shared Verse removes. -->
+      {#each linkEdges.filter((e) => e.note) as e, i (i)}
+        <p class="note">Note on the Relationship: {e.note} Evidence: {cited(e.evidence!)}.{@render request(e.request)}</p>
+      {/each}
+      {#await details then d}
+        {#if d?.facts.length}
+          <ul class="facts" aria-label="Facts">
+            {#each d.facts as f (f.name)}
+              <li><span class="muted">{f.name}</span> {f.value} <small class="source">{credit([f])}</small></li>
+            {/each}
+          </ul>
+        {/if}
+        {#if d?.corrections.length}
+          <ul class="facts" aria-label="Corrections">
+            {#each d.corrections as c, i (i)}
+              <li>Corrected after review: {c.field} ({cited(c.evidence)}). <span class="muted">{c.note}</span>{@render request(c.request)} <small class="source">{credit([c])}</small></li>
+            {/each}
+          </ul>
+        {/if}
+        {#if d?.entry}
+          {@const [first, ...rest] = d.entry.text.split(/\n\s*\n\s*/)}
+          {@const key = `${selected}|entry`}
+          <section class="entry" aria-labelledby="entry">
+            <h3 id="entry">{d.entry.source}</h3>
+            {#each opened[key] ? [first, ...rest] : [first] as paragraph, i (i)}<p>{paragraph}</p>{/each}
+            {#if rest.length}
+              <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>{opened[key] ? "Read less" : "Read more"}</button>
+            {/if}
+            <small class="source">{d.entry.licence}</small>
+          </section>
+        {/if}
+      {:catch e}
+        {@render failed("the details", e)}
+      {/await}
     </section>
     {#await listing then list}
+      <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so), each with its source. -->
       {#each list.types as t (t)}
-        {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
+        {@const linked = t === "verse" && isEntity(list.r.id)}
+        {@const found = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
+        {@const all = linked ? found.sort((a, b) => (a.id < b.id ? -1 : 1)) : found}
         {@const key = `${neighboursOf}|${t}`}
         {@const k = model.filters.k}
         {#if all.length}
           <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
           <ol aria-labelledby="list-{t}">
             {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
-              <li>{@render item(l.id, relation(l, data.genderOf, plainName(list.r.id)).text, "neighbours")}</li>
+              <li>
+                {@render item(l.id, relation(l, data.genderOf, plainName(list.r.id)).text, "neighbours")}
+                {#if linked}<small class="source">{credit(l.edges)}</small>{/if}
+              </li>
             {/each}
           </ol>
           {#if !list.whole && all.length > k}
             <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
               <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
-              {opened[key] ? `Show top ${k}` : `${all.length - k} more`}
+              {opened[key] ? `Show ${linked ? "first" : "top"} ${k}` : `${all.length - k} more`}
             </button>
           {/if}
         {/if}
@@ -278,6 +344,9 @@
     {data!.label(id, false)}
     {#if words}<span class="muted">{words}</span>{/if}
   </button>
+{/snippet}
+{#snippet request(url?: string | null)}
+  {#if url}{" "}<a href={url} target="_blank" rel="noopener">Request #{url.slice(url.lastIndexOf("/") + 1)}</a>{/if}
 {/snippet}
 {#snippet failed(what: string, e: Error)}
   <p class="muted">Could not load {what}: {e.message} <button onclick={() => retries++}>Retry</button></p>
@@ -384,7 +453,7 @@
     line-height: 1;
   }
   .selected {
-    height: 300px;
+    height: 55%;
     overflow-y: auto;
     border-bottom: 1px solid #262a3c;
   }
@@ -438,6 +507,26 @@
   }
   .muted {
     color: #9aa0b4;
+  }
+  /* Where a fact or link came from: quiet, after the item. */
+  .source {
+    font-size: 11px;
+    color: #7a8098;
+  }
+  .panel .facts {
+    margin: 8px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .panel .note {
+    font-size: 13px;
+    color: #c8cde0;
+  }
+  .panel a {
+    color: #ffd27a;
+  }
+  .entry p {
+    min-height: 0;
   }
   button {
     font: inherit;
