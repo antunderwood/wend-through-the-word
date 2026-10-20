@@ -160,9 +160,8 @@ export function reduce(s: State, a: Action, label: (id: Id) => string): State {
       return { ...s, filters: { ...s.filters, [a.key]: a.value } };
     case "clearPath": {
       if (!s.path.length) return s;
-      // The Focus and pins stay; a Selected Node only on Your Path gives way to the Focus.
-      const selected = s.path.includes(s.selected) && !s.pins.includes(s.selected) ? s.focus : s.selected;
-      return { ...s, path: [], cleared: s.path, selected, notice: "Cleared Your Path." };
+      // The Focus and pins stay; afterClear settles the Selected Node once the new scene is drawn.
+      return { ...s, path: [], cleared: s.path, notice: "Cleared Your Path." };
     }
     case "undoClear": {
       if (!s.cleared) return s;
@@ -172,6 +171,10 @@ export function reduce(s: State, a: Action, label: (id: Id) => string): State {
     }
   }
 }
+
+// After Clear, a Selected Node only on Your Path (so no longer in the scene) gives way to the Focus.
+export const afterClear = (s: State, sc: Scene): State =>
+  s.cleared?.includes(s.selected) && !sc.nodes.some((n) => n.id === s.selected) ? { ...s, selected: s.focus } : s;
 
 // rec(id) gives a loaded record; the Focus and every pin must be loaded.
 export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined): Scene {

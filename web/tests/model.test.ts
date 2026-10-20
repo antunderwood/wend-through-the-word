@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
+import { afterClear, initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -186,7 +186,11 @@ describe("select and focus", () => {
   });
 
   describe("Clear and Undo clear", () => {
-    const clear = (t: State) => reduce(t, { type: "clearPath" }, data.label);
+    // As the app applies it: the reducer, then the Selected Node checked against the new scene.
+    const clear = (t: State) => {
+      const u = reduce(t, { type: "clearPath" }, data.label);
+      return afterClear(u, draw(u));
+    };
     const undo = (t: State) => reduce(t, { type: "undoClear" }, data.label);
     let s: State; // Your Path: Abraham, Isaac, Hagar; Sarah the Focus
     beforeAll(() => {
@@ -200,11 +204,21 @@ describe("select and focus", () => {
     });
 
     it("a Selected Node only on Your Path gives way to the Focus; a pinned one stays", () => {
-      expect(clear(reduce(s, { type: "select", id: HAGAR }, data.label)).selected).toBe(SARAH);
+      // With Terah the Focus, Hagar is only on Your Path, and the clear leaves her out of the scene.
+      const t = walk(initialState(ABRAHAM), ISAAC, HAGAR, TERAH);
+      expect(clear(reduce(t, { type: "select", id: HAGAR }, data.label)).selected).toBe(TERAH);
       const pinned = reduce(reduce(s, { type: "pin", id: ISAAC }, data.label), { type: "select", id: ISAAC }, data.label);
       expect(clear(pinned).selected).toBe(ISAAC);
       // A Ring 1 node off Your Path stays selected.
       expect(clear(reduce(s, { type: "select", id: TERAH }, data.label)).selected).toBe(TERAH);
+    });
+
+    it("a Selected Node on Your Path that is still in the scene after the clear stays selected", () => {
+      // Abraham and Hagar are on Your Path and in Sarah's Ring 1.
+      for (const id of [ABRAHAM, HAGAR]) {
+        expect(draw(s).nodes.find((n) => n.id === id)!.roles).toEqual(["ring1", "path"]);
+        expect(clear(reduce(s, { type: "select", id }, data.label)).selected).toBe(id);
+      }
     });
 
     it("Undo clear with no visits in between gives back Your Path as it was", () => {

@@ -3,7 +3,7 @@
   import { createData, fetchJSON, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import { afterClear, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
@@ -57,8 +57,9 @@
       : data!.label(id);
 
   function apply(a: Action, from?: "neighbours" | "verses") {
-    const next = reduce(model, a, label);
+    let next = reduce(model, a, label);
     if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) sc = scene(next, data!.rec, data!.genderOf);
+    if (a.type === "clearPath") next = afterClear(next, sc!);
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") listed = next.selected;
       if (from !== "verses") versed = next.selected;

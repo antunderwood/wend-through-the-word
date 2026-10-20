@@ -44,8 +44,8 @@ test("the Your Path bar shows the Focus then Your Path newest first, and can be 
 
   await bar.getByRole("button", { name: "Clear", exact: true }).click();
   await expect(items).toHaveText(["Hagar"]);
-  // Abraham was on Your Path and is not pinned, so the selection gives way to the Focus.
-  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Hagar");
+  // Abraham is also in Hagar's Ring 1, so he is still in the scene and stays selected.
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Abraham");
 
   await bar.getByRole("button", { name: "Undo clear" }).click();
   await expect(items).toHaveText(["Hagar", "Sarah", "Abraham"]);
