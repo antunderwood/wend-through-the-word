@@ -20,7 +20,7 @@ const BG = 0x0d0f17,
   ACCENT = 0xffd27a,
   SHARED = 0x4ff0e0,
   PIN = 0xff9f6e;
-const TYPE_COLOUR: Record<NodeType, number> = {
+export const TYPE_COLOUR: Record<NodeType, number> = {
   person: 0x6fa8dc,
   place: 0x6cc4a1,
   event: 0xe6b85c,
@@ -33,7 +33,7 @@ const STYLE: Record<Role, { size: number; opacity: number; labelled: boolean }> 
   ring1: { size: 2.0, opacity: 0.95, labelled: true },
   pinned: { size: 2.6, opacity: 1, labelled: true },
   overflow: { size: 1.8, opacity: 0.75, labelled: true },
-  pinring: { size: 1.3, opacity: 0.8, labelled: false },
+  pinring: { size: 1.3, opacity: 0.8, labelled: true },
   path: { size: 1.5, opacity: 0.45, labelled: false },
   ring2: { size: 0.8, opacity: 0.32, labelled: false },
 };
@@ -312,7 +312,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       Object.assign(s.userData, { node: n, to: s.position.clone(), ringed: !!ring });
       if (n.role === "focus" && look.glow) s.add(sprite(TEX.glow, ACCENT, 0.55, 3.2, LAYER.glow, THREE.AdditiveBlending));
       if (ring) s.add(sprite(TEX.mask, BG, 1, RINGED, LAYER.mask), sprite(TEX.ring, ring, 0.95, RINGED, LAYER.ring));
-      if (st.labelled || n.shared) s.add(nodeLabel(n, selected)); // a Shared Node around a pin is labelled too
+      if (st.labelled || n.shared) s.add(nodeLabel(n, selected));
       world.add(s);
       sprites.set(n.id, s);
     }
@@ -325,7 +325,10 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
         pairs.push([a, b]);
         continue;
       }
-      const { color, opacity } = EDGE[e.kind];
+      // A pin's link to a Shared Node in Ring 1 is drawn bright, in the Shared colour, so it reads
+      // across the scene.
+      const toShared = e.kind === "pin" && sprites.get(e.b)!.userData.node.shared;
+      const { color, opacity } = toShared ? { color: SHARED, opacity: 0.8 } : EDGE[e.kind];
       // A link that is only a Co-mention is dashed (PRD 10.4 edge look 8).
       const mat = e.dashed
         ? new THREE.LineDashedMaterial({ color, transparent: true, opacity, dashSize: 0.7, gapSize: 0.5 })

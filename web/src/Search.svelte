@@ -2,7 +2,11 @@
   // Search by name, alias, or verse reference, with a type filter. Choosing a result (a click, or
   // Enter for the first) makes it the Focus at once and closes the list (decision 115).
   import type { Data } from "./data";
+  import { TYPE_COLOUR } from "./graph";
   import { TYPES, TYPE_NAME, typeOf, type Id, type NodeType } from "./model";
+
+  // The type colour of the scene, so a result reads like its node.
+  const colour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
 
   let { data, onchoose }: { data: Data; onchoose: (id: Id) => void } = $props();
   let query = $state("");
@@ -27,15 +31,18 @@
   <div class="chips" role="group" aria-label="Filter by type">
     <button aria-pressed={!type} onclick={() => (type = undefined)}>All</button>
     {#each TYPES as t (t)}
-      <button aria-pressed={type === t} onclick={() => (type = t)}>{TYPE_NAME[t]}</button>
+      <button aria-pressed={type === t} style="--c: {colour(t)}" onclick={() => (type = t)}>{TYPE_NAME[t]}</button>
     {/each}
   </div>
   {#if query.trim()}
     <ul aria-label="Search results">
       {#each hits as h (h.id)}
+        {@const t = typeOf(h.id) as NodeType}
         <li>
           <button onclick={() => choose(h.id)}>
-            {data.label(h.id)} <span class="muted">{TYPE_NAME[typeOf(h.id) as NodeType]}{h.hint ? `, ${h.hint}` : ""}</span>
+            <span class="name">{data.label(h.id)}</span>
+            {#if h.hint}<span class="hint">{h.hint}</span>{/if}
+            <span class="type" style="--c: {colour(t)}">{TYPE_NAME[t]}</span>
           </button>
         </li>
       {:else}
@@ -72,31 +79,68 @@
     gap: 4px;
     margin-top: 6px;
   }
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
   .chips button {
     font-size: 11px;
-    padding: 1px 8px;
+    padding: 2px 9px;
     border-radius: 999px;
+    background: none;
+    border: 1px solid #3a4060;
+    color: #c9ccd8;
+  }
+  .chips button:hover {
+    border-color: var(--c, #6b7394);
   }
   .chips button[aria-pressed="true"] {
-    background: #3a4060;
+    background: var(--c, #ffd27a);
+    border-color: var(--c, #ffd27a);
+    color: #0d0f17;
+    font-weight: 600;
   }
   ul {
     list-style: none;
-    margin: 6px 0 0;
+    margin: 8px 0 0;
     padding: 0;
     max-height: 45vh;
     overflow-y: auto;
   }
   li button {
-    display: block;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     width: 100%;
     text-align: left;
     background: none;
     border: none;
-    padding: 4px 6px;
+    border-radius: 4px;
+    padding: 5px 6px;
+    color: #e6e8f0;
   }
-  li button:hover {
-    background: rgba(255, 255, 255, 0.1);
+  li button:hover,
+  li button:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  li:first-child button {
+    background: rgba(255, 210, 122, 0.08);
+  }
+  .name {
+    flex: 1;
+    min-width: 0;
+  }
+  .hint {
+    color: #9aa0b4;
+    font-size: 11px;
+  }
+  .type {
+    flex: none;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--c);
   }
   li.muted {
     padding: 4px 6px;
