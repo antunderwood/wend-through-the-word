@@ -160,7 +160,9 @@ export async function createData(getJSON: GetJSON, root: string) {
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until
     // loaded. The scene wraps it and stops after three lines with an ellipsis.
     quote: (id: Id): string => (records.get(id)?.text ?? "").split(/(?<=\.)\s(?=[A-Z])/)[0],
-    label(id: Id): string {
+    // `relation` false leaves out a same-name Person's relation, for a list whose Relationship
+    // words already say it.
+    label(id: Id, relation = true): string {
       if (typeOf(id) === "verse") return reference(id);
       const e = entities.get(id);
       const name = e?.name ?? id;
@@ -170,7 +172,7 @@ export async function createData(getJSON: GetJSON, root: string) {
           ? name.toLowerCase().replace(/(^|[\s(,])\S/g, (c) => c.toUpperCase())
           : name;
       // Same-name Entities of one type (decisions 122, 125): "Anah, brother of Ajah (Gen 36:24)".
-      const named = e?.relation ? `${shown}, ${e.relation}` : shown;
+      const named = relation && e?.relation ? `${shown}, ${e.relation}` : shown;
       return e?.hint ? `${named} (${e.hint})` : named;
     },
   };

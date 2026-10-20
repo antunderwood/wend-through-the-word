@@ -272,7 +272,7 @@
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
 {#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
   <button class="item" class:sel={id === selected} onclick={() => apply({ type: "select", id }, from)} ondblclick={() => makeFocus(id)}>
-    {label(id)}
+    {data!.label(id, false)}
     {#if words}<span class="muted">{words}</span>{/if}
   </button>
 {/snippet}

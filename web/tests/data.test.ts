@@ -58,11 +58,13 @@ describe("data loader", () => {
     // Fixture: People named Anah, and two Places named Sitnah that share Gen 26:21, so the first
     // Sitnah falls back to the number in its ID (decision 122). A Person's relation that no other
     // Anah has comes before the hint (decision 125); anah_247 has none.
-    expect(["person:anah_247", "person:anah_248", "person:anah_249"].map(data.label)).toEqual([
+    expect(["person:anah_247", "person:anah_248", "person:anah_249"].map((id) => data.label(id))).toEqual([
       "Anah (Gen 36:2)",
       "Anah, son of Seir (Gen 36:20)",
       "Anah, brother of Ajah (Gen 36:24)",
     ]);
+    // A panel list, whose Relationship words already say it, leaves the relation out.
+    expect(data.label("person:anah_248", false)).toBe("Anah (Gen 36:20)");
     expect(data.label("place:sitnah_1102")).toBe("Sitnah (1102)");
     // Canaan is a Person and a Place: the type icon and colour tell them apart, not a hint.
     expect(data.label("person:canaan_914")).toBe("Canaan");
