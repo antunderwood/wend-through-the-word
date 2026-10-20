@@ -33,11 +33,12 @@ test("the picker switches A to B to C with the keyboard, keeping the Focus and e
   }
 });
 
-test("the chosen view survives a reload", async ({ page }) => {
+test("the chosen view is kept in this browser", async ({ page }) => {
   await page.goto("/");
   await sceneReady(page);
   await picker(page).getByRole("radio", { name: "Free orbit" }).click();
-  await page.reload();
+  // The bare address, not a reload: a reload would keep the view through the address.
+  await page.goto("/");
   await sceneReady(page);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Free orbit");
 });

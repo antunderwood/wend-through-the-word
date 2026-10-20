@@ -80,9 +80,9 @@ export type Scene = {
 };
 
 export const RING2_K = 3; // Ring 2 nodes per Ring 1 node
+export const MAX_PINS = 3;
 const SCENE_PATH = 5,
-  PIN_K = 3,
-  MAX_PINS = 3;
+  PIN_K = 3;
 const isCrossRef = (l: Link) => l.edges.some((e) => e.edge === "CROSS_REF");
 export const passes = (l: Link, f: State["filters"]) => !isCrossRef(l) || l.weight >= f.minVotes;
 // A Ring 2 entry is a Cross-reference when both ends are Verses; its weight is then Votes.

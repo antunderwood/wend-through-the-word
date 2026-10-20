@@ -1,13 +1,14 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
+  import { read, START, write } from "./address";
   import { createData, fetchJSON, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
+  import Reader from "./Reader.svelte";
   import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
-  const START = "person:abraham_58";
   const HINT_KEY = "wend.hintDismissed";
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
@@ -31,6 +32,8 @@
   let versesOf = $state(START);
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   let selectedBox = $state<HTMLElement>();
+  // The Verse the reader panel is open at; undefined when it is closed.
+  let reading = $state<Id>();
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -70,6 +73,8 @@
         versesOf = next.selected;
         selectedBox?.scrollTo(0, 0); // read from the name down, not from where a long entry was left
       }
+      // The open reader panel follows the Selected Verse.
+      if (reading && typeOf(next.selected) === "verse") reading = next.selected;
     }
     model = next;
     graph?.render(onScreen!, model.selected);
@@ -115,7 +120,16 @@
     apply({ type: "pin", id });
   }
 
+  // Opens the reader panel at the Selected Verse, or at an Entity's first Verse in Bible order.
+  async function openReader() {
+    if (typeOf(selected) === "verse") return (reading = selected);
+    const first = (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
+    if (first) reading = first;
+    else model = { ...model, notice: `${label(selected)} has no linked Verses.` };
+  }
+
   const selected = $derived(model.selected);
+  const inScene = $derived(new Set(onScreen?.nodes.map((n) => n.id)));
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data?.record(model.focus)?.links.find((l) => l.id === selected));
@@ -193,11 +207,18 @@
     store(HINT_KEY, "1");
   }
 
+  // The page opens on the address (decision 128): a missing or unknown Focus is Abraham.
   async function start() {
     failure = undefined;
     try {
       data = await createData(fetchJSON, "/data");
-      await data.loadWithKin(START);
+      const asked = read(location.search, data.known);
+      const focus = asked.focus ?? START,
+        pins = asked.pins ?? [];
+      await Promise.all([data.loadWithKin(focus), ...pins.map(data.load)]);
+      model = { ...initialState(focus), selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
+      neighboursOf = versesOf = model.selected;
+      if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
       return;
@@ -222,12 +243,34 @@
     start();
     return () => graph?.dispose();
   });
+
+  // The address follows the page: a new Focus is a new history entry, any other change replaces it.
+  let entryFocus = "";
+  $effect(() => {
+    if (!onScreen) return;
+    const url = location.pathname + write(model, view);
+    if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
+    else history.replaceState(null, "", url);
+    entryFocus = model.focus;
+  });
+
+  // Back and Forward make the entry's Focus the Focus again.
+  function moved() {
+    entryFocus = read(location.search, data!.known).focus ?? START;
+    makeFocus(entryFocus);
+  }
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(location.href);
+    model = { ...model, notice: "Link copied." };
+  }
 </script>
 
-<svelte:window onkeydown={sceneKey} />
+<svelte:window onkeydown={sceneKey} onpopstate={moved} />
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<!-- The scene takes the space between the open panels. -->
+<div class="stage" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   <!-- The chevron points the way the panel will move. -->
@@ -254,6 +297,7 @@
       {/if}
       <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
       <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+      <button onclick={openReader} disabled={typeOf(selected) === "overflow"}>Read</button>
       {#await sharing then lists}
         {#each lists as { with: o, verses }, i (o)}
           {#if verses.length}
@@ -336,6 +380,20 @@
     {/await}
   </aside>
   <PathBar {model} {label} {apply} />
+  {#if reading}
+    <div class="drawer">
+      <Reader
+        {data}
+        at={reading}
+        {selected}
+        inScene={(id) => inScene.has(id)}
+        onselect={(id) => apply({ type: "select", id })}
+        onfocus={makeFocus}
+        onmove={(id) => (reading = id)}
+        onclose={() => (reading = undefined)}
+      />
+    </div>
+  {/if}
 {/if}
 
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
@@ -363,14 +421,20 @@
     <button onclick={failure.retry}>Retry</button>
   </div>
 {/if}
-{#if !noWebGL}
-  <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-    {#each VIEW_KEYS as key (key)}
-      <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-    {/each}
-  </div>
-{/if}
+<div class="controls">
+  {#if !noWebGL}
+    <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+      {#each VIEW_KEYS as key (key)}
+        <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+      {/each}
+    </div>
+  {/if}
+  {#if onScreen}<button class="copy" onclick={copyLink}>Copy link</button>{/if}
+</div>
 <p class="notice" role="status">{model.notice}</p>
+<footer>
+  <a href="/credits.html">Data: CC BY-SA 4.0, credits</a>{#if data}<span class="muted">. Data version {data.version}</span>{/if}
+</footer>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
@@ -383,19 +447,30 @@
     color: #e6e8f0;
     font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
+  /* Below the top strip of the search box and the Your Path bar, like the panel. */
   .stage {
     position: fixed;
-    inset: 0;
+    inset: 56px 0 0;
+  }
+  .stage.reading {
+    left: 412px; /* the reader drawer's right edge (16 + 380) and a gap */
+  }
+  .stage.narrow {
+    right: 340px; /* the panel's width */
   }
   .stage :global(canvas) {
     display: block;
     touch-action: none;
   }
-  .views {
+  .controls {
     position: fixed;
     left: 50%;
     bottom: 16px;
     transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  .views {
     display: flex;
     gap: 2px;
     padding: 3px;
@@ -410,6 +485,9 @@
     color: #9aa0b4;
     font: inherit;
     cursor: pointer;
+  }
+  .copy {
+    border-radius: 999px;
   }
   .views button[aria-checked="true"] {
     background: #2a3048;
@@ -432,6 +510,7 @@
   .panel.full {
     left: 0;
     width: auto;
+    bottom: 36px; /* above the footer */
   }
   .panel.collapsed {
     transform: translateX(100%);
@@ -440,6 +519,19 @@
     .panel {
       transition: none;
     }
+  }
+  /* Under the search box, clear of the notes in the bottom left corner. */
+  .drawer {
+    position: fixed;
+    top: 132px;
+    left: 16px;
+    bottom: 92px;
+    width: 380px;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    background: rgba(20, 23, 34, 0.92);
+    border: 1px solid #262a3c;
+    border-radius: 8px;
   }
   .chevron {
     position: fixed;
@@ -559,7 +651,7 @@
   .trimmed {
     position: fixed;
     left: 16px;
-    bottom: 40px; /* above the notice line */
+    bottom: 64px; /* above the notice line */
     margin: 0;
     font-size: 12px;
     color: #9aa0b4;
@@ -593,8 +685,18 @@
   .notice {
     position: fixed;
     left: 16px;
-    bottom: 16px;
+    bottom: 40px; /* above the footer */
     margin: 0;
     color: #9aa0b4;
+  }
+  footer {
+    position: fixed;
+    left: 16px;
+    bottom: 12px;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  footer a {
+    color: inherit;
   }
 </style>
