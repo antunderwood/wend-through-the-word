@@ -233,6 +233,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 130. **The book filter applies to Verses only.** Its choices are each book in the build, "Verses outside this build", and all (the default). Reason: Entities belong to many books; hiding Cross-references to books not in the build stops Ring 1 filling with Verses that cannot be opened.
 131. **M4 sends Correction Requests to the GitHub issue form only (owner).** The mailto fallback of PRD 10.5 is held until the owner chooses a project-only address (PRD open question 13), before the M5 launch. Reason: the address does not exist yet; the form is the primary channel.
 132. **The credits page is its own page in the front end build.** It is rendered from `credits.json`, needs no state from the main page, and loads without WebGL. Reason: PRD 5 rule 6 and the CC BY-SA modification notice must be reachable by every reader.
+133. **Your Path lasts until cleared (owner).** Your Path and the Focus are kept in browser storage, so they survive reloads and closing the browser until the reader clears them; an address that names a Focus still wins. Amends the glossary's "this session" and decision 129. Reason: notes are kept per step of Your Path, and losing the steps on a reload would leave notes without their journey.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 

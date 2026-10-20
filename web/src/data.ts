@@ -55,6 +55,9 @@ export async function createData(getJSON: GetJSON, root: string) {
       ? ""
       : `${reference(id)} is outside this build (${built} only).`;
 
+  // The built chapters in Bible order, as the first 5 digits of their Verse Keys.
+  const chapters = searchIndex.books.flatMap((b) => b.chapters.map((c) => `${b.number}${String(c).padStart(3, "0")}`));
+
   const byWeight =(a: Link, b: Link) => b.weight - a.weight || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
   async function fetchRecord(id: Id): Promise<Rec> {
@@ -160,6 +163,17 @@ export async function createData(getJSON: GetJSON, root: string) {
     bookOf: (id: Id) => (outside(id) ? undefined : books.get(id.slice(0, 2))?.osis),
     // The books with chapters in this build, in Bible order.
     builtBooks: searchIndex.books.filter((b) => b.chapters.length),
+    // The chapter of a built Verse, for the reader panel.
+    async chapter(id: Id): Promise<{ title: string; verses: { key: Id; text: string }[] }> {
+      const book = books.get(id.slice(0, 2))!;
+      const c = await get<ChapterFile>(`${base}/chapter/${book.osis}/${+id.slice(2, 5)}.json`);
+      return { title: `${book.name} ${+id.slice(2, 5)}`, verses: c.verses.map((v) => ({ key: v.key, text: v.text_bsb ?? "" })) };
+    },
+    // The first Verse of the built chapter after (dir 1) or before (dir -1) a Verse's own; none at the ends.
+    nextChapter(id: Id, dir: -1 | 1): Id | undefined {
+      const c = chapters[chapters.indexOf(id.slice(0, 5)) + dir];
+      return c && `${c}001`;
+    },
     // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
     known: (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id)),
     record: (id: Id) => records.get(id),

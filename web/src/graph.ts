@@ -179,7 +179,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     crowded = true;
   }
   resize();
-  window.addEventListener("resize", resize);
+  // The page's panels change the scene's size as well as the window.
+  const sized = new ResizeObserver(resize);
+  sized.observe(host);
 
   function useView(v: ViewModule) {
     controls?.dispose();
@@ -609,7 +611,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     },
     dispose() {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
+      sized.disconnect();
       endMove();
       clear();
       selRing.traverse((c) => c instanceof THREE.Sprite && c.material.dispose());

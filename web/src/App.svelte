@@ -5,11 +5,16 @@
   import Filters from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
+  import Reader from "./Reader.svelte";
+  import NoteBox from "./NoteBox.svelte";
+  import { notesMarkdown } from "./notes";
   import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
   const HINT_KEY = "wend.hintDismissed";
+  const NOTES_KEY = "wend.notes";
+  const JOURNEY_KEY = "wend.journey";
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
   const VIEW_KEYS = Object.keys(VIEWS) as View[];
@@ -31,6 +36,8 @@
   let neighboursOf = $state(START);
   let versesOf = $state(START);
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
+  // The Verse the reader panel is open at; undefined when it is closed.
+  let reading = $state<Id>();
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -76,6 +83,8 @@
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") neighboursOf = next.selected;
       if (from !== "verses") versesOf = next.selected;
+      // The open reader panel follows the Selected Verse.
+      if (reading && typeOf(next.selected) === "verse") reading = next.selected;
     }
     model = next;
     graph?.render(onScreen!, model.selected);
@@ -121,7 +130,16 @@
     apply({ type: "pin", id });
   }
 
+  // Opens the reader panel at the Selected Verse, or at an Entity's first Verse in Bible order.
+  async function openReader() {
+    if (typeOf(selected) === "verse") return (reading = selected);
+    const first = (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
+    if (first) reading = first;
+    else model = { ...model, notice: `${label(selected)} has no linked Verses.` };
+  }
+
   const selected = $derived(model.selected);
+  const inScene = $derived(new Set(onScreen?.nodes.map((n) => n.id)));
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data?.record(model.focus)?.links.find((l) => l.id === selected));
@@ -175,6 +193,26 @@
     e.preventDefault();
   }
 
+  // Journey notes (decision 129): a note per node ID, kept in this browser with Your Path and the Focus.
+  let notes = $state.raw<Record<Id, string>>(JSON.parse(stored(NOTES_KEY) ?? "{}"));
+  function keepNotes(next: Record<Id, string>) {
+    notes = next;
+    store(NOTES_KEY, JSON.stringify(next));
+  }
+  // An emptied note is removed, so its step is no longer marked.
+  function writeNote(id: Id, text: string) {
+    const { [id]: _, ...rest } = notes;
+    keepNotes(text ? { ...rest, [id]: text } : rest);
+  }
+  function downloadNotes() {
+    const link = (id: Id) => location.origin + location.pathname + write(initialState(id), "A");
+    const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], link, new Date());
+    const a = document.createElement("a");
+    a.href = "data:text/markdown;charset=utf-8," + encodeURIComponent(text);
+    a.download = "journey-notes.md";
+    a.click();
+  }
+
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
@@ -186,10 +224,15 @@
     try {
       data = await createData(fetchJSON, "/data");
       const asked = readAddress();
-      const focus = asked.focus ?? START,
+      // Your Path and the Focus kept in this browser, less any node a newer build no longer has.
+      const kept: { focus: Id; path: Id[] } | null = JSON.parse(stored(JOURNEY_KEY) ?? "null");
+      let journey = { ...initialState(kept && data.known(kept.focus) ? kept.focus : START), path: kept?.path.filter(data.known) ?? [] };
+      // The address wins when it names a Focus; the kept Focus then joins Your Path, as on any move.
+      if (asked.focus) journey = reduce(journey, { type: "focus", id: asked.focus }, data.label);
+      const focus = journey.focus,
         pins = asked.pins ?? [];
       await Promise.all([data.loadWithKin(focus), ...pins.map(data.load)]);
-      model = { ...initialState(focus), selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
+      model = { ...journey, selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
       neighboursOf = versesOf = model.selected;
       if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
@@ -228,6 +271,10 @@
     entryFocus = model.focus;
   });
 
+  $effect(() => {
+    if (onScreen) store(JOURNEY_KEY, JSON.stringify({ focus: model.focus, path: model.path }));
+  });
+
   const readAddress = () => read(location.search, data!.known, data!.builtBooks.map((b) => b.osis));
 
   // Back and Forward make the entry's Focus the Focus again.
@@ -245,7 +292,8 @@
 <svelte:window onkeydown={sceneKey} onpopstate={moved} />
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<!-- The scene takes the space between the open panels. -->
+<div class="stage" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   <!-- The chevron points the way the panel will move. -->
@@ -270,6 +318,10 @@
       {/if}
       <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
       <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+      <button onclick={openReader} disabled={typeOf(selected) === "overflow"}>Read</button>
+      {#if selected === model.focus || model.path.includes(selected)}
+        <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => writeNote(selected, t)} download={downloadNotes} deleteAll={() => keepNotes({})} />
+      {/if}
       {#await sharing then lists}
         {#each lists as { with: o, verses }, i (o)}
           {#if verses.length}
@@ -310,7 +362,21 @@
       {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
     {/await}
   </aside>
-  <PathBar {model} {label} {apply} />
+  <PathBar {model} {label} {apply} {notes} />
+  {#if reading}
+    <div class="drawer">
+      <Reader
+        {data}
+        at={reading}
+        {selected}
+        inScene={(id) => inScene.has(id)}
+        onselect={(id) => apply({ type: "select", id })}
+        onfocus={makeFocus}
+        onmove={(id) => (reading = id)}
+        onclose={() => (reading = undefined)}
+      />
+    </div>
+  {/if}
 {/if}
 
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
@@ -372,9 +438,16 @@
     color: #e6e8f0;
     font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
+  /* Below the top strip of the search box and the Your Path bar, like the panel. */
   .stage {
     position: fixed;
-    inset: 0;
+    inset: 56px 0 0;
+  }
+  .stage.reading {
+    left: 412px; /* the reader drawer's right edge (16 + 380) and a gap */
+  }
+  .stage.narrow {
+    right: 340px; /* the panel's width */
   }
   .stage :global(canvas) {
     display: block;
@@ -437,6 +510,19 @@
     .panel {
       transition: none;
     }
+  }
+  /* Under the search box, clear of the notes in the bottom left corner. */
+  .drawer {
+    position: fixed;
+    top: 132px;
+    left: 16px;
+    bottom: 92px;
+    width: 380px;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    background: rgba(20, 23, 34, 0.92);
+    border: 1px solid #262a3c;
+    border-radius: 8px;
   }
   .chevron {
     position: fixed;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Action, Id, State } from "./model";
 
-  let { model, label, apply }: { model: State; label: (id: Id) => string; apply: (a: Action) => void } = $props();
+  let { model, label, apply, notes }: { model: State; label: (id: Id) => string; apply: (a: Action) => void; notes: Record<Id, string> } = $props();
   // The Focus first, then Your Path newest first.
   const items = $derived([model.focus, ...[...model.path].reverse()]);
 </script>
@@ -10,7 +10,7 @@
   <ol>
     {#each items as id, i (id)}
       <li>
-        <button class:focus={i === 0} class:selected={id === model.selected} onclick={() => apply({ type: "select", id })}>{label(id)}</button>
+        <button class:focus={i === 0} class:selected={id === model.selected} class:noted={notes[id]} title={notes[id] ? "Has a note" : undefined} onclick={() => apply({ type: "select", id })}>{label(id)}</button>
       </li>
     {/each}
   </ol>
@@ -60,6 +60,12 @@
   }
   .selected {
     background: rgba(255, 255, 255, 0.12);
+  }
+  /* A step with a note; the title says so to a screen reader. */
+  .noted::after {
+    content: "✎" / "";
+    margin-left: 4px;
+    opacity: 0.7;
   }
   .clear {
     flex: none;

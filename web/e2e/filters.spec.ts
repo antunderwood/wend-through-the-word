@@ -60,7 +60,9 @@ test("the animation switch stops the camera flight and the growth", async ({ pag
     )
     .then((h) => h.jsonValue())) as OnScreen[];
   const focus = frame.find((n) => n.role === "focus")!;
-  const centre = { x: page.viewportSize()!.width / 2, y: page.viewportSize()!.height / 2 };
+  // The centre of the scene, which lies between the panels.
+  const b = (await page.getByRole("application").boundingBox())!;
+  const centre = { x: b.x + b.width / 2, y: b.y + b.height / 2 };
   expect(Math.hypot(focus.x - centre.x, focus.y - centre.y)).toBeLessThan(2);
   expect(Math.max(...frame.filter((n) => n.role === "ring1").map((n) => Math.hypot(n.x - focus.x, n.y - focus.y)))).toBeGreaterThan(100);
 });
