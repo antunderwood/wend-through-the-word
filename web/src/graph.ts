@@ -153,6 +153,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   lit.frustumCulled = false;
   scene3.add(lit);
 
+  // Test page switches (#30): the Focus glow, the free orbit fog, and a turning camera.
+  let look = { glow: true, fog: true, spin: false };
   let view = VIEWS.A,
     controls: OrbitControls,
     deco: THREE.Object3D;
@@ -184,11 +186,12 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       });
     }
     view = v;
-    scene3.fog = view.fog ? new THREE.Fog(BG) : null; // depth fog in free orbit
+    scene3.fog = view.fog && look.fog ? new THREE.Fog(BG) : null; // depth fog in free orbit
     camera.position.set(0, 0, 0);
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     view.setup(camera, controls);
+    controls.autoRotate = look.spin;
     camera.position.add(centre);
     controls.target.add(centre);
     controls.update();
@@ -303,7 +306,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       s.position.copy(rel.get(n.id)!).add(centre);
       const ring = n.shared ? SHARED : n.role === "pinned" ? PIN : 0;
       Object.assign(s.userData, { node: n, to: s.position.clone(), ringed: !!ring });
-      if (n.role === "focus") s.add(sprite(TEX.glow, ACCENT, 0.55, 3.2, LAYER.glow, THREE.AdditiveBlending));
+      if (n.role === "focus" && look.glow) s.add(sprite(TEX.glow, ACCENT, 0.55, 3.2, LAYER.glow, THREE.AdditiveBlending));
       if (ring) s.add(sprite(TEX.mask, BG, 1, RINGED, LAYER.mask), sprite(TEX.ring, ring, 0.95, RINGED, LAYER.ring));
       if (st.labelled || n.shared) s.add(nodeLabel(n, selected)); // a Shared Node around a pin is labelled too
       world.add(s);
@@ -444,6 +447,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     click: [] as ((id: Id) => void)[],
     double: [] as ((id: Id) => void)[],
     hover: [] as ((n: SceneNode | null, x: number, y: number) => void)[],
+    fps: [] as ((fps: number) => void)[],
   };
   let lastClick = { id: "", t: 0 };
   function click(id: Id) {
@@ -501,8 +505,17 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   el.addEventListener("pointermove", onMove);
   el.addEventListener("pointerleave", onLeave);
 
+  // Frames drawn per second, reported once a second.
+  let frames = 0,
+    since = performance.now();
   let raf = requestAnimationFrame(function frame(now) {
     raf = requestAnimationFrame(frame);
+    frames++;
+    if (now - since >= 1000) {
+      handlers.fps.forEach((f) => f((frames * 1000) / (now - since)));
+      frames = 0;
+      since = now;
+    }
     step(now);
     controls.update();
     renderer.render(scene3, camera);
@@ -529,6 +542,14 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),
     onNodeDoubleClick: (f: (id: Id) => void) => handlers.double.push(f),
     onHover: (f: (n: SceneNode | null, x: number, y: number) => void) => handlers.hover.push(f),
+    onFps: (f: (fps: number) => void) => handlers.fps.push(f),
+    // The camera goes back to the view's start.
+    setLook(l: typeof look) {
+      step(Infinity);
+      look = l;
+      useView(view);
+      draw();
+    },
     dispose() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
