@@ -39,6 +39,10 @@ function serveData(): Plugin {
 export default defineConfig({
   plugins: [svelte(), serveData()],
   // three.js alone is about 520 KB minified.
-  build: { chunkSizeWarningLimit: 700 },
+  // The node limit test page (#30) is a second entry, not linked from the reader's page.
+  build: {
+    chunkSizeWarningLimit: 700,
+    rollupOptions: { input: { main: resolve(import.meta.dirname, "index.html"), nodelimit: resolve(import.meta.dirname, "node-limit.html") } },
+  },
   test: { include: ["tests/**/*.test.ts"], environment: "node" },
 });
