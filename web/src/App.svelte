@@ -3,7 +3,7 @@
   import { createData, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
+  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
@@ -26,6 +26,12 @@
   let sc = $state.raw<Scene>();
   let error = $state("");
   let hint = $state(!stored(HINT_KEY));
+  let collapsed = $state(false);
+  // The panel lists the Neighbours of `listed` and the Verses `versed` shares with the Focus. A
+  // click in a list keeps that list, so the second click of a double click lands on the same item.
+  let listed = $state(START);
+  let versed = $state(START);
+  let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -52,9 +58,13 @@
       ? `+${sc?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
       : data!.label(id);
 
-  function apply(a: Action) {
+  function apply(a: Action, from?: "neighbours" | "verses") {
     const next = reduce(model, a, label);
     if (next.focus !== model.focus || next.path !== model.path) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.selected !== model.selected || next.focus !== model.focus) {
+      if (from !== "neighbours") listed = next.selected;
+      if (from !== "verses") versed = next.selected;
+    }
     model = next;
     graph?.render(sc!, model.selected);
   }
@@ -80,6 +90,17 @@
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data?.rec(model.focus)?.links.find((l) => l.id === selected));
+
+  // Separate from model so a list is loaded again only when its owner or the Focus changes.
+  const focus = $derived(model.focus);
+  // Both are read only once data is loaded. An Overflow Node lists all the Focus's Neighbours of its type.
+  const listing = $derived(
+    typeOf(listed) === "overflow"
+      ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(listed)], whole: true }))
+      : data!.loadWithKin(listed).then((r) => ({ r, types: TYPES, whole: false })),
+  );
+  const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
+  const sharing = $derived(versed !== focus && isEntity(versed) && isEntity(focus) ? data!.shared(focus, versed) : Promise.resolve([]));
 
   function dismissHint() {
     hint = false;
@@ -109,16 +130,66 @@
 <div class="stage" bind:this={host}></div>
 {#if sc && data}
   <Search {data} onchoose={makeFocus} />
-  <aside class="panel" aria-label="Selected Node">
-    <h2>{label(selected)}</h2>
-    <p class="muted">{selectedType}</p>
-    {#if link}<p>Relationship: <b>{relation(link, data.genderOf).text}</b></p>{/if}
-    <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
-    <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-    <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+  <!-- The chevron points the way the panel will move. -->
+  <button class="chevron" aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+    {collapsed ? "‹" : "›"}
+  </button>
+  <aside id="panel" class="panel" class:collapsed aria-label="Selected Node">
+    <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
+    <section class="selected">
+      <h2>{label(selected)}</h2>
+      <p class="muted">{selectedType}</p>
+      <p>{#if link}Relationship: <b>{relation(link, data.genderOf).text}</b>{/if}</p>
+      <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+      <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
+      <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+      {#await sharing then verses}
+        {#if verses.length}
+          <h3 id="shared">Together in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
+          <ul aria-labelledby="shared">
+            {#each verses as v (v.key)}
+              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
+            {/each}
+          </ul>
+        {/if}
+      {:catch e}
+        <p class="muted">Could not load the shared verses: {e.message}</p>
+      {/await}
+    </section>
+    {#await listing then list}
+      {#each list.types as t (t)}
+        {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
+        {@const key = `${listed}|${t}`}
+        {@const k = model.filters.k}
+        {#if all.length}
+          <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
+          <ol aria-labelledby="list-{t}">
+            {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
+              <li>{@render item(l.id, relation(l, data.genderOf).text, "neighbours")}</li>
+            {/each}
+          </ol>
+          {#if !list.whole && all.length > k}
+            <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
+              <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
+              {opened[key] ? `Show top ${k}` : `${all.length - k} more`}
+            </button>
+          {/if}
+        {/if}
+      {/each}
+    {:catch e}
+      <p class="muted">Could not load the Neighbours: {e.message}</p>
+    {/await}
   </aside>
   <PathBar {model} {label} {apply} />
 {/if}
+
+<!-- A click selects and a double click makes the Focus, as in the scene. -->
+{#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
+  <button class="item" class:sel={id === selected} onclick={() => apply({ type: "select", id }, from)} ondblclick={() => makeFocus(id)}>
+    {label(id)}
+    {#if words}<span class="muted">{words}</span>{/if}
+  </button>
+{/snippet}
 {#if hint}
   <p class="hint">
     A click selects a node. A double click, Make Focus, or search moves the Focus.
@@ -173,22 +244,90 @@
     background: #2a3048;
     color: #ffd27a;
   }
+  /* The panel starts below the top strip, so it never covers the Your Path bar there. */
   .panel {
     position: fixed;
-    top: 16px;
-    right: 16px;
-    width: 280px;
+    top: 56px;
+    right: 0;
+    bottom: 0;
+    width: 340px;
+    box-sizing: border-box;
     padding: 12px 16px;
+    overflow-y: auto;
     background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
-    border-radius: 8px;
+    border-left: 1px solid #262a3c;
+    transition: transform 0.2s;
+  }
+  .panel.collapsed {
+    transform: translateX(100%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      transition: none;
+    }
+  }
+  .chevron {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 999px;
+    font-size: 20px;
+    line-height: 1;
+  }
+  .selected {
+    height: 300px;
+    overflow-y: auto;
+    border-bottom: 1px solid #262a3c;
   }
   .panel h2 {
     margin: 0;
     font-size: 17px;
   }
+  .panel h3 {
+    margin: 14px 0 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9aa0b4;
+  }
   .panel p {
     margin: 4px 0;
+    min-height: 1.45em;
+  }
+  .panel ol,
+  .panel ul {
+    margin: 0;
+    padding-left: 22px;
+  }
+  .item {
+    padding: 1px 4px;
+    border: 0;
+    background: none;
+    text-align: left;
+  }
+  .item.sel {
+    background: #262a3c;
+  }
+  .item .muted {
+    font-size: 12px;
+  }
+  .panel .verse-text {
+    margin: 0 0 8px 4px;
+    opacity: 0.85;
+  }
+  .more {
+    margin: 4px 0;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  .more[aria-expanded="true"] {
+    color: #ffd27a;
   }
   .muted {
     color: #9aa0b4;

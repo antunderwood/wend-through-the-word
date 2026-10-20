@@ -42,6 +42,17 @@ describe("data loader", () => {
     expect(data.label(ABRAHAM)).toBe("Abraham");
   });
 
+  it("gives the Verses two nodes share, in order, with their BSB text", async () => {
+    const data = await createData(readExport, "");
+    // Genealogy stands in for Faith, which shares no Verse with Abraham in the fixture.
+    const shared = await data.shared(ABRAHAM, "theme:genealogy");
+    expect(shared.map((v) => data.label(v.key))).toEqual(["Gen 11:26", "Gen 11:27", "Gen 11:29", "Gen 11:31", "Gen 25:1", "Gen 25:12"]);
+    expect(shared[0].text).toBe("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");
+    expect(shared[5].text).toBe(
+      "This is the account of Abraham’s son Ishmael, whom Hagar the Egyptian, Sarah’s maidservant, bore to Abraham.",
+    );
+  });
+
   it("gives a Verse a short BSB quote once its record is loaded", async () => {
     const data = await createData(readExport, "");
     expect(data.quote("01025005")).toBe("");

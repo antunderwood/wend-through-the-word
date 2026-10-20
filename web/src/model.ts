@@ -81,7 +81,7 @@ const SCENE_PATH = 5,
   RING2_K = 3,
   MAX_PINS = 3;
 const isCrossRef = (l: Link) => l.edges.some((e) => e.edge === "CROSS_REF");
-const passes = (l: Link, f: State["filters"]) => !isCrossRef(l) || l.weight >= f.minVotes;
+export const passes = (l: Link, f: State["filters"]) => !isCrossRef(l) || l.weight >= f.minVotes;
 // A Ring 2 entry is a Cross-reference when both ends are Verses; its weight is then Votes.
 const passesRing2 = (parent: Id, c: { id: Id; weight: number }, f: State["filters"]) =>
   !(typeOf(parent) === "verse" && typeOf(c.id) === "verse") || c.weight >= f.minVotes;

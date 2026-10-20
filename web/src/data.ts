@@ -129,6 +129,13 @@ export async function createData(getJSON: GetJSON, root: string) {
       await Promise.allSettled(kin.map((l) => load(l.id)));
       return r;
     },
+    // The Verses two Entities are both linked to, in Bible order, with their BSB text.
+    async shared(a: Id, b: Id): Promise<{ key: Id; text: string }[]> {
+      const [ra, rb] = await Promise.all([load(a), load(b)]);
+      const mine = new Set(ra.links.filter((l) => l.type === "verse").map((l) => l.id));
+      const keys = rb.links.filter((l) => l.type === "verse" && mine.has(l.id)).map((l) => l.id).sort();
+      return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
+    },
     rec: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text, cut at 90 characters; "" until loaded.

@@ -34,17 +34,17 @@ test("the Your Path bar shows the Focus then Your Path newest first, and can be 
   // A click selects without moving the Focus; Next steps towards the Focus.
   const panel = page.getByRole("complementary", { name: "Selected Node" });
   await items.getByText("Abraham").click();
-  await expect(panel.getByRole("heading")).toHaveText("Abraham");
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Abraham");
   await panel.getByRole("button", { name: "Next", exact: true }).click();
-  await expect(panel.getByRole("heading")).toHaveText("Sarah");
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Sarah");
   await panel.getByRole("button", { name: "Prev", exact: true }).click();
-  await expect(panel.getByRole("heading")).toHaveText("Abraham");
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Abraham");
   await focusIs(page, HAGAR);
 
   await bar.getByRole("button", { name: "Clear", exact: true }).click();
   await expect(items).toHaveText(["Hagar"]);
   // Abraham was on Your Path and is not pinned, so the selection gives way to the Focus.
-  await expect(panel.getByRole("heading")).toHaveText("Hagar");
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Hagar");
 
   await bar.getByRole("button", { name: "Undo clear" }).click();
   await expect(items).toHaveText(["Hagar", "Sarah", "Abraham"]);
