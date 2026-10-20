@@ -34,10 +34,13 @@ for (const view of ["A", "B", "C"] as const)
     await panel(page).getByRole("button", { name: "Make Focus" }).click();
     await focusIs(page, ISAAC);
 
-    await expect.poll(() => overlapping(page)).toEqual([]);
-    const names = (await shown(page)).map((s) => s.text);
-    expect(names).toContain("Abraham");
-    expect(names.length).toBeGreaterThan(10);
+    // Once the names are drawn: the pinned Abraham's among more than ten, none overlapping.
+    await expect
+      .poll(async () => {
+        const names = (await shown(page)).map((s) => s.text);
+        return { drawn: names.includes("Abraham") && names.length > 10, overlapping: await overlapping(page) };
+      })
+      .toEqual({ drawn: true, overlapping: [] });
 
     // Hovering a disc whose name is hidden shows the name (a disc not under another name).
     const at = Object.fromEntries((await nodes(page)).map((n) => [n.id, n]));
