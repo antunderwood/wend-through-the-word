@@ -59,17 +59,20 @@ test("hovering a Ring 2 node shows its name and its path to the Focus, until the
   await expect(tip).toBeHidden();
 });
 
-test("far nodes lose their labels, near nodes keep them", async ({ page }) => {
-  const isaac = page.locator(".labels .nl").getByText("Isaac", { exact: true });
-  await expect(isaac).toBeVisible();
-  // The wheel goes straight to the scene's canvas: page.mouse.wheel waits for each event to be
-  // handled, which a page drawing every frame can starve under load.
-  const wheel = (deltaY: number) =>
-    page.locator("canvas").evaluate((c, deltaY) => {
-      for (let i = 0; i < 20; i++) c.dispatchEvent(new WheelEvent("wheel", { deltaY, bubbles: true, cancelable: true }));
-    }, deltaY);
-  await wheel(400); // zoom out as far as the view allows
-  await expect(isaac).toBeHidden();
-  await wheel(-400);
-  await expect(isaac).toBeVisible();
-});
+for (const view of ["Tilted plane", "Stacked discs", "Free orbit"])
+  test(`far nodes lose their labels, near nodes keep them: ${view}`, async ({ page }) => {
+    await page.getByRole("radiogroup", { name: "View" }).getByRole("radio", { name: view }).click();
+    const isaac = page.locator(".labels .nl").getByText("Isaac", { exact: true });
+    await expect(isaac).toBeVisible();
+    // The wheel goes straight to the scene's canvas: page.mouse.wheel waits for each event to be
+    // handled, which a page drawing every frame can starve under load.
+    const wheel = (deltaY: number) =>
+      page.locator("canvas").evaluate((c, deltaY) => {
+        for (let i = 0; i < 20; i++) c.dispatchEvent(new WheelEvent("wheel", { deltaY, bubbles: true, cancelable: true }));
+      }, deltaY);
+    await wheel(400); // zoom out as far as the view allows
+    // Only the Focus keeps its name (and its first line).
+    await expect(page.locator(".labels .nl:visible")).toHaveText([/^Abraham/]);
+    await wheel(-400);
+    await expect(isaac).toBeVisible();
+  });

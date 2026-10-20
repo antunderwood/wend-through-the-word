@@ -12,7 +12,7 @@ export const viewA: ViewModule = {
     controls.screenSpacePanning = false; // pan along the ground plane
     controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
     controls.minDistance = 20;
-    controls.maxDistance = 240;
+    controls.maxDistance = 250; // the nearest names are past the label fade at the farthest zoom
   },
   decorate() {
     const grid = new THREE.PolarGridHelper(40, 6, 4, 96, 0x3a4060, 0x262a3c);
