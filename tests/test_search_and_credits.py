@@ -67,6 +67,20 @@ def test_same_name_entities_of_one_type_get_distinct_hints(export):
     assert "person:canaan_914" not in hints and "place:canaan_272" not in hints
 
 
+def test_same_name_people_get_the_first_relation_no_namesake_shares(export):
+    # Decision 125: parents, then children, spouses, and siblings, worded by the person's gender.
+    relations = {e["id"]: e.get("relation") for e in search_index(export)["entities"]}
+    assert relations["person:anah_248"] == "son of Seir"
+    # Its first relation, "son of Zibeon", is anah_247's too (another Zibeon, same name).
+    assert relations["person:anah_249"] == "brother of Ajah"
+    assert relations["person:anah_9250"] == "daughter of Zibeon"
+    # "son of Zibeon" is anah_249's, "father of Aholibamah" anah_248's: none is its own.
+    assert relations["person:anah_247"] is None
+    # A Place, or a Person with no namesake, gets none.
+    assert relations["place:sitnah_9102"] is None
+    assert relations["person:seir_2485"] is None
+
+
 def test_search_index_is_below_500_kb_compressed(export):
     assert compressed_size(export) < 500 * 1000
 
