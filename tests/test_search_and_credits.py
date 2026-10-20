@@ -40,6 +40,29 @@ def test_every_entity_file_has_a_label_in_the_index(export):
     assert all(labels.values())
 
 
+def test_same_name_entities_of_one_type_get_distinct_hints(export):
+    # Decision 122: the first whole-Bible Verse no namesake of that type shares, else the ID number.
+    entities = search_index(export)["entities"]
+    hints = {e["id"]: e["hint"] for e in entities if "hint" in e}
+    assert hints["person:anah_247"] == "Gen 36:2"
+    assert hints["person:anah_248"] == "Gen 36:20"
+    assert hints["person:anah_249"] == "Gen 36:24"
+    # The synthetic second Sitnah shares Sitnah's only Verse, Gen 26:21, as the two Valleys of
+    # Shaveh share Gen 14:17, so Sitnah falls back to its ID number and the twin to its next Verse.
+    assert hints["place:sitnah_1102"] == "1102"
+    assert hints["place:sitnah_9102"] == "Gen 26:22"
+    groups = {}
+    for e in entities:
+        groups.setdefault((e["type"], e["name"]), []).append(e)
+    for group in groups.values():
+        if len(group) == 1:
+            assert "hint" not in group[0]
+        else:
+            assert len({e["hint"] for e in group}) == len(group)
+    # Different types are told apart by type icon and colour, not a hint.
+    assert "person:canaan_914" not in hints and "place:canaan_272" not in hints
+
+
 def test_search_index_is_below_500_kb_compressed(export):
     assert compressed_size(export) < 500 * 1000
 

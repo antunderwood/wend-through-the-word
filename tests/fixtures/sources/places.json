@@ -2095,5 +2095,17 @@
     "recNwG4bBkZyEhAT4"
    ]
   }
+ },
+ {
+  "id": "recFixtureSitnah",
+  "fields": {
+   "placeLookup": "sitnah_9102",
+   "displayTitle": "Sitnah",
+   "placeID": 9102,
+   "verses": [
+    "recpnwWfs8FMFurbC",
+    "recrozrjlihdxYmIi"
+   ]
+  }
  }
 ]
