@@ -90,7 +90,7 @@ describe("the node limit (decision 33)", () => {
   });
 
   it("gives a corner note only when nodes are hidden", () => {
-    expect(hiddenNote(draw(limit(60)))).toBe("39 faint nodes hidden to keep the view fast");
+    expect(hiddenNote(draw(limit(60)))).toBe("39 nodes hidden to keep the view fast");
     expect(hiddenNote(draw(initialState(ABRAHAM)))).toBe("");
   });
 

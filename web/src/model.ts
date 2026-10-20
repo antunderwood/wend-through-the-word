@@ -173,7 +173,7 @@ export function reduce(s: State, a: Action, label: (id: Id) => string): State {
 }
 
 // The corner note when the node limit hides nodes (decision 33), or "".
-export const hiddenNote = (sc: Scene) => (sc.hidden ? `${sc.hidden} faint node${sc.hidden === 1 ? "" : "s"} hidden to keep the view fast` : "");
+export const hiddenNote = (sc: Scene) => (sc.hidden ? `${sc.hidden} node${sc.hidden === 1 ? "" : "s"} hidden to keep the view fast` : "");
 
 // After Clear, a Selected Node only on Your Path (so no longer in the scene) gives way to the Focus.
 export const afterClear = (s: State, sc: Scene): State =>
