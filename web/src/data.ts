@@ -5,7 +5,11 @@ import { typeOf, type Edge, type Id, type Link, type NodeType, type Rec } from "
 
 export type GetJSON = (url: string) => Promise<unknown>;
 
-type SearchIndex = { entities: { id: Id; name: string }[]; books: { number: string; osis: string; chapters: number[] }[] };
+type SearchIndex = {
+  entities: { id: Id; type: NodeType; name: string; aliases: string[] }[];
+  books: { number: string; osis: string; name: string; chapters: number[] }[];
+};
+export type Hit = { id: Id; hint: string };
 type EntityFile = {
   name?: string;
   title?: string;
@@ -28,9 +32,9 @@ export async function createData(getJSON: GetJSON, root: string) {
   const get = <T>(url: string) => getJSON(url).catch(() => getJSON(url)) as Promise<T>;
   const index = await get<{ data_version: string }>(`${root}/index.json`);
   const base = `${root}/${index.data_version}`;
-  const search = await get<SearchIndex>(`${base}/search-index.json`);
-  const names = new Map(search.entities.map((e) => [e.id, e.name]));
-  const books = new Map(search.books.map((b) => [b.number, b]));
+  const searchIndex = await get<SearchIndex>(`${base}/search-index.json`);
+  const names = new Map(searchIndex.entities.map((e) => [e.id, e.name]));
+  const books = new Map(searchIndex.books.map((b) => [b.number, b]));
   const records = new Map<Id, Rec>();
   const pending = new Map<Id, Promise<Rec>>();
 
@@ -77,8 +81,45 @@ export async function createData(getJSON: GetJSON, root: string) {
     return pending.get(id)!;
   }
 
+  // Search over names, aliases, and verse references (decision 22: no verse text search in v1).
+  // Matches rank exact, then prefix, then word start, then anywhere, a name before an alias in each;
+  // ties go to the shorter name.
+  function search(query: string, type?: NodeType): Hit[] {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    // "Gen 22:2", "gen 22.2", "Genesis 22", "3 John 1:4": the book is its OSIS name or a prefix of its
+    // name (2 letters or more). A chapter alone gives its first Verse. Only built chapters count.
+    const m = q.match(/^((?:[1-3]\s*)?[a-z]+)\.?\s*(\d+)(?:\s*[:.]\s*(\d+))?$/);
+    if (m && (!type || type === "verse")) {
+      const [, b, chapter, verse] = m;
+      const s = b.replace(/\s+/g, "");
+      const book = searchIndex.books.find((x) => x.osis.toLowerCase() === s || (s.length >= 2 && x.name.toLowerCase().replace(/\s+/g, "").startsWith(s)));
+      if (book?.chapters.includes(+chapter))
+        return [{ id: `${book.number}${chapter.padStart(3, "0")}${(verse ?? "1").padStart(3, "0")}`, hint: verse ? "" : "first verse of the chapter" }];
+    }
+    if (type === "verse") return [];
+    const rank = (name: string) => {
+      const n = name.toLowerCase();
+      if (n === q) return 0;
+      if (n.startsWith(q)) return 2;
+      if (n.split(/\W+/).some((w) => w.startsWith(q))) return 4;
+      return n.includes(q) ? 6 : Infinity;
+    };
+    const hits: (Hit & { score: number; name: string })[] = [];
+    for (const e of searchIndex.entities) {
+      if (type && e.type !== type) continue;
+      const [score, hint] = e.aliases
+        .map((a): [number, string] => [rank(a) + 1, `also called ${a}`])
+        .reduce((best, m) => (m[0] < best[0] ? m : best), [rank(e.name), ""]);
+      if (score < Infinity) hits.push({ id: e.id, hint, score, name: e.name });
+    }
+    hits.sort((a, b) => a.score - b.score || a.name.length - b.name.length || (a.name < b.name ? -1 : 1));
+    return hits.slice(0, 30).map(({ id, hint }) => ({ id, hint }));
+  }
+
   return {
     load,
+    search,
     // Family words (son or daughter, husband or wife) follow the relative's gender, which only the
     // relative's own file carries, so this also loads every Person with a family link. A relative
     // that fails to load keeps the neutral word (child, spouse).
