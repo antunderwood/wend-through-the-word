@@ -6,7 +6,7 @@ import { typeOf, type Edge, type Id, type Link, type NodeType, type Rec } from "
 export type GetJSON = (url: string) => Promise<unknown>;
 
 type SearchIndex = {
-  entities: { id: Id; type: NodeType; name: string; aliases: string[] }[];
+  entities: { id: Id; type: NodeType; name: string; aliases: string[]; hint?: string }[];
   books: { number: string; osis: string; name: string; chapters: number[] }[];
 };
 export type Hit = { id: Id; hint: string };
@@ -33,7 +33,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   const index = await get<{ data_version: string }>(`${root}/index.json`);
   const base = `${root}/${index.data_version}`;
   const searchIndex = await get<SearchIndex>(`${base}/search-index.json`);
-  const names = new Map(searchIndex.entities.map((e) => [e.id, e.name]));
+  const entities = new Map(searchIndex.entities.map((e) => [e.id, e]));
   const books = new Map(searchIndex.books.map((b) => [b.number, b]));
   const records = new Map<Id, Rec>();
   const pending = new Map<Id, Promise<Rec>>();
@@ -141,11 +141,15 @@ export async function createData(getJSON: GetJSON, root: string) {
         const b = books.get(id.slice(0, 2));
         return `${b?.osis ?? "?"} ${+id.slice(2, 5)}:${+id.slice(5)}`;
       }
-      const name = names.get(id) ?? id;
+      const e = entities.get(id);
+      const name = e?.name ?? id;
       // Nave's headings are upper case ("FAITH"); show them as "Faith".
-      return typeOf(id) === "theme" && name === name.toUpperCase()
-        ? name.toLowerCase().replace(/(^|[\s(,])\S/g, (c) => c.toUpperCase())
-        : name;
+      const shown =
+        typeOf(id) === "theme" && name === name.toUpperCase()
+          ? name.toLowerCase().replace(/(^|[\s(,])\S/g, (c) => c.toUpperCase())
+          : name;
+      // Same-name Entities of one type (decision 122): "Anah (Gen 36:24)".
+      return e?.hint ? `${shown} (${e.hint})` : shown;
     },
   };
 }
