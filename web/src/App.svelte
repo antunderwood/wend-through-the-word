@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { createData } from "./data";
   import { createGraph } from "./graph";
-  import { initialState, scene } from "./model";
+  import { initialState, reduce, scene } from "./model";
 
   const START = "person:abraham_58";
   const getJSON = async (url: string) => {
@@ -20,10 +20,16 @@
       try {
         const data = await createData(getJSON, "/data");
         await data.load(START);
-        const model = initialState(START);
-        graph = createGraph(host, data.label);
-        graph.render(scene(model, data.rec, data.genderOf), model.selected);
-        Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
+        let model = initialState(START);
+        const g = (graph = createGraph(host, data.label, data.quote));
+        g.render(scene(model, data.rec, data.genderOf), model.selected);
+        // Test only until search (#22): make any Entity or Verse the Focus.
+        const focus = async (id: string) => {
+          await data.load(id);
+          model = reduce(model, { type: "focus", id }, data.label);
+          g.render(scene(model, data.rec, data.genderOf), model.selected);
+        };
+        Object.assign(window, { wendGraph: graph, wendFocus: focus }); // test-only hooks for the browser tests
       } catch (e) {
         error = `Could not load the data: ${(e as Error).message}`;
       }

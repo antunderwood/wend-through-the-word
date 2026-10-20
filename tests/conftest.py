@@ -16,8 +16,10 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 )
 # A size limit that makes the build trim cross-references in some chapter files and Ring 2
 # sidecars, but stays above every file that cannot be trimmed (Abraham's entity file is about
-# 51 KB), so the build still succeeds (story 74).
-TRIM_LIMIT = 62000
+# 51 KB), so the build still succeeds (story 74). The window is narrow: Gen 36 without its
+# cross-references is about 57 KB, and above about 58 KB its trimmed chapter file leaves too few
+# Ring 1 Verses for its Ring 2 sidecar to need trimming.
+TRIM_LIMIT = 57500
 
 
 def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):

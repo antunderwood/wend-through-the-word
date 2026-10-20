@@ -1,7 +1,7 @@
 // The data loader: reads the static export. getJSON(url) is injected (fetch in the browser, files
 // in tests). Reads index.json first, then only files under its data_version, so a new build never
 // mixes with a cached old one.
-import { typeOf, type Edge, type Id, type Link, type Rec } from "./model";
+import { typeOf, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
 
 export type GetJSON = (url: string) => Promise<unknown>;
 
@@ -13,6 +13,10 @@ type EntityFile = {
   neighbours: Link[];
   verses: { key: string; edge: string; direction: Edge["direction"]; weight: number }[];
   ring2: Rec["ring2"];
+};
+type Mention = { id: Id; edge: string; weight: number };
+type ChapterFile = {
+  verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[] }[];
 };
 
 export type Data = Awaited<ReturnType<typeof createData>>;
@@ -32,8 +36,8 @@ export async function createData(getJSON: GetJSON, root: string) {
 
   async function fetchRecord(id: Id): Promise<Rec> {
     const type = typeOf(id);
-    // A Verse Focus comes with the weighted Mentions (#20).
-    if (type === "verse" || type === "overflow") throw new Error(`No record for ${id}`);
+    if (type === "verse") return fetchVerse(id);
+    if (type === "overflow") throw new Error(`No record for ${id}`);
     const d = await get<EntityFile>(`${base}/entity/${type}/${id.slice(type.length + 1)}.json`);
     const links = [
       ...d.neighbours,
@@ -41,6 +45,22 @@ export async function createData(getJSON: GetJSON, root: string) {
       ...d.verses.map((v) => ({ id: v.key, type: "verse" as const, weight: v.weight, edges: [{ edge: v.edge, direction: v.direction }] })),
     ];
     return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender };
+  }
+
+  // A Verse becomes a record of the same shape, from its chapter file and the chapter's Ring 2
+  // sidecar: Mentions and Filed Under weighted by rarity (decision 121), Cross-references by Votes.
+  async function fetchVerse(id: Id): Promise<Rec> {
+    const chapter = `${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}`;
+    const [c, side] = await Promise.all([get<ChapterFile>(`${chapter}.json`), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
+    const v = c.verses.find((x) => x.key === id);
+    if (!v) throw new Error(`No verse ${id} in ${chapter}.json`);
+    const named = [...v.mentions, ...v.filed_under].map((m) => ({
+      id: m.id,
+      type: typeOf(m.id) as NodeType,
+      weight: m.weight,
+      edges: [{ edge: m.edge, direction: "out" as const }],
+    }));
+    return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb };
   }
 
   return {
@@ -57,6 +77,11 @@ export async function createData(getJSON: GetJSON, root: string) {
     },
     rec: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
+    // The first sentence of a loaded Verse's BSB text, cut at 90 characters; "" until loaded.
+    quote(id: Id): string {
+      const first = (records.get(id)?.text ?? "").split(/(?<=\.)\s(?=[A-Z])/)[0];
+      return first.length > 90 ? `${first.slice(0, 88)}...` : first;
+    },
     label(id: Id): string {
       if (typeOf(id) === "verse") {
         const b = books.get(id.slice(0, 2));

@@ -99,3 +99,39 @@ describe("the node limit (decision 33)", () => {
     expect(new Set(byRank(0).map((n) => n.via))).toEqual(new Set(full.map((n) => n.via)));
   });
 });
+
+describe("a Verse as the Focus", () => {
+  const GEN_25_5 = "01025005",
+    GEN_25_8 = "01025008";
+  beforeAll(async () => {
+    await data.load(GEN_25_5);
+    await data.load(GEN_25_8);
+  });
+  const verseFocus = (id: string, minVotes = 1) =>
+    draw(reduce(initialState(id), { type: "setFilter", key: "minVotes", value: minVotes }, data.label));
+
+  it("ranks its Entities of each type by the build weight, then ID, and Cross-references by Votes", () => {
+    const sc = verseFocus(GEN_25_5);
+    // Fixture weights, ln(31,102 / whole-Bible Verse count) (decision 121): Isaac 6.3747 is rarer
+    // than Abraham 6.1706; HEIR and WILL tie at 9.2464, before INHERITANCE at 8.9587.
+    expect(ring1Of(sc, "person")).toEqual(["person:isaac_616", "person:abraham_58"]);
+    expect(ring1Of(sc, "theme")).toEqual(["theme:heir", "theme:will", "theme:inheritance"]);
+    // 15 Cross-references: two with 5 Votes, then the first four of five with 4 Votes, by ID.
+    expect(ring1Of(sc, "verse")).toEqual(["48003029", "58001002", "19068018", "43003035", "45008017", "45008032"]);
+    expect(sc.nodes.find((n) => n.id === "overflow:verse")?.count).toBe(9);
+  });
+
+  it("leaves Cross-references under the Vote Limit out of Ring 1", () => {
+    const sc = verseFocus(GEN_25_5, 5);
+    expect(ring1Of(sc, "verse")).toEqual(["48003029", "58001002"]);
+    expect(ids(sc, "overflow")).toEqual([]);
+  });
+
+  it("leaves Cross-references under the Vote Limit out of Ring 2", () => {
+    // Gen 25:17 is in Gen 25:8's Ring 1 (11 Votes). Its own Cross-references, after Gen 25:8:
+    // Gen 25:7 (3 Votes), Deut 32:50 (3), Num 20:24 (2).
+    const via = (sc: Scene) => sc.nodes.filter((n) => n.role === "ring2" && n.via === "01025017").map((n) => n.id);
+    expect(via(verseFocus(GEN_25_8))).toEqual(["01025007", "05032050", "04020024"]);
+    expect(via(verseFocus(GEN_25_8, 3))).toEqual(["01025007", "05032050"]);
+  });
+});
