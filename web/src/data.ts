@@ -1,7 +1,7 @@
 // The data loader: reads the static export. getJSON(url) is injected (fetch in the browser, files
 // in tests). Reads index.json first, then only files under its data_version, so a new build never
 // mixes with a cached old one.
-import { typeOf, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
+import { typeOf, type Curated, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
 
 export type GetJSON = (url: string) => Promise<unknown>;
 
@@ -17,15 +17,32 @@ type SearchIndex = {
   books: { number: string; osis: string; name: string; chapters: number[] }[];
 };
 export type Hit = { id: Id; hint: string };
-type EntityFile = {
+type Sourced = { source: string; licence: string };
+export type Fact = Sourced & { name: string; value: string };
+// A "Corrected after review" item (decision 75): the field, its upstream value, and the fix.
+export type Correction = Curated & { field: string; was: string; value: string };
+type EntityFile = Sourced & {
   name?: string;
   title?: string;
+  aliases?: string[];
   gender?: string;
-  dictionary_entry?: { text: string };
+  event_year?: number;
+  lat?: number;
+  lon?: number;
+  coord_source?: string;
+  dictionary_entry?: Sourced & { text: string };
+  corrections?: Correction[];
   neighbours: Link[];
-  verses: { key: string; edge: string; direction: Edge["direction"]; weight: number }[];
+  verses: (Sourced & { key: string; edge: string; direction: Edge["direction"]; weight: number })[];
   ring2: Rec["ring2"];
 };
+type Credits = { licence: string; sources: (Sourced & { name: string })[] };
+// A Place's coord_source, as credits.json names it. A "Curated" point is not there: it has the
+// licence of the data itself.
+const POINT_SOURCE: Record<string, string> = { OpenBible: "OpenBible.info Bible Geocoding Data", Pleiades: "Pleiades", Wikidata: "Wikidata", GeoNames: "GeoNames" };
+// Theographic's years are astronomical: 0 is 1 BC.
+const year = (y: number) => (y > 0 ? `AD ${y}` : `${1 - y} BC`);
+const degrees = (x: number, plus: string, minus: string) => `${+Math.abs(x).toFixed(4)}° ${x < 0 ? minus : plus}`;
 type Mention = { id: Id; edge: string; weight: number };
 type ChapterFile = {
   verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[] }[];
@@ -44,6 +61,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   const entities = new Map(searchIndex.entities.map((e) => [e.id, e]));
   const books = new Map(searchIndex.books.map((b) => [b.number, b]));
   const records = new Map<Id, Rec>();
+  const files = new Map<Id, EntityFile>(); // for the detail panel
   const pending = new Map<Id, Promise<Rec>>();
 
   const reference = (id: Id) => `${books.get(id.slice(0, 2))?.osis ?? "?"} ${+id.slice(2, 5)}:${+id.slice(5)}`;
@@ -65,10 +83,16 @@ export async function createData(getJSON: GetJSON, root: string) {
     if (type === "verse") return fetchVerse(id);
     if (type === "overflow") throw new Error(`No record for ${id}`);
     const d = await get<EntityFile>(`${base}/entity/${type}/${id.slice(type.length + 1)}.json`);
+    files.set(id, d);
     const links = [
       ...d.neighbours,
       // Entity to Verse: the weight is the number of other Entities in the Verse.
-      ...d.verses.map((v) => ({ id: v.key, type: "verse" as const, weight: v.weight, edges: [{ edge: v.edge, direction: v.direction }] })),
+      ...d.verses.map((v) => ({
+        id: v.key,
+        type: "verse" as const,
+        weight: v.weight,
+        edges: [{ edge: v.edge, direction: v.direction, source: v.source, licence: v.licence }],
+      })),
     ];
     return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender, text: d.dictionary_entry?.text };
   }
@@ -157,6 +181,23 @@ export async function createData(getJSON: GetJSON, root: string) {
       const mine = new Set(ra.links.filter((l) => l.type === "verse").map((l) => l.id));
       const keys = rb.links.filter((l) => l.type === "verse" && mine.has(l.id)).map((l) => l.id).sort();
       return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
+    },
+    // What the export holds about an Entity beyond its links, each part with its source and licence.
+    async details(id: Id) {
+      await load(id);
+      const d = files.get(id)!;
+      const own = { source: d.source, licence: d.licence };
+      const facts: Fact[] = [];
+      if (d.aliases?.length) facts.push({ name: typeOf(id) === "place" ? "Other names" : "Also called", value: d.aliases.join(", "), ...own });
+      if (d.gender) facts.push({ name: "Gender", value: d.gender, ...own });
+      if (d.event_year !== undefined) facts.push({ name: "Year", value: `${year(d.event_year)} (approx., Jones chronology)`, ...own });
+      if (d.lat !== undefined && d.lon !== undefined) {
+        const c = await get<Credits>(`${base}/credits.json`);
+        const source = POINT_SOURCE[d.coord_source!] ?? d.coord_source!;
+        const licence = c.sources.find((s) => s.name === source)?.licence ?? c.licence;
+        facts.push({ name: "Coordinates", value: `${degrees(d.lat, "N", "S")}, ${degrees(d.lon, "E", "W")}`, source, licence });
+      }
+      return { ...own, facts, entry: d.dictionary_entry, corrections: d.corrections ?? [] };
     },
     outside,
     // The chapter of a built Verse, for the reader panel.

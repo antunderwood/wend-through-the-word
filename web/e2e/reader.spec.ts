@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 async function readFromList(page: Page, ref: string) {
   await panel(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: new RegExp(`^${ref}`) }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText(ref);
-  await panel(page).getByRole("button", { name: "Read" }).click();
+  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
   await expect(reader(page).getByRole("heading", { level: 2 })).toBeVisible();
   // The scene has made way for the panel: two frames, so it has been resized and drawn.
   for (let i = 0; i < 2; i++) await page.evaluate(() => new Promise(requestAnimationFrame));
@@ -38,7 +38,7 @@ test("Read with a Verse selected opens its chapter with that Verse highlighted",
 });
 
 test("Read on an Entity opens the chapter of its first linked Verse", async ({ page }) => {
-  await panel(page).getByRole("button", { name: "Read" }).click();
+  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
   // Fixture: Abraham's first Verse in Bible order is Gen 11:26.
   await expect(reader(page).getByRole("heading", { name: "Genesis 11" })).toBeVisible();
   await expect(verse(page, "Gen 11:26")).toBeInViewport();
@@ -80,7 +80,7 @@ test("the reader follows the Selected Verse, and a Verse outside the build shows
   await page.getByRole("searchbox", { name: "Search" }).fill("Gen 16:1");
   await page.getByRole("searchbox", { name: "Search" }).press("Enter");
   await focusIs(page, "01016001");
-  await panel(page).getByRole("button", { name: "Read" }).click();
+  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
   await expect(reader(page).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
   // Gen 16:1 has a Cross-reference to Gal 4:24, outside the fixture build.
   await page.locator(".labels").getByText("Gal 4:24", { exact: true }).click();

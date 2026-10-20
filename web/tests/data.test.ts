@@ -120,3 +120,51 @@ describe("data loader", () => {
     expect(data.nextChapter("64001001", 1)).toBeUndefined();
   });
 });
+
+describe("details of an Entity", () => {
+  const THEO = { source: "Theographic", licence: "CC BY-SA 4.0" };
+
+  it("gives a Person's aliases and gender, and the Dictionary Entry, each with its source", async () => {
+    const data = await createData(readExport, "");
+    const abraham = await data.details(ABRAHAM);
+    expect(abraham).toMatchObject(THEO);
+    expect(abraham.facts).toEqual([
+      { name: "Also called", value: "Abram", ...THEO },
+      { name: "Gender", value: "Male", ...THEO },
+    ]);
+    expect(abraham.entry).toMatchObject({ source: "Easton's Bible Dictionary (1897)", licence: "Public domain (1897)" });
+    expect(abraham.entry!.text).toMatch(/^Father of a multitude/);
+    expect(abraham.corrections).toEqual([]);
+  });
+
+  it("gives a corrected item with its note, Evidence Verse, and request", async () => {
+    const data = await createData(readExport, "");
+    // Fixture: Anah's gender is corrected to Male (decision 28), with no request.
+    expect((await data.details("person:anah_247")).corrections).toEqual([
+      expect.objectContaining({ field: "gender", evidence: [{ verse_key: "01036024", label: "Gen.36.24" }], request: null, source: "Curated", licence: "CC BY-SA 4.0" }),
+    ]);
+  });
+
+  it("gives an Event's year as approximate, in the Jones chronology, with BC and AD", async () => {
+    const data = await createData(readExport, "");
+    // Astronomical years (PRD 3): Theographic's -2245 is 2246 BC.
+    expect((await data.details("event:53")).facts).toEqual([{ name: "Year", value: "2246 BC (approx., Jones chronology)", ...THEO }]);
+    expect((await data.details("event:407")).facts).toEqual([{ name: "Year", value: "AD 29 (approx., Jones chronology)", ...THEO }]);
+  });
+
+  it("gives a Place's other names, and its coordinates with the source and licence of the point", async () => {
+    const data = await createData(readExport, "");
+    expect((await data.details("place:gerar_459")).facts).toEqual([
+      { name: "Other names", value: "Valley of Gerar", ...THEO },
+      { name: "Coordinates", value: "31.3821° N, 34.6065° E", source: "OpenBible.info Bible Geocoding Data", licence: "CC BY 4.0" },
+    ]);
+    const point = async (id: string) => (await data.details(id)).facts.find((f) => f.name === "Coordinates");
+    expect(await point("place:bered_178")).toMatchObject({ source: "Pleiades", licence: "CC BY 3.0" });
+    expect(await point("place:assyria_111")).toMatchObject({ source: "Wikidata", licence: "CC0 1.0" });
+    expect(await point("place:machpelah_748")).toMatchObject({ source: "GeoNames", licence: "CC BY 4.0" });
+    // Fixture: Babel's point is set by a curated correction (synthetic row, decision 89).
+    expect(await point("place:babel_150")).toEqual({ name: "Coordinates", value: "32.5° N, 44.4° E", source: "Curated", licence: "CC BY-SA 4.0" });
+    // Canaan has no point.
+    expect(await point("place:canaan_272")).toBeUndefined();
+  });
+});
