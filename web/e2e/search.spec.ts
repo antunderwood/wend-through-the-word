@@ -1,12 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
-
 const focusOf = (page: Page) => page.evaluate(() => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id);
 
 test.use({ reducedMotion: "reduce" });

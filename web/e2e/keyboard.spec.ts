@@ -1,9 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
+import { focusIs, nodes } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   ISAAC = "person:isaac_616";
-const focusIs = (page: Page, id: string) =>
-  page.waitForFunction((id) => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === id, id, { polling: "raf" });
 const heading = (page: Page) => page.getByRole("complementary", { name: "Selected Node" }).getByRole("heading", { level: 2 });
 
 test.use({ reducedMotion: "reduce" });
@@ -11,7 +10,7 @@ test.use({ reducedMotion: "reduce" });
 test("arrows step the Selected Node through Ring 1, Enter makes it the Focus, Backspace goes back", async ({ page }) => {
   await page.goto("/");
   await focusIs(page, ABRAHAM);
-  const before = await page.evaluate(() => window.wendGraph!.testNodes());
+  const before = await nodes(page);
 
   // Fixture: Abraham's Ring 1 starts with his People by weight (Isaac, then Sarah) and ends with
   // the Overflow Node for his 20 further Verses.
@@ -27,7 +26,7 @@ test("arrows step the Selected Node through Ring 1, Enter makes it the Focus, Ba
   await page.keyboard.press("ArrowRight");
   await expect(heading(page)).toHaveText("Isaac");
   // Selecting never changes the scene.
-  expect(await page.evaluate(() => window.wendGraph!.testNodes())).toEqual(before);
+  expect(await nodes(page)).toEqual(before);
 
   await page.keyboard.press("Enter");
   await focusIs(page, ISAAC);

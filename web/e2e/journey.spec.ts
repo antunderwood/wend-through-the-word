@@ -1,19 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
-
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
+import { focusIs, nodes } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
   ISAAC = "person:isaac_616";
-const nodes = (page: Page) => page.evaluate(() => window.wendGraph!.testNodes());
 const at = async (page: Page, id: string) => (await nodes(page)).find((n) => n.id === id)!;
-const focusIs = (page: Page, id: string) =>
-  page.waitForFunction((id) => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === id, id);
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const heading = (page: Page) => panel(page).getByRole("heading", { level: 2 });
 const picker = (page: Page) => page.getByRole("radiogroup", { name: "View" });

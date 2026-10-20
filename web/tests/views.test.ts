@@ -8,7 +8,7 @@ import { readExport } from "./fixture";
 const ABRAHAM = "person:abraham_58",
   TERAH = "person:terah_2841",
   ISAAC = "person:isaac_616";
-let data: Data, sc: Scene;
+let data: Data, drawn: Scene;
 
 beforeAll(async () => {
   data = await createData(readExport, "");
@@ -21,7 +21,7 @@ beforeAll(async () => {
     { type: "pin", id: ABRAHAM },
   ] as const)
     s = reduce(s, a, data.label);
-  sc = scene(s, data.rec, data.genderOf);
+  drawn = scene(s, data.record, data.genderOf);
 });
 
 describe("the views (decision 114)", () => {
@@ -30,15 +30,15 @@ describe("the views (decision 114)", () => {
   });
 
   it.each(["A", "B", "C"] as View[])("view %s places every node of the Scene, adding none", (key) => {
-    expect(new Set(sc.nodes.map((n) => n.role))).toEqual(new Set(["focus", "ring1", "overflow", "ring2", "pinned", "pinring", "path"]));
-    const at = layout(sc, VIEWS[key].place);
-    expect([...at.keys()].sort()).toEqual(sc.nodes.map((n) => n.id).sort());
+    expect(new Set(drawn.nodes.map((n) => n.role))).toEqual(new Set(["focus", "ring1", "overflow", "ring2", "pinned", "pinring", "path"]));
+    const at = layout(drawn, VIEWS[key].place);
+    expect([...at.keys()].sort()).toEqual(drawn.nodes.map((n) => n.id).sort());
     for (const p of at.values()) expect([p.x, p.y, p.z].every(Number.isFinite)).toBe(true);
   });
 
   it("stacks the Focus above Ring 1, and Ring 1 above Ring 2, in view B", () => {
-    const at = layout(sc, VIEWS.B.place);
-    const heights = (role: string) => new Set(sc.nodes.filter((n) => n.role === role).map((n) => at.get(n.id)!.y));
+    const at = layout(drawn, VIEWS.B.place);
+    const heights = (role: string) => new Set(drawn.nodes.filter((n) => n.role === role).map((n) => at.get(n.id)!.y));
     const [focus, ring1, ring2] = [heights("focus"), heights("ring1"), heights("ring2")].map((h) => [...h]);
     expect([focus.length, ring1.length, ring2.length]).toEqual([1, 1, 1]); // one disc each
     expect(focus[0]).toBeGreaterThan(ring1[0]);

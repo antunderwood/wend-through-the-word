@@ -1,17 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
-
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
+import { focusIs } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   ISAAC = "person:isaac_616";
 const roleOf = (page: Page, id: string) => page.evaluate((id) => window.wendGraph!.testNodes().find((n) => n.id === id)?.role, id);
-const focusIs = (page: Page, id: string) =>
-  page.waitForFunction((id) => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === id, id);
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 
 test.use({ reducedMotion: "reduce" });

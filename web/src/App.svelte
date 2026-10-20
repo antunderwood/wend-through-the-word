@@ -18,17 +18,17 @@
   let graph: Graph | undefined;
   let data = $state.raw<Data>();
   let model = $state.raw(initialState(START));
-  let sc = $state.raw<Scene>();
+  let onScreen = $state.raw<Scene>();
   // A data file failed twice (the loader retries once): a message and a Retry, never a broken scene.
   let failure = $state<{ message: string; retry: () => void }>();
   let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // The panel lists the Neighbours of `listed` and the Verses `versed` shares with the Focus. A
-  // click in a list keeps that list, so the second click of a double click lands on the same item.
-  let listed = $state(START);
-  let versed = $state(START);
+  // The nodes whose Neighbours, and whose Verses shared with the Focus, the panel lists. A click in
+  // a list keeps that list, so the second click of a double click lands on the same item.
+  let neighboursOf = $state(START);
+  let versesOf = $state(START);
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
@@ -53,20 +53,23 @@
   const overflowType = (id: Id) => id.slice("overflow:".length) as NodeType;
   const label = (id: Id) =>
     typeOf(id) === "overflow"
-      ? `+${sc?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
+      ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
       : data!.label(id);
 
   function apply(a: Action, from?: "neighbours" | "verses") {
     let next = reduce(model, a, label);
-    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) sc = scene(next, data!.rec, data!.genderOf);
-    if (a.type === "clearPath") next = afterClear(next, sc!);
+    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf);
+    if (a.type === "clearPath") next = afterClear(next, onScreen!);
     if (next.selected !== model.selected || next.focus !== model.focus) {
-      if (from !== "neighbours") listed = next.selected;
-      if (from !== "verses") versed = next.selected;
+      if (from !== "neighbours") neighboursOf = next.selected;
+      if (from !== "verses") versesOf = next.selected;
     }
     model = next;
-    graph?.render(sc!, model.selected);
+    graph?.render(onScreen!, model.selected);
   }
+
+  // A record that failed to load twice: a message and a Retry.
+  const loadFailed = (id: Id, e: unknown, retry: () => void) => (failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry });
 
   // The new Focus and its relatives load first; a later move wins over an earlier one still loading.
   let moves = 0;
@@ -81,7 +84,7 @@
     try {
       await data!.loadWithKin(id);
     } catch (e) {
-      if (mine === moves) failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry: () => makeFocus(id) };
+      if (mine === moves) loadFailed(id, e, () => makeFocus(id));
       return;
     }
     if (mine === moves) apply({ type: "focus", id });
@@ -98,7 +101,7 @@
       try {
         await data!.load(id);
       } catch (e) {
-        failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry: () => pin(id) };
+        loadFailed(id, e, () => pin(id));
         return;
       }
     }
@@ -108,7 +111,7 @@
   const selected = $derived(model.selected);
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
-  const link = $derived(selected === model.focus ? undefined : data?.rec(model.focus)?.links.find((l) => l.id === selected));
+  const link = $derived(selected === model.focus ? undefined : data?.record(model.focus)?.links.find((l) => l.id === selected));
 
   // An unlabelled node names itself on hover; Ring 2 also shows its way to the Focus.
   function showTip(n: SceneNode | null, x: number, y: number) {
@@ -124,19 +127,19 @@
   // Both are read only once data is loaded. An Overflow Node lists all the Focus's Neighbours of its type.
   const listing = $derived.by(() => {
     retries;
-    return typeOf(listed) === "overflow"
-      ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(listed)], whole: true }))
-      : data!.loadWithKin(listed).then((r) => ({ r, types: TYPES, whole: false }));
+    return typeOf(neighboursOf) === "overflow"
+      ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(neighboursOf)], whole: true }))
+      : data!.loadWithKin(neighboursOf).then((r) => ({ r, types: TYPES, whole: false }));
   });
   const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
-  // The Verses `versed` shares with the Focus, then with each pin.
+  // The Verses `versesOf` shares with the Focus, then with each pin.
   const pins = $derived(model.pins);
   const sharing = $derived.by(() => {
     retries;
     return Promise.all(
       [...new Set([focus, ...pins])]
-        .filter((o) => o !== versed && isEntity(versed) && isEntity(o))
-        .map(async (o) => ({ with: o, verses: await data!.shared(o, versed) })),
+        .filter((o) => o !== versesOf && isEntity(versesOf) && isEntity(o))
+        .map(async (o) => ({ with: o, verses: await data!.shared(o, versesOf) })),
     );
   });
 
@@ -144,10 +147,10 @@
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
   // node on Your Path (PRD 10.4). Keys in the search box, a button, or the view picker are theirs.
   function sceneKey(e: KeyboardEvent) {
-    if ((e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !sc) return;
+    if ((e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !onScreen) return;
     const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
     if (dir) {
-      const ring = sc.nodes.filter((n) => n.ring1).sort((a, b) => a.ring1!.ti - b.ring1!.ti || a.ring1!.pos - b.ring1!.pos);
+      const ring = onScreen.nodes.filter((n) => n.ring1).sort((a, b) => a.ring1!.sector - b.ring1!.sector || a.ring1!.pos - b.ring1!.pos);
       const i = ring.findIndex((n) => n.id === model.selected);
       apply({ type: "select", id: ring[i < 0 ? (dir > 0 ? 0 : ring.length - 1) : (i + dir + ring.length) % ring.length].id });
     } else if (e.key === "Enter") {
@@ -173,7 +176,7 @@
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
       return;
     }
-    sc = scene(model, data.rec, data.genderOf);
+    onScreen = scene(model, data.record, data.genderOf);
     try {
       graph = createGraph(host, data.label, data.quote);
     } catch {
@@ -184,7 +187,7 @@
     graph.onNodeClick((id) => apply({ type: "select", id }));
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
-    graph.render(sc, model.selected);
+    graph.render(onScreen, model.selected);
     // The browser tests read node positions; only their build (vite build --mode e2e) has the hook.
     if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph });
   }
@@ -199,7 +202,7 @@
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
-{#if sc && data}
+{#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   <!-- The chevron points the way the panel will move. -->
   <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
@@ -241,7 +244,7 @@
     {#await listing then list}
       {#each list.types as t (t)}
         {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
-        {@const key = `${listed}|${t}`}
+        {@const key = `${neighboursOf}|${t}`}
         {@const k = model.filters.k}
         {#if all.length}
           <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
@@ -260,7 +263,7 @@
       {/each}
     {:catch e}
       <!-- A Verse outside the build has no lists; the note above says why. -->
-      {#if !data.outside(listed)}{@render failed("the Neighbours", e)}{/if}
+      {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
     {/await}
   </aside>
   <PathBar {model} {label} {apply} />
@@ -296,7 +299,7 @@
   </div>
 {/if}
 <p class="notice" role="status">{model.notice}</p>
-{#if sc?.hidden}<p class="trimmed">{hiddenNote(sc)}</p>{/if}
+{#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>

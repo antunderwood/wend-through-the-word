@@ -1,14 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
-
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
+import { focusIs, nodes } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
-const nodes = (page: Page) => page.evaluate(() => window.wendGraph!.testNodes());
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 // One type's list in the panel, found by its title ("Theme (36)").
 const typeList = (page: Page, title: string) => panel(page).getByRole("list", { name: title });
@@ -17,7 +10,7 @@ test.use({ reducedMotion: "reduce" });
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await page.waitForFunction((id) => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === id, ABRAHAM);
+  await focusIs(page, ABRAHAM);
 });
 
 test("a type's N more opens and closes its full list", async ({ page }) => {
@@ -60,7 +53,7 @@ test("a list click selects, a double click makes the Focus", async ({ page }) =>
   expect(await nodes(page)).toEqual(before);
   // The list stays Abraham's, so the second click of a double click lands on the same item.
   await people.getByRole("button", { name: /^Sarah/ }).dblclick();
-  await page.waitForFunction(() => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === "person:sarah_2473");
+  await focusIs(page, "person:sarah_2473");
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Sarah");
 });
 
@@ -75,7 +68,7 @@ test("the panel lists the Verses a Selected Node shares with the Focus, with BSB
   await verses.getByRole("button", { name: /^Gen 11:27/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
   await verses.getByRole("button", { name: /^Gen 11:27/ }).dblclick();
-  await page.waitForFunction(() => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === "01011027");
+  await focusIs(page, "01011027");
 });
 
 test("the chevron collapses and expands the panel and points the way it will move", async ({ page }) => {
@@ -93,7 +86,7 @@ test("the chevron collapses and expands the panel and points the way it will mov
 
 test("the panel, open or collapsed, leaves the Your Path bar fully usable", async ({ page }) => {
   await typeList(page, "Person (21)").getByRole("button", { name: /^Sarah/ }).dblclick();
-  await page.waitForFunction(() => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === "person:sarah_2473");
+  await focusIs(page, "person:sarah_2473");
   const bar = page.getByRole("navigation", { name: "Your Path" });
   // A click fails if anything lies over its target, so each click checks the bar is uncovered.
   await bar.getByRole("button", { name: "Abraham" }).click();

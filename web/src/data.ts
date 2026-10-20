@@ -78,11 +78,11 @@ export async function createData(getJSON: GetJSON, root: string) {
     const [c, side] = await Promise.all([get<ChapterFile>(`${chapter}.json`), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
     const v = c.verses.find((x) => x.key === id);
     if (!v) throw new Error(`No verse ${id} in ${chapter}.json`);
-    const named = [...v.mentions, ...v.filed_under].map((m) => ({
-      id: m.id,
-      type: typeOf(m.id) as NodeType,
-      weight: m.weight,
-      edges: [{ edge: m.edge, direction: "out" as const }],
+    const named = [...v.mentions, ...v.filed_under].map((mention) => ({
+      id: mention.id,
+      type: typeOf(mention.id) as NodeType,
+      weight: mention.weight,
+      edges: [{ edge: mention.edge, direction: "out" as const }],
     }));
     return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb };
   }
@@ -107,9 +107,9 @@ export async function createData(getJSON: GetJSON, root: string) {
     if (!q) return [];
     // "Gen 22:2", "gen 22.2", "Genesis 22", "3 John 1:4": the book is its OSIS name or a prefix of its
     // name (2 letters or more). A chapter alone gives its first Verse. Only built chapters count.
-    const m = q.match(/^((?:[1-3]\s*)?[a-z]+)\.?\s*(\d+)(?:\s*[:.]\s*(\d+))?$/);
-    if (m && (!type || type === "verse")) {
-      const [, b, chapter, verse] = m;
+    const ref = q.match(/^((?:[1-3]\s*)?[a-z]+)\.?\s*(\d+)(?:\s*[:.]\s*(\d+))?$/);
+    if (ref && (!type || type === "verse")) {
+      const [, b, chapter, verse] = ref;
       const s = b.replace(/\s+/g, "");
       const book = searchIndex.books.find((x) => x.osis.toLowerCase() === s || (s.length >= 2 && x.name.toLowerCase().replace(/\s+/g, "").startsWith(s)));
       if (book?.chapters.includes(+chapter))
@@ -128,7 +128,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       if (type && e.type !== type) continue;
       const [score, hint] = e.aliases
         .map((a): [number, string] => [rank(a) + 1, `also called ${a}`])
-        .reduce((best, m) => (m[0] < best[0] ? m : best), [rank(e.name), ""]);
+        .reduce((best, hit) => (hit[0] < best[0] ? hit : best), [rank(e.name), ""]);
       if (score < Infinity) hits.push({ id: e.id, hint, score, name: e.name });
     }
     hits.sort((a, b) => a.score - b.score || a.name.length - b.name.length || (a.name < b.name ? -1 : 1));
@@ -155,7 +155,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
     },
     outside,
-    rec: (id: Id) => records.get(id),
+    record: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry, cut at 90
     // characters; "" until loaded.

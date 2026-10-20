@@ -1,7 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-
-const focusIs = (page: Page, id: string) =>
-  page.waitForFunction((id) => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === id, id, { polling: "raf" });
+import { expect, test } from "@playwright/test";
+import { focusIs, nodes } from "./scene";
 
 test("a data file that fails twice shows a message and a retry, and the scene stays", async ({ page }) => {
   await page.goto("/");
@@ -12,7 +10,7 @@ test("a data file that fails twice shows a message and a retry, and the scene st
   await page.getByRole("searchbox", { name: "Search" }).press("Enter");
   const alert = page.getByRole("alert");
   await expect(alert).toContainText("Could not load Gen 25:5");
-  expect((await page.evaluate(() => window.wendGraph!.testNodes())).find((n) => n.role === "focus")!.id).toBe("person:abraham_58");
+  expect((await nodes(page)).find((n) => n.role === "focus")!.id).toBe("person:abraham_58");
 
   await page.unroute("**/chapter/Gen/25.json");
   await alert.getByRole("button", { name: "Retry" }).click();
@@ -45,7 +43,7 @@ test("a Verse outside the build is never fetched: Make Focus and Pin are refused
   await expect(page.getByRole("status")).toHaveText(note);
   await expect(panel.getByRole("button", { name: "Unpin" })).toHaveCount(0);
   await expect(page.getByRole("alert")).toHaveCount(0);
-  expect((await page.evaluate(() => window.wendGraph!.testNodes())).find((n) => n.role === "focus")!.id).toBe("01016001");
+  expect((await nodes(page)).find((n) => n.role === "focus")!.id).toBe("01016001");
   expect(asked.filter((u) => u.includes("/Gal/"))).toEqual([]);
 });
 

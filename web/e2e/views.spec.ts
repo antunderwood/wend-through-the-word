@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { nodes } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
-const drawn = (page: Page) => page.evaluate(() => window.wendGraph!.testNodes());
 const sceneReady = (page: Page) => page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
 const picker = (page: Page) => page.getByRole("radiogroup", { name: "View" });
 
@@ -9,9 +9,9 @@ test("the picker switches A to B to C with the keyboard, keeping the Focus and e
   await page.goto("/");
   await sceneReady(page);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
-  const before = await drawn(page);
+  const before = await nodes(page);
   const ids = before.map((n) => n.id).sort();
-  const isaacAt = async () => (await drawn(page)).find((n) => n.id === "person:isaac_616");
+  const isaacAt = async () => (await nodes(page)).find((n) => n.id === "person:isaac_616");
 
   await picker(page).getByRole("radio", { name: "Tilted plane" }).focus();
   let last = await isaacAt();
@@ -27,7 +27,7 @@ test("the picker switches A to B to C with the keyboard, keeping the Focus and e
     // The view moved the nodes, but the Scene is the same: Abraham the Focus, 99 nodes.
     await expect.poll(isaacAt).not.toEqual(last);
     last = await isaacAt();
-    const now = await drawn(page);
+    const now = await nodes(page);
     expect(now.find((n) => n.role === "focus")!.id).toBe(ABRAHAM);
     expect(now.map((n) => n.id).sort()).toEqual(ids);
   }

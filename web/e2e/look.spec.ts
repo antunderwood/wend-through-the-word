@@ -1,14 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
-
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
+import { nodes } from "./scene";
 
 const ISAAC = "person:isaac_616";
-const nodes = (page: Page) => page.evaluate(() => window.wendGraph!.testNodes());
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 
 test.use({ reducedMotion: "reduce" });

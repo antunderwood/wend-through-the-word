@@ -56,11 +56,11 @@ export type SceneNode = {
   role: Role;
   roles: Role[];
   shared: boolean;
-  ring1?: { ti: number; pos: number; m: number }; // sector index, place in sector, sector size
+  ring1?: { sector: number; pos: number; size: number }; // sector (type) index, place in sector, sector size
   pinIndex?: number;
   pathIndex?: number; // 0 is the newest
   pin?: Id; // the Pinned Node a pin ring node surrounds
-  ti?: number;
+  typeIndex?: number;
   via?: Id; // the Ring 1 parent of a Ring 2 node
   rank?: number;
   count?: number; // Neighbours behind an Overflow Node
@@ -76,9 +76,9 @@ export type Scene = {
   hiddenVotes: number;
 };
 
+export const RING2_K = 3; // Ring 2 nodes per Ring 1 node
 const SCENE_PATH = 5,
   PIN_K = 3,
-  RING2_K = 3,
   MAX_PINS = 3;
 const isCrossRef = (l: Link) => l.edges.some((e) => e.edge === "CROSS_REF");
 export const passes = (l: Link, f: State["filters"]) => !isCrossRef(l) || l.weight >= f.minVotes;
@@ -89,7 +89,7 @@ const passesRing2 = (parent: Id, c: { id: Id; weight: number }, f: State["filter
 // The words on an edge, read from the node that owns the link list towards the Neighbour.
 export function relation(link: Link, genderOf: (id: Id) => string | undefined) {
   const sex = genderOf(link.id);
-  const kin = (m: string, f: string, x: string) => (sex === "Male" ? m : sex === "Female" ? f : x);
+  const kin = (male: string, female: string, other: string) => (sex === "Male" ? male : sex === "Female" ? female : other);
   const has = (e: string) => link.edges.some((x) => x.edge === e);
   const words: string[] = [];
   const edges = [...link.edges].sort((a, b) => +(b.edge === "SPOUSE_OF") - +(a.edge === "SPOUSE_OF"));
@@ -173,16 +173,16 @@ export function reduce(s: State, a: Action, label: (id: Id) => string): State {
 }
 
 // The corner note when the node limit hides nodes (decision 33), or "".
-export const hiddenNote = (sc: Scene) => (sc.hidden ? `${sc.hidden} node${sc.hidden === 1 ? "" : "s"} hidden to keep the view fast` : "");
+export const hiddenNote = (drawn: Scene) => (drawn.hidden ? `${drawn.hidden} node${drawn.hidden === 1 ? "" : "s"} hidden to keep the view fast` : "");
 
 // After Clear, a Selected Node only on Your Path (so no longer in the scene) gives way to the Focus.
-export const afterClear = (s: State, sc: Scene): State =>
-  s.cleared?.includes(s.selected) && !sc.nodes.some((n) => n.id === s.selected) ? { ...s, selected: s.focus } : s;
+export const afterClear = (s: State, drawn: Scene): State =>
+  s.cleared?.includes(s.selected) && !drawn.nodes.some((n) => n.id === s.selected) ? { ...s, selected: s.focus } : s;
 
-// rec(id) gives a loaded record; the Focus and every pin must be loaded.
-export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined): Scene {
+// record(id) gives a loaded record; the Focus and every pin must be loaded.
+export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined): Scene {
   const f = s.filters,
-    F = rec(s.focus)!;
+    F = record(s.focus)!;
   const roles = new Map<Id, Set<Role>>();
   const tag = (id: Id, r: Role) => {
     if (!roles.has(id)) roles.set(id, new Set());
@@ -200,34 +200,34 @@ export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id:
   const ring1 = {} as Record<NodeType, Link[]>,
     overflow = {} as Record<NodeType, Link[]>,
     ring1Meta = new Map<Id, SceneNode["ring1"]>();
-  TYPES.forEach((t, ti) => {
+  TYPES.forEach((t, sector) => {
     const all = F.links.filter((l) => l.type === t && l.id !== s.focus);
     const ok = all.filter((l) => passes(l, f));
     hiddenVotes += all.length - ok.length;
     ring1[t] = ok.slice(0, f.k);
     overflow[t] = ok.slice(f.k);
     // The Overflow Node sits last in its sector.
-    const m = ring1[t].length + (overflow[t].length ? 1 : 0);
+    const size = ring1[t].length + (overflow[t].length ? 1 : 0);
     ring1[t].forEach((l, pos) => {
       tag(l.id, "ring1");
-      ring1Meta.set(l.id, { ti, pos, m });
+      ring1Meta.set(l.id, { sector, pos, size });
     });
-    if (overflow[t].length) ring1Meta.set(`overflow:${t}`, { ti, pos: m - 1, m });
+    if (overflow[t].length) ring1Meta.set(`overflow:${t}`, { sector, pos: size - 1, size });
   });
 
   // Each pin brings its own top 3 of each type, no Ring 2 (decision 25).
-  type Around = { id: Id; pin: Id; rank: number; ti: number; pos: number };
+  type Around = { id: Id; pin: Id; rank: number; typeIndex: number; pos: number };
   const pinRing: Record<Id, Around[]> = {};
   s.pins.forEach((p, pinIndex) => {
     if (p === s.focus) return;
-    pinRing[p] = TYPES.flatMap((t, ti) => topK(rec(p)!, t, PIN_K).map((l, rank) => ({ id: l.id, pin: p, rank, ti, pos: pinIndex })));
+    pinRing[p] = TYPES.flatMap((t, typeIndex) => topK(record(p)!, t, PIN_K).map((l, rank) => ({ id: l.id, pin: p, rank, typeIndex, pos: pinIndex })));
     pinRing[p].forEach((n) => tag(n.id, "pinring"));
   });
 
   // Ring 2: up to 3 of each Ring 1 node's stored top 10 that pass the filters and are not already on screen.
-  type Outer = { id: Id; via: Id; rank: number; pos: number; ti: number };
+  type Outer = { id: Id; via: Id; rank: number; pos: number; typeIndex: number };
   let ring2: Outer[] = [];
-  TYPES.forEach((t, ti) =>
+  TYPES.forEach((t, typeIndex) =>
     ring1[t].forEach((r, pos) => {
       let rank = 0;
       for (const c of F.ring2[r.id] ?? []) {
@@ -238,7 +238,7 @@ export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id:
         }
         if (roles.has(c.id)) continue;
         tag(c.id, "ring2");
-        ring2.push({ id: c.id, via: r.id, rank, pos, ti });
+        ring2.push({ id: c.id, via: r.id, rank, pos, typeIndex });
         rank++;
       }
     }),
@@ -258,7 +258,7 @@ export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id:
       trimmed[role]++;
     }
   };
-  const roundRobin = (a: Outer | Around, b: Outer | Around) => b.rank - a.rank || b.pos - a.pos || b.ti - a.ti;
+  const roundRobin = (a: Outer | Around, b: Outer | Around) => b.rank - a.rank || b.pos - a.pos || b.typeIndex - a.typeIndex;
   const q2 = [...ring2].sort(roundRobin);
   while (count() > f.nodeLimit && q2.length) drop(q2.shift()!.id, "ring2");
   ring2 = ring2.filter((r) => roles.get(r.id)?.has("ring2"));
@@ -273,7 +273,7 @@ export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id:
   // the Focus and a Pinned Node.
   const topIds = (R: Rec) => new Set(TYPES.flatMap((t) => topK(R, t, f.k).map((l) => l.id)));
   const focusTop = topIds(F);
-  const pinTops = s.pins.filter((p) => p !== s.focus).map((p) => topIds(rec(p)!));
+  const pinTops = s.pins.filter((p) => p !== s.focus).map((p) => topIds(record(p)!));
   const isShared = (id: Id, rs: Set<Role>) =>
     (rs.has("ring1") || rs.has("pinring")) && !rs.has("pinned") && focusTop.has(id) && pinTops.some((ps) => ps.has(id));
 
@@ -291,7 +291,7 @@ export function scene(s: State, rec: (id: Id) => Rec | undefined, genderOf: (id:
     if (role === "path") n.pathIndex = pathKept.length - 1 - pathKept.indexOf(id);
     if (role === "pinring") {
       const pr = pinRingBy.get(id)!;
-      Object.assign(n, { pin: pr.pin, ti: pr.ti, rank: pr.rank });
+      Object.assign(n, { pin: pr.pin, typeIndex: pr.typeIndex, rank: pr.rank });
     }
     if (role === "ring2") {
       const r2 = ring2By.get(id)!;
