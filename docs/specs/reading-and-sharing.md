@@ -139,6 +139,27 @@ No build change is expected: the export already carries corrections, Evidence Ve
 - **Notes stay in the browser** (decision 112, PRD 3): no account, no server, no Worker. Deleting all notes asks for confirmation.
 - **Credits page as its own entry** (decision 132): it needs no state from the main page and must load without WebGL.
 
+### Page address format
+
+Stable (decision 128): links shared now must still open after later releases, so a parameter may be added but never renamed, and a value's meaning never changes. Read and written by `web/src/address.ts`.
+
+`/?focus=person:isaac_616&sel=place:gerar_459&pins=person:abraham_58,place:gerar_459&view=B&votes=5`
+
+| Parameter | Value | Default (left out) |
+|---|---|---|
+| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse Key (`01025001`) | `person:abraham_58` |
+| `sel` | The Selected Node: an Entity ID, a Verse Key, or an Overflow Node (`overflow:person`) | the Focus |
+| `pins` | Pinned Nodes, comma-separated, in pin order, at most 3 | none |
+| `view` | `A` (tilted plane), `B` (stacked discs), or `C` (free orbit) | the view kept in this browser, else `A` |
+| `votes` | The Vote Limit, a whole number | `1` |
+
+- Parameters are written in the order above. Colons and commas in IDs are not escaped; a reader of the address decodes it as usual form encoding, so escaped forms work too.
+- With every default, the address is the bare page: Abraham with default settings.
+- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a view other than A, B, or C, votes that are not a whole number, a fourth pin) is left out and named in a notice. A missing or unknown Focus opens on Abraham. Unknown parameter names are ignored.
+- A `view` in the address wins over the view kept in this browser.
+- Your Path is not in the address.
+- History: a Focus change pushes a new entry; a selection, pin, view, or filter change replaces the current one. Back and Forward make the entry's Focus the Focus again; the Selected Node, pins, view, and filters stay as they are.
+
 ## Testing Decisions
 
 - **The same seams as M3** (#18): Vitest on pure modules and the Focus Model, fed by the export built from the fixture sources; Playwright on the built page with the fixture export, in the e2e build mode. The build seam is used only if a data change turns out to be needed.
