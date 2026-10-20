@@ -92,10 +92,11 @@
   // A pin's record must be loaded before the scene can draw its ring.
   async function pin(id: Id) {
     if (typeOf(id) !== "overflow") {
+      failure = undefined;
       try {
         await data!.load(id);
       } catch (e) {
-        model = { ...model, notice: `Could not load ${label(id)}: ${(e as Error).message}` };
+        failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry: () => pin(id) };
         return;
       }
     }
