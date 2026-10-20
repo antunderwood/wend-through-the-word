@@ -203,6 +203,10 @@ export async function createData(getJSON: GetJSON, root: string) {
       return { ...own, facts, entry: d.dictionary_entry, corrections: d.corrections ?? [] };
     },
     outside,
+    // A Verse's OSIS book, or undefined for a Verse outside this build (the book filter).
+    bookOf: (id: Id) => (outside(id) ? undefined : books.get(id.slice(0, 2))?.osis),
+    // The books with chapters in this build, in Bible order.
+    builtBooks: searchIndex.books.filter((b) => b.chapters.length),
     // The chapter of a built Verse, for the reader panel.
     async chapter(id: Id): Promise<{ title: string; verses: { key: Id; text: string }[] }> {
       const book = books.get(id.slice(0, 2))!;
