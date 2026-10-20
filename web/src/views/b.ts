@@ -18,7 +18,7 @@ export const viewB: ViewModule = {
     controls.minPolarAngle = controls.maxPolarAngle = polar; // a turntable: no tilting
     controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
     controls.minDistance = 25;
-    controls.maxDistance = 240;
+    controls.maxDistance = 260; // the front row of Ring 1 is past the label fade at the farthest zoom
   },
   decorate() {
     const g = new THREE.Group();
