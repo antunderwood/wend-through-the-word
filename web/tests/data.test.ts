@@ -57,9 +57,9 @@ describe("data loader", () => {
     const data = await createData(readExport, "");
     // Fixture: People named Anah, and two Places named Sitnah that share Gen 26:21, so the first
     // Sitnah falls back to the number in its ID (decision 122). A Person's relation that no other
-    // Anah has comes before the hint (decision 125); anah_247 has none.
+    // Anah has comes before the hint (decision 125); anah_247 has none of its own, so shows its first (decision 126).
     expect(["person:anah_247", "person:anah_248", "person:anah_249"].map((id) => data.label(id))).toEqual([
-      "Anah (Gen 36:2)",
+      "Anah, son of Zibeon (Gen 36:2)",
       "Anah, son of Seir (Gen 36:20)",
       "Anah, brother of Ajah (Gen 36:24)",
     ]);

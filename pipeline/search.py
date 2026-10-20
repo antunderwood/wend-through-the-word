@@ -8,7 +8,7 @@ any step added.
 An Entity whose name another Entity of the same type shares gets a `hint` (decision 122): the
 reference of its first whole-Bible Verse that none of them shares, else the number in its ID.
 Such a Person also gets a `relation` (decision 125): the first of its family relations, such as
-"son of Seir", that none of them has."""
+"son of Seir", that none of them has, else its first relation (decision 126)."""
 
 import re
 from collections import defaultdict
@@ -63,7 +63,9 @@ def index(b):
             e["hint"] = re.search(r"\d+$", e["id"])[0]
         if e["type"] == "person":
             theirs = {r for i in others for r in relations(b, i)}
-            mine = [r for r in relations(b, e["id"]) if r not in theirs]
+            own = relations(b, e["id"])
+            # None of its own: the first anyway, a parent before a child (decision 126).
+            mine = [r for r in own if r not in theirs] or own
             if mine:
                 e["relation"] = mine[0]
     return {

@@ -74,8 +74,9 @@ def test_same_name_people_get_the_first_relation_no_namesake_shares(export):
     # Its first relation, "son of Zibeon", is anah_247's too (another Zibeon, same name).
     assert relations["person:anah_249"] == "brother of Ajah"
     assert relations["person:anah_9250"] == "daughter of Zibeon"
-    # "son of Zibeon" is anah_249's, "father of Aholibamah" anah_248's: none is its own.
-    assert relations["person:anah_247"] is None
+    # "son of Zibeon" is anah_249's, "father of Aholibamah" anah_248's: none is its own, so it
+    # falls back to its first relation, a parent before a child (decision 126).
+    assert relations["person:anah_247"] == "son of Zibeon"
     # A Place, or a Person with no namesake, gets none.
     assert relations["place:sitnah_9102"] is None
     assert relations["person:seir_2485"] is None
