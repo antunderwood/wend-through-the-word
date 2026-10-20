@@ -136,6 +136,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   }
 
   return {
+    version: index.data_version,
     load,
     search,
     // Family words (son or daughter, husband or wife) follow the relative's gender, which only the

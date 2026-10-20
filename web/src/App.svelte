@@ -302,6 +302,9 @@
   </div>
 {/if}
 <p class="notice" role="status">{model.notice}</p>
+<footer>
+  <a href="/credits.html">Data: CC BY-SA 4.0, credits</a>{#if data}<span class="muted">. Data version {data.version}</span>{/if}
+</footer>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
@@ -363,6 +366,7 @@
   .panel.full {
     left: 0;
     width: auto;
+    bottom: 36px; /* above the footer */
   }
   .panel.collapsed {
     transform: translateX(100%);
@@ -470,7 +474,7 @@
   .trimmed {
     position: fixed;
     left: 16px;
-    bottom: 40px; /* above the notice line */
+    bottom: 64px; /* above the notice line */
     margin: 0;
     font-size: 12px;
     color: #9aa0b4;
@@ -504,8 +508,18 @@
   .notice {
     position: fixed;
     left: 16px;
-    bottom: 16px;
+    bottom: 40px; /* above the footer */
     margin: 0;
     color: #9aa0b4;
+  }
+  footer {
+    position: fixed;
+    left: 16px;
+    bottom: 12px;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  footer a {
+    color: inherit;
   }
 </style>
