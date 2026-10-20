@@ -176,7 +176,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
 
   function nodeLabel(n: SceneNode, selected: Id) {
     const d = document.createElement("div");
-    d.className = `nl ${n.role}${n.id === selected ? " selected" : ""}`;
+    d.className = `nl ${n.role}${n.shared ? " shared" : ""}${n.id === selected ? " selected" : ""}`;
     d.textContent = n.role === "overflow" ? `+${n.count} ${TYPE_PLURAL[n.type]}` : label(n.id);
     if (quote(n.id)) {
       const q = document.createElement("div");
@@ -215,7 +215,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       s.renderOrder = 1;
       s.position.copy(rel.get(n.id)!).add(centre);
       s.userData = { node: n, opacity: st.opacity, to: s.position.clone() };
-      if (st.labelled) s.add(nodeLabel(n, selected));
+      if (st.labelled || n.shared) s.add(nodeLabel(n, selected)); // a Shared Node around a pin is labelled too
       world.add(s);
       sprites.set(n.id, s);
     }

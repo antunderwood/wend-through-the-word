@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { initialState, reduce, relation, scene, type Edge, type NodeType, type Scene, type State } from "../src/model";
+import { initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -226,6 +226,120 @@ describe("select and focus", () => {
       expect(undo(s)).toEqual(s);
       const t = undo(clear(s));
       expect(undo(t)).toEqual(t);
+    });
+  });
+});
+
+describe("pins and Shared Nodes", () => {
+  const [ISAAC, SARAH, TERAH] = ["person:isaac_616", "person:sarah_2473", "person:terah_2841"];
+  beforeAll(() => Promise.all([ISAAC, SARAH, TERAH].map(data.load)));
+  const act = (s: State, ...actions: Action[]) => actions.reduce((t, a) => reduce(t, a, data.label), s);
+  const pin = (id: string): Action => ({ type: "pin", id });
+  const focus = (id: string): Action => ({ type: "focus", id });
+  // Abraham pinned, then Isaac made the Focus.
+  const isaacWithAbraham = () => act(initialState(ABRAHAM), pin(ABRAHAM), focus(ISAAC));
+
+  it("pins at most three nodes; a fourth is refused with a notice", () => {
+    const s = act(initialState(ABRAHAM), pin(ISAAC), pin(SARAH), pin(TERAH));
+    expect(s.pins).toEqual([ISAAC, SARAH, TERAH]);
+    const t = act(s, pin("person:hagar_1348"));
+    expect({ ...t, notice: "" }).toEqual({ ...s, notice: "" });
+    expect(t.notice).toBe("3 nodes are already pinned. Unpin one first.");
+  });
+
+  it("refuses to pin an Overflow Node", () => {
+    const s = initialState(ABRAHAM);
+    const t = act(s, pin("overflow:theme"));
+    expect(t.pins).toEqual([]);
+    expect(t.notice).toBe("An Overflow Node cannot be pinned.");
+  });
+
+  it("a pinned Focus brings no pin ring until another node is the Focus", () => {
+    const s = act(initialState(ABRAHAM), pin(ABRAHAM));
+    expect(s.pins).toEqual([ABRAHAM]);
+    expect(draw(s).count).toBe(99); // as unpinned (the Ring 1 test above)
+    expect(draw(s).edges.filter((e) => e.kind === "pin")).toEqual([]);
+    const sc = draw(act(s, focus(ISAAC)));
+    expect(sc.nodes.find((n) => n.id === ABRAHAM)?.role).toBe("pinned");
+    expect(sc.edges.filter((e) => e.kind === "pin" && e.a === ABRAHAM)).toHaveLength(16);
+  });
+
+  it("each pin brings its own top 3 of each type, and no Ring 2", () => {
+    const sc = draw(isaacWithAbraham());
+    const around = sc.edges.filter((e) => e.kind === "pin" && e.a === ABRAHAM).map((e) => e.b);
+    // Fixture: Abraham's top 3 of each type (top 6 in the Ring 1 test above); 1 People Group.
+    expect(around).toEqual([
+      ...[ISAAC, SARAH, "person:haran_1407"],
+      ...["place:ur_1189", "place:beer-lahai-roi_167", "place:canaan_272"],
+      ...["event:65", "event:61", "event:66"],
+      "group:genealogy_of_jesus",
+      ...["theme:god", "theme:genealogy", "theme:covenant"],
+      ...["01011031", "01011027", "01011029"],
+    ]);
+    // Isaac is the Focus and Beer-lahai-roi is in his Ring 1, so they keep those roles.
+    expect(sc.nodes.find((n) => n.id === "place:canaan_272")?.role).toBe("pinring");
+    expect(sc.nodes.find((n) => n.id === "place:beer-lahai-roi_167")?.role).toBe("ring1");
+    // Ring 2 hangs only off Ring 1 (Abraham is also in Isaac's Ring 1), never off a pin ring.
+    const pinOnly = new Set(ids(sc, "pinring"));
+    expect(sc.nodes.filter((n) => n.role === "ring2" && pinOnly.has(n.via!))).toEqual([]);
+  });
+
+  it("unpinning takes the pin and its ring out of the scene", () => {
+    const s = isaacWithAbraham();
+    const t = act(s, { type: "unpin", id: ABRAHAM });
+    expect(t.pins).toEqual([]);
+    expect(t.notice).toBe("Unpinned Abraham.");
+    const sc = draw(t);
+    expect(sc.nodes.some((n) => n.roles.includes("pinned") || n.roles.includes("pinring"))).toBe(false);
+    expect(sc.edges.filter((e) => e.kind === "pin")).toEqual([]);
+  });
+
+  it("highlights a Shared Node only when it is in the top K of its type for both the Focus and a pin", () => {
+    const shared = (s: State) =>
+      draw(s)
+        .nodes.filter((n) => n.shared)
+        .map((n) => n.id);
+    // Fixture: 11 nodes on screen are linked to both by any link. Covenant is around Abraham and
+    // linked to Isaac, but seventh of Isaac's Themes; Gerar is fourth of Abraham's Places, outside
+    // his pin ring, and second of Isaac's.
+    expect(shared(isaacWithAbraham())).toEqual(["place:gerar_459", "place:beer-lahai-roi_167", "group:genealogy_of_jesus", "theme:blessing"]);
+    // With K = 7 Covenant is in Isaac's top K too.
+    const k7 = act(isaacWithAbraham(), { type: "setFilter", key: "k", value: 7 });
+    expect(shared(k7)).toContain("theme:covenant");
+    // No pin, no Shared Node.
+    expect(shared(act(isaacWithAbraham(), { type: "unpin", id: ABRAHAM }))).toEqual([]);
+  });
+
+  describe("the node limit with pins (decision 33)", () => {
+    // Abraham and Sarah pinned, then Terah and Isaac made the Focus: Your Path is Abraham, Terah.
+    // Fixture: 107 nodes wanted, 53 of them Ring 2 and 19 around the pins (9 of them third).
+    const s = () => act(initialState(ABRAHAM), pin(ABRAHAM), pin(SARAH), focus(TERAH), focus(ISAAC));
+    const at = (n: number) => draw(act(s(), { type: "setFilter", key: "nodeLimit", value: n }));
+    const around = (sc: Scene, rank: number) => sc.nodes.filter((n) => n.role === "pinring" && n.rank === rank).length;
+
+    it("trims Ring 2 first, then the oldest of Your Path, then the pin rings", () => {
+      expect(at(54).trimmed).toEqual({ ring2: 53, path: 0, pinring: 0 });
+      // Terah goes; Abraham stays, as a pin.
+      const sc = at(53);
+      expect(sc.trimmed).toEqual({ ring2: 53, path: 1, pinring: 0 });
+      expect(sc.nodes.some((n) => n.id === TERAH)).toBe(false);
+      expect(at(52).trimmed).toEqual({ ring2: 53, path: 1, pinring: 1 });
+    });
+
+    it("takes each pin's third neighbours before any pin's second", () => {
+      const sc = at(44);
+      expect(sc.trimmed.pinring).toBe(9);
+      expect([around(sc, 0), around(sc, 1), around(sc, 2)]).toEqual([7, 3, 0]);
+    });
+
+    it("never trims the Focus, the pins, Ring 1, or Overflow Nodes", () => {
+      const sc = at(10);
+      // 1 Focus, 28 Ring 1 (Abraham among them), Sarah, 4 Overflow Nodes.
+      expect([sc.count, sc.demand, sc.hidden]).toEqual([34, 107, 73]);
+      expect(sc.nodes.filter((n) => n.roles.includes("pinned")).map((n) => n.id)).toEqual([ABRAHAM, SARAH]);
+      expect(ids(sc, "focus")).toEqual([ISAAC]);
+      expect(sc.nodes.filter((n) => n.roles.includes("ring1"))).toHaveLength(28);
+      expect(ids(sc, "overflow")).toHaveLength(4);
     });
   });
 });
