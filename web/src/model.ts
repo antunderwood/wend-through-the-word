@@ -40,13 +40,15 @@ export type State = {
   path: Id[]; // every earlier Focus, each once, latest visit last
   pins: Id[]; // at most 3
   cleared: Id[] | null; // what the last clearPath removed, for undoClear
-  filters: { k: number; minVotes: number; nodeLimit: number };
+  // hidden: node types turned off. books: OSIS codes of the books whose Verses show, "build" for
+  // every Verse in this build, or "all" (decision 130).
+  filters: { k: number; minVotes: number; nodeLimit: number; hidden: NodeType[]; books: string[] | "all" | "build" };
   notice: string;
 };
 export type Action =
   | { type: "focus" | "select" | "pin" | "unpin"; id: Id }
   | { type: "step"; dir: -1 | 1 } // Prev and Next along [...path, focus]
-  | { type: "setFilter"; key: keyof State["filters"]; value: number }
+  | { type: "setFilter"; key: keyof State["filters"]; value: State["filters"][keyof State["filters"]] }
   | { type: "clearPath" }
   | { type: "undoClear" };
 export type Role = "focus" | "pinned" | "ring1" | "pinring" | "path" | "ring2" | "overflow";
@@ -81,9 +83,19 @@ export const MAX_PINS = 3;
 const SCENE_PATH = 5,
   PIN_K = 3;
 const isCrossRef = (l: Link) => l.edges.some((e) => e.edge === "CROSS_REF");
-export const passes = (l: Link, f: State["filters"]) => !isCrossRef(l) || l.weight >= f.minVotes;
+// bookOf(id) gives a Verse's OSIS book, or undefined for a Verse outside this build.
+export type BookOf = (id: Id) => string | undefined;
+// A node the type or book filter hides; the book filter applies to Verses only (decision 130).
+const hides = (id: Id, f: State["filters"], bookOf: BookOf) => {
+  const t = typeOf(id) as NodeType;
+  if (f.hidden.includes(t)) return true;
+  if (t !== "verse" || f.books === "all") return false;
+  const book = bookOf(id);
+  return !book || (f.books !== "build" && !f.books.includes(book));
+};
+export const passes = (l: Link, f: State["filters"], bookOf: BookOf) => !hides(l.id, f, bookOf) && (!isCrossRef(l) || l.weight >= f.minVotes);
 // A Ring 2 entry is a Cross-reference when both ends are Verses; its weight is then Votes.
-const passesRing2 = (parent: Id, c: { id: Id; weight: number }, f: State["filters"]) =>
+const passesVotes = (parent: Id, c: { id: Id; weight: number }, f: State["filters"]) =>
   !(typeOf(parent) === "verse" && typeOf(c.id) === "verse") || c.weight >= f.minVotes;
 
 // The words on an edge, read from the node that owns the link list towards the Neighbour.
@@ -130,7 +142,7 @@ export const initialState = (focus: Id): State => ({
   path: [],
   pins: [],
   cleared: null,
-  filters: { k: 6, minVotes: 1, nodeLimit: 500 },
+  filters: { k: 6, minVotes: 1, nodeLimit: 500, hidden: [], books: "all" },
   notice: "",
 });
 
@@ -183,8 +195,9 @@ export const hiddenNote = (drawn: Scene) => (drawn.hidden ? `${drawn.hidden} nod
 export const afterClear = (s: State, drawn: Scene): State =>
   s.cleared?.includes(s.selected) && !drawn.nodes.some((n) => n.id === s.selected) ? { ...s, selected: s.focus } : s;
 
-// record(id) gives a loaded record; the Focus and every pin must be loaded.
-export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined): Scene {
+// record(id) gives a loaded record; the Focus and every pin must be loaded. The type and book
+// filters never hide the Focus or a pin.
+export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined, bookOf: BookOf): Scene {
   const f = s.filters,
     F = record(s.focus)!;
   const roles = new Map<Id, Set<Role>>();
@@ -198,15 +211,15 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
   pathShown.forEach((id) => tag(id, "path"));
 
   // The top K of each type, after filters, by weight then ID (decision 94). Links are pre-sorted.
-  const topK = (R: Rec, t: NodeType, k: number) => R.links.filter((l) => l.type === t && l.id !== R.id && passes(l, f)).slice(0, k);
+  const topK = (R: Rec, t: NodeType, k: number) => R.links.filter((l) => l.type === t && l.id !== R.id && passes(l, f, bookOf)).slice(0, k);
 
   let hiddenVotes = 0;
   const ring1 = {} as Record<NodeType, Link[]>,
     overflow = {} as Record<NodeType, Link[]>,
     ring1Meta = new Map<Id, SceneNode["ring1"]>();
   TYPES.forEach((t, sector) => {
-    const all = F.links.filter((l) => l.type === t && l.id !== s.focus);
-    const ok = all.filter((l) => passes(l, f));
+    const all = F.links.filter((l) => l.type === t && l.id !== s.focus && !hides(l.id, f, bookOf));
+    const ok = all.filter((l) => passes(l, f, bookOf));
     hiddenVotes += all.length - ok.length;
     ring1[t] = ok.slice(0, f.k);
     overflow[t] = ok.slice(f.k);
@@ -236,7 +249,8 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
       let rank = 0;
       for (const c of F.ring2[r.id] ?? []) {
         if (rank === RING2_K) break;
-        if (!passesRing2(r.id, c, f)) {
+        if (hides(c.id, f, bookOf)) continue;
+        if (!passesVotes(r.id, c, f)) {
           hiddenVotes++;
           continue;
         }

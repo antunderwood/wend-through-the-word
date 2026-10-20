@@ -2,6 +2,7 @@
   import { onMount, tick } from "svelte";
   import { read, START, write } from "./address";
   import { createData, fetchJSON, type Data } from "./data";
+  import Filters from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
   import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
@@ -33,6 +34,15 @@
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
+  // Animation turned off in the filter panel is kept in this browser (PRD 10.2 rule 6).
+  const MOTION_STORE = "wend.motion";
+  let motion = $state(stored(MOTION_STORE) !== "off");
+
+  function setMotion(on: boolean) {
+    motion = on;
+    store(MOTION_STORE, on ? "on" : "off");
+    graph?.setMotion(on);
+  }
 
   function choose(v: View) {
     view = v;
@@ -61,7 +71,7 @@
 
   function apply(a: Action, from?: "neighbours" | "verses") {
     let next = reduce(model, a, label);
-    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf, data!.bookOf);
     if (a.type === "clearPath") next = afterClear(next, onScreen!);
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") neighboursOf = next.selected;
@@ -175,7 +185,7 @@
     failure = undefined;
     try {
       data = await createData(fetchJSON, "/data");
-      const asked = read(location.search, data.known);
+      const asked = readAddress();
       const focus = asked.focus ?? START,
         pins = asked.pins ?? [];
       await Promise.all([data.loadWithKin(focus), ...pins.map(data.load)]);
@@ -186,7 +196,7 @@
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
       return;
     }
-    onScreen = scene(model, data.record, data.genderOf);
+    onScreen = scene(model, data.record, data.genderOf, data.bookOf);
     try {
       graph = createGraph(host, data.label, data.quote);
     } catch {
@@ -194,6 +204,7 @@
       return;
     }
     graph.setView(view);
+    graph.setMotion(motion);
     graph.onNodeClick((id) => apply({ type: "select", id }));
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
@@ -217,9 +228,11 @@
     entryFocus = model.focus;
   });
 
+  const readAddress = () => read(location.search, data!.known, data!.builtBooks.map((b) => b.osis));
+
   // Back and Forward make the entry's Focus the Focus again.
   function moved() {
-    entryFocus = read(location.search, data!.known).focus ?? START;
+    entryFocus = readAddress().focus ?? START;
     makeFocus(entryFocus);
   }
 
@@ -274,7 +287,7 @@
     </section>
     {#await listing then list}
       {#each list.types as t (t)}
-        {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
+        {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters, data!.bookOf))}
         {@const key = `${neighboursOf}|${t}`}
         {@const k = model.filters.k}
         {#if all.length}
@@ -330,7 +343,18 @@
       {/each}
     </div>
   {/if}
-  {#if onScreen}<button class="copy" onclick={copyLink}>Copy link</button>{/if}
+  {#if onScreen && data}
+    <button class="pill" popovertarget="filters">Filters</button>
+    <Filters
+      filters={model.filters}
+      entityFocus={isEntity(model.focus)}
+      books={data.builtBooks}
+      {motion}
+      set={(key, value) => apply({ type: "setFilter", key, value })}
+      {setMotion}
+    />
+    <button class="pill" onclick={copyLink}>Copy link</button>
+  {/if}
 </div>
 <p class="notice" role="status">{model.notice}</p>
 <footer>
@@ -380,7 +404,7 @@
     font: inherit;
     cursor: pointer;
   }
-  .copy {
+  .pill {
     border-radius: 999px;
   }
   .views button[aria-checked="true"] {

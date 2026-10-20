@@ -156,6 +156,10 @@ export async function createData(getJSON: GetJSON, root: string) {
       return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
     },
     outside,
+    // A Verse's OSIS book, or undefined for a Verse outside this build (the book filter).
+    bookOf: (id: Id) => (outside(id) ? undefined : books.get(id.slice(0, 2))?.osis),
+    // The books with chapters in this build, in Bible order.
+    builtBooks: searchIndex.books.filter((b) => b.chapters.length),
     // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
     known: (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id)),
     record: (id: Id) => records.get(id),
