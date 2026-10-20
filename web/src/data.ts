@@ -17,6 +17,8 @@ type EntityFile = {
 
 export type Data = Awaited<ReturnType<typeof createData>>;
 
+const KIN = new Set(["PARENT_OF", "SPOUSE_OF", "SIBLING_OF", "HALF_SIBLING_OF"]);
+
 export async function createData(getJSON: GetJSON, root: string) {
   // A failed fetch is retried once; a second failure is thrown to the caller and nothing is kept.
   const get = <T>(url: string) => getJSON(url).catch(() => getJSON(url)) as Promise<T>;
@@ -43,17 +45,28 @@ export async function createData(getJSON: GetJSON, root: string) {
     return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender };
   }
 
+  function load(id: Id): Promise<Rec> {
+    const done = records.get(id);
+    if (done) return Promise.resolve(done);
+    if (!pending.has(id)) {
+      const p = fetchRecord(id)
+        .then((r) => (records.set(id, r), r))
+        .finally(() => pending.delete(id));
+      pending.set(id, p);
+    }
+    return pending.get(id)!;
+  }
+
   return {
-    load(id: Id): Promise<Rec> {
-      const done = records.get(id);
-      if (done) return Promise.resolve(done);
-      if (!pending.has(id)) {
-        const p = fetchRecord(id)
-          .then((r) => (records.set(id, r), r))
-          .finally(() => pending.delete(id));
-        pending.set(id, p);
-      }
-      return pending.get(id)!;
+    load,
+    // Family words (son or daughter, husband or wife) follow the relative's gender, which only the
+    // relative's own file carries, so this also loads every Person with a family link. A relative
+    // that fails to load keeps the neutral word (child, spouse).
+    async loadWithKin(id: Id): Promise<Rec> {
+      const r = await load(id);
+      const kin = r.links.filter((l) => l.type === "person" && l.edges.some((e) => KIN.has(e.edge)));
+      await Promise.allSettled(kin.map((l) => load(l.id)));
+      return r;
     },
     rec: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,

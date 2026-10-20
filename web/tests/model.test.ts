@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { initialState, reduce, scene, type Scene, type State } from "../src/model";
+import { initialState, reduce, relation, scene, type Edge, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -8,7 +8,7 @@ let data: Data;
 
 beforeAll(async () => {
   data = await createData(readExport, "");
-  await data.load(ABRAHAM);
+  await data.loadWithKin(ABRAHAM);
 });
 
 const draw = (s: State) => scene(s, data.rec, data.genderOf);
@@ -97,5 +97,131 @@ describe("the node limit (decision 33)", () => {
     const byRank = (k: number) => kept.filter((n) => n.rank === k);
     expect([byRank(0).length, byRank(1).length, byRank(2).length]).toEqual([27, 8, 0]);
     expect(new Set(byRank(0).map((n) => n.via))).toEqual(new Set(full.map((n) => n.via)));
+  });
+});
+
+describe("select and focus", () => {
+  const [ISAAC, SARAH, HAGAR, TERAH, JACOB, REBEKAH] = [
+    "person:isaac_616",
+    "person:sarah_2473",
+    "person:hagar_1348",
+    "person:terah_2841",
+    "person:israel_682",
+    "person:rebekah_2401",
+  ];
+  beforeAll(() => Promise.all([ISAAC, SARAH, HAGAR, TERAH, JACOB, REBEKAH].map(data.load)));
+  const walk = (s: State, ...ids: string[]) => ids.reduce((t, id) => reduce(t, { type: "focus", id }, data.label), s);
+
+  it("selecting a node never changes the scene", () => {
+    const s = initialState(ABRAHAM);
+    for (const id of [ISAAC, "place:ur_1189", "overflow:theme", "01011031"]) {
+      const t = reduce(s, { type: "select", id }, data.label);
+      expect(t.selected).toBe(id);
+      expect(draw(t)).toEqual(draw(s));
+    }
+  });
+
+  it("moves the old Focus onto Your Path, each node once at its latest visit", () => {
+    const s = walk(initialState(ABRAHAM), ISAAC, SARAH, ISAAC, ABRAHAM);
+    expect([s.focus, s.selected]).toEqual([ABRAHAM, ABRAHAM]);
+    expect(s.path).toEqual([SARAH, ISAAC]); // latest visit last; the Focus is never on Your Path
+    expect(s.notice).toBe("Abraham is the Focus.");
+  });
+
+  it("focusing the current Focus only selects it", () => {
+    const s = reduce(initialState(ABRAHAM), { type: "select", id: ISAAC }, data.label);
+    const t = reduce(s, { type: "focus", id: ABRAHAM }, data.label);
+    expect({ ...t, notice: "" }).toEqual({ ...s, selected: ABRAHAM, notice: "" });
+    expect(t.notice).toBe("Abraham is already the Focus.");
+  });
+
+  it("draws only the last 5 of Your Path, newest nearest the Focus", () => {
+    const s = walk(initialState(ABRAHAM), ISAAC, SARAH, HAGAR, TERAH, JACOB, REBEKAH);
+    expect(s.path).toEqual([ABRAHAM, ISAAC, SARAH, HAGAR, TERAH, JACOB]);
+    const sc = draw(s);
+    // Abraham, the oldest, is left out. Isaac and Jacob are also in Rebekah's Ring 1 and drawn there.
+    const onPath = sc.nodes.filter((n) => n.roles.includes("path")).map((n) => n.id);
+    expect(onPath.sort()).toEqual([ISAAC, SARAH, HAGAR, TERAH, JACOB].sort());
+    // One path line: the Focus, then the newest to the oldest drawn.
+    const line = sc.edges.filter((e) => e.kind === "path").map((e) => [e.a, e.b]);
+    expect(line).toEqual([
+      [REBEKAH, JACOB],
+      [JACOB, TERAH],
+      [TERAH, HAGAR],
+      [HAGAR, SARAH],
+      [SARAH, ISAAC],
+    ]);
+  });
+});
+
+describe("Relationship words on the Focus edges", () => {
+  it("reads each Ring 1 link from the Focus, with the gender of each relative", () => {
+    const words = Object.fromEntries(
+      draw(initialState(ABRAHAM))
+        .edges.filter((e) => e.kind === "focus")
+        .map((e) => [e.b, e.dashed ? `${e.label} (dashed)` : e.label]),
+    );
+    // Fixture edges in Abraham's file: Hagar is a curated wife and concubine; Canaan and Genealogy
+    // are only Co-mentions (2 and 6 shared Verses).
+    expect(words).toMatchObject({
+      "person:isaac_616": "son",
+      "person:sarah_2473": "wife",
+      "person:hagar_1348": "wife, concubine",
+      "person:haran_1407": "brother",
+      "person:terah_2841": "father",
+      "place:ur_1189": "birthplace",
+      "event:65": "took part",
+      "group:genealogy_of_jesus": "member of",
+      "place:canaan_272": "together in 2 verses (dashed)",
+      "theme:genealogy": "together in 6 verses (dashed)",
+    });
+  });
+
+  // One link from the Focus to a Neighbour of the given gender, with these edges.
+  const words = (gender: string | undefined, type: NodeType, ...edges: Edge[]) =>
+    relation({ id: "n", type, weight: 3, edges }, () => gender).text;
+  const out = (edge: string, role?: string): Edge => ({ edge, direction: "out", role });
+  const inn = (edge: string, role?: string): Edge => ({ edge, direction: "in", role });
+  const both = (edge: string): Edge => ({ edge, direction: "both" });
+
+  it("names family by the relative's gender, or a neutral word when it is unknown", () => {
+    const byGender = (...edges: Edge[]) => ["Male", "Female", undefined].map((g) => words(g, "person", ...edges));
+    expect(byGender(out("PARENT_OF", "father"))).toEqual(["son", "daughter", "child"]);
+    expect(byGender(inn("PARENT_OF"))).toEqual(["father", "mother", "parent"]);
+    expect(byGender(inn("PARENT_OF", "mother"))).toEqual(["mother", "mother", "mother"]); // the stated role wins
+    expect(byGender(both("SPOUSE_OF"))).toEqual(["husband", "wife", "spouse"]);
+    expect(byGender(both("SIBLING_OF"))).toEqual(["brother", "sister", "sibling"]);
+    expect(byGender(both("HALF_SIBLING_OF"))).toEqual(["half-brother", "half-sister", "half-sibling"]);
+  });
+
+  it("names curated partners: a concubine, and a spouse before a concubine", () => {
+    expect(words("Female", "person", inn("CONCUBINE_OF"))).toBe("concubine");
+    expect(words("Female", "person", inn("CONCUBINE_OF"), both("SPOUSE_OF"))).toBe("wife, concubine");
+    // Read from the concubine: the man is her partner, or her husband when they also married.
+    expect(words("Male", "person", out("CONCUBINE_OF"))).toBe("partner");
+    expect(words("Male", "person", out("CONCUBINE_OF"), both("SPOUSE_OF"))).toBe("husband");
+    expect(words("Female", "person", both("PARTNER_OF"))).toBe("partner");
+    expect(words("Male", "person", both("POSSIBLY_SAME_AS"))).toBe("possibly the same person");
+  });
+
+  it("names places, events, and People Groups from the Focus's side", () => {
+    expect([words(undefined, "place", out("BORN_AT")), words(undefined, "person", inn("BORN_AT"))]).toEqual(["birthplace", "born here"]);
+    expect([words(undefined, "place", out("DIED_AT")), words(undefined, "person", inn("DIED_AT"))]).toEqual(["place of death", "died here"]);
+    expect(words(undefined, "event", out("PARTICIPATED_IN"))).toBe("took part");
+    expect([words(undefined, "place", out("OCCURRED_AT")), words(undefined, "event", inn("OCCURRED_AT"))]).toEqual([
+      "where it happened",
+      "happened here",
+    ]);
+    expect([words(undefined, "group", out("MEMBER_OF")), words(undefined, "person", inn("MEMBER_OF"))]).toEqual(["member of", "member"]);
+  });
+
+  it("falls back to a Co-mention, then to how a Verse links", () => {
+    const co = (n: number): Edge => ({ edge: "CO_MENTION", direction: "both", shared_verses: n });
+    expect(relation({ id: "n", type: "place", weight: 1, edges: [co(1)] }, () => undefined)).toEqual({ text: "together in 1 verse", derived: true });
+    expect(words(undefined, "theme", co(6))).toBe("together in 6 verses");
+    expect(words("Male", "person", co(6), both("SIBLING_OF"))).toBe("brother"); // stated words win
+    expect(words(undefined, "verse", out("CROSS_REF"))).toBe("cross-reference, 3 votes");
+    expect([words(undefined, "verse", inn("MENTIONS")), words(undefined, "person", out("MENTIONS"))]).toEqual(["named in this verse", "named"]);
+    expect([words(undefined, "verse", inn("FILED_UNDER")), words(undefined, "theme", out("FILED_UNDER"))]).toEqual(["filed here", "filed under"]);
   });
 });
