@@ -19,7 +19,26 @@ The browser tests already cover: a click on a disc under another node's label, t
 
 Checked 2026-10-20 on Chromium (Playwright, software WebGL), 1400 by 900. Re-ticked for every view on the finished M3 page (#31), after free orbit's start camera was raised (Isaac had sat behind the Focus) and its pins moved on screen, and A and B were let zoom out until only the Focus keeps its name.
 
+## M4 panels
+
+Checks for the panels of spec `docs/specs/reading-and-sharing.md` (issue #42). Run them on the real export with Anah of Gen 36:2 as the Focus (`?focus=person:anah_247`), the reader panel opened with "Read", a note written, the filter panel open, and then the correction dialog open from "Suggest a correction to Gender".
+
+The browser tests already cover: the M4 journey in each view (`web/e2e/journey.spec.ts`), the search box, Your Path bar, reader panel, scene, and detail panel not overlapping at 1280 by 800 (`web/e2e/reader.spec.ts`), and the footer and credits page without WebGL (`web/e2e/credits.spec.ts`).
+
+| Check | A, tilted plane | B, stacked discs | C, free orbit |
+|---|---|---|---|
+| Reader panel: a left drawer under the search box, serif text in large type with wide spacing, chapter title between the chapter buttons, "Berean Standard Bible" at the foot | [x] | [x] | [x] |
+| Reader panel: Verses in the scene have a brighter number underlined with dots; the scene's nodes sit between the reader and detail panels | [x] | [x] | [x] |
+| Filter panel: opens above the Filters button over the scene; type toggles in the type colours, the Vote Limit slider with its explanation, the book choice, and the animation switch all readable | [x] | [x] | [x] |
+| Footer: one quiet line at the bottom left, "Data: CC BY-SA 4.0, credits" and the data version, clear of the reader panel and the view picker | [x] | [x] | [x] |
+| Correction dialog: centred over the scene; the Evidence Verse and CC BY-SA 4.0 warning, the note on another way, "Open the form on GitHub", and Cancel | [x] | [x] | [x] |
+| Note box: below the buttons with "Note on" and the name, the "this browser only" line, Download notes and Delete all notes; the noted step has its mark in the Your Path bar | [x] | [x] | [x] |
+
+Checked 2026-10-20 on Chromium (Playwright, software WebGL), 1440 by 900, on the real Genesis export (data version 2026-10-19).
+
 ## Known gaps
 
 - A drag that starts on a name does not pan or orbit; the wheel over a name still zooms.
 - Masks draw below every disc, so in C a faint far disc can show inside a near ring (spec note 3). Not seen in this run.
+- With the Focus selected, the detail panel keeps a blank two-line gap under the type line: the space the Relationship line holds (#37) so the shared list does not move between two clicks.
+- The open filter panel covers the lower middle of the scene; it closes with Escape or a click outside.
