@@ -15,6 +15,7 @@ The browser tests already cover: a click on a disc under another node's label, t
 | Hover on a Ring 2 node: it lights up, the tooltip reads "node → parent → Focus", and it goes faint again when the pointer leaves | [x] | [x] | [x] |
 | The Focus has its accent colour, a soft glow, its name, and the first line of its Dictionary Entry | [x] | [x] | [x] |
 | Depth fog dims nodes behind the Focus | n/a | n/a | [x] |
+| Isaac the Focus, Abraham pinned: the Pinned ring (orange) and Shared rings (cyan) are masked inside, and edges meet them | [x] | [ ] | [ ] |
 
 Checked 2026-10-20 on Chromium (Playwright, software WebGL), 1400 by 900.
 

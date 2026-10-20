@@ -305,7 +305,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       Object.assign(s.userData, { node: n, to: s.position.clone(), ringed: !!ring });
       if (n.role === "focus") s.add(sprite(TEX.glow, ACCENT, 0.55, 3.2, LAYER.glow, THREE.AdditiveBlending));
       if (ring) s.add(sprite(TEX.mask, BG, 1, RINGED, LAYER.mask), sprite(TEX.ring, ring, 0.95, RINGED, LAYER.ring));
-      if (st.labelled || n.shared) s.add(nodeLabel(n, selected));
+      if (st.labelled || n.shared) s.add(nodeLabel(n, selected)); // a Shared Node around a pin is labelled too
       world.add(s);
       sprites.set(n.id, s);
     }
