@@ -4,12 +4,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
-import { TYPE_PLURAL, type Id, type NodeType, type Role, type Scene, type SceneEdge, type SceneNode } from "./model";
+import { TYPE_PLURAL, type Id, type NodeType, type Role, type Scene, type SceneEdge, type SceneNode, type View } from "./model";
 import { viewA } from "./views/a";
-import { layout } from "./views/view";
+import { viewB } from "./views/b";
+import { viewC } from "./views/c";
+import { layout, type ViewModule } from "./views/view";
 import "./graph.css";
 
-const VIEWS = { A: viewA };
+// The tilted plane (the default, decision 118), stacked discs, and free orbit.
+export const VIEWS: Record<View, ViewModule> = { A: viewA, B: viewB, C: viewC };
 const DOUBLE_CLICK_MS = 400,
   MOVE_MS = 700;
 
@@ -83,9 +86,17 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   resize();
   window.addEventListener("resize", resize);
 
-  function useView(v: typeof viewA) {
+  function useView(v: ViewModule) {
     controls?.dispose();
-    if (deco) scene3.remove(deco);
+    if (deco) {
+      scene3.remove(deco);
+      deco.traverse((o) => {
+        if (o instanceof THREE.Mesh || o instanceof THREE.Line) {
+          o.geometry.dispose();
+          (o.material as THREE.Material).dispose();
+        }
+      });
+    }
     view = v;
     camera.position.set(0, 0, 0);
     controls = new OrbitControls(camera, renderer.domElement);
@@ -136,9 +147,10 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       if (c instanceof CSS2DObject) c.element.style.pointerEvents = "none";
     });
     scene3.add(old);
-    const delta = clicked.clone().sub(centre);
-    const D = [centre, clicked.clone()];
-    centre = clicked.clone();
+    const next = view.centreFrom?.(clicked, centre) ?? clicked.clone();
+    const delta = next.clone().sub(centre);
+    const D = [centre, next];
+    centre = next;
     draw();
     const P = [camera.position.clone(), camera.position.clone().add(delta)];
     const T = [controls.target.clone(), controls.target.clone().add(delta)];
@@ -314,7 +326,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       if (clicked) moveFocus(clicked.userData.to);
       else draw();
     },
-    setView(key: keyof typeof VIEWS) {
+    setView(key: View) {
       step(Infinity);
       useView(VIEWS[key]);
       draw();

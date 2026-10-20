@@ -12,6 +12,6 @@ describe("module boundaries", () => {
   });
 
   it("keeps Svelte out of the graph module and the views", () => {
-    for (const file of ["graph.ts", "views/view.ts", "views/a.ts"]) expect(imports(file).filter((m) => m.startsWith("svelte"))).toEqual([]);
+    for (const file of ["graph.ts", "views/view.ts", "views/a.ts", "views/b.ts", "views/c.ts"]) expect(imports(file).filter((m) => m.startsWith("svelte"))).toEqual([]);
   });
 });

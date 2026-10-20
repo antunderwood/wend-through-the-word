@@ -7,6 +7,8 @@ import { TYPES, type Id, type Scene } from "../model";
 export type ViewModule = {
   setup(camera: THREE.PerspectiveCamera, controls: OrbitControls): void;
   decorate(): THREE.Object3D;
+  // The next Focus centre when the node at p becomes the Focus; p itself when left out.
+  centreFrom?(p: THREE.Vector3, centre: THREE.Vector3): THREE.Vector3;
   place: {
     focus(): THREE.Vector3;
     ring1(angle: number, pos: number): THREE.Vector3;

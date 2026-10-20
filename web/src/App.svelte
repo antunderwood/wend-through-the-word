@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { createData, type Data } from "./data";
-  import { createGraph, type Graph } from "./graph";
-  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene } from "./model";
+  import { createGraph, VIEWS, type Graph } from "./graph";
+  import PathBar from "./PathBar.svelte";
+  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
   import { store, stored } from "./storage";
 
   const START = "person:abraham_58";
@@ -12,6 +13,10 @@
     if (!r.ok) throw new Error(`${r.status} ${url}`);
     return r.json();
   };
+
+  const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
+  const VIEW_KEYS = Object.keys(VIEWS) as View[];
+  const VIEW_STORE = "wend.view";
 
   let host: HTMLDivElement;
   let graph: Graph | undefined;
@@ -26,6 +31,25 @@
   let listed = $state(START);
   let versed = $state(START);
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
+  const storedView = stored(VIEW_STORE);
+  // The tilted plane unless the reader chose another view in this browser (decision 118).
+  let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
+
+  function choose(v: View) {
+    view = v;
+    store(VIEW_STORE, v);
+    graph?.setView(v); // the Focus Model state is untouched: only the view changes
+  }
+
+  // Left and Right on the picker step through the views, as a radio group does.
+  async function stepView(e: KeyboardEvent) {
+    const dir = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    if (!dir) return;
+    e.preventDefault();
+    choose(VIEW_KEYS[(VIEW_KEYS.indexOf(view) + dir + VIEW_KEYS.length) % VIEW_KEYS.length]);
+    await tick();
+    (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-checked="true"]')!.focus();
+  }
 
   const overflowType = (id: Id) => id.slice("overflow:".length) as NodeType;
   const label = (id: Id) =>
@@ -35,7 +59,7 @@
 
   function apply(a: Action, from?: "neighbours" | "verses") {
     const next = reduce(model, a, label);
-    if (next.focus !== model.focus) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path) sc = scene(next, data!.rec, data!.genderOf);
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") listed = next.selected;
       if (from !== "verses") versed = next.selected;
@@ -89,6 +113,7 @@
         await data.loadWithKin(START);
         sc = scene(model, data.rec, data.genderOf);
         graph = createGraph(host, data.label, data.quote);
+        graph.setView(view);
         graph.onNodeClick((id) => apply({ type: "select", id }));
         graph.onNodeDoubleClick(makeFocus);
         graph.render(sc, model.selected);
@@ -115,6 +140,8 @@
       <p class="muted">{selectedType}</p>
       <p>{#if link}Relationship: <b>{relation(link, data.genderOf).text}</b>{/if}</p>
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+      <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
+      <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
       {#await sharing then verses}
         {#if verses.length}
           <h3 id="shared">Together in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
@@ -152,6 +179,7 @@
       <p class="muted">Could not load the Neighbours: {e.message}</p>
     {/await}
   </aside>
+  <PathBar {model} {label} {apply} />
 {/if}
 
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
@@ -167,6 +195,11 @@
     <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
   </p>
 {/if}
+<div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+  {#each VIEW_KEYS as key (key)}
+    <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+  {/each}
+</div>
 <p class="notice" role="status">{error || model.notice}</p>
 
 <style>
@@ -185,6 +218,30 @@
   .stage :global(canvas) {
     display: block;
     touch-action: none;
+  }
+  .views {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    background: #161a28;
+  }
+  .views button {
+    border: 0;
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: none;
+    color: #9aa0b4;
+    font: inherit;
+    cursor: pointer;
+  }
+  .views button[aria-checked="true"] {
+    background: #2a3048;
+    color: #ffd27a;
   }
   /* The panel starts below the top strip, so it never covers the Your Path bar there. */
   .panel {
@@ -290,7 +347,7 @@
   .hint {
     position: fixed;
     left: 50%;
-    top: 16px;
+    top: 64px;
     transform: translateX(-50%);
     margin: 0;
     padding: 6px 8px 6px 14px;

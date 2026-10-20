@@ -90,3 +90,20 @@ test("the chevron collapses and expands the panel and points the way it will mov
   await show.click();
   await expect(panel(page)).toBeInViewport();
 });
+
+test("the panel, open or collapsed, leaves the Your Path bar fully usable", async ({ page }) => {
+  await typeList(page, "Person (21)").getByRole("button", { name: /^Sarah/ }).dblclick();
+  await page.waitForFunction(() => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === "person:sarah_2473");
+  const bar = page.getByRole("navigation", { name: "Your Path" });
+  // A click fails if anything lies over its target, so each click checks the bar is uncovered.
+  await bar.getByRole("button", { name: "Abraham" }).click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Abraham");
+  await page.getByRole("button", { name: "Hide panel" }).click();
+  await expect(panel(page)).not.toBeInViewport();
+  await bar.getByRole("button", { name: "Sarah" }).click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Sarah");
+  await bar.getByRole("button", { name: "Clear" }).click();
+  await expect(bar.getByRole("listitem")).toHaveText(["Sarah"]);
+  await bar.getByRole("button", { name: "Undo clear" }).click();
+  await expect(bar.getByRole("listitem")).toHaveText(["Sarah", "Abraham"]);
+});
