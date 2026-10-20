@@ -41,4 +41,15 @@ describe("data loader", () => {
     expect(abraham.links.find((l) => l.type === "verse")).toMatchObject({ id: "01011031", weight: 11 });
     expect(data.label(ABRAHAM)).toBe("Abraham");
   });
+
+  it("gives a Verse a short BSB quote once its record is loaded", async () => {
+    const data = await createData(readExport, "");
+    expect(data.quote("01025005")).toBe("");
+    await data.load("01025005");
+    await data.load("01025008");
+    expect(data.label("01025005")).toBe("Gen 25:5");
+    expect(data.quote("01025005")).toBe("Abraham left everything he owned to Isaac.");
+    // Gen 25:8 is one sentence of 103 characters, so it is cut.
+    expect(data.quote("01025008")).toBe("And at a ripe old age he breathed his last and died, old and contented, and was gathered...");
+  });
 });
