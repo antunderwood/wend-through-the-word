@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
-  import { createData, type Data } from "./data";
+  import { createData, fetchJSON, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
   import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
@@ -9,11 +9,6 @@
 
   const START = "person:abraham_58";
   const HINT_KEY = "wend.hintDismissed";
-  const getJSON = async (url: string) => {
-    const r = await fetch(url);
-    if (!r.ok) throw new Error(`${r.status} ${url}`);
-    return r.json();
-  };
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
   const VIEW_KEYS = Object.keys(VIEWS) as View[];
@@ -162,7 +157,7 @@
   async function start() {
     failure = undefined;
     try {
-      data = await createData(getJSON, "/data");
+      data = await createData(fetchJSON, "/data");
       await data.loadWithKin(START);
     } catch (e) {
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };

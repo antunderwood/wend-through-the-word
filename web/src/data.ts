@@ -5,6 +5,13 @@ import { typeOf, type Edge, type Id, type Link, type NodeType, type Rec } from "
 
 export type GetJSON = (url: string) => Promise<unknown>;
 
+// getJSON in the browser: an HTTP error is a failure too.
+export const fetchJSON: GetJSON = async (url) => {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${r.status} ${url}`);
+  return r.json();
+};
+
 type SearchIndex = {
   entities: { id: Id; type: NodeType; name: string; aliases: string[]; hint?: string }[];
   books: { number: string; osis: string; name: string; chapters: number[] }[];
