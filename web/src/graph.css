@@ -20,6 +20,12 @@
   color: #ffd27a;
   margin-top: 22px;
 }
+.nl .quote {
+  font-size: 12px;
+  font-weight: 400;
+  font-style: italic;
+  color: #c9ccd8;
+}
 .nl.overflow {
   color: #9aa0b4;
   font-style: italic;

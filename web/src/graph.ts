@@ -49,8 +49,9 @@ function discTexture() {
 
 export type Graph = ReturnType<typeof createGraph>;
 
-// label(id) names a node. Throws when the browser has no WebGL.
-export function createGraph(host: HTMLElement, label: (id: Id) => string) {
+// label(id) names a node; quote(id) is a loaded Verse's short BSB quote, else "". Throws when the
+// browser has no WebGL.
+export function createGraph(host: HTMLElement, label: (id: Id) => string, quote: (id: Id) => string) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   host.appendChild(renderer.domElement);
@@ -165,6 +166,12 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
     const d = document.createElement("div");
     d.className = `nl ${n.role}${n.id === selected ? " selected" : ""}`;
     d.textContent = n.role === "overflow" ? `+${n.count} ${TYPE_PLURAL[n.type]}` : label(n.id);
+    if (quote(n.id)) {
+      const q = document.createElement("div");
+      q.className = "quote";
+      q.textContent = quote(n.id);
+      d.append(q);
+    }
     d.addEventListener("pointerdown", (e) => e.stopPropagation());
     d.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -330,6 +337,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
     testNodes() {
       const r = el.getBoundingClientRect(),
         v = new THREE.Vector3();
+      camera.updateMatrixWorld(); // the camera may have moved since the last frame drawn
       return [...sprites.values()].map((s) => {
         s.getWorldPosition(v).project(camera);
         const n = s.userData.node as SceneNode;

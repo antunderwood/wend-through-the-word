@@ -67,11 +67,12 @@
         data = await createData(getJSON, "/data");
         await data.loadWithKin(START);
         sc = scene(model, data.rec, data.genderOf);
-        graph = createGraph(host, data.label);
+        graph = createGraph(host, data.label, data.quote);
         graph.onNodeClick((id) => apply({ type: "select", id }));
         graph.onNodeDoubleClick(makeFocus);
         graph.render(sc, model.selected);
-        Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
+        // Test only until search (#22): wendFocus makes any Entity or Verse the Focus.
+        Object.assign(window, { wendGraph: graph, wendFocus: makeFocus }); // test-only hooks for the browser tests
       } catch (e) {
         error = `Could not load the data: ${(e as Error).message}`;
       }

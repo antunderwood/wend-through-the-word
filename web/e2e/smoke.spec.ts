@@ -4,6 +4,7 @@ type OnScreen = { id: string; role: string; x: number; y: number };
 declare global {
   interface Window {
     wendGraph?: { testNodes(): OnScreen[] };
+    wendFocus?: (id: string) => Promise<void>;
   }
 }
 
@@ -20,4 +21,19 @@ test("the page opens on Abraham in the tilted plane", async ({ page }) => {
   expect(Math.abs(focus.y - size.height / 2)).toBeLessThan(size.height / 4);
   await expect(page.locator(".labels").getByText("Abraham", { exact: true })).toBeVisible();
   await expect(page.getByText("+15 people")).toBeVisible();
+});
+
+test("a Verse can be the Focus, with a short BSB quote", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
+  // Test hook until search (#22) can make a Verse the Focus.
+  await page.evaluate(() => window.wendFocus!("01025005"));
+  const nodes = await page.evaluate(() => window.wendGraph!.testNodes());
+  expect(nodes.find((n) => n.role === "focus")?.id).toBe("01025005");
+  // Fixture: Gen 25:5 names Isaac and Abraham, is filed under HEIR, and has Gal 3:29 (5 Votes).
+  expect(nodes.filter((n) => n.role === "ring1").map((n) => n.id)).toEqual(
+    expect.arrayContaining(["person:isaac_616", "person:abraham_58", "theme:heir", "48003029"]),
+  );
+  // The Focus label holds the reference, then the quote.
+  await expect(page.locator(".nl.focus")).toHaveText("Gen 25:5Abraham left everything he owned to Isaac.");
 });

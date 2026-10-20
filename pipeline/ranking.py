@@ -31,7 +31,18 @@ def cosine_of(n):
     return next((e["cosine"] for e in n["edges"] if e["edge"] == "CO_MENTION"), 0)
 
 
+def rarity(b, entity_id):
+    """How rare an Entity is across the Bible (decision 111)."""
+    return math.log(BIBLE_VERSES / len(b.verse_sets[entity_id]))
+
+
 def load(b):
+    # A Verse Focus ranks the Entities it mentions or is filed under by rarity (decision 121).
+    for verses in b.chapters.values():
+        for v in verses:
+            for m in v["mentions"] + v["filed_under"]:
+                m["weight"] = round(rarity(b, m["id"]), 4)
+
     shared = Counter()  # (ID, ID) -> number of shared Verses in range
     provenance = defaultdict(set)  # (ID, ID) -> (source, licence) of their links to those Verses
     for verses in b.chapters.values():
@@ -56,8 +67,8 @@ def load(b):
             # Cosine favours a tiny heading (VENERATION, 2 Verses) over a broad one (FAITH), so a
             # Theme neighbour is weighted by how many Verses it shares, damped by how broad the
             # heading is. Ring 1 never compares types, so the scales may differ (decision 93).
-            rarity = math.log(BIBLE_VERSES / len(b.verse_sets[there]))
-            weight = round(len(a & c) * rarity, 4) if there.startswith("theme:") else cosine
+            theme = there.startswith("theme:")
+            weight = round(len(a & c) * rarity(b, there), 4) if theme else cosine
             found = neighbours[here].get(there)
             if not found:
                 found = {"id": there, "type": b.entities[there]["type"], "edges": []}
