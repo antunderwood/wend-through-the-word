@@ -4,7 +4,6 @@ type OnScreen = { id: string; role: string; x: number; y: number };
 declare global {
   interface Window {
     wendGraph?: { testNodes(): OnScreen[] };
-    wendApply?: (a: { type: "setFilter"; key: "nodeLimit"; value: number }) => void;
   }
 }
 
@@ -37,15 +36,6 @@ test("the Focus edges carry the Relationship, and a Co-mention reads together in
 test("the Focus shows the first line of its Dictionary Entry", async ({ page }) => {
   // Fixture: Abraham's Easton entry starts "Father of a multitude, son of Terah, named (Gen. 11:27)..."
   await expect(page.locator(".nl.focus")).toContainText("Father of a multitude, son of Terah");
-});
-
-test("a corner note says how many nodes the node limit hid", async ({ page }) => {
-  const note = page.getByText(/hidden to keep the view fast/);
-  await expect(note).toBeHidden();
-  // Fixture: at a node limit of 60, Abraham's 99 node scene loses 39 Ring 2 nodes (tests/model.test.ts).
-  await page.evaluate(() => window.wendApply!({ type: "setFilter", key: "nodeLimit", value: 60 }));
-  await expect(note).toHaveText("39 faint nodes hidden to keep the view fast");
-  expect(await nodes(page)).toHaveLength(60);
 });
 
 test("hovering a Ring 2 node shows its name and its path to the Focus, until the pointer leaves", async ({ page }) => {

@@ -3,7 +3,7 @@
   import { createData, fetchJSON, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { afterClear, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
@@ -185,9 +185,8 @@
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
     graph.render(sc, model.selected);
-    // Test-only hooks for the browser tests. wendApply dispatches any action, such as a node limit,
-    // which has no entry yet (#30).
-    Object.assign(window, { wendGraph: graph, wendApply: apply });
+    // The browser tests read node positions; only their build (vite build --mode e2e) has the hook.
+    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph });
   }
 
   onMount(() => {
@@ -297,7 +296,7 @@
   </div>
 {/if}
 <p class="notice" role="status">{model.notice}</p>
-{#if sc?.hidden}<p class="trimmed">{sc.hidden} faint node{sc.hidden === 1 ? "" : "s"} hidden to keep the view fast</p>{/if}
+{#if sc?.hidden}<p class="trimmed">{hiddenNote(sc)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>

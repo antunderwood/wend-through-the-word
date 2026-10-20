@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { afterClear, initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
+import { afterClear, hiddenNote, initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -87,6 +87,11 @@ describe("the node limit (decision 33)", () => {
     expect(sc.trimmed).toEqual({ ring2: 39, path: 0, pinring: 0 });
     expect(ids(sc, "ring1")).toHaveLength(30);
     expect(ids(sc, "overflow")).toHaveLength(4);
+  });
+
+  it("gives a corner note only when nodes are hidden", () => {
+    expect(hiddenNote(draw(limit(60)))).toBe("39 faint nodes hidden to keep the view fast");
+    expect(hiddenNote(draw(initialState(ABRAHAM)))).toBe("");
   });
 
   it("takes each parent's third Ring 2 node before any parent's second", () => {

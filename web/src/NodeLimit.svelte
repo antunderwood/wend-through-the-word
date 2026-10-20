@@ -83,7 +83,7 @@
       (d) => (data = d),
       (e) => (message = `Could not load the export, so the hubs are off: ${e.message}`),
     );
-    Object.assign(window, { wendGraph: graph }); // test only
+    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph }); // the browser tests' build only
     return () => graph?.dispose();
   });
 </script>
