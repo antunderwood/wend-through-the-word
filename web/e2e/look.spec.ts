@@ -62,11 +62,14 @@ test("hovering a Ring 2 node shows its name and its path to the Focus, until the
 test("far nodes lose their labels, near nodes keep them", async ({ page }) => {
   const isaac = page.locator(".labels .nl").getByText("Isaac", { exact: true });
   await expect(isaac).toBeVisible();
-  // Over the Focus's name, which passes the wheel on to the scene.
-  const focus = (await nodes(page)).find((n) => n.role === "focus")!;
-  await page.mouse.move(focus.x, focus.y + 30);
-  for (let i = 0; i < 20; i++) await page.mouse.wheel(0, 400); // zoom out as far as the view allows
+  // The wheel goes straight to the scene's canvas: page.mouse.wheel waits for each event to be
+  // handled, which a page drawing every frame can starve under load.
+  const wheel = (deltaY: number) =>
+    page.locator("canvas").evaluate((c, deltaY) => {
+      for (let i = 0; i < 20; i++) c.dispatchEvent(new WheelEvent("wheel", { deltaY, bubbles: true, cancelable: true }));
+    }, deltaY);
+  await wheel(400); // zoom out as far as the view allows
   await expect(isaac).toBeHidden();
-  for (let i = 0; i < 20; i++) await page.mouse.wheel(0, -400);
+  await wheel(-400);
   await expect(isaac).toBeVisible();
 });
