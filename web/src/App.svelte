@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
   import { read, START, write } from "./address";
+  import { correctionLink, type Request } from "./correction";
   import { createData, fetchJSON, type Data } from "./data";
   import Filters from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
@@ -306,6 +307,22 @@
     makeFocus(entryFocus);
   }
 
+  // "Suggest a correction" (decision 131): the issue form's address, shown after a warning about
+  // what a request needs. The page address in it is the shareable one.
+  let asking = $state<string>();
+  let warning: HTMLDialogElement;
+  async function suggest(kind: Request["kind"], nodeIds: Id[], currentValue: string) {
+    try {
+      const pageUrl = location.origin + location.pathname + write(model, view);
+      asking = correctionLink((await data!.credits()).curated_tables, { kind, nodeIds, currentValue, dataVersion: data!.version, pageUrl });
+    } catch (e) {
+      model = { ...model, notice: `Could not open the correction form: ${(e as Error).message}` };
+      return;
+    }
+    await tick();
+    warning.showModal();
+  }
+
   async function copyLink() {
     await navigator.clipboard.writeText(location.href);
     model = { ...model, notice: "Link copied." };
@@ -333,7 +350,10 @@
       <p class="muted">{selectedType}{#await details then d}{#if d}, from {credit([d])}{/if}{/await}</p>
       <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
            that item goes after it. -->
-      <p>{#if link}Relationship: <b>{linkWords!.text}</b> <small class="source">{credit(linkEdges)}</small>{/if}</p>
+      <p class="relationship">
+        {#if link}Relationship: <b>{linkWords!.text}</b> <small class="source">{credit(linkEdges)}</small>
+          {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
+      </p>
       {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
       {#if model.pins.includes(selected)}
@@ -344,6 +364,9 @@
       <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
       <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
       <button onclick={openReader} disabled={typeOf(selected) === "overflow"}>Read</button>
+      <button onclick={() => suggest(typeOf(selected) === "verse" ? "verse" : "fact", [selected], `${selectedType}: ${label(selected)}`)} disabled={typeOf(selected) === "overflow"}>
+        Suggest a correction
+      </button>
       {#await sharing then lists}
         {#each lists as { with: o, verses }, i (o)}
           {#if verses.length}
@@ -371,7 +394,7 @@
         {#if d?.facts.length}
           <ul class="facts" aria-label="Facts">
             {#each d.facts as f (f.name)}
-              <li><span class="muted">{f.name}</span> {f.value} <small class="source">{credit([f])}</small></li>
+              <li><span class="muted">{f.name}</span> {f.value} <small class="source">{credit([f])}</small> {@render fix(f.name, "fact", [selected], `${f.name}: ${f.value}`)}</li>
             {/each}
           </ul>
         {/if}
@@ -410,9 +433,13 @@
           <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
           <ol aria-labelledby="list-{t}">
             {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
+              {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
               <li>
-                {@render item(l.id, relation(l, data.genderOf, plainName(list.r.id)).text, "neighbours")}
-                {#if linked}<small class="source">{credit(l.edges)}</small>{/if}
+                {@render item(l.id, words, "neighbours")}
+                {#if linked}
+                  <small class="source">{credit(l.edges)}</small>
+                  {@render fix(`the link to ${data.label(l.id)}`, "verse", [list.r.id, l.id], `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`)}
+                {/if}
               </li>
             {/each}
           </ol>
@@ -453,6 +480,10 @@
     {#if words}<span class="muted">{words}</span>{/if}
   </button>
 {/snippet}
+<!-- A small link that opens the correction form for one item. -->
+{#snippet fix(what: string, kind: Request["kind"], nodeIds: Id[], currentValue: string)}
+  <button class="fix" aria-label="Suggest a correction to {what}" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
+{/snippet}
 {#snippet request(url?: string | null)}
   {#if url}{" "}<a href={url} target="_blank" rel="noopener">Request #{url.slice(url.lastIndexOf("/") + 1)}</a>{/if}
 {/snippet}
@@ -492,6 +523,13 @@
     <button class="pill" onclick={copyLink}>Copy link</button>
   {/if}
 </div>
+<dialog class="warning" bind:this={warning} aria-labelledby="warning">
+  <h2 id="warning">Suggest a correction</h2>
+  <p>The form is on GitHub. A request needs at least one Evidence Verse, and is published under CC BY-SA 4.0.</p>
+  <p class="muted">For readers without a GitHub account, another way to send a request is coming.</p>
+  <a href={asking} target="_blank" rel="noopener" onclick={() => warning.close()}>Open the form on GitHub</a>
+  <button onclick={() => warning.close()}>Cancel</button>
+</dialog>
 <p class="notice" role="status">{model.notice}</p>
 <footer>
   <a href="/credits.html">Data: CC BY-SA 4.0, credits</a>{#if data}<span class="muted">. Data version {data.version}</span>{/if}
@@ -665,6 +703,35 @@
   .source {
     font-size: 11px;
     color: #7a8098;
+  }
+  /* Two lines whether or not there is a Relationship, so the shared Verses below never move between
+     the two clicks of a double click. */
+  .panel .relationship {
+    min-height: 2.9em;
+  }
+  .fix {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 11px;
+    color: #9aa0b4;
+    text-decoration: underline;
+  }
+  .warning {
+    max-width: 360px;
+    padding: 16px 20px;
+    background: #161a28;
+    color: inherit;
+    border: 1px solid #3a4060;
+    border-radius: 8px;
+  }
+  .warning h2 {
+    margin: 0 0 8px;
+    font-size: 17px;
+  }
+  .warning a {
+    margin-right: 12px;
+    color: #ffd27a;
   }
   .panel .facts {
     margin: 8px 0;

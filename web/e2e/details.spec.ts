@@ -31,7 +31,7 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
   await panel(page).getByRole("button", { name: "5 more" }).click();
   await panel(page).getByRole("list", { name: "Person (11)" }).getByRole("button", { name: /^Beeri/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Beeri");
-  await expect(relationship(page)).toHaveText("Relationship: possibly the same person as Anah Curated, CC BY-SA 4.0");
+  await expect(relationship(page)).toHaveText("Relationship: possibly the same person as Anah Curated, CC BY-SA 4.0 Suggest a correction");
   await expect(notes(page)).toHaveText([
     'Note on the Relationship: Esau\'s wife is "Judith daughter of Beeri" in Gen.26.34 and "Oholibamah daughter of Anah" in Gen.36.2. Evidence: Gen 26:34, Gen 36:2, Gen 36:24.',
   ]);
@@ -67,11 +67,11 @@ test("the Dictionary Entry is named as Easton's, folded after its first paragrap
 
 test("an Event shows its year as approx., Jones chronology; a Place its coordinates and their source", async ({ page }) => {
   await focusOn(page, "Birth of Arphaxad", /^Birth of Arphaxad/, "event:45");
-  await expect(facts(page).getByRole("listitem")).toHaveText(["Year 2346 BC (approx., Jones chronology) Theographic, CC BY-SA 4.0"]);
+  await expect(facts(page).getByRole("listitem")).toHaveText(["Year 2346 BC (approx., Jones chronology) Theographic, CC BY-SA 4.0 Suggest a correction"]);
   await focusOn(page, "Gerar", /^Gerar/, "place:gerar_459");
   await expect(facts(page).getByRole("listitem")).toHaveText([
-    "Other names Valley of Gerar Theographic, CC BY-SA 4.0",
-    "Coordinates 31.3821° N, 34.6065° E OpenBible.info Bible Geocoding Data, CC BY 4.0",
+    "Other names Valley of Gerar Theographic, CC BY-SA 4.0 Suggest a correction",
+    "Coordinates 31.3821° N, 34.6065° E OpenBible.info Bible Geocoding Data, CC BY 4.0 Suggest a correction",
   ]);
 });
 
@@ -81,7 +81,7 @@ test("an Entity's linked Verses are in Bible order, each with its source, and to
   await expect(verses.getByRole("listitem")).toHaveCount(6);
   await panel(page).getByRole("button", { name: "20 more" }).click();
   await expect(verses.getByRole("listitem")).toHaveCount(26);
-  const keys = (await verses.getByRole("button").allTextContents()).map((t) => t.match(/Gen (\d+):(\d+)/)!.slice(1).map(Number));
+  const keys = (await verses.getByRole("button", { name: /^Gen/ }).allTextContents()).map((t) => t.match(/Gen (\d+):(\d+)/)!.slice(1).map(Number));
   expect(keys).toEqual([...keys].sort((a, b) => a[0] - b[0] || a[1] - b[1]));
   await expect(verses.getByRole("listitem").first()).toContainText("Theographic, CC BY-SA 4.0");
   await panel(page).getByRole("button", { name: "Show first 6" }).click();
@@ -94,8 +94,8 @@ test("an Entity's linked Verses are in Bible order, each with its source, and to
 
 test("each fact and link says where it came from", async ({ page }) => {
   await expect(panel(page).getByText("Person, from Theographic, CC BY-SA 4.0")).toBeVisible();
-  await expect(facts(page).getByRole("listitem")).toHaveText(["Also called Abram Theographic, CC BY-SA 4.0", "Gender Male Theographic, CC BY-SA 4.0"]);
+  await expect(facts(page).getByRole("listitem")).toHaveText(["Also called Abram Theographic, CC BY-SA 4.0 Suggest a correction", "Gender Male Theographic, CC BY-SA 4.0 Suggest a correction"]);
   // A derived Neighbour: both sources, each with its own licence.
   await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
-  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
+  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0 Suggest a correction");
 });

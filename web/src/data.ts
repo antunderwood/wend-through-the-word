@@ -36,7 +36,7 @@ type EntityFile = Sourced & {
   verses: (Sourced & { key: string; edge: string; direction: Edge["direction"]; weight: number })[];
   ring2: Rec["ring2"];
 };
-type Credits = { licence: string; sources: (Sourced & { name: string })[] };
+type Credits = { licence: string; curated_tables: string; sources: (Sourced & { name: string })[] };
 // A Place's coord_source, as credits.json names it. A "Curated" point is not there: it has the
 // licence of the data itself.
 const POINT_SOURCE: Record<string, string> = { OpenBible: "OpenBible.info Bible Geocoding Data", Pleiades: "Pleiades", Wikidata: "Wikidata", GeoNames: "GeoNames" };
@@ -75,6 +75,8 @@ export async function createData(getJSON: GetJSON, root: string) {
 
   // The built chapters in Bible order, as the first 5 digits of their Verse Keys.
   const chapters = searchIndex.books.flatMap((b) => b.chapters.map((c) => `${b.number}${String(c).padStart(3, "0")}`));
+
+  const credits = () => get<Credits>(`${base}/credits.json`);
 
   const byWeight =(a: Link, b: Link) => b.weight - a.weight || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
@@ -164,6 +166,7 @@ export async function createData(getJSON: GetJSON, root: string) {
 
   return {
     version: index.data_version,
+    credits,
     load,
     search,
     // Family words (son or daughter, husband or wife) follow the relative's gender, which only the
@@ -192,7 +195,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       if (d.gender) facts.push({ name: "Gender", value: d.gender, ...own });
       if (d.event_year !== undefined) facts.push({ name: "Year", value: `${year(d.event_year)} (approx., Jones chronology)`, ...own });
       if (d.lat !== undefined && d.lon !== undefined) {
-        const c = await get<Credits>(`${base}/credits.json`);
+        const c = await credits();
         const source = POINT_SOURCE[d.coord_source!] ?? d.coord_source!;
         const licence = c.sources.find((s) => s.name === source)?.licence ?? c.licence;
         facts.push({ name: "Coordinates", value: `${degrees(d.lat, "N", "S")}, ${degrees(d.lon, "E", "W")}`, source, licence });
