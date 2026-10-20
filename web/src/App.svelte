@@ -62,7 +62,7 @@
 
   function apply(a: Action, from?: "neighbours" | "verses") {
     const next = reduce(model, a, label);
-    if (next.focus !== model.focus || next.path !== model.path) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path || next.pins !== model.pins) sc = scene(next, data!.rec, data!.genderOf);
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") listed = next.selected;
       if (from !== "verses") versed = next.selected;
@@ -89,6 +89,20 @@
     if (mine === moves) apply({ type: "focus", id });
   }
 
+  // A pin's record must be loaded before the scene can draw its ring.
+  async function pin(id: Id) {
+    if (typeOf(id) !== "overflow") {
+      failure = undefined;
+      try {
+        await data!.load(id);
+      } catch (e) {
+        failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry: () => pin(id) };
+        return;
+      }
+    }
+    apply({ type: "pin", id });
+  }
+
   const selected = $derived(model.selected);
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
@@ -103,7 +117,15 @@
       : data!.loadWithKin(listed).then((r) => ({ r, types: TYPES, whole: false })),
   );
   const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
-  const sharing = $derived(versed !== focus && isEntity(versed) && isEntity(focus) ? data!.shared(focus, versed) : Promise.resolve([]));
+  // The Verses `versed` shares with the Focus, then with each pin.
+  const pins = $derived(model.pins);
+  const sharing = $derived(
+    Promise.all(
+      [...new Set([focus, ...pins])]
+        .filter((o) => o !== versed && isEntity(versed) && isEntity(o))
+        .map(async (o) => ({ with: o, verses: await data!.shared(o, versed) })),
+    ),
+  );
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
@@ -178,17 +200,24 @@
       <p class="muted">{selectedType}</p>
       <p>{#if link}Relationship: <b>{relation(link, data.genderOf).text}</b>{/if}</p>
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+      {#if model.pins.includes(selected)}
+        <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
+      {:else}
+        <button onclick={() => pin(selected)}>Pin</button>
+      {/if}
       <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
       <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
-      {#await sharing then verses}
-        {#if verses.length}
-          <h3 id="shared">Together in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
-          <ul aria-labelledby="shared">
-            {#each verses as v (v.key)}
-              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
-            {/each}
-          </ul>
-        {/if}
+      {#await sharing then lists}
+        {#each lists as { with: o, verses }, i (o)}
+          {#if verses.length}
+            <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
+            <ul aria-labelledby="shared-{i}">
+              {#each verses as v (v.key)}
+                <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
+              {/each}
+            </ul>
+          {/if}
+        {/each}
       {:catch e}
         <p class="muted">Could not load the shared verses: {e.message}</p>
       {/await}
