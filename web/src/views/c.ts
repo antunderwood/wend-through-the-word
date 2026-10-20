@@ -8,9 +8,9 @@ const sph = (az: number, el: number, r: number) =>
 
 export const viewC: ViewModule = {
   setup(camera, controls) {
-    // Above the top Ring 1 band (elevation 0.4) by 0.3, so the line of sight behind the Focus misses
-    // the lowest band: lower, the first Person sat right behind the Focus.
-    camera.position.set(30, 60, 64);
+    // At elevation 0.75, so the line of sight behind the Focus passes well below the lowest Ring 1
+    // band (-0.4); at 0.45 the first Person sat right behind the Focus.
+    camera.position.set(24, 63, 63);
     controls.minDistance = 15;
     controls.maxDistance = 260;
   },
@@ -22,7 +22,8 @@ export const viewC: ViewModule = {
     // Ring 2 keeps its parent's elevation.
     ring2: (a, rank, parent) => sph(a, Math.asin(parent.y / parent.length()) + (rank - 1) * 0.14, 31 + rank * 2),
     path: (i) => new THREE.Vector3(-1, -0.7, -0.8).normalize().multiplyScalar(44 + i * 5),
-    pin: (i) => new THREE.Vector3(-26 + i * 26, 34, -24),
+    // Behind Ring 2, so the pins and their rings show above the scene from the start camera.
+    pin: (i) => new THREE.Vector3(-30 + i * 22, 0, -44),
     pinRing: (p, ti, rank) => p.clone().add(sph(-Math.PI / 2 + ti * W + (rank - 1) * 0.3, (rank - 1) * 0.5, 8)),
   },
 };
