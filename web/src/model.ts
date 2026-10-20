@@ -3,6 +3,14 @@
 
 export const TYPES = ["person", "place", "event", "group", "theme", "verse"] as const;
 export type NodeType = (typeof TYPES)[number];
+export const TYPE_NAME: Record<NodeType, string> = {
+  person: "Person",
+  place: "Place",
+  event: "Event",
+  group: "People Group",
+  theme: "Theme",
+  verse: "Verse",
+};
 export const TYPE_PLURAL: Record<NodeType, string> = {
   person: "people",
   place: "places",
