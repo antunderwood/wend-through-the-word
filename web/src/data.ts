@@ -157,12 +157,9 @@ export async function createData(getJSON: GetJSON, root: string) {
     outside,
     record: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
-    // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry, cut at 90
-    // characters; "" until loaded.
-    quote(id: Id): string {
-      const first = (records.get(id)?.text ?? "").split(/(?<=\.)\s(?=[A-Z])/)[0];
-      return first.length > 90 ? `${first.slice(0, 88)}...` : first;
-    },
+    // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until
+    // loaded. The scene wraps it and stops after three lines with an ellipsis.
+    quote: (id: Id): string => (records.get(id)?.text ?? "").split(/(?<=\.)\s(?=[A-Z])/)[0],
     label(id: Id): string {
       if (typeOf(id) === "verse") return reference(id);
       const e = entities.get(id);

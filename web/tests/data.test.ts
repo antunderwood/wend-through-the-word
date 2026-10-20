@@ -81,21 +81,21 @@ describe("data loader", () => {
     expect(read.some((url) => url.includes("/Gal/"))).toBe(false);
   });
 
-  it("gives a Verse a short BSB quote once its record is loaded", async () => {
+  it("gives a Verse its first BSB sentence once its record is loaded", async () => {
     const data = await createData(readExport, "");
     expect(data.quote("01025005")).toBe("");
     await data.load("01025005");
     await data.load("01025008");
     expect(data.label("01025005")).toBe("Gen 25:5");
     expect(data.quote("01025005")).toBe("Abraham left everything he owned to Isaac.");
-    // Gen 25:8 is one sentence of 103 characters, so it is cut.
-    expect(data.quote("01025008")).toBe("And at a ripe old age he breathed his last and died, old and contented, and was gathered...");
+    // Gen 25:8 is one sentence of 103 characters; the scene, not the loader, shortens it.
+    expect(data.quote("01025008")).toHaveLength(103);
   });
 
   it("gives an Entity the first line of its Dictionary Entry once its record is loaded", async () => {
     const data = await createData(readExport, "");
     await data.load(ABRAHAM);
-    // Fixture: Easton's entry for Abraham; its first sentence is 139 characters, so it is cut.
-    expect(data.quote(ABRAHAM)).toBe("Father of a multitude, son of Terah, named (Gen. 11:27) before his older brothers Nahor ...");
+    // Fixture: Easton's entry for Abraham; its first sentence is 139 characters.
+    expect(data.quote(ABRAHAM)).toMatch(/^Father of a multitude, son of Terah, .*promises\.$/);
   });
 });

@@ -23,11 +23,20 @@
   white-space: normal;
   text-align: center;
 }
+/* A long quote wraps to the Focus label's width and stops after three lines. */
 .nl .quote {
   font-size: 12px;
   font-weight: 400;
   font-style: italic;
   color: #c9ccd8;
+  white-space: normal;
+  width: max-content;
+  max-width: 240px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 .nl.overflow {
   color: #9aa0b4;
