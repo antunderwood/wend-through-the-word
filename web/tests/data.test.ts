@@ -55,12 +55,13 @@ describe("data loader", () => {
 
   it("tells same-name Entities of one type apart by the hint after the name", async () => {
     const data = await createData(readExport, "");
-    // Fixture: three People named Anah, and two Places named Sitnah that share Gen 26:21, so the
-    // first Sitnah falls back to the number in its ID (decision 122).
+    // Fixture: People named Anah, and two Places named Sitnah that share Gen 26:21, so the first
+    // Sitnah falls back to the number in its ID (decision 122). A Person's relation that no other
+    // Anah has comes before the hint (decision 125); anah_247 has none.
     expect(["person:anah_247", "person:anah_248", "person:anah_249"].map(data.label)).toEqual([
       "Anah (Gen 36:2)",
-      "Anah (Gen 36:20)",
-      "Anah (Gen 36:24)",
+      "Anah, son of Seir (Gen 36:20)",
+      "Anah, brother of Ajah (Gen 36:24)",
     ]);
     expect(data.label("place:sitnah_1102")).toBe("Sitnah (1102)");
     // Canaan is a Person and a Place: the type icon and colour tell them apart, not a hint.

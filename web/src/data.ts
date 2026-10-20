@@ -13,7 +13,7 @@ export const fetchJSON: GetJSON = async (url) => {
 };
 
 type SearchIndex = {
-  entities: { id: Id; type: NodeType; name: string; aliases: string[]; hint?: string }[];
+  entities: { id: Id; type: NodeType; name: string; aliases: string[]; hint?: string; relation?: string }[];
   books: { number: string; osis: string; name: string; chapters: number[] }[];
 };
 export type Hit = { id: Id; hint: string };
@@ -169,8 +169,9 @@ export async function createData(getJSON: GetJSON, root: string) {
         typeOf(id) === "theme" && name === name.toUpperCase()
           ? name.toLowerCase().replace(/(^|[\s(,])\S/g, (c) => c.toUpperCase())
           : name;
-      // Same-name Entities of one type (decision 122): "Anah (Gen 36:24)".
-      return e?.hint ? `${shown} (${e.hint})` : shown;
+      // Same-name Entities of one type (decisions 122, 125): "Anah, brother of Ajah (Gen 36:24)".
+      const named = e?.relation ? `${shown}, ${e.relation}` : shown;
+      return e?.hint ? `${named} (${e.hint})` : named;
     },
   };
 }
