@@ -451,7 +451,7 @@ These are targets to test in the prototype. They are not proven.
 | Item | Target |
 |---|---|
 | First view loads | under 3 seconds on a normal home network |
-| Nodes in view (desktop) | up to 500, at least 30 frames per second |
+| Nodes in view (desktop) | up to 500, at least 30 frames per second (first run passed, decision 123; re-test before M5) |
 | Nodes in view (phone, after the desktop release) | up to 150, at least 30 frames per second |
 | Graph file size per view | under 500 KB |
 | Search index file | under 500 KB compressed |
