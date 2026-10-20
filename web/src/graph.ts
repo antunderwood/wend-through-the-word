@@ -236,7 +236,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   }
 
   // A Focus change: the camera glides by the same shift as the centre, new nodes grow out of the
-  // clicked node, and the old scene fades. Under reduced motion all of it happens at once.
+  // clicked node, and the old scene fades. Under reduced motion, or with animation turned off in
+  // the filter panel, all of it happens at once.
+  let motion = true;
   let move: { t0: number; from: THREE.Vector3; camera: THREE.Vector3[]; target: THREE.Vector3[]; deco: THREE.Vector3[]; old: THREE.Group } | null = null;
   function endMove() {
     if (!move) return;
@@ -265,7 +267,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       deco: [centre, next],
       old,
     };
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
+    if (!motion || matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
     else step(move.t0);
   }
   const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
@@ -592,6 +594,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       step(Infinity);
       useView(VIEWS[key]);
       draw();
+    },
+    setMotion(on: boolean) {
+      motion = on;
     },
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),
     onNodeDoubleClick: (f: (id: Id) => void) => handlers.double.push(f),
