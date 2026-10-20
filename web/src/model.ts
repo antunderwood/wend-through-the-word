@@ -87,20 +87,23 @@ const passesRing2 = (parent: Id, c: { id: Id; weight: number }, f: State["filter
   !(typeOf(parent) === "verse" && typeOf(c.id) === "verse") || c.weight >= f.minVotes;
 
 // The words on an edge, read from the node that owns the link list towards the Neighbour.
-export function relation(link: Link, genderOf: (id: Id) => string | undefined) {
+// `of` names the node the words are read from, for a panel list: "son of Benjamin", since a
+// bare "son" says little. Only family and partner words take it.
+export function relation(link: Link, genderOf: (id: Id) => string | undefined, of?: string) {
   const sex = genderOf(link.id);
-  const kin = (male: string, female: string, other: string) => (sex === "Male" ? male : sex === "Female" ? female : other);
+  const tail = of ? ` of ${of}` : "";
+  const kin = (male: string, female: string, other: string) => (sex === "Male" ? male : sex === "Female" ? female : other) + tail;
   const has = (e: string) => link.edges.some((x) => x.edge === e);
   const words: string[] = [];
   const edges = [...link.edges].sort((a, b) => +(b.edge === "SPOUSE_OF") - +(a.edge === "SPOUSE_OF"));
   for (const e of edges) {
     const out = e.direction === "out";
     switch (e.edge) {
-      case "PARENT_OF": words.push(out ? kin("son", "daughter", "child") : e.role || kin("father", "mother", "parent")); break;
+      case "PARENT_OF": words.push(out ? kin("son", "daughter", "child") : (e.role ? e.role + tail : kin("father", "mother", "parent"))); break;
       case "SPOUSE_OF": words.push(kin("husband", "wife", "spouse")); break;
-      case "CONCUBINE_OF": if (!out) words.push("concubine"); else if (!has("SPOUSE_OF")) words.push("partner"); break;
-      case "PARTNER_OF": words.push("partner"); break;
-      case "POSSIBLY_SAME_AS": words.push("possibly the same person"); break;
+      case "CONCUBINE_OF": if (!out) words.push("concubine" + tail); else if (!has("SPOUSE_OF")) words.push("partner" + tail); break;
+      case "PARTNER_OF": words.push("partner" + tail); break;
+      case "POSSIBLY_SAME_AS": words.push("possibly the same person" + (of ? ` as ${of}` : "")); break;
       case "SIBLING_OF": words.push(kin("brother", "sister", "sibling")); break;
       case "HALF_SIBLING_OF": words.push(kin("half-brother", "half-sister", "half-sibling")); break;
       case "BORN_AT": words.push(out ? "birthplace" : "born here"); break;

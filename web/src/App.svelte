@@ -56,6 +56,9 @@
       ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
       : data!.label(id);
 
+  // A name for "son of ...": without a hint or a parenthesis ("Benjamin (patriarch)" is "Benjamin").
+  const plainName = (id: Id) => data!.label(id, false).replace(/\s*\(.*\)$/, "");
+
   function apply(a: Action, from?: "neighbours" | "verses") {
     let next = reduce(model, a, label);
     if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf);
@@ -216,7 +219,7 @@
     <section class="selected">
       <h2>{label(selected)}</h2>
       <p class="muted">{selectedType}</p>
-      <p>{#if link}Relationship: <b>{relation(link, data.genderOf).text}</b>{/if}</p>
+      <p>{#if link}Relationship: <b>{relation(link, data.genderOf, plainName(model.focus)).text}</b>{/if}</p>
       {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
       {#if model.pins.includes(selected)}
@@ -250,7 +253,7 @@
           <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
           <ol aria-labelledby="list-{t}">
             {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
-              <li>{@render item(l.id, relation(l, data.genderOf).text, "neighbours")}</li>
+              <li>{@render item(l.id, relation(l, data.genderOf, plainName(list.r.id)).text, "neighbours")}</li>
             {/each}
           </ol>
           {#if !list.whole && all.length > k}

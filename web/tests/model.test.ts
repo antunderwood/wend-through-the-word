@@ -424,6 +424,15 @@ describe("Relationship words on the Focus edges", () => {
     expect([words(undefined, "group", out("MEMBER_OF")), words(undefined, "person", inn("MEMBER_OF"))]).toEqual(["member of", "member"]);
   });
 
+  it("names the node the words are read from, for family and partner words only", () => {
+    const link = (gender: string | undefined, ...edges: Edge[]) => ({ link: { id: "n", type: "person" as const, weight: 3, edges }, gender });
+    const said = ({ link: l, gender }: ReturnType<typeof link>) => relation(l, () => gender, "Benjamin").text;
+    expect(said(link("Male", out("PARENT_OF")))).toBe("son of Benjamin");
+    expect(said(link("Female", both("SPOUSE_OF")))).toBe("wife of Benjamin");
+    expect(said(link(undefined, both("POSSIBLY_SAME_AS")))).toBe("possibly the same person as Benjamin");
+    expect(said(link(undefined, { edge: "CO_MENTION", direction: "both", shared_verses: 2 }))).toBe("together in 2 verses");
+  });
+
   it("falls back to a Co-mention, then to how a Verse links", () => {
     const co = (n: number): Edge => ({ edge: "CO_MENTION", direction: "both", shared_verses: n });
     expect(relation({ id: "n", type: "place", weight: 1, edges: [co(1)] }, () => undefined)).toEqual({ text: "together in 1 verse", derived: true });
