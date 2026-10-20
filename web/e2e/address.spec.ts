@@ -65,6 +65,14 @@ test("an unknown Focus opens on Abraham with a notice", async ({ page }) => {
   await expect.poll(() => search(page)).toBe("?view=C");
 });
 
+test("a Verse number its chapter does not have is left out with a notice, not a failed load", async ({ page }) => {
+  // Fixture: Gen 11 is built and ends at verse 32.
+  await page.goto("/?focus=01011099&pins=01011033");
+  await focusIs(page, ABRAHAM);
+  await expect(page.getByRole("status")).toHaveText("Not recognised in this link, so left out: focus 01011099, pins 01011033.");
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
 test("Copy link puts the current address on the clipboard", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/?focus=person:isaac_616");

@@ -21,11 +21,14 @@ export function write(s: State, view: View): string {
   return "?" + params.map(([k, v]) => `${k}=${encodeURIComponent(v).replace(/%3A/g, ":").replace(/%2C/g, ",")}`).join("&");
 }
 
-// known(id) says whether a node exists in this build; books are the OSIS codes of its books.
-// Anything not recognised is left out and named in the notice; a missing Focus is the caller's to
-// fill (Abraham).
-export function read(search: string, known: (id: Id) => boolean, books: string[]): Asked {
+// exists(id) says whether a node exists in this build (for a Verse, it may read the chapter); books
+// are the OSIS codes of its books. Anything not recognised is left out and named in the notice; a
+// missing Focus is the caller's to fill (Abraham).
+export async function read(search: string, exists: (id: Id) => Promise<boolean>, books: string[]): Promise<Asked> {
   const p = new URLSearchParams(search);
+  const ids = [p.get("focus"), p.get("sel"), ...(p.get("pins")?.split(",") ?? [])].filter((v) => v !== null);
+  const found = new Set(await Promise.all(ids.map(async (id) => ((await exists(id)) ? id : ""))));
+  const known = (id: Id) => found.has(id);
   const asked: Asked = {};
   const dropped: string[] = [];
   const take = (key: string, ok: (v: string) => boolean) => {

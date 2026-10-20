@@ -157,7 +157,7 @@ Stable (decision 128): links shared now must still open after later releases, so
 
 - Parameters are written in the order above. Colons and commas in IDs are not escaped; a reader of the address decodes it as usual form encoding, so escaped forms work too.
 - With every default, the address is the bare page: Abraham with default settings.
-- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A missing or unknown Focus opens on Abraham. Unknown parameter names are ignored.
+- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A missing or unknown Focus opens on Abraham. Unknown parameter names are ignored.
 - A `view` in the address wins over the view kept in this browser.
 - Your Path is not in the address.
 - History: a Focus change pushes a new entry; a selection, pin, view, or filter change replaces the current one. Back and Forward make the entry's Focus the Focus again; the Selected Node, pins, view, and filters stay as they are.

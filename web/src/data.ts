@@ -77,6 +77,9 @@ export async function createData(getJSON: GetJSON, root: string) {
   const chapters = searchIndex.books.flatMap((b) => b.chapters.map((c) => `${b.number}${String(c).padStart(3, "0")}`));
 
   const credits = () => get<Credits>(`${base}/credits.json`);
+  const chapterFile = (id: Id) => get<ChapterFile>(`${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}.json`);
+  // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
+  const known = (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id));
 
   const byWeight =(a: Link, b: Link) => b.weight - a.weight || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
@@ -104,7 +107,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   async function fetchVerse(id: Id): Promise<Rec> {
     if (outside(id)) throw new Error(outside(id));
     const chapter = `${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}`;
-    const [c, side] = await Promise.all([get<ChapterFile>(`${chapter}.json`), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
+    const [c, side] = await Promise.all([chapterFile(id), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
     const v = c.verses.find((x) => x.key === id);
     if (!v) throw new Error(`No verse ${id} in ${chapter}.json`);
     const named = [...v.mentions, ...v.filed_under].map((mention) => ({
@@ -210,7 +213,7 @@ export async function createData(getJSON: GetJSON, root: string) {
     // The chapter of a built Verse, for the reader panel.
     async chapter(id: Id): Promise<{ title: string; verses: { key: Id; text: string }[] }> {
       const book = books.get(id.slice(0, 2))!;
-      const c = await get<ChapterFile>(`${base}/chapter/${book.osis}/${+id.slice(2, 5)}.json`);
+      const c = await chapterFile(id);
       return { title: `${book.name} ${+id.slice(2, 5)}`, verses: c.verses.map((v) => ({ key: v.key, text: v.text_bsb ?? "" })) };
     },
     // The first Verse of the built chapter after (dir 1) or before (dir -1) a Verse's own; none at the ends.
@@ -218,8 +221,9 @@ export async function createData(getJSON: GetJSON, root: string) {
       const c = chapters[chapters.indexOf(id.slice(0, 5)) + dir];
       return c && `${c}001`;
     },
-    // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
-    known: (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id)),
+    known,
+    // known, and a Verse's number is in its chapter: reads the chapter (for an address from outside).
+    exists: async (id: Id) => known(id) && (typeOf(id) !== "verse" || (await chapterFile(id)).verses.some((v) => v.key === id)),
     record: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until

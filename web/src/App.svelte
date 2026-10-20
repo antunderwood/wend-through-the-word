@@ -247,7 +247,7 @@
     failure = undefined;
     try {
       data = await createData(fetchJSON, "/data");
-      const asked = readAddress();
+      const asked = await readAddress();
       // Your Path and the Focus kept in this browser, less any node a newer build no longer has.
       const kept: { focus: Id; path: Id[] } | null = JSON.parse(stored(JOURNEY_KEY) ?? "null");
       let journey = { ...initialState(kept && data.known(kept.focus) ? kept.focus : START), path: kept?.path.filter(data.known) ?? [] };
@@ -299,11 +299,11 @@
     if (onScreen) store(JOURNEY_KEY, JSON.stringify({ focus: model.focus, path: model.path }));
   });
 
-  const readAddress = () => read(location.search, data!.known, data!.builtBooks.map((b) => b.osis));
+  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis));
 
   // Back and Forward make the entry's Focus the Focus again.
-  function moved() {
-    entryFocus = readAddress().focus ?? START;
+  async function moved() {
+    entryFocus = (await readAddress()).focus ?? START;
     makeFocus(entryFocus);
   }
 
