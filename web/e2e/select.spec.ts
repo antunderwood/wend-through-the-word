@@ -41,7 +41,7 @@ test.describe("with reduced motion", () => {
     await page.mouse.click(sarah.x, sarah.y);
 
     const panel = page.getByRole("complementary", { name: "Selected Node" });
-    await expect(panel.getByRole("heading")).toHaveText("Sarah");
+    await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Sarah");
     // Fixture: Abraham SPOUSE_OF Sarah, and Sarah is Female.
     await expect(panel).toContainText("Person");
     await expect(panel).toContainText("wife");
@@ -54,7 +54,7 @@ test.describe("with reduced motion", () => {
     expect(far(focus, centre(page))).toBeLessThan(2);
     expect(Math.max(...frame.filter((n) => n.role === "ring1").map((n) => far(n, focus)))).toBeGreaterThan(100);
     await expect(page.getByRole("status")).toHaveText("Sarah is the Focus.");
-    await expect(panel.getByRole("heading")).toHaveText("Sarah");
+    await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Sarah");
     await expect(panel.getByRole("button", { name: "Make Focus" })).toBeDisabled();
   });
 
