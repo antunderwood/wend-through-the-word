@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 // The frame rate under software WebGL means nothing, so no test reads its value (the owner runs
-// the page on a laptop).
+// the page on a laptop). Software WebGL on a busy machine can take seconds per frame at 1,000 nodes.
 test("the node limit page measures each view and gives the results as text", async ({ page }) => {
+  test.slow();
   await page.goto("/");
   await expect(page.locator('a[href*="node-limit"]')).toHaveCount(0); // not linked from the reader's page
 
@@ -19,13 +20,13 @@ test("the node limit page measures each view and gives the results as text", asy
     await page.getByLabel("Scene").selectOption({ label: choice });
     await expect(page.getByTestId("nodes")).toHaveText(nodes);
     await page.waitForFunction((n) => (window as { wendGraph?: { testNodes(): unknown[] } }).wendGraph?.testNodes().length === n, +nodes);
-    await expect(page.getByTestId("fps")).toHaveText(/^\d+(\.\d)? fps/);
+    await expect(page.getByTestId("fps")).toHaveText(/^\d+(\.\d)? fps/, { timeout: 20_000 });
     await record.click();
   }
   await page.getByRole("checkbox", { name: "Glow" }).uncheck();
   await page.getByLabel("Node limit").fill("20");
   await expect(page.getByTestId("hidden")).toHaveText("13");
-  await expect(page.getByTestId("fps")).toHaveText(/^\d+(\.\d)? fps/);
+  await expect(page.getByTestId("fps")).toHaveText(/^\d+(\.\d)? fps/, { timeout: 20_000 });
   await record.click();
 
   const lines = (await results.inputValue()).trimEnd().split("\n");
