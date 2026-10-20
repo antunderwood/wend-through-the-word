@@ -4,7 +4,6 @@ type OnScreen = { id: string; role: string; x: number; y: number };
 declare global {
   interface Window {
     wendGraph?: { testNodes(): OnScreen[] };
-    wendFocus?: (id: string) => Promise<void>;
   }
 }
 
@@ -26,8 +25,9 @@ test("the page opens on Abraham in the tilted plane", async ({ page }) => {
 test("a Verse can be the Focus, with a short BSB quote", async ({ page }) => {
   await page.goto("/");
   await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
-  // Test hook until search (#22) can make a Verse the Focus.
-  await page.evaluate(() => window.wendFocus!("01025005"));
+  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 25:5");
+  await page.getByRole("searchbox", { name: "Search" }).press("Enter");
+  await page.waitForFunction(() => window.wendGraph!.testNodes().find((n) => n.role === "focus")?.id === "01025005");
   const nodes = await page.evaluate(() => window.wendGraph!.testNodes());
   expect(nodes.find((n) => n.role === "focus")?.id).toBe("01025005");
   // Fixture: Gen 25:5 names Isaac and Abraham, is filed under HEIR, and has Gal 3:29 (5 Votes).

@@ -23,7 +23,7 @@ test("a click on a disc selects that node, even under another node's label", asy
   // In the tilted plane Sarah's label lies over Isaac's disc.
   const isaac = (await nodes(page)).find((n) => n.id === ISAAC)!;
   await page.mouse.click(isaac.x, isaac.y);
-  await expect(panel(page).getByRole("heading")).toHaveText("Isaac");
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
 });
 
 test("the Focus edges carry the Relationship, and a Co-mention reads together in N verses", async ({ page }) => {

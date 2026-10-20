@@ -3,7 +3,8 @@
   import { createData, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
   const START = "person:abraham_58";
@@ -23,9 +24,17 @@
   let data = $state.raw<Data>();
   let model = $state.raw(initialState(START));
   let sc = $state.raw<Scene>();
-  let error = $state("");
+  // A data file failed twice (the loader retries once): a message and a Retry, never a broken scene.
+  let failure = $state<{ message: string; retry: () => void }>();
+  let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
+  let collapsed = $state(false);
+  // The panel lists the Neighbours of `listed` and the Verses `versed` shares with the Focus. A
+  // click in a list keeps that list, so the second click of a double click lands on the same item.
+  let listed = $state(START);
+  let versed = $state(START);
+  let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -52,9 +61,13 @@
       ? `+${sc?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
       : data!.label(id);
 
-  function apply(a: Action) {
+  function apply(a: Action, from?: "neighbours" | "verses") {
     const next = reduce(model, a, label);
     if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.selected !== model.selected || next.focus !== model.focus) {
+      if (from !== "neighbours") listed = next.selected;
+      if (from !== "verses") versed = next.selected;
+    }
     model = next;
     graph?.render(sc!, model.selected);
   }
@@ -67,10 +80,11 @@
       return;
     }
     const mine = ++moves;
+    failure = undefined;
     try {
       await data!.loadWithKin(id);
     } catch (e) {
-      model = { ...model, notice: `Could not load ${label(id)}: ${(e as Error).message}` };
+      if (mine === moves) failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry: () => makeFocus(id) };
       return;
     }
     if (mine === moves) apply({ type: "focus", id });
@@ -88,58 +102,162 @@
     tip = text ? { text, x, y } : null;
   }
 
+  // Separate from model so a list is loaded again only when its owner or the Focus changes.
+  const focus = $derived(model.focus);
+  // Both are read only once data is loaded. An Overflow Node lists all the Focus's Neighbours of its type.
+  const listing = $derived(
+    typeOf(listed) === "overflow"
+      ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(listed)], whole: true }))
+      : data!.loadWithKin(listed).then((r) => ({ r, types: TYPES, whole: false })),
+  );
+  const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
+  const sharing = $derived(versed !== focus && isEntity(versed) && isEntity(focus) ? data!.shared(focus, versed) : Promise.resolve([]));
+
+  // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
+  // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
+  // node on Your Path (PRD 10.4). Keys in the search box, a button, or the view picker are theirs.
+  function sceneKey(e: KeyboardEvent) {
+    if ((e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !sc) return;
+    const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+    if (dir) {
+      const ring = sc.nodes.filter((n) => n.ring1).sort((a, b) => a.ring1!.ti - b.ring1!.ti || a.ring1!.pos - b.ring1!.pos);
+      const i = ring.findIndex((n) => n.id === model.selected);
+      apply({ type: "select", id: ring[i < 0 ? (dir > 0 ? 0 : ring.length - 1) : (i + dir + ring.length) % ring.length].id });
+    } else if (e.key === "Enter") {
+      if (model.selected !== model.focus) makeFocus(model.selected);
+    } else if (e.key === "Backspace") {
+      if (model.path.length) makeFocus(model.path[model.path.length - 1]);
+      else model = { ...model, notice: "Your Path is empty." };
+    } else return;
+    e.preventDefault();
+  }
+
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
   }
 
+  async function start() {
+    failure = undefined;
+    try {
+      data = await createData(getJSON, "/data");
+      await data.loadWithKin(START);
+    } catch (e) {
+      failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
+      return;
+    }
+    sc = scene(model, data.rec, data.genderOf);
+    try {
+      graph = createGraph(host, data.label, data.quote);
+    } catch {
+      noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
+      return;
+    }
+    graph.setView(view);
+    graph.onNodeClick((id) => apply({ type: "select", id }));
+    graph.onNodeDoubleClick(makeFocus);
+    graph.onHover(showTip);
+    graph.render(sc, model.selected);
+    // Test-only hooks for the browser tests. wendApply dispatches any action, such as a node limit,
+    // which has no entry yet (#30).
+    Object.assign(window, { wendGraph: graph, wendApply: apply });
+  }
+
   onMount(() => {
-    (async () => {
-      try {
-        data = await createData(getJSON, "/data");
-        await data.loadWithKin(START);
-        sc = scene(model, data.rec, data.genderOf);
-        graph = createGraph(host, data.label, data.quote);
-        graph.setView(view);
-        graph.onNodeClick((id) => apply({ type: "select", id }));
-        graph.onNodeDoubleClick(makeFocus);
-        graph.onHover(showTip);
-        graph.render(sc, model.selected);
-        // Test only until search (#22): wendFocus makes any Entity or Verse the Focus. wendApply
-        // dispatches any action, such as a node limit, which has no entry yet (#30).
-        Object.assign(window, { wendGraph: graph, wendFocus: makeFocus, wendApply: apply }); // test-only hooks for the browser tests
-      } catch (e) {
-        error = `Could not load the data: ${(e as Error).message}`;
-      }
-    })();
+    start();
     return () => graph?.dispose();
   });
 </script>
 
-<div class="stage" bind:this={host}></div>
+<svelte:window onkeydown={sceneKey} />
+<!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if sc && data}
-  <aside class="panel" aria-label="Selected Node">
-    <h2>{label(selected)}</h2>
-    <p class="muted">{selectedType}</p>
-    {#if link}<p>Relationship: <b>{relation(link, data.genderOf).text}</b></p>{/if}
-    <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
-    <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-    <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+  <Search {data} onchoose={makeFocus} />
+  <!-- The chevron points the way the panel will move. -->
+  <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+    {collapsed ? "‹" : "›"}
+  </button>
+  <aside id="panel" class="panel" class:collapsed class:full={noWebGL} aria-label="Selected Node">
+    {#if noWebGL}
+      <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
+    {/if}
+    <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
+    <section class="selected">
+      <h2>{label(selected)}</h2>
+      <p class="muted">{selectedType}</p>
+      <p>{#if link}Relationship: <b>{relation(link, data.genderOf).text}</b>{/if}</p>
+      <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+      <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
+      <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+      {#await sharing then verses}
+        {#if verses.length}
+          <h3 id="shared">Together in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
+          <ul aria-labelledby="shared">
+            {#each verses as v (v.key)}
+              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
+            {/each}
+          </ul>
+        {/if}
+      {:catch e}
+        <p class="muted">Could not load the shared verses: {e.message}</p>
+      {/await}
+    </section>
+    {#await listing then list}
+      {#each list.types as t (t)}
+        {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
+        {@const key = `${listed}|${t}`}
+        {@const k = model.filters.k}
+        {#if all.length}
+          <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
+          <ol aria-labelledby="list-{t}">
+            {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
+              <li>{@render item(l.id, relation(l, data.genderOf).text, "neighbours")}</li>
+            {/each}
+          </ol>
+          {#if !list.whole && all.length > k}
+            <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
+              <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
+              {opened[key] ? `Show top ${k}` : `${all.length - k} more`}
+            </button>
+          {/if}
+        {/if}
+      {/each}
+    {:catch e}
+      <p class="muted">Could not load the Neighbours: {e.message}</p>
+    {/await}
   </aside>
   <PathBar {model} {label} {apply} />
 {/if}
+
+<!-- A click selects and a double click makes the Focus, as in the scene. -->
+{#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
+  <button class="item" class:sel={id === selected} onclick={() => apply({ type: "select", id }, from)} ondblclick={() => makeFocus(id)}>
+    {label(id)}
+    {#if words}<span class="muted">{words}</span>{/if}
+  </button>
+{/snippet}
 {#if hint}
   <p class="hint">
     A click selects a node. A double click, Make Focus, or search moves the Focus.
     <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
   </p>
 {/if}
-<div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-  {#each VIEW_KEYS as key (key)}
-    <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-  {/each}
-</div>
-<p class="notice" role="status">{error || model.notice}</p>
+{#if failure}
+  <div class="failure" role="alert">
+    <p>{failure.message}</p>
+    <button onclick={failure.retry}>Retry</button>
+  </div>
+{/if}
+{#if !noWebGL}
+  <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+    {#each VIEW_KEYS as key (key)}
+      <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+    {/each}
+  </div>
+{/if}
+<p class="notice" role="status">{model.notice}</p>
 {#if sc?.hidden}<p class="trimmed">{sc.hidden} faint node{sc.hidden === 1 ? "" : "s"} hidden to keep the view fast</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
@@ -184,22 +302,94 @@
     background: #2a3048;
     color: #ffd27a;
   }
+  /* The panel starts below the top strip, so it never covers the Your Path bar there. */
   .panel {
     position: fixed;
-    top: 16px;
-    right: 16px;
-    width: 280px;
+    top: 56px;
+    right: 0;
+    bottom: 0;
+    width: 340px;
+    box-sizing: border-box;
     padding: 12px 16px;
+    overflow-y: auto;
     background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
-    border-radius: 8px;
+    border-left: 1px solid #262a3c;
+    transition: transform 0.2s;
+  }
+  .panel.full {
+    left: 0;
+    width: auto;
+  }
+  .panel.collapsed {
+    transform: translateX(100%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      transition: none;
+    }
+  }
+  .chevron {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 999px;
+    font-size: 20px;
+    line-height: 1;
+  }
+  .selected {
+    height: 300px;
+    overflow-y: auto;
+    border-bottom: 1px solid #262a3c;
   }
   .panel h2 {
     margin: 0;
     font-size: 17px;
   }
+  .panel h3 {
+    margin: 14px 0 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9aa0b4;
+  }
   .panel p {
     margin: 4px 0;
+    min-height: 1.45em;
+  }
+  .panel ol,
+  .panel ul {
+    margin: 0;
+    padding-left: 22px;
+  }
+  .item {
+    padding: 1px 4px;
+    border: 0;
+    background: none;
+    text-align: left;
+  }
+  .item.sel {
+    background: #262a3c;
+  }
+  .item .muted {
+    font-size: 12px;
+  }
+  .panel .verse-text {
+    margin: 0 0 8px 4px;
+    opacity: 0.85;
+  }
+  .more {
+    margin: 4px 0;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  .more[aria-expanded="true"] {
+    color: #ffd27a;
   }
   .muted {
     color: #9aa0b4;
@@ -234,8 +424,8 @@
   }
   .trimmed {
     position: fixed;
-    right: 16px;
-    bottom: 16px;
+    left: 16px;
+    bottom: 40px; /* above the notice line */
     margin: 0;
     font-size: 12px;
     color: #9aa0b4;
@@ -248,6 +438,23 @@
     border: 1px solid #262a3c;
     border-radius: 6px;
     font-size: 12px;
+  }
+  .fallback {
+    color: #ffd27a;
+  }
+  .failure {
+    position: fixed;
+    left: 50%;
+    top: 40%;
+    transform: translateX(-50%);
+    padding: 12px 16px;
+    background: rgba(20, 23, 34, 0.96);
+    border: 1px solid #3a4060;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .failure p {
+    margin: 0 0 8px;
   }
   .notice {
     position: fixed;
