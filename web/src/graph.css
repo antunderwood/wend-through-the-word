@@ -36,10 +36,6 @@
 .nl.selected {
   text-decoration: underline;
 }
-.nl.shared {
-  border: 1px solid #4ff0e0;
-  border-radius: 3px;
-}
 /* Relationship words on the Focus edges; a Co-mention reads quieter. Opacity is left to the
    distance fade. */
 .el {
