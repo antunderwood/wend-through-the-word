@@ -340,7 +340,7 @@
   <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
     {collapsed ? "‹" : "›"}
   </button>
-  <aside id="panel" class="panel" class:collapsed class:full={noWebGL} aria-label="Selected Node">
+  <aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node">
     {#if noWebGL}
       <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
     {/if}
@@ -606,10 +606,15 @@
     border-left: 1px solid #262a3c;
     transition: transform 0.2s;
   }
+  /* Below the search box and the hint, and right of the reader drawer when it is open. */
   .panel.full {
+    top: 132px;
     left: 0;
     width: auto;
     bottom: 36px; /* above the footer */
+  }
+  .panel.full.reading {
+    left: 412px;
   }
   .panel.collapsed {
     transform: translateX(100%);
