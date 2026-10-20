@@ -17,7 +17,9 @@ const DOUBLE_CLICK_MS = 400,
   MOVE_MS = 700;
 
 const BG = 0x0d0f17,
-  ACCENT = 0xffd27a;
+  ACCENT = 0xffd27a,
+  SHARED = 0x4ff0e0,
+  PIN = 0xff9f6e;
 const TYPE_COLOUR: Record<NodeType, number> = {
   person: 0x6fa8dc,
   place: 0x6cc4a1,
@@ -35,25 +37,97 @@ const STYLE: Record<Role, { size: number; opacity: number; labelled: boolean }> 
   path: { size: 1.5, opacity: 0.45, labelled: false },
   ring2: { size: 0.8, opacity: 0.32, labelled: false },
 };
-const EDGE_OPACITY: Record<SceneEdge["kind"], number> = { focus: 0.55, overflow: 0.25, path: 0.5, pin: 0.4, ring2: 0.14 };
+const EDGE: Record<SceneEdge["kind"], { color: number; opacity: number }> = {
+  focus: { color: 0xc8cde0, opacity: 0.55 },
+  overflow: { color: 0x8a90a8, opacity: 0.25 },
+  path: { color: ACCENT, opacity: 0.5 },
+  pin: { color: PIN, opacity: 0.4 },
+  ring2: { color: 0x8a90a8, opacity: 0.14 },
+};
+// Draw order. Lines (edges, grids, the axis) are 0. Node sprites ignore depth and draw after every
+// line, so no line crosses a node: a background coloured mask fills the gap inside a ring, then the
+// disc, then the ring.
+const LAYER = { glow: 1, mask: 2, disc: 3, ring: 4 };
+// The drawn circle's radius as a share of the sprite size: the disc is radius 58 of 128 px; a ring
+// stroke ends at 58.5 of 128 px. A Shared or Pinned ring is 1.5 times the node, a Selected one 1.8.
+const DISC_RIM = 58 / 128,
+  RING_RIM = 58.5 / 128,
+  RINGED = 1.5,
+  SELECTED = 1.8;
+// Labels show in full up to NEAR from the camera and fade out by FAR (PRD 10.4 node look 4).
+const NEAR = 170,
+  FAR = 230;
+const SEG = 12; // segments in a curved edge
 
-function discTexture() {
+function canvasTex(paint: (g: CanvasRenderingContext2D) => void) {
   const c = document.createElement("canvas");
   c.width = c.height = 128;
-  const g = c.getContext("2d")!;
-  g.fillStyle = "#fff";
-  g.beginPath();
-  g.arc(64, 64, 58, 0, Math.PI * 2);
-  g.fill();
+  paint(c.getContext("2d")!);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
+const disc = (g: CanvasRenderingContext2D) => {
+  g.fillStyle = "#fff";
+  g.beginPath();
+  g.arc(64, 64, 58, 0, Math.PI * 2);
+  g.fill();
+};
+// A white disc with a dark letter, tinted by the sprite colour: one icon per type.
+const discWith = (text: string) =>
+  canvasTex((g) => {
+    disc(g);
+    g.fillStyle = "rgba(0,0,0,0.55)";
+    g.font = "bold 56px system-ui, sans-serif";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.fillText(text, 64, 68);
+  });
+function textures() {
+  return {
+    type: {
+      person: discWith("P"),
+      place: discWith("L"),
+      event: discWith("E"),
+      group: discWith("G"),
+      theme: discWith("T"),
+      verse: discWith("V"),
+    } satisfies Record<NodeType, THREE.Texture>,
+    plus: discWith("+"),
+    mask: canvasTex(disc),
+    ring: canvasTex((g) => {
+      g.strokeStyle = "#fff";
+      g.lineWidth = 9;
+      g.beginPath();
+      g.arc(64, 64, 54, 0, Math.PI * 2);
+      g.stroke();
+    }),
+    glow: canvasTex((g) => {
+      const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      r.addColorStop(0, "rgba(255,255,255,0.8)");
+      r.addColorStop(0.35, "rgba(255,255,255,0.25)");
+      r.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = r;
+      g.fillRect(0, 0, 128, 128);
+    }),
+  };
+}
+
+// A camera facing sprite; scale is relative to its parent node.
+function sprite(map: THREE.Texture, color: number, opacity: number, scale: number, layer: number, blending: THREE.Blending = THREE.NormalBlending) {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map, color, transparent: true, opacity, depthTest: false, depthWrite: false, blending }));
+  s.scale.setScalar(scale);
+  s.renderOrder = layer;
+  s.userData.opacity = opacity;
+  return s;
+}
+
+type Drawn = { e: SceneEdge; a: THREE.Sprite; b: THREE.Sprite; line: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>; lab?: CSS2DObject };
 
 export type Graph = ReturnType<typeof createGraph>;
 
-// label(id) names a node; quote(id) is a loaded Verse's short BSB quote, else "". Throws when the
-// browser has no WebGL.
+// label(id) names a node; quote(id) is a loaded node's short text (a Verse's BSB quote, an
+// Entity's first line of its Dictionary Entry), else "". Throws when the browser has no WebGL.
 export function createGraph(host: HTMLElement, label: (id: Id) => string, quote: (id: Id) => string) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -61,20 +135,32 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   const labels = new CSS2DRenderer();
   labels.domElement.className = "labels";
   host.appendChild(labels.domElement);
+  // A wheel over a name still zooms the scene.
+  labels.domElement.addEventListener("wheel", (e) => renderer.domElement.dispatchEvent(new WheelEvent(e.type, e)), { passive: true });
 
   const scene3 = new THREE.Scene();
   scene3.background = new THREE.Color(BG);
   const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 1000);
   const world = new THREE.Group();
   scene3.add(world);
-  const disc = discTexture();
+  const pa = new THREE.Vector3(),
+    pb = new THREE.Vector3();
+  const TEX = textures();
+  // The white ring of the Selected Node, moved from node to node.
+  const selRing = new THREE.Group().add(sprite(TEX.mask, BG, 1, SELECTED, LAYER.mask), sprite(TEX.ring, 0xffffff, 1, SELECTED, LAYER.ring));
+  // The edge from a hovered Ring 2 node to its parent, at full opacity over the faint ones.
+  const lit = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pa, pb]), new THREE.LineBasicMaterial({ color: EDGE.ring2.color }));
+  lit.frustumCulled = false;
+  scene3.add(lit);
 
   let view = VIEWS.A,
     controls: OrbitControls,
     deco: THREE.Object3D;
   let current: { scene: Scene; selected: Id } | null = null;
   let sprites = new Map<Id, THREE.Sprite>();
-  let edgeLines: THREE.LineSegments[] = [];
+  let edges: Drawn[] = [];
+  let faint: { line: THREE.LineSegments; pairs: THREE.Sprite[][] } | null = null; // Ring 2 edges, one draw call
+  let fading: { el: HTMLElement; obj: THREE.Object3D }[] = [];
 
   function resize() {
     const { clientWidth: w, clientHeight: h } = host;
@@ -98,6 +184,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       });
     }
     view = v;
+    scene3.fog = view.fog ? new THREE.Fog(BG) : null; // depth fog in free orbit
     camera.position.set(0, 0, 0);
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -105,6 +192,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     camera.position.add(centre);
     controls.target.add(centre);
     controls.update();
+    controls.addEventListener("change", () => follow()); // the camera moved
     deco = view.decorate();
     deco.position.copy(centre);
     scene3.add(deco);
@@ -117,17 +205,21 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       group.remove(o);
       o.traverse((c) => {
         if (c instanceof CSS2DObject) c.element.remove(); // CSS2D elements stay in the DOM otherwise
-        if (c instanceof THREE.Sprite || c instanceof THREE.LineSegments) {
+        if (c instanceof THREE.Sprite || c instanceof THREE.Line) {
           c.material.dispose();
-          if (c instanceof THREE.LineSegments) c.geometry.dispose();
+          if (c instanceof THREE.Line) c.geometry.dispose();
         }
       });
     }
   }
   function clear() {
+    hover(null);
+    selRing.removeFromParent();
     empty(world);
     sprites = new Map();
-    edgeLines = [];
+    edges = [];
+    faint = null;
+    fading = [];
   }
 
   // A Focus change: the camera glides by the same shift as the centre, new nodes grow out of the
@@ -141,6 +233,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   }
   function moveFocus(clicked: THREE.Vector3) {
     step(Infinity); // finish any move under way
+    selRing.removeFromParent();
     const old = new THREE.Group();
     old.add(...world.children);
     old.traverse((c) => {
@@ -167,30 +260,34 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     deco.position.lerpVectors(move.D[0], move.D[1], k);
     for (const s of sprites.values()) s.position.lerpVectors(move.from, s.userData.to, k);
     move.old.traverse((c) => {
-      if (c instanceof THREE.Sprite || c instanceof THREE.LineSegments) c.material.opacity = c.userData.opacity * (1 - k);
+      if (c instanceof THREE.Sprite || c instanceof THREE.Line) c.material.opacity = c.userData.opacity * (1 - k);
       if (c instanceof CSS2DObject) c.element.style.opacity = String(1 - k);
     });
-    updateEdges();
+    follow();
     if (k === 1) endMove();
   }
 
   function nodeLabel(n: SceneNode, selected: Id) {
     const d = document.createElement("div");
-    d.className = `nl ${n.role}${n.id === selected ? " selected" : ""}`;
+    d.className = `nl ${n.role}${n.shared ? " shared" : ""}${n.id === selected ? " selected" : ""}`;
     d.textContent = n.role === "overflow" ? `+${n.count} ${TYPE_PLURAL[n.type]}` : label(n.id);
-    if (quote(n.id)) {
-      const q = document.createElement("div");
-      q.className = "quote";
-      q.textContent = quote(n.id);
-      d.append(q);
+    // The Focus shows its first line; a Verse always shows its quote (PRD 10.4 node look 5).
+    const q = n.role === "focus" || n.type === "verse" ? quote(n.id) : "";
+    if (q) {
+      const p = document.createElement("div");
+      p.className = "quote";
+      p.textContent = q;
+      d.append(p);
     }
     d.addEventListener("pointerdown", (e) => e.stopPropagation());
+    // A disc under the pointer wins over the label lying across it.
     d.addEventListener("click", (e) => {
       e.stopPropagation();
-      click(n.id);
+      click(pick(e)?.userData.node.id ?? n.id);
     });
     const o = new CSS2DObject(d);
     o.center.set(0.5, 0);
+    if (n.role !== "focus") fading.push({ el: d, obj: o });
     return o;
   }
 
@@ -201,59 +298,144 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     const rel = layout(scene, view.place);
     for (const n of scene.nodes) {
       const st = STYLE[n.role];
-      const material = new THREE.SpriteMaterial({
-        map: disc,
-        color: n.role === "focus" ? ACCENT : TYPE_COLOUR[n.type],
-        transparent: true,
-        opacity: st.opacity,
-        // Nodes ignore depth and draw after every line, so no line crosses a node.
-        depthTest: false,
-        depthWrite: false,
-      });
-      const s = new THREE.Sprite(material);
-      s.scale.setScalar(st.size);
-      s.renderOrder = 1;
+      const map = n.role === "overflow" ? TEX.plus : TEX.type[n.type];
+      const s = sprite(map, n.role === "focus" ? ACCENT : TYPE_COLOUR[n.type], st.opacity, st.size, LAYER.disc);
       s.position.copy(rel.get(n.id)!).add(centre);
-      s.userData = { node: n, opacity: st.opacity, to: s.position.clone() };
-      if (st.labelled) s.add(nodeLabel(n, selected));
+      const ring = n.shared ? SHARED : n.role === "pinned" ? PIN : 0;
+      Object.assign(s.userData, { node: n, to: s.position.clone(), ringed: !!ring });
+      if (n.role === "focus") s.add(sprite(TEX.glow, ACCENT, 0.55, 3.2, LAYER.glow, THREE.AdditiveBlending));
+      if (ring) s.add(sprite(TEX.mask, BG, 1, RINGED, LAYER.mask), sprite(TEX.ring, ring, 0.95, RINGED, LAYER.ring));
+      if (st.labelled || n.shared) s.add(nodeLabel(n, selected));
       world.add(s);
       sprites.set(n.id, s);
     }
-    // One set of line segments per edge kind, following the nodes as they move.
-    const byKind = new Map<SceneEdge["kind"], THREE.Sprite[][]>();
+    const pairs: THREE.Sprite[][] = [];
     for (const e of scene.edges) {
       const a = sprites.get(e.a),
         b = sprites.get(e.b);
       if (!a || !b) continue;
-      if (!byKind.has(e.kind)) byKind.set(e.kind, []);
-      byKind.get(e.kind)!.push([a, b]);
+      if (e.kind === "ring2") {
+        pairs.push([a, b]);
+        continue;
+      }
+      const { color, opacity } = EDGE[e.kind];
+      // A link that is only a Co-mention is dashed (PRD 10.4 edge look 8).
+      const mat = e.dashed
+        ? new THREE.LineDashedMaterial({ color, transparent: true, opacity, dashSize: 0.7, gapSize: 0.5 })
+        : new THREE.LineBasicMaterial({ color, transparent: true, opacity });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array((SEG + 1) * 3), 3));
+      const line = new THREE.Line(geo, mat);
+      line.frustumCulled = false;
+      line.userData.opacity = opacity;
+      world.add(line);
+      let lab: CSS2DObject | undefined;
+      if (e.label) {
+        const d = document.createElement("div");
+        d.className = `el${e.dashed ? " derived" : ""}`;
+        d.textContent = e.label;
+        lab = new CSS2DObject(d);
+        world.add(lab);
+        fading.push({ el: d, obj: lab });
+      }
+      edges.push({ e, a, b, line, lab });
     }
-    for (const [kind, pairs] of byKind) {
+    if (pairs.length) {
       const geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pairs.length * 6), 3));
-      const mat = new THREE.LineBasicMaterial({ color: 0xc8cde0, transparent: true, opacity: EDGE_OPACITY[kind] });
-      const line = new THREE.LineSegments(geo, mat);
+      const { color, opacity } = EDGE.ring2;
+      const line = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
       line.frustumCulled = false;
-      line.userData = { pairs, opacity: EDGE_OPACITY[kind] };
+      line.userData.opacity = opacity;
       world.add(line);
-      edgeLines.push(line);
+      faint = { line, pairs };
     }
-    updateEdges();
+    markSelected(selected);
   }
 
+  // Edges stop at the node border. Sprites face the camera, so the border is measured in the plane
+  // across the view direction; it moves whenever the camera or the nodes move.
+  const fwd = new THREE.Vector3(),
+    gap = new THREE.Vector3(),
+    tmp = new THREE.Vector3();
+  const curve = new THREE.QuadraticBezierCurve3();
+  const rim = (s: THREE.Sprite) => s.scale.x * (selRing.parent === s ? SELECTED * RING_RIM : s.userData.ringed ? RINGED * RING_RIM : DISC_RIM);
+  // The point on p's circle of radius r towards q.
+  function onRim(out: THREE.Vector3, p: THREE.Vector3, q: THREE.Vector3, r: number) {
+    out.copy(q).sub(p);
+    out.addScaledVector(fwd, -out.dot(fwd));
+    const len = out.length();
+    return len > 1e-6 ? out.multiplyScalar(r / len).add(p) : out.copy(p);
+  }
+  // True when two circles overlap on screen, leaving no gap to draw an edge in.
+  function touching(a: THREE.Sprite, b: THREE.Sprite) {
+    gap.copy(b.position).sub(a.position);
+    gap.addScaledVector(fwd, -gap.dot(fwd));
+    return gap.length() <= rim(a) + rim(b);
+  }
   function updateEdges() {
-    for (const line of edgeLines) {
+    camera.getWorldDirection(fwd);
+    for (const { a, b, line, lab } of edges) {
+      // A slight curve; each end leaves along it.
+      curve.v1.copy(a.position).add(b.position).multiplyScalar(0.5);
+      curve.v1.y += a.position.distanceTo(b.position) * 0.08;
+      line.visible = !touching(a, b);
+      onRim(curve.v0, a.position, curve.v1, rim(a));
+      onRim(curve.v2, b.position, curve.v1, rim(b));
       const pos = line.geometry.getAttribute("position") as THREE.BufferAttribute;
-      (line.userData.pairs as THREE.Sprite[][]).forEach(([a, b], i) => {
-        pos.setXYZ(2 * i, a.position.x, a.position.y, a.position.z);
-        pos.setXYZ(2 * i + 1, b.position.x, b.position.y, b.position.z);
+      for (let i = 0; i <= SEG; i++) pos.setXYZ(i, ...curve.getPoint(i / SEG, tmp).toArray());
+      pos.needsUpdate = true;
+      if (line.material instanceof THREE.LineDashedMaterial) line.computeLineDistances();
+      if (lab) {
+        curve.getPoint(0.62, lab.position); // nearer the Neighbour, to spread the labels
+        lab.visible = line.visible;
+      }
+    }
+    if (faint) {
+      const pos = faint.line.geometry.getAttribute("position") as THREE.BufferAttribute;
+      faint.pairs.forEach(([a, b], i) => {
+        if (touching(a, b)) pb.copy(pa.copy(a.position)); // zero length: hidden
+        else {
+          onRim(pa, a.position, b.position, rim(a));
+          onRim(pb, b.position, a.position, rim(b));
+        }
+        pos.setXYZ(2 * i, pa.x, pa.y, pa.z);
+        pos.setXYZ(2 * i + 1, pb.x, pb.y, pb.z);
       });
       pos.needsUpdate = true;
+    }
+    const h = hovered?.userData.node as SceneNode | undefined,
+      via = h?.role === "ring2" && sprites.get(h.via!);
+    lit.visible = !!via && !touching(via, hovered!);
+    if (via && lit.visible) {
+      onRim(pa, via.position, hovered!.position, rim(via));
+      onRim(pb, hovered!.position, via.position, rim(hovered!));
+      lit.geometry.setFromPoints([pa, pb]);
+    }
+  }
+  // Near labels show in full, far ones not at all; the Focus keeps its name.
+  function fadeLabels() {
+    for (const { el, obj } of fading) {
+      const k = THREE.MathUtils.clamp((FAR - obj.getWorldPosition(tmp).distanceTo(camera.position)) / (FAR - NEAR), 0, 1);
+      el.style.opacity = String(k);
+      el.style.visibility = k ? "" : "hidden";
+    }
+  }
+  function follow() {
+    updateEdges();
+    fadeLabels();
+    // Fog starts at the Focus's depth, so nodes behind it fade at any zoom.
+    if (scene3.fog instanceof THREE.Fog) {
+      scene3.fog.near = camera.position.distanceTo(controls.target);
+      scene3.fog.far = scene3.fog.near + 150;
     }
   }
 
   function markSelected(selected: Id) {
     for (const [id, s] of sprites) s.children.forEach((c) => c instanceof CSS2DObject && c.element.classList.toggle("selected", id === selected));
+    selRing.removeFromParent();
+    sprites.get(selected)?.add(selRing);
+    follow();
   }
 
   // Picking. A click is a pointer down and up without a drag; two clicks on the same node within
@@ -276,7 +458,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   }
   const ray = new THREE.Raycaster(),
     ndc = new THREE.Vector2();
-  function pick(e: PointerEvent): THREE.Sprite | null {
+  function pick(e: MouseEvent): THREE.Sprite | null {
     const r = renderer.domElement.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
@@ -293,18 +475,31 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     const hit = moved <= 5 && pick(e);
     if (hit) click(hit.userData.node.id);
   };
-  const onMove = (e: PointerEvent) => {
-    if (down) return;
-    const hit = pick(e);
-    if (hovered && hovered !== hit) hovered.material.opacity = hovered.userData.opacity;
-    hovered = hit;
+  // Hover lights a node and the edges on its way to the Focus (PRD 10.4 rule 4, edge look 2);
+  // leaving puts them back.
+  function light(s: THREE.Sprite | null, on: boolean) {
+    if (!s) return;
+    const n = s.userData.node as SceneNode;
+    s.material.opacity = on ? Math.max(0.95, s.userData.opacity) : s.userData.opacity;
+    const way = new Set([n.id, n.via]);
+    for (const d of edges) if (way.has(d.e.b)) d.line.material.opacity = on ? 1 : d.line.userData.opacity;
+  }
+  function hover(hit: THREE.Sprite | null, x = 0, y = 0) {
+    if (hit !== hovered) {
+      light(hovered, false);
+      light(hit, true);
+      hovered = hit;
+      updateEdges();
+    }
     el.style.cursor = hit ? "pointer" : "";
-    if (hit) hit.material.opacity = Math.max(0.95, hit.userData.opacity); // Ring 2 lights up on hover
-    handlers.hover.forEach((f) => f(hit?.userData.node ?? null, e.clientX, e.clientY));
-  };
+    handlers.hover.forEach((f) => f(hit?.userData.node ?? null, x, y));
+  }
+  const onMove = (e: PointerEvent) => !down && hover(pick(e), e.clientX, e.clientY);
+  const onLeave = () => hover(null);
   el.addEventListener("pointerdown", onDown);
   el.addEventListener("pointerup", onUp);
   el.addEventListener("pointermove", onMove);
+  el.addEventListener("pointerleave", onLeave);
 
   let raf = requestAnimationFrame(function frame(now) {
     raf = requestAnimationFrame(frame);
@@ -339,8 +534,11 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       window.removeEventListener("resize", resize);
       endMove();
       clear();
+      selRing.traverse((c) => c instanceof THREE.Sprite && c.material.dispose());
+      lit.geometry.dispose();
+      lit.material.dispose();
       controls.dispose();
-      disc.dispose();
+      [...Object.values(TEX.type), TEX.plus, TEX.mask, TEX.ring, TEX.glow].forEach((t) => t.dispose());
       renderer.dispose();
       el.remove();
       labels.domElement.remove();

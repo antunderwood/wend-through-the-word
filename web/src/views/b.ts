@@ -3,13 +3,16 @@
 import * as THREE from "three";
 import { W, flat, type ViewModule } from "./view";
 
-const TOP = 12,
-  LOW = -12;
+// Wide rings and a camera 45 degrees from the vertical keep Ring 1 and its labels clear of the Focus.
+const TOP = 10,
+  LOW = -14,
+  R1 = 28,
+  R2 = 44;
 
 export const viewB: ViewModule = {
   setup(camera, controls) {
-    const polar = THREE.MathUtils.degToRad(62),
-      d = 105;
+    const polar = THREE.MathUtils.degToRad(45),
+      d = 115;
     camera.position.set(0, Math.cos(polar) * d, Math.sin(polar) * d);
     controls.enablePan = false;
     controls.minPolarAngle = controls.maxPolarAngle = polar; // a turntable: no tilting
@@ -20,8 +23,8 @@ export const viewB: ViewModule = {
   decorate() {
     const g = new THREE.Group();
     for (const [y, r] of [
-      [0, 24],
-      [LOW, 40],
+      [0, R1 + 8],
+      [LOW, R2 + 12],
     ]) {
       const disc = new THREE.Mesh(
         new THREE.CircleGeometry(r, 96),
@@ -44,10 +47,10 @@ export const viewB: ViewModule = {
   centreFrom: (p, centre) => new THREE.Vector3(p.x, centre.y, p.z), // the discs keep their height
   place: {
     focus: () => new THREE.Vector3(0, TOP, 0),
-    ring1: (a, pos) => flat(a, 17 + (pos % 2) * 4),
-    ring2: (a, rank) => flat(a, 32 + rank * 2.5, LOW),
+    ring1: (a, pos) => flat(a, R1 + (pos % 2) * 5),
+    ring2: (a, rank) => flat(a, R2 + rank * 3, LOW),
     path: (i) => new THREE.Vector3(-(7 + i * 6), TOP + (i + 1) * 3, 0),
-    pin: (i) => flat(-Math.PI / 2 + (i - 1) * 0.8, 50, TOP),
+    pin: (i) => flat(-Math.PI / 2 + (i - 1) * 0.8, 60, TOP),
     pinRing: (p, ti, rank) => p.clone().add(flat(-Math.PI / 2 + ti * W + (rank - 1) * 0.3, 8, -4)),
   },
 };

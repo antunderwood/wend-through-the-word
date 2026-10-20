@@ -3,7 +3,7 @@
   import { createData, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
+  import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import { store, stored } from "./storage";
 
   const START = "person:abraham_58";
@@ -25,6 +25,7 @@
   let sc = $state.raw<Scene>();
   let error = $state("");
   let hint = $state(!stored(HINT_KEY));
+  let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -53,7 +54,7 @@
 
   function apply(a: Action) {
     const next = reduce(model, a, label);
-    if (next.focus !== model.focus || next.path !== model.path) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters) sc = scene(next, data!.rec, data!.genderOf);
     model = next;
     graph?.render(sc!, model.selected);
   }
@@ -80,6 +81,13 @@
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data?.rec(model.focus)?.links.find((l) => l.id === selected));
 
+  // An unlabelled node names itself on hover; Ring 2 also shows its way to the Focus.
+  function showTip(n: SceneNode | null, x: number, y: number) {
+    const named = n && ["ring2", "pinring", "path"].includes(n.role);
+    const text = n?.role === "ring2" ? [n.id, n.via!, model.focus].map(label).join(" → ") : named ? label(n.id) : "";
+    tip = text ? { text, x, y } : null;
+  }
+
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
@@ -95,9 +103,11 @@
         graph.setView(view);
         graph.onNodeClick((id) => apply({ type: "select", id }));
         graph.onNodeDoubleClick(makeFocus);
+        graph.onHover(showTip);
         graph.render(sc, model.selected);
-        // Test only until search (#22): wendFocus makes any Entity or Verse the Focus.
-        Object.assign(window, { wendGraph: graph, wendFocus: makeFocus }); // test-only hooks for the browser tests
+        // Test only until search (#22): wendFocus makes any Entity or Verse the Focus. wendApply
+        // dispatches any action, such as a node limit, which has no entry yet (#30).
+        Object.assign(window, { wendGraph: graph, wendFocus: makeFocus, wendApply: apply }); // test-only hooks for the browser tests
       } catch (e) {
         error = `Could not load the data: ${(e as Error).message}`;
       }
@@ -130,6 +140,8 @@
   {/each}
 </div>
 <p class="notice" role="status">{error || model.notice}</p>
+{#if sc?.hidden}<p class="trimmed">{sc.hidden} faint node{sc.hidden === 1 ? "" : "s"} hidden to keep the view fast</p>{/if}
+{#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>
   :global(html, body) {
@@ -219,6 +231,23 @@
   .hint button {
     margin-left: 8px;
     padding: 0 7px;
+  }
+  .trimmed {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    margin: 0;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  .tip {
+    position: fixed;
+    pointer-events: none;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid #262a3c;
+    border-radius: 6px;
+    font-size: 12px;
   }
   .notice {
     position: fixed;

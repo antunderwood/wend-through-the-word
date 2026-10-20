@@ -7,6 +7,7 @@ import { TYPES, type Id, type Scene } from "../model";
 export type ViewModule = {
   setup(camera: THREE.PerspectiveCamera, controls: OrbitControls): void;
   decorate(): THREE.Object3D;
+  fog?: boolean; // depth fog on far nodes
   // The next Focus centre when the node at p becomes the Focus; p itself when left out.
   centreFrom?(p: THREE.Vector3, centre: THREE.Vector3): THREE.Vector3;
   place: {

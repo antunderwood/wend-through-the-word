@@ -19,6 +19,9 @@
   font-weight: 650;
   color: #ffd27a;
   margin-top: 22px;
+  width: 240px;
+  white-space: normal;
+  text-align: center;
 }
 .nl .quote {
   font-size: 12px;
@@ -32,4 +35,21 @@
 }
 .nl.selected {
   text-decoration: underline;
+}
+.nl.shared {
+  border: 1px solid #4ff0e0;
+  border-radius: 3px;
+}
+/* Relationship words on the Focus edges; a Co-mention reads quieter. Opacity is left to the
+   distance fade. */
+.el {
+  font-size: 10px;
+  color: rgba(200, 205, 224, 0.75);
+  text-shadow: 0 0 3px #000;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.el.derived {
+  font-style: italic;
+  color: rgba(200, 205, 224, 0.55);
 }
