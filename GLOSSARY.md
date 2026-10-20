@@ -97,5 +97,5 @@ _Avoid_: Bookmark, favourite
 A node in Ring 1 or around a Pinned Node that is in the top K of its type for both the Focus and that Pinned Node (decision 119).
 
 **Your Path**:
-Every node that has been the Focus this session, in order of the latest visit. The last five are drawn in the scene as small dim nodes joined to the current Focus; the breadcrumb row shows all of them.
+Every node that has been the Focus in this browser, until the reader clears it, in order of the latest visit. The last five are drawn in the scene as small dim nodes joined to the current Focus; the breadcrumb row shows all of them.
 _Avoid_: Trail (the earlier name), breadcrumb (as a separate concept), history
