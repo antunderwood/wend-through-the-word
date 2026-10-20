@@ -384,7 +384,7 @@ Rules:
 3. Use one muted colour for each edge type, or a gradient between the two end nodes.
 4. Show moving particles on the focus node edges only, to show direction (for example "parent of").
 5. Show only cross-reference edges above the vote threshold. Fade the others out.
-6. Edges that touch the focus carry a text label at their midpoint. Other edges show their label on hover only.
+6. Only the edge between the focus and the selected node carries its relationship words, plus the edge of a hovered node; other edges carry no words. A node name that would overlap a more important one is hidden until a zoom or camera move makes room, and shows on hover (decision 124).
 7. The label is the relationship read from the focus: father, mother, son, daughter, brother, sister, half-brother, half-sister, partner, birthplace, took part, member of. Family words follow the neighbour's gender. Unknown gender uses parent, child, or sibling. Theographic's `partners` field does not separate wives from concubines, so a curated table (`pipeline/curated/partners.csv`) decides. The label is husband or wife when a BSB verse calls them so. It is concubine (read from the man) when a verse calls her that; read from her, he is "partner" (or "husband" when a verse also says wife). When the text uses both words, both are shown, for example Hagar, Keturah, and Bilhah: "wife, concubine". It is partner when no verse says either. Each curated row has an evidence verse, shown in the detail panel. The owner reviews every row before it ships.
 8. A link that is only a co-mention is a dashed line labelled "together in N verses".
 9. The build must keep the direction of PARENT_OF, BORN_AT, DIED_AT, PARTICIPATED_IN, OCCURRED_AT, and MEMBER_OF.

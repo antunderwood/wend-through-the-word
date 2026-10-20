@@ -52,3 +52,7 @@
   font-style: italic;
   color: rgba(200, 205, 224, 0.55);
 }
+/* A name hidden because it would overlap a more important one (decision 124). */
+.labels .crowded {
+  visibility: hidden;
+}

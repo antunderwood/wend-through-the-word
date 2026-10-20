@@ -411,6 +411,7 @@
     border: 0;
     background: none;
     text-align: left;
+    vertical-align: top; /* a name that wraps keeps its number on the first line */
   }
   .item.sel {
     background: #262a3c;

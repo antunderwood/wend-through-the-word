@@ -18,12 +18,19 @@ test("a click on a disc selects that node, even under another node's label", asy
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
 });
 
-test("the Focus edges carry the Relationship, and a Co-mention reads together in N verses", async ({ page }) => {
-  const words = page.locator(".labels .el");
+test("only the Selected Node's edge and a hovered node's carry Relationship words; a Co-mention reads together in N verses", async ({ page }) => {
+  const words = page.locator(".labels .el:visible");
+  // Abraham is the Focus and the Selected Node: no words.
+  await expect(words).toHaveCount(0);
   // Fixture: Abraham SPOUSE_OF Sarah (Female); Abraham and Genealogy (Theme) only share 6 Verses.
-  await expect(words.getByText("wife", { exact: true })).toBeVisible();
-  await expect(words.getByText("together in 6 verses", { exact: true })).toBeVisible();
+  await page.locator(".labels").getByText("Sarah", { exact: true }).click();
+  await expect(words).toHaveText(["wife"]);
+  const genealogy = (await nodes(page)).find((n) => n.id === "theme:genealogy")!;
+  await page.mouse.move(genealogy.x, genealogy.y);
+  await expect(words).toHaveText(["wife", "together in 6 verses"]);
   await expect(words.getByText("together in 6 verses", { exact: true })).toHaveClass(/derived/);
+  await page.mouse.move(5, 5);
+  await expect(words).toHaveText(["wife"]);
 });
 
 test("the Focus shows the first line of its Dictionary Entry", async ({ page }) => {

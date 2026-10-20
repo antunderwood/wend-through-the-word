@@ -13,7 +13,8 @@ test("the page opens on Abraham in the tilted plane", async ({ page }) => {
   expect(Math.abs(focus.x - size.width / 2)).toBeLessThan(size.width / 4);
   expect(Math.abs(focus.y - size.height / 2)).toBeLessThan(size.height / 4);
   await expect(page.locator(".nl.focus")).toContainText("Abraham");
-  await expect(page.getByText("+15 people")).toBeVisible();
+  // Named, though the name may give way to a Ring 1 name it would overlap (decision 124).
+  await expect(page.getByText("+15 people")).toBeAttached();
 });
 
 test("a Verse can be the Focus, with a short BSB quote", async ({ page }) => {

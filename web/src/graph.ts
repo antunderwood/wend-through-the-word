@@ -9,6 +9,7 @@ import { viewA } from "./views/a";
 import { viewB } from "./views/b";
 import { viewC } from "./views/c";
 import { layout, type ViewModule } from "./views/view";
+import { namePriority, uncrowded, WORDS_PRIORITY } from "./declutter";
 import "./graph.css";
 
 // The tilted plane (the default, decision 118), stacked discs, and free orbit.
@@ -163,6 +164,11 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   let edges: Drawn[] = [];
   let faint: { line: THREE.LineSegments; pairs: THREE.Sprite[][] } | null = null; // Ring 2 edges, one draw call
   let fading: { el: HTMLElement; obj: THREE.Object3D }[] = [];
+  // Node names and Relationship words, for hiding a name that would overlap a more important one.
+  // size is read from the page once per scene.
+  type Name = { el: HTMLElement; obj: CSS2DObject; node?: SceneNode; edge?: Id; size?: { w: number; h: number; dy: number } };
+  let names: Name[] = [],
+    crowded = true; // names need placing again
 
   function resize() {
     const { clientWidth: w, clientHeight: h } = host;
@@ -170,6 +176,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     labels.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    crowded = true;
   }
   resize();
   window.addEventListener("resize", resize);
@@ -223,6 +230,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     edges = [];
     faint = null;
     fading = [];
+    names = [];
   }
 
   // A Focus change: the camera glides by the same shift as the centre, new nodes grow out of the
@@ -277,6 +285,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   function nodeLabel(n: SceneNode, selected: Id) {
     const d = document.createElement("div");
     d.className = `nl ${n.role}${n.shared ? " shared" : ""}${n.id === selected ? " selected" : ""}`;
+    d.dataset.node = n.id;
     d.textContent = n.role === "overflow" ? `+${n.count} ${TYPE_PLURAL[n.type]}` : label(n.id);
     // The Focus shows its first line; a Verse always shows its quote (PRD 10.4 node look 5).
     const q = n.role === "focus" || n.type === "verse" ? quote(n.id) : "";
@@ -295,6 +304,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     const o = new CSS2DObject(d);
     o.center.set(0.5, 0);
     if (n.role !== "focus") fading.push({ el: d, obj: o });
+    names.push({ el: d, obj: o, node: n });
     return o;
   }
 
@@ -347,6 +357,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
         lab = new CSS2DObject(d);
         world.add(lab);
         fading.push({ el: d, obj: lab });
+        names.push({ el: d, obj: lab, edge: e.b });
       }
       edges.push({ e, a, b, line, lab });
     }
@@ -385,7 +396,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   }
   function updateEdges() {
     camera.getWorldDirection(fwd);
-    for (const { a, b, line, lab } of edges) {
+    const words = [drawn?.selected, hovered?.userData.node.id];
+    for (const { e, a, b, line, lab } of edges) {
       // A slight curve; each end leaves along it.
       curve.v1.copy(a.position).add(b.position).multiplyScalar(0.5);
       curve.v1.y += a.position.distanceTo(b.position) * 0.08;
@@ -398,7 +410,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       if (line.material instanceof THREE.LineDashedMaterial) line.computeLineDistances();
       if (lab) {
         curve.getPoint(0.62, lab.position); // nearer the Neighbour, to spread the labels
-        lab.visible = line.visible;
+        // Relationship words only on the Selected Node's edge and a hovered node's (decision 124).
+        lab.visible = line.visible && words.includes(e.b);
       }
     }
     if (faint) {
@@ -432,6 +445,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     }
   }
   function follow() {
+    crowded = true;
     updateEdges();
     fadeLabels();
     // Fog starts at the Focus's depth, so nodes behind it fade at any zoom.
@@ -446,6 +460,32 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     selRing.removeFromParent();
     sprites.get(selected)?.add(selRing);
     follow();
+  }
+
+  // A name that would overlap a more important one is hidden until a zoom or a camera move makes
+  // room (decision 124); a hovered node's name and words always show. Runs after the labels are
+  // drawn, so each name's place on the page is known.
+  function declutter() {
+    const { clientWidth: w, clientHeight: h } = host,
+      hov = hovered?.userData.node.id,
+      selected = drawn?.selected ?? "";
+    const placed: { L: Name; box: { left: number; top: number; right: number; bottom: number }; priority: number }[] = [];
+    for (const L of names) {
+      if (L.el.style.display === "none" || L.el.style.visibility === "hidden" || (L.node?.id ?? L.edge) === hov) continue;
+      if (!L.size?.w) {
+        const { width: w, height: h } = L.el.getBoundingClientRect(); // unrounded, unlike offsetWidth
+        L.size = { w, h, dy: parseFloat(getComputedStyle(L.el).marginTop) };
+      }
+      tmp.setFromMatrixPosition(L.obj.matrixWorld).project(camera);
+      const left = ((tmp.x + 1) / 2) * w - L.obj.center.x * L.size.w,
+        top = ((1 - tmp.y) / 2) * h - L.obj.center.y * L.size.h + L.size.dy;
+      const priority = L.node ? namePriority(L.node, selected) : WORDS_PRIORITY;
+      placed.push({ L, box: { left, top, right: left + L.size.w, bottom: top + L.size.h }, priority });
+    }
+    // Every size is read before any class changes, so the page lays out at most once.
+    const shows = uncrowded(placed),
+      hidden = new Set(placed.filter((_, i) => !shows[i]).map((p) => p.L));
+    for (const L of names) L.el.classList.toggle("crowded", hidden.has(L));
   }
 
   // Picking. A click is a pointer down and up without a drag; two clicks on the same node within
@@ -501,6 +541,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       light(hit, true);
       hovered = hit;
       updateEdges();
+      crowded = true;
     }
     el.style.cursor = hit ? "pointer" : "";
     handlers.hover.forEach((f) => f(hit?.userData.node ?? null, x, y));
@@ -527,6 +568,10 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     controls.update();
     renderer.render(scene3, camera);
     labels.render(scene3, camera);
+    if (crowded) {
+      crowded = false;
+      declutter();
+    }
   });
 
   const focusOf = (scene: Scene) => scene.nodes.find((n) => n.role === "focus")!.id;
