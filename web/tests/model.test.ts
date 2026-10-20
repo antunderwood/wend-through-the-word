@@ -430,6 +430,9 @@ describe("Relationship words on the Focus edges", () => {
     expect(said(link("Male", out("PARENT_OF")))).toBe("son of Benjamin");
     expect(said(link("Female", both("SPOUSE_OF")))).toBe("wife of Benjamin");
     expect(said(link(undefined, both("POSSIBLY_SAME_AS")))).toBe("possibly the same person as Benjamin");
+    // Benjamin's list: a group he belongs to; a group's list: a member of it.
+    expect(said(link(undefined, out("MEMBER_OF")))).toBe("Benjamin is a member");
+    expect(said(link("Male", inn("MEMBER_OF")))).toBe("member of Benjamin");
     expect(said(link(undefined, { edge: "CO_MENTION", direction: "both", shared_verses: 2 }))).toBe("together in 2 verses");
   });
 

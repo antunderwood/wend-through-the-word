@@ -110,7 +110,8 @@ export function relation(link: Link, genderOf: (id: Id) => string | undefined, o
       case "DIED_AT": words.push(out ? "place of death" : "died here"); break;
       case "PARTICIPATED_IN": words.push("took part"); break;
       case "OCCURRED_AT": words.push(out ? "where it happened" : "happened here"); break;
-      case "MEMBER_OF": words.push(out ? "member of" : "member"); break;
+      // Read from a People Group's member, the Neighbour is the group: "Abraham is a member".
+      case "MEMBER_OF": words.push(out ? (of ? `${of} is a member` : "member of") : "member" + tail); break;
     }
   }
   const explicit = [...new Set(words)];
