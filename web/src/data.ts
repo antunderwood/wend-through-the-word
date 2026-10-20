@@ -139,6 +139,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   }
 
   return {
+    version: index.data_version,
     load,
     search,
     // Family words (son or daughter, husband or wife) follow the relative's gender, which only the
@@ -169,6 +170,8 @@ export async function createData(getJSON: GetJSON, root: string) {
       const c = chapters[chapters.indexOf(id.slice(0, 5)) + dir];
       return c && `${c}001`;
     },
+    // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
+    known: (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id)),
     record: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until
