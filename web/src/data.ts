@@ -155,6 +155,8 @@ export async function createData(getJSON: GetJSON, root: string) {
       return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
     },
     outside,
+    // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
+    known: (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id)),
     record: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until

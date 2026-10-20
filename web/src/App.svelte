@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
+  import { read, START, write } from "./address";
   import { createData, fetchJSON, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
@@ -7,7 +8,6 @@
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
-  const START = "person:abraham_58";
   const HINT_KEY = "wend.hintDismissed";
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
@@ -170,11 +170,18 @@
     store(HINT_KEY, "1");
   }
 
+  // The page opens on the address (decision 128): a missing or unknown Focus is Abraham.
   async function start() {
     failure = undefined;
     try {
       data = await createData(fetchJSON, "/data");
-      await data.loadWithKin(START);
+      const asked = read(location.search, data.known);
+      const focus = asked.focus ?? START,
+        pins = asked.pins ?? [];
+      await Promise.all([data.loadWithKin(focus), ...pins.map(data.load)]);
+      model = { ...initialState(focus), selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
+      neighboursOf = versesOf = model.selected;
+      if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
       return;
@@ -199,9 +206,30 @@
     start();
     return () => graph?.dispose();
   });
+
+  // The address follows the page: a new Focus is a new history entry, any other change replaces it.
+  let entryFocus = "";
+  $effect(() => {
+    if (!onScreen) return;
+    const url = location.pathname + write(model, view);
+    if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
+    else history.replaceState(null, "", url);
+    entryFocus = model.focus;
+  });
+
+  // Back and Forward make the entry's Focus the Focus again.
+  function moved() {
+    entryFocus = read(location.search, data!.known).focus ?? START;
+    makeFocus(entryFocus);
+  }
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(location.href);
+    model = { ...model, notice: "Link copied." };
+  }
 </script>
 
-<svelte:window onkeydown={sceneKey} />
+<svelte:window onkeydown={sceneKey} onpopstate={moved} />
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
@@ -294,13 +322,16 @@
     <button onclick={failure.retry}>Retry</button>
   </div>
 {/if}
-{#if !noWebGL}
-  <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-    {#each VIEW_KEYS as key (key)}
-      <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-    {/each}
-  </div>
-{/if}
+<div class="controls">
+  {#if !noWebGL}
+    <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+      {#each VIEW_KEYS as key (key)}
+        <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+      {/each}
+    </div>
+  {/if}
+  {#if onScreen}<button class="copy" onclick={copyLink}>Copy link</button>{/if}
+</div>
 <p class="notice" role="status">{model.notice}</p>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
@@ -322,11 +353,15 @@
     display: block;
     touch-action: none;
   }
-  .views {
+  .controls {
     position: fixed;
     left: 50%;
     bottom: 16px;
     transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  .views {
     display: flex;
     gap: 2px;
     padding: 3px;
@@ -341,6 +376,9 @@
     color: #9aa0b4;
     font: inherit;
     cursor: pointer;
+  }
+  .copy {
+    border-radius: 999px;
   }
   .views button[aria-checked="true"] {
     background: #2a3048;

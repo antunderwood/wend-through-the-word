@@ -102,9 +102,10 @@ for (const view of ["A", "B", "C"] as const) {
     await expect(heading(page)).toHaveText("Abraham");
     await expect(items).toHaveText(["Isaac", "Abraham"]);
 
-    // A reload remembers the view.
+    // A reload opens the address, so the Focus, the pin, and the view are kept.
     await page.reload();
-    await focusIs(page, ABRAHAM);
+    await focusIs(page, ISAAC);
+    expect((await at(page, ABRAHAM)).role).toBe("pinned");
     await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName(VIEW_NAME[NEXT[view]]);
   });
 }
