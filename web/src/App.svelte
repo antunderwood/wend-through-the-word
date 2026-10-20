@@ -2,6 +2,7 @@
   import { onMount, tick } from "svelte";
   import { createData, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
+  import PathBar from "./PathBar.svelte";
   import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
   import { store, stored } from "./storage";
 
@@ -52,7 +53,7 @@
 
   function apply(a: Action) {
     const next = reduce(model, a, label);
-    if (next.focus !== model.focus) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path) sc = scene(next, data!.rec, data!.genderOf);
     model = next;
     graph?.render(sc!, model.selected);
   }
@@ -112,7 +113,10 @@
     <p class="muted">{selectedType}</p>
     {#if link}<p>Relationship: <b>{relation(link, data.genderOf).text}</b></p>{/if}
     <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+    <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
+    <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
   </aside>
+  <PathBar {model} {label} {apply} />
 {/if}
 {#if hint}
   <p class="hint">
@@ -204,7 +208,7 @@
   .hint {
     position: fixed;
     left: 50%;
-    top: 16px;
+    top: 64px;
     transform: translateX(-50%);
     margin: 0;
     padding: 6px 8px 6px 14px;

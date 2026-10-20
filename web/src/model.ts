@@ -161,7 +161,7 @@ export function reduce(s: State, a: Action, label: (id: Id) => string): State {
     case "clearPath": {
       if (!s.path.length) return s;
       // The Focus and pins stay; a Selected Node only on Your Path gives way to the Focus.
-      const selected = s.path.includes(s.selected) ? s.focus : s.selected;
+      const selected = s.path.includes(s.selected) && !s.pins.includes(s.selected) ? s.focus : s.selected;
       return { ...s, path: [], cleared: s.path, selected, notice: "Cleared Your Path." };
     }
     case "undoClear": {
