@@ -3,7 +3,7 @@ import { focusIs } from "./scene";
 
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const facts = (page: Page) => panel(page).getByRole("list", { name: "Facts" });
-const relationship = (page: Page) => panel(page).getByText(/^Relationship:/);
+const relationship = (page: Page) => panel(page).getByRole("paragraph").filter({ hasText: /^Relationship:/ });
 const notes = (page: Page) => panel(page).getByText(/^Note on the Relationship:/);
 
 test.use({ reducedMotion: "reduce" });
@@ -50,6 +50,29 @@ test("a shared Verse can be double clicked while the Selected Node shows its det
   await expect(notes(page)).toHaveCount(1);
   await panel(page).getByRole("list", { name: /^Together in/ }).getByRole("button").first().dblclick();
   await focusIs(page, "01011029");
+});
+
+// The second click of a double click lands where the first did only if nothing above the item moves.
+test("a list item stays put between the two clicks of a double click", async ({ page }) => {
+  const settled = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+  // Genealogy: a Co-mention with two sources, and a type line whose source loads after the click.
+  const genealogy = panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ });
+  // A click scrolls its target into view first; measure after that.
+  const y = async (item: typeof genealogy) => (await item.scrollIntoViewIfNeeded(), (await item.boundingBox())!.y);
+  const neighbour = await y(genealogy);
+  await genealogy.click();
+  await expect(panel(page).getByText("Theme, from Nave's Topical Bible, CC BY 4.0")).toBeVisible();
+  await expect(relationship(page)).toContainText("Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
+  await settled();
+  expect(await y(genealogy)).toBe(neighbour);
+
+  const verse = panel(page).getByRole("list", { name: "Together in 6 verses" }).getByRole("button", { name: /^Gen 11:27/ });
+  const shared = await y(verse);
+  await verse.click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
+  await expect(relationship(page)).toContainText("Suggest a correction");
+  await settled();
+  expect(await y(verse)).toBe(shared);
 });
 
 test("the Dictionary Entry is named as Easton's, folded after its first paragraph, and opens with Read more", async ({ page }) => {

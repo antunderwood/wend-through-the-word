@@ -346,13 +346,17 @@
     {/if}
     <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
     <section class="selected" bind:this={selectedBox}>
-      <h2>{label(selected)}</h2>
-      <p class="muted">{selectedType}{#await details then d}{#if d}, from {credit([d])}{/if}{/await}</p>
+      <!-- The name, the type line, and the Relationship line have fixed heights, so the shared Verses
+           below never move between the two clicks of a double click; a long text is cut, and whole
+           in its title. -->
+      <h2 class="line" title={label(selected)}>{label(selected)}</h2>
+      {#await details}{@render typeLine(selectedType)}{:then d}{@render typeLine(d ? `${selectedType}, from ${credit([d])}` : selectedType)}{:catch}{@render typeLine(selectedType)}{/await}
       <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
            that item goes after it. -->
-      <p class="relationship">
-        {#if link}Relationship: <b>{linkWords!.text}</b> <small class="source">{credit(linkEdges)}</small>
-          {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
+      <p class="relationship" title={link && `Relationship: ${linkWords!.text}. ${credit(linkEdges)}`}>
+        {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b></span>
+          <span class="sourced"><small class="source line">{credit(linkEdges)}</small>
+            {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}</span>{/if}
       </p>
       {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
@@ -483,6 +487,9 @@
 <!-- A small link that opens the correction form for one item. -->
 {#snippet fix(what: string, kind: Request["kind"], nodeIds: Id[], currentValue: string)}
   <button class="fix" aria-label="Suggest a correction to {what}" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
+{/snippet}
+{#snippet typeLine(text: string)}
+  <p class="muted line" title={text}>{text}</p>
 {/snippet}
 {#snippet request(url?: string | null)}
   {#if url}{" "}<a href={url} target="_blank" rel="noopener">Request #{url.slice(url.lastIndexOf("/") + 1)}</a>{/if}
@@ -709,10 +716,33 @@
     font-size: 11px;
     color: #7a8098;
   }
-  /* Two lines whether or not there is a Relationship, so the shared Verses below never move between
-     the two clicks of a double click. */
+  /* One line, cut with an ellipsis. */
+  .line {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* Three lines whether or not there is a Relationship: two for the words, then the source and its
+     link. */
   .panel .relationship {
-    min-height: 2.9em;
+    height: 4.35em;
+    overflow: hidden;
+  }
+  .words {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  .sourced {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .sourced .fix {
+    flex: none;
   }
   .fix {
     padding: 0;
