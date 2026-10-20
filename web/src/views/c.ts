@@ -8,7 +8,9 @@ const sph = (az: number, el: number, r: number) =>
 
 export const viewC: ViewModule = {
   setup(camera, controls) {
-    camera.position.set(30, 40, 78);
+    // Above the top Ring 1 band (elevation 0.4) by 0.3, so the line of sight behind the Focus misses
+    // the lowest band: lower, the first Person sat right behind the Focus.
+    camera.position.set(30, 60, 64);
     controls.minDistance = 15;
     controls.maxDistance = 260;
   },
