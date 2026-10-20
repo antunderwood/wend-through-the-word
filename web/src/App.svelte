@@ -24,7 +24,9 @@
   let data = $state.raw<Data>();
   let model = $state.raw(initialState(START));
   let sc = $state.raw<Scene>();
-  let error = $state("");
+  // A data file failed twice (the loader retries once): a message and a Retry, never a broken scene.
+  let failure = $state<{ message: string; retry: () => void }>();
+  let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
   let collapsed = $state(false);
   // The panel lists the Neighbours of `listed` and the Verses `versed` shares with the Focus. A
@@ -77,10 +79,11 @@
       return;
     }
     const mine = ++moves;
+    failure = undefined;
     try {
       await data!.loadWithKin(id);
     } catch (e) {
-      model = { ...model, notice: `Could not load ${label(id)}: ${(e as Error).message}` };
+      if (mine === moves) failure = { message: `Could not load ${label(id)}: ${(e as Error).message}`, retry: () => makeFocus(id) };
       return;
     }
     if (mine === moves) apply({ type: "focus", id });
@@ -123,39 +126,73 @@
     ),
   );
 
+  // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
+  // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
+  // node on Your Path (PRD 10.4). Keys in the search box, a button, or the view picker are theirs.
+  function sceneKey(e: KeyboardEvent) {
+    if ((e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !sc) return;
+    const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+    if (dir) {
+      const ring = sc.nodes.filter((n) => n.ring1).sort((a, b) => a.ring1!.ti - b.ring1!.ti || a.ring1!.pos - b.ring1!.pos);
+      const i = ring.findIndex((n) => n.id === model.selected);
+      apply({ type: "select", id: ring[i < 0 ? (dir > 0 ? 0 : ring.length - 1) : (i + dir + ring.length) % ring.length].id });
+    } else if (e.key === "Enter") {
+      if (model.selected !== model.focus) makeFocus(model.selected);
+    } else if (e.key === "Backspace") {
+      if (model.path.length) makeFocus(model.path[model.path.length - 1]);
+      else model = { ...model, notice: "Your Path is empty." };
+    } else return;
+    e.preventDefault();
+  }
+
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
   }
 
+  async function start() {
+    failure = undefined;
+    try {
+      data = await createData(getJSON, "/data");
+      await data.loadWithKin(START);
+    } catch (e) {
+      failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
+      return;
+    }
+    sc = scene(model, data.rec, data.genderOf);
+    try {
+      graph = createGraph(host, data.label, data.quote);
+    } catch {
+      noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
+      return;
+    }
+    graph.setView(view);
+    graph.onNodeClick((id) => apply({ type: "select", id }));
+    graph.onNodeDoubleClick(makeFocus);
+    graph.render(sc, model.selected);
+    Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
+  }
+
   onMount(() => {
-    (async () => {
-      try {
-        data = await createData(getJSON, "/data");
-        await data.loadWithKin(START);
-        sc = scene(model, data.rec, data.genderOf);
-        graph = createGraph(host, data.label, data.quote);
-        graph.setView(view);
-        graph.onNodeClick((id) => apply({ type: "select", id }));
-        graph.onNodeDoubleClick(makeFocus);
-        graph.render(sc, model.selected);
-        Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
-      } catch (e) {
-        error = `Could not load the data: ${(e as Error).message}`;
-      }
-    })();
+    start();
     return () => graph?.dispose();
   });
 </script>
 
-<div class="stage" bind:this={host}></div>
+<svelte:window onkeydown={sceneKey} />
+<!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if sc && data}
   <Search {data} onchoose={makeFocus} />
   <!-- The chevron points the way the panel will move. -->
-  <button class="chevron" aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+  <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
     {collapsed ? "‹" : "›"}
   </button>
-  <aside id="panel" class="panel" class:collapsed aria-label="Selected Node">
+  <aside id="panel" class="panel" class:collapsed class:full={noWebGL} aria-label="Selected Node">
+    {#if noWebGL}
+      <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
+    {/if}
     <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
     <section class="selected">
       <h2>{label(selected)}</h2>
@@ -224,12 +261,20 @@
     <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
   </p>
 {/if}
-<div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-  {#each VIEW_KEYS as key (key)}
-    <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-  {/each}
-</div>
-<p class="notice" role="status">{error || model.notice}</p>
+{#if failure}
+  <div class="failure" role="alert">
+    <p>{failure.message}</p>
+    <button onclick={failure.retry}>Retry</button>
+  </div>
+{/if}
+{#if !noWebGL}
+  <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+    {#each VIEW_KEYS as key (key)}
+      <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+    {/each}
+  </div>
+{/if}
+<p class="notice" role="status">{model.notice}</p>
 
 <style>
   :global(html, body) {
@@ -285,6 +330,10 @@
     background: rgba(20, 23, 34, 0.92);
     border-left: 1px solid #262a3c;
     transition: transform 0.2s;
+  }
+  .panel.full {
+    left: 0;
+    width: auto;
   }
   .panel.collapsed {
     transform: translateX(100%);
@@ -387,6 +436,23 @@
   .hint button {
     margin-left: 8px;
     padding: 0 7px;
+  }
+  .fallback {
+    color: #ffd27a;
+  }
+  .failure {
+    position: fixed;
+    left: 50%;
+    top: 40%;
+    transform: translateX(-50%);
+    padding: 12px 16px;
+    background: rgba(20, 23, 34, 0.96);
+    border: 1px solid #3a4060;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .failure p {
+    margin: 0 0 8px;
   }
   .notice {
     position: fixed;
