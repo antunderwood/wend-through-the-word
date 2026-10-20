@@ -153,6 +153,8 @@
   const linkWords = $derived(link && relation(link, data!.genderOf, plainName(model.focus)));
   // The edges that give the words: the Co-mention for "together in N verses", else the others.
   const linkEdges = $derived(link?.edges.filter((e) => (e.edge === "CO_MENTION") === linkWords!.derived) ?? []);
+  // A curated Relationship's first Evidence Verse, shown in the Relationship line (decision 135).
+  const evidence = $derived(linkEdges.find((e) => e.evidence?.length)?.evidence![0].verse_key);
 
   // "Theographic, CC BY-SA 4.0"; a derived link has two sources, each with its own licence.
   function credit(edges: { source?: string; licence?: string }[]) {
@@ -354,8 +356,9 @@
       {#await details}{@render typeLine(selectedType)}{:then d}{@render typeLine(d ? `${selectedType}, from ${credit([d])}` : selectedType)}{:catch}{@render typeLine(selectedType)}{/await}
       <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
            that item goes after it. -->
-      <p class="relationship" title={link && `Relationship: ${linkWords!.text}. ${credit(linkEdges)}`}>
-        {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b></span>
+      <p class="relationship" title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
+        {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
+            {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
           <span class="sourced"><small class="source line">{credit(linkEdges)}</small>
             {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}</span>{/if}
       </p>
@@ -744,6 +747,13 @@
   }
   .sourced .fix {
     flex: none;
+  }
+  /* An Evidence Verse in the Relationship line: a reference that selects it. */
+  .ref {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #ffd27a;
   }
   .fix {
     padding: 0;

@@ -31,10 +31,13 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
   await panel(page).getByRole("button", { name: "5 more" }).click();
   await panel(page).getByRole("list", { name: "Person (11)" }).getByRole("button", { name: /^Beeri/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Beeri");
-  await expect(relationship(page)).toHaveText("Relationship: possibly the same person as Anah Curated, CC BY-SA 4.0 Suggest a correction");
+  // The first Evidence Verse is in the Relationship line (decision 135); the note has them all.
+  await expect(relationship(page)).toHaveText("Relationship: possibly the same person as Anah (Gen 26:34) Curated, CC BY-SA 4.0 Suggest a correction");
   await expect(notes(page)).toHaveText([
     'Note on the Relationship: Esau\'s wife is "Judith daughter of Beeri" in Gen.26.34 and "Oholibamah daughter of Anah" in Gen.36.2. Evidence: Gen 26:34, Gen 36:2, Gen 36:24.',
   ]);
+  await relationship(page).getByRole("button", { name: "Gen 26:34" }).click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 26:34");
 });
 
 test("a curated item with a request links to it", async ({ page }) => {
