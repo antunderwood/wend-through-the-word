@@ -51,6 +51,10 @@ def test_same_name_entities_of_one_type_get_distinct_hints(export):
     # Shaveh share Gen 14:17, so Sitnah falls back to its ID number and the twin to its next Verse.
     assert hints["place:sitnah_1102"] == "1102"
     assert hints["place:sitnah_9102"] == "Gen 26:22"
+    # A stub outside the book range has a whole-Bible Verse set too: the synthetic fourth Anah,
+    # Zibeon's daughter, shares 1 Chr 1:40 with anah_249, so her hint is her other Verse.
+    assert hints["person:anah_9250"] == "1Chr 1:39"
+    assert hints["person:anah_249"] == "Gen 36:24"
     groups = {}
     for e in entities:
         groups.setdefault((e["type"], e["name"]), []).append(e)

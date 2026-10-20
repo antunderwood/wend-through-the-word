@@ -9763,5 +9763,22 @@
    ],
    "modified": "2019-07-27T11:49:43.000Z"
   }
+ },
+ {
+  "id": "recFixtureAnah",
+  "fields": {
+   "personLookup": "anah_9250",
+   "displayTitle": "Anah",
+   "name": "Anah",
+   "personID": 9250,
+   "gender": "Female",
+   "verses": [
+    "recM8JEaKggcjezUh",
+    "recRODu9Qady5JNLU"
+   ],
+   "father": [
+    "recsCvIS5fxl25zU6"
+   ]
+  }
  }
 ]
