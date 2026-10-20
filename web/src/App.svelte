@@ -5,11 +5,15 @@
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
+  import NoteBox from "./NoteBox.svelte";
+  import { notesMarkdown } from "./notes";
   import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
   const HINT_KEY = "wend.hintDismissed";
+  const NOTES_KEY = "wend.notes";
+  const JOURNEY_KEY = "wend.journey";
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
   const VIEW_KEYS = Object.keys(VIEWS) as View[];
@@ -179,6 +183,26 @@
     e.preventDefault();
   }
 
+  // Journey notes (decision 129): a note per node ID, kept in this browser with Your Path and the Focus.
+  let notes = $state.raw<Record<Id, string>>(JSON.parse(stored(NOTES_KEY) ?? "{}"));
+  function keepNotes(next: Record<Id, string>) {
+    notes = next;
+    store(NOTES_KEY, JSON.stringify(next));
+  }
+  // An emptied note is removed, so its step is no longer marked.
+  function writeNote(id: Id, text: string) {
+    const { [id]: _, ...rest } = notes;
+    keepNotes(text ? { ...rest, [id]: text } : rest);
+  }
+  function downloadNotes() {
+    const link = (id: Id) => location.origin + location.pathname + write(initialState(id), "A");
+    const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], link, new Date());
+    const a = document.createElement("a");
+    a.href = "data:text/markdown;charset=utf-8," + encodeURIComponent(text);
+    a.download = "journey-notes.md";
+    a.click();
+  }
+
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
@@ -190,10 +214,15 @@
     try {
       data = await createData(fetchJSON, "/data");
       const asked = read(location.search, data.known);
-      const focus = asked.focus ?? START,
+      // Your Path and the Focus kept in this browser, less any node a newer build no longer has.
+      const kept: { focus: Id; path: Id[] } | null = JSON.parse(stored(JOURNEY_KEY) ?? "null");
+      let journey = { ...initialState(kept && data.known(kept.focus) ? kept.focus : START), path: kept?.path.filter(data.known) ?? [] };
+      // The address wins when it names a Focus; the kept Focus then joins Your Path, as on any move.
+      if (asked.focus) journey = reduce(journey, { type: "focus", id: asked.focus }, data.label);
+      const focus = journey.focus,
         pins = asked.pins ?? [];
       await Promise.all([data.loadWithKin(focus), ...pins.map(data.load)]);
-      model = { ...initialState(focus), selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
+      model = { ...journey, selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
       neighboursOf = versesOf = model.selected;
       if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
@@ -229,6 +258,10 @@
     if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
     else history.replaceState(null, "", url);
     entryFocus = model.focus;
+  });
+
+  $effect(() => {
+    if (onScreen) store(JOURNEY_KEY, JSON.stringify({ focus: model.focus, path: model.path }));
   });
 
   // Back and Forward make the entry's Focus the Focus again.
@@ -273,6 +306,9 @@
       <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
       <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
       <button onclick={openReader} disabled={typeOf(selected) === "overflow"}>Read</button>
+      {#if selected === model.focus || model.path.includes(selected)}
+        <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => writeNote(selected, t)} download={downloadNotes} deleteAll={() => keepNotes({})} />
+      {/if}
       {#await sharing then lists}
         {#each lists as { with: o, verses }, i (o)}
           {#if verses.length}
@@ -313,7 +349,7 @@
       {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
     {/await}
   </aside>
-  <PathBar {model} {label} {apply} />
+  <PathBar {model} {label} {apply} {notes} />
   {#if reading}
     <div class="drawer">
       <Reader
