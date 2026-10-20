@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
-  import { createData } from "./data";
+  import { createData, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
-  import { initialState, scene, type View } from "./model";
-  import { load, save } from "./storage";
+  import { initialState, reduce, relation, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
+  import { store, stored } from "./storage";
 
   const START = "person:abraham_58";
+  const HINT_KEY = "wend.hintDismissed";
   const getJSON = async (url: string) => {
     const r = await fetch(url);
     if (!r.ok) throw new Error(`${r.status} ${url}`);
@@ -18,19 +19,23 @@
 
   let host: HTMLDivElement;
   let graph: Graph | undefined;
+  let data = $state.raw<Data>();
+  let model = $state.raw(initialState(START));
+  let sc = $state.raw<Scene>();
   let error = $state("");
-  const stored = load(VIEW_STORE);
+  let hint = $state(!stored(HINT_KEY));
+  const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
-  let view = $state<View>(stored && Object.hasOwn(VIEWS, stored) ? (stored as View) : "A");
+  let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
 
   function choose(v: View) {
     view = v;
-    save(VIEW_STORE, v);
+    store(VIEW_STORE, v);
     graph?.setView(v); // the Focus Model state is untouched: only the view changes
   }
 
   // Left and Right on the picker step through the views, as a radio group does.
-  async function step(e: KeyboardEvent) {
+  async function stepView(e: KeyboardEvent) {
     const dir = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
     if (!dir) return;
     e.preventDefault();
@@ -39,16 +44,59 @@
     (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-checked="true"]')!.focus();
   }
 
+  const overflowType = (id: Id) => id.slice("overflow:".length) as NodeType;
+  const label = (id: Id) =>
+    typeOf(id) === "overflow"
+      ? `+${sc?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
+      : data!.label(id);
+
+  function apply(a: Action) {
+    const next = reduce(model, a, label);
+    if (next.focus !== model.focus) sc = scene(next, data!.rec, data!.genderOf);
+    model = next;
+    graph?.render(sc!, model.selected);
+  }
+
+  // The new Focus and its relatives load first; a later move wins over an earlier one still loading.
+  let moves = 0;
+  async function makeFocus(id: Id) {
+    if (typeOf(id) === "overflow") {
+      model = { ...model, notice: "An Overflow Node cannot be the Focus." };
+      return;
+    }
+    const mine = ++moves;
+    try {
+      await data!.loadWithKin(id);
+    } catch (e) {
+      model = { ...model, notice: `Could not load ${label(id)}: ${(e as Error).message}` };
+      return;
+    }
+    if (mine === moves) apply({ type: "focus", id });
+  }
+
+  const selected = $derived(model.selected);
+  const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
+  // The Relationship is read from the Focus: Isaac is Abraham's son.
+  const link = $derived(selected === model.focus ? undefined : data?.rec(model.focus)?.links.find((l) => l.id === selected));
+
+  function dismissHint() {
+    hint = false;
+    store(HINT_KEY, "1");
+  }
+
   onMount(() => {
     (async () => {
       try {
-        const data = await createData(getJSON, "/data");
-        await data.load(START);
-        const model = initialState(START);
-        graph = createGraph(host, data.label);
+        data = await createData(getJSON, "/data");
+        await data.loadWithKin(START);
+        sc = scene(model, data.rec, data.genderOf);
+        graph = createGraph(host, data.label, data.quote);
         graph.setView(view);
-        graph.render(scene(model, data.rec, data.genderOf), model.selected);
-        Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
+        graph.onNodeClick((id) => apply({ type: "select", id }));
+        graph.onNodeDoubleClick(makeFocus);
+        graph.render(sc, model.selected);
+        // Test only until search (#22): wendFocus makes any Entity or Verse the Focus.
+        Object.assign(window, { wendGraph: graph, wendFocus: makeFocus }); // test-only hooks for the browser tests
       } catch (e) {
         error = `Could not load the data: ${(e as Error).message}`;
       }
@@ -58,12 +106,26 @@
 </script>
 
 <div class="stage" bind:this={host}></div>
-<div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={step}>
+{#if sc && data}
+  <aside class="panel" aria-label="Selected Node">
+    <h2>{label(selected)}</h2>
+    <p class="muted">{selectedType}</p>
+    {#if link}<p>Relationship: <b>{relation(link, data.genderOf).text}</b></p>{/if}
+    <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+  </aside>
+{/if}
+{#if hint}
+  <p class="hint">
+    A click selects a node. A double click, Make Focus, or search moves the Focus.
+    <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
+  </p>
+{/if}
+<div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
   {#each VIEW_KEYS as key (key)}
     <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
   {/each}
 </div>
-{#if error}<p class="notice">{error}</p>{/if}
+<p class="notice" role="status">{error || model.notice}</p>
 
 <style>
   :global(html, body) {
@@ -106,10 +168,59 @@
     background: #2a3048;
     color: #ffd27a;
   }
+  .panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 280px;
+    padding: 12px 16px;
+    background: rgba(20, 23, 34, 0.92);
+    border: 1px solid #262a3c;
+    border-radius: 8px;
+  }
+  .panel h2 {
+    margin: 0;
+    font-size: 17px;
+  }
+  .panel p {
+    margin: 4px 0;
+  }
+  .muted {
+    color: #9aa0b4;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    background: #262a3c;
+    border: 1px solid #3a4060;
+    border-radius: 4px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .hint {
+    position: fixed;
+    left: 50%;
+    top: 16px;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 6px 8px 6px 14px;
+    background: rgba(20, 23, 34, 0.92);
+    border-radius: 6px;
+    color: #c8cde0;
+  }
+  .hint button {
+    margin-left: 8px;
+    padding: 0 7px;
+  }
   .notice {
     position: fixed;
     left: 16px;
     bottom: 16px;
     margin: 0;
+    color: #9aa0b4;
   }
 </style>

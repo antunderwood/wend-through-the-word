@@ -41,6 +41,7 @@ export const viewB: ViewModule = {
     );
     return g.add(axis);
   },
+  centreFrom: (p, centre) => new THREE.Vector3(p.x, centre.y, p.z), // the discs keep their height
   place: {
     focus: () => new THREE.Vector3(0, TOP, 0),
     ring1: (a, pos) => flat(a, 17 + (pos % 2) * 4),

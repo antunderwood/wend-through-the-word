@@ -1,16 +1,19 @@
-// Browser storage, wrapped: when storage is blocked the page still works and nothing is remembered.
-export function load(key: string): string | null {
+// Browser storage that never throws. When storage is blocked, a value lasts until the page closes.
+const memory = new Map<string, string>();
+
+export function stored(key: string): string | null {
   try {
-    return localStorage.getItem(key);
+    return localStorage.getItem(key) ?? memory.get(key) ?? null;
   } catch {
-    return null;
+    return memory.get(key) ?? null;
   }
 }
 
-export function save(key: string, value: string) {
+export function store(key: string, value: string) {
+  memory.set(key, value);
   try {
     localStorage.setItem(key, value);
   } catch {
-    // blocked: keep the choice for this visit only
+    // memory only
   }
 }

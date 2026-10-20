@@ -26,7 +26,11 @@ def test_a_kept_heading_is_a_theme_entity_with_its_filed_under_verses(export):
 
 def test_a_verse_links_to_its_themes_by_filed_under_not_mentions(export):
     verse = chapter_verse(export, "Gen.25.29")
-    assert {"id": "theme:birthright", "edge": "FILED_UNDER", **NAVES} in verse["filed_under"]
+    birthright = next(m for m in verse["filed_under"] if m["id"] == "theme:birthright")
+    assert {k: birthright[k] for k in ("edge", "source", "licence")} == {
+        "edge": "FILED_UNDER",
+        **NAVES,
+    }
     assert not [m for m in verse["mentions"] if m["id"].startswith("theme:")]
 
 

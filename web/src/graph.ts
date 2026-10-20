@@ -13,7 +13,8 @@ import "./graph.css";
 
 // The tilted plane (the default, decision 118), stacked discs, and free orbit.
 export const VIEWS: Record<View, ViewModule> = { A: viewA, B: viewB, C: viewC };
-const DOUBLE_CLICK_MS = 400;
+const DOUBLE_CLICK_MS = 400,
+  MOVE_MS = 700;
 
 const BG = 0x0d0f17,
   ACCENT = 0xffd27a;
@@ -51,8 +52,9 @@ function discTexture() {
 
 export type Graph = ReturnType<typeof createGraph>;
 
-// label(id) names a node. Throws when the browser has no WebGL.
-export function createGraph(host: HTMLElement, label: (id: Id) => string) {
+// label(id) names a node; quote(id) is a loaded Verse's short BSB quote, else "". Throws when the
+// browser has no WebGL.
+export function createGraph(host: HTMLElement, label: (id: Id) => string, quote: (id: Id) => string) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   host.appendChild(renderer.domElement);
@@ -72,6 +74,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
     deco: THREE.Object3D;
   let current: { scene: Scene; selected: Id } | null = null;
   let sprites = new Map<Id, THREE.Sprite>();
+  let edgeLines: THREE.LineSegments[] = [];
 
   function resize() {
     const { clientWidth: w, clientHeight: h } = host;
@@ -99,15 +102,19 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     view.setup(camera, controls);
+    camera.position.add(centre);
+    controls.target.add(centre);
     controls.update();
     deco = view.decorate();
+    deco.position.copy(centre);
     scene3.add(deco);
   }
+  let centre = new THREE.Vector3(); // where the Focus sits in the world
   useView(view);
 
-  function clear() {
-    for (const o of [...world.children]) {
-      world.remove(o);
+  function empty(group: THREE.Group) {
+    for (const o of [...group.children]) {
+      group.remove(o);
       o.traverse((c) => {
         if (c instanceof CSS2DObject) c.element.remove(); // CSS2D elements stay in the DOM otherwise
         if (c instanceof THREE.Sprite || c instanceof THREE.LineSegments) {
@@ -116,13 +123,67 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
         }
       });
     }
+  }
+  function clear() {
+    empty(world);
     sprites = new Map();
+    edgeLines = [];
+  }
+
+  // A Focus change: the camera glides by the same shift as the centre, new nodes grow out of the
+  // clicked node, and the old scene fades. Under reduced motion all of it happens at once.
+  let move: { t0: number; from: THREE.Vector3; P: THREE.Vector3[]; T: THREE.Vector3[]; D: THREE.Vector3[]; old: THREE.Group } | null = null;
+  function endMove() {
+    if (!move) return;
+    empty(move.old);
+    scene3.remove(move.old);
+    move = null;
+  }
+  function moveFocus(clicked: THREE.Vector3) {
+    step(Infinity); // finish any move under way
+    const old = new THREE.Group();
+    old.add(...world.children);
+    old.traverse((c) => {
+      if (c instanceof CSS2DObject) c.element.style.pointerEvents = "none";
+    });
+    scene3.add(old);
+    const next = view.centreFrom?.(clicked, centre) ?? clicked.clone();
+    const delta = next.clone().sub(centre);
+    const D = [centre, next];
+    centre = next;
+    draw();
+    const P = [camera.position.clone(), camera.position.clone().add(delta)];
+    const T = [controls.target.clone(), controls.target.clone().add(delta)];
+    move = { t0: performance.now(), from: clicked, P, T, D, old };
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
+    else step(move.t0);
+  }
+  const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+  function step(now: number) {
+    if (!move) return;
+    const k = ease(Math.min(1, (now - move.t0) / MOVE_MS));
+    camera.position.lerpVectors(move.P[0], move.P[1], k);
+    controls.target.lerpVectors(move.T[0], move.T[1], k);
+    deco.position.lerpVectors(move.D[0], move.D[1], k);
+    for (const s of sprites.values()) s.position.lerpVectors(move.from, s.userData.to, k);
+    move.old.traverse((c) => {
+      if (c instanceof THREE.Sprite || c instanceof THREE.LineSegments) c.material.opacity = c.userData.opacity * (1 - k);
+      if (c instanceof CSS2DObject) c.element.style.opacity = String(1 - k);
+    });
+    updateEdges();
+    if (k === 1) endMove();
   }
 
   function nodeLabel(n: SceneNode, selected: Id) {
     const d = document.createElement("div");
     d.className = `nl ${n.role}${n.id === selected ? " selected" : ""}`;
     d.textContent = n.role === "overflow" ? `+${n.count} ${TYPE_PLURAL[n.type]}` : label(n.id);
+    if (quote(n.id)) {
+      const q = document.createElement("div");
+      q.className = "quote";
+      q.textContent = quote(n.id);
+      d.append(q);
+    }
     d.addEventListener("pointerdown", (e) => e.stopPropagation());
     d.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -152,26 +213,47 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
       const s = new THREE.Sprite(material);
       s.scale.setScalar(st.size);
       s.renderOrder = 1;
-      s.position.copy(rel.get(n.id)!);
-      s.userData = { node: n, opacity: st.opacity };
+      s.position.copy(rel.get(n.id)!).add(centre);
+      s.userData = { node: n, opacity: st.opacity, to: s.position.clone() };
       if (st.labelled) s.add(nodeLabel(n, selected));
       world.add(s);
       sprites.set(n.id, s);
     }
-    // One set of line segments per edge kind.
-    const byKind = new Map<SceneEdge["kind"], THREE.Vector3[]>();
+    // One set of line segments per edge kind, following the nodes as they move.
+    const byKind = new Map<SceneEdge["kind"], THREE.Sprite[][]>();
     for (const e of scene.edges) {
       const a = sprites.get(e.a),
         b = sprites.get(e.b);
       if (!a || !b) continue;
       if (!byKind.has(e.kind)) byKind.set(e.kind, []);
-      byKind.get(e.kind)!.push(a.position, b.position);
+      byKind.get(e.kind)!.push([a, b]);
     }
-    for (const [kind, points] of byKind) {
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
+    for (const [kind, pairs] of byKind) {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pairs.length * 6), 3));
       const mat = new THREE.LineBasicMaterial({ color: 0xc8cde0, transparent: true, opacity: EDGE_OPACITY[kind] });
-      world.add(new THREE.LineSegments(geo, mat));
+      const line = new THREE.LineSegments(geo, mat);
+      line.frustumCulled = false;
+      line.userData = { pairs, opacity: EDGE_OPACITY[kind] };
+      world.add(line);
+      edgeLines.push(line);
     }
+    updateEdges();
+  }
+
+  function updateEdges() {
+    for (const line of edgeLines) {
+      const pos = line.geometry.getAttribute("position") as THREE.BufferAttribute;
+      (line.userData.pairs as THREE.Sprite[][]).forEach(([a, b], i) => {
+        pos.setXYZ(2 * i, a.position.x, a.position.y, a.position.z);
+        pos.setXYZ(2 * i + 1, b.position.x, b.position.y, b.position.z);
+      });
+      pos.needsUpdate = true;
+    }
+  }
+
+  function markSelected(selected: Id) {
+    for (const [id, s] of sprites) s.children.forEach((c) => c instanceof CSS2DObject && c.element.classList.toggle("selected", id === selected));
   }
 
   // Picking. A click is a pointer down and up without a drag; two clicks on the same node within
@@ -224,19 +306,28 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
   el.addEventListener("pointerup", onUp);
   el.addEventListener("pointermove", onMove);
 
-  let raf = requestAnimationFrame(function frame() {
+  let raf = requestAnimationFrame(function frame(now) {
     raf = requestAnimationFrame(frame);
+    step(now);
     controls.update();
     renderer.render(scene3, camera);
     labels.render(scene3, camera);
   });
 
+  const focusOf = (sc: Scene) => sc.nodes.find((n) => n.role === "focus")!.id;
+
   return {
+    // A new Selected Node in the same Scene only moves the selection mark.
     render(scene: Scene, selected: Id) {
+      const before = current;
       current = { scene, selected };
-      draw();
+      if (before?.scene === scene) return markSelected(selected);
+      const clicked = before && focusOf(before.scene) !== focusOf(scene) && sprites.get(focusOf(scene));
+      if (clicked) moveFocus(clicked.userData.to);
+      else draw();
     },
     setView(key: View) {
+      step(Infinity);
       useView(VIEWS[key]);
       draw();
     },
@@ -246,6 +337,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
     dispose() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      endMove();
       clear();
       controls.dispose();
       disc.dispose();
@@ -257,6 +349,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string) {
     testNodes() {
       const r = el.getBoundingClientRect(),
         v = new THREE.Vector3();
+      camera.updateMatrixWorld(); // the camera may have moved since the last frame drawn
       return [...sprites.values()].map((s) => {
         s.getWorldPosition(v).project(camera);
         const n = s.userData.node as SceneNode;

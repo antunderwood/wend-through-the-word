@@ -3,6 +3,14 @@
 
 export const TYPES = ["person", "place", "event", "group", "theme", "verse"] as const;
 export type NodeType = (typeof TYPES)[number];
+export const TYPE_NAME: Record<NodeType, string> = {
+  person: "Person",
+  place: "Place",
+  event: "Event",
+  group: "People Group",
+  theme: "Theme",
+  verse: "Verse",
+};
 export const TYPE_PLURAL: Record<NodeType, string> = {
   person: "people",
   place: "places",
@@ -22,7 +30,8 @@ export const typeOf = (id: Id): NodeType | "overflow" =>
 export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number };
 export type Link = { id: Id; type: NodeType; weight: number; edges: Edge[] };
 // A loaded node: links sorted by weight, then ID; ring2 maps a Ring 1 ID to its stored top 10.
-export type Rec = { id: Id; type: NodeType; links: Link[]; ring2: Record<Id, { id: Id; weight: number }[]>; gender?: string };
+// text is a Verse's BSB text.
+export type Rec = { id: Id; type: NodeType; links: Link[]; ring2: Record<Id, { id: Id; weight: number }[]>; gender?: string; text?: string };
 
 export type View = "A" | "B" | "C";
 export type State = {
