@@ -99,6 +99,32 @@ SYNTHETIC = {  # (file, ID field, ID) -> change, each one listed in README.md
         verses=[kept["Gen.36.1"]]  # no group has a real verse in the kept chapters
     ),
 }
+# Synthetic: a second Sitnah that shares Sitnah's only Verse, as the two Valleys of Shaveh share
+# Gen 14:17, and also names Gen 26:22, to test the same-name hint (decision 122).
+SITNAH_TWIN = {
+    "id": "recFixtureSitnah",
+    "fields": {
+        "placeLookup": "sitnah_9102",
+        "displayTitle": "Sitnah",
+        "placeID": 9102,
+        "verses": [kept["Gen.26.21"], kept["Gen.26.22"]],
+    },
+}
+# Synthetic: a fourth Anah, a stub (Zibeon's daughter) with Verses only outside the fixture books,
+# one of them shared with anah_249, to test the same-name hint of a stub (decision 122).
+ENDS = {r["fields"]["osisRef"]: r["id"] for r in ends}
+ANAH_STUB = {
+    "id": "recFixtureAnah",
+    "fields": {
+        "personLookup": "anah_9250",
+        "displayTitle": "Anah",
+        "name": "Anah",
+        "personID": 9250,
+        "gender": "Female",
+        "verses": [ENDS["1Chr.1.39"], ENDS["1Chr.1.40"]],
+        "father": ["recsCvIS5fxl25zU6"],  # zibeon_3061
+    },
+}
 # Decision 41: Theographic coordinates are made up, so a test can spot them in the export.
 LAT, LON = "-11.111111", "-22.222222"
 THEO_COORDS = dict.fromkeys(("latitude", "openBibleLat", "recogitoLat"), LAT)
@@ -137,6 +163,10 @@ for name, rows in records.items():
                 change(f)
         if name == "places.json":
             f.update({k: v for k, v in THEO_COORDS.items() if k in f})
+    if name == "places.json":
+        rows.append(SITNAH_TWIN)
+    if name == "people.json":
+        rows.append(ANAH_STUB)
     dump(name, rows)
 
 # OpenBible geocoding, joined through Theographic's links (decision 56).

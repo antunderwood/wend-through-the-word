@@ -25,6 +25,21 @@ uv run python -m pipeline.build build.toml
 The download writes to `sources/` and records each file's URL, date, and SHA-256 in `sources/manifest.json`.
 If a host is blocked, fetch the file by hand and run `uv run python -m pipeline.download --supply NAME FILE`.
 
+## Front end
+
+The page is in `web/` (TypeScript, Svelte 5, Vite, three.js). `npm run dev` there serves it with the export in `out/data/`, or the one in `WEND_DATA`.
+
+Its tests read an export built from the fixtures:
+
+```
+uv run python -c "import sys; sys.path.insert(0, 'tests'); from pathlib import Path; from conftest import run_build; run_build(Path(sys.argv[1]))" "$PWD/.fixture-export"
+cd web && npm ci
+export WEND_DATA=../.fixture-export/data
+npm test                # Vitest
+npx playwright test     # the built page in Chromium
+npm run check           # svelte-check
+```
+
 ## Corrections
 
 Use the "Correction request" issue form. Every request needs at least one verse as evidence.

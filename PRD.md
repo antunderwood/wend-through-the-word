@@ -365,7 +365,7 @@ Rules:
 5. When a node becomes the new focus, the old focus joins your path. The old ring 1 fades out. New nodes grow out of the clicked node.
 6. Your path holds every focus node of the session, each node once (the latest visit counts). The scene draws only the last 5, as small dim nodes on one path line to the focus. The breadcrumb row and Prev and Next cover the whole path; the row scrolls and shows the newest first. A click on either selects that node. Prev and Next in the detail panel step along your path. "Make focus" on a trail node goes back to it.
 7. A user can pin up to 3 nodes. A pinned node stays in the view when the focus changes. It brings its top 3 neighbours of each type, with no ring 2. Nodes in ring 1 or around a pin that are in the top K of their type for both the focus and a pin are highlighted as shared (decision 119). Use this to compare nodes.
-8. The scene never shows more nodes than the node limit from the M3 test. Nodes on your path, pinned nodes, and the neighbours around pins, count toward the limit. Trim ring 2 first, then the oldest nodes on your path, then the neighbours around pins. Never trim the focus, pinned nodes, ring 1, or overflow nodes. Within ring 2, and within the neighbours around pins, trim round robin: every parent's third neighbour goes before any second, and every second before any first. Within a round, the parent ranked lowest in its type list loses first. Do not compare weights across types. When nodes are trimmed, a quiet note in a corner of the scene says how many, for example "39 faint nodes hidden to keep the view fast".
+8. The scene never shows more nodes than the node limit from the M3 test. Nodes on your path, pinned nodes, and the neighbours around pins, count toward the limit. Trim ring 2 first, then the oldest nodes on your path, then the neighbours around pins. Never trim the focus, pinned nodes, ring 1, or overflow nodes. Within ring 2, and within the neighbours around pins, trim round robin: every parent's third neighbour goes before any second, and every second before any first. Within a round, the parent ranked lowest in its type list loses first. Do not compare weights across types. When nodes are trimmed, a quiet note in a corner of the scene says how many, for example "39 nodes hidden to keep the view fast".
 9. Test the rules first with hub nodes that have thousands of links, for example Jesus and Jerusalem.
 
 #### Node look
@@ -384,7 +384,7 @@ Rules:
 3. Use one muted colour for each edge type, or a gradient between the two end nodes.
 4. Show moving particles on the focus node edges only, to show direction (for example "parent of").
 5. Show only cross-reference edges above the vote threshold. Fade the others out.
-6. Edges that touch the focus carry a text label at their midpoint. Other edges show their label on hover only.
+6. Only the edge between the focus and the selected node carries its relationship words, plus the edge of a hovered node; other edges carry no words. A node name that would overlap a more important one is hidden until a zoom or camera move makes room, and shows on hover (decision 124).
 7. The label is the relationship read from the focus: father, mother, son, daughter, brother, sister, half-brother, half-sister, partner, birthplace, took part, member of. Family words follow the neighbour's gender. Unknown gender uses parent, child, or sibling. Theographic's `partners` field does not separate wives from concubines, so a curated table (`pipeline/curated/partners.csv`) decides. The label is husband or wife when a BSB verse calls them so. It is concubine (read from the man) when a verse calls her that; read from her, he is "partner" (or "husband" when a verse also says wife). When the text uses both words, both are shown, for example Hagar, Keturah, and Bilhah: "wife, concubine". It is partner when no verse says either. Each curated row has an evidence verse, shown in the detail panel. The owner reviews every row before it ships.
 8. A link that is only a co-mention is a dashed line labelled "together in N verses".
 9. The build must keep the direction of PARENT_OF, BORN_AT, DIED_AT, PARTICIPATED_IN, OCCURRED_AT, and MEMBER_OF.
@@ -451,7 +451,7 @@ These are targets to test in the prototype. They are not proven.
 | Item | Target |
 |---|---|
 | First view loads | under 3 seconds on a normal home network |
-| Nodes in view (desktop) | up to 500, at least 30 frames per second |
+| Nodes in view (desktop) | up to 500, at least 30 frames per second (passed on a MacBook Air at pixel ratio 1 and 2, decision 123; re-test on a mid-range laptop before M5) |
 | Nodes in view (phone, after the desktop release) | up to 150, at least 30 frames per second |
 | Graph file size per view | under 500 KB |
 | Search index file | under 500 KB compressed |

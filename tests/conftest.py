@@ -14,10 +14,6 @@ VERSION = "test1"
 TIPNR = (  # the TIPNR file name, in the fixture and in a download
     "TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt"
 )
-# A size limit that makes the build trim cross-references in some chapter files and Ring 2
-# sidecars, but stays above every file that cannot be trimmed (Abraham's entity file is about
-# 51 KB), so the build still succeeds (story 74).
-TRIM_LIMIT = 62000
 
 
 def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
@@ -39,6 +35,20 @@ def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CUR
 @pytest.fixture(scope="session")
 def export(tmp_path_factory):
     return run_build(tmp_path_factory.mktemp("build") / "out")
+
+
+@pytest.fixture(scope="session")
+def trim_limit(export):
+    """A size limit that makes the build trim cross-references in some chapter files and Ring 2
+    sidecars, but stays above every file that cannot be trimmed, so the build still succeeds
+    (story 74). The largest such file is the Gen 36 sidecar's Entity entries, never trimmed
+    (decision 96). Just above them the trimmed Gen 36 chapter keeps a few cross-references,
+    whose Ring 2 lists push the sidecar over again; about 1 KB above, it keeps too few. Derived
+    from the fixture build, so the window moves with the fixture."""
+    sidecar = read_json(export / "data" / VERSION / "chapter" / "Gen" / "36.ring2.json")
+    sidecar["ring2"] = {k: v for k, v in sidecar["ring2"].items() if ":" in k}
+    floor = len((json.dumps(sidecar, ensure_ascii=False, sort_keys=True, indent=1) + "\n").encode())
+    return floor + 200
 
 
 def read_json(path):

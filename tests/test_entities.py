@@ -26,6 +26,27 @@ def test_chapter_file_shows_the_entities_each_verse_mentions(export):
     assert chapter_verse(export, "3John.1.2")["mentions"] == []
 
 
+def test_each_mention_and_filed_under_is_weighted_by_the_rarity_of_its_entity(export):
+    # Decision 121: ln(31,102 / whole-Bible Verse count), rounded to 4 places. Fixture: Keturah is
+    # in 4 Verses across the Bible and Abraham in 65, so in Gen 25:1 Keturah comes first.
+    gen_25_1 = chapter_verse(export, "Gen.25.1")
+    assert {m["id"]: m["weight"] for m in gen_25_1["mentions"]} == {
+        "person:abraham_58": 6.1706,
+        "person:keturah_1782": 8.9587,
+    }
+    # The heading ABIDAH is rarer than GENEALOGY, so it outweighs it in Gen 25:4.
+    filed = {m["id"]: m["weight"] for m in chapter_verse(export, "Gen.25.4")["filed_under"]}
+    assert filed["theme:abidah"] > filed["theme:genealogy"]
+
+    weights = {}  # an Entity has one weight in every Verse
+    for path in (export / "data" / VERSION / "chapter").rglob("*.json"):
+        for v in read_json(path).get("verses", []):  # a Ring 2 sidecar has none
+            for m in v["mentions"] + v["filed_under"]:
+                assert m["weight"] > 0 and round(m["weight"], 4) == m["weight"]
+                weights.setdefault(m["id"], set()).add(m["weight"])
+    assert all(len(w) == 1 for w in weights.values())
+
+
 def test_each_person_has_a_gender_and_no_year(export):
     people = list((export / "data" / VERSION / "entity" / "person").glob("*.json"))
     assert people

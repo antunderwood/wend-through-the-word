@@ -1,2 +1,3 @@
 a_id,b_id,evidence,note,reviewed,request
 person:anah_247,person:beeri_432,Gen.26.34;Gen.36.2;Gen.36.24,"Esau's wife is ""Judith daughter of Beeri"" in Gen.26.34 and ""Oholibamah daughter of Anah"" in Gen.36.2. A traditional harmonisation (attributed to Rashi, not checked against the source) reads them as one person. The text does not say so.",yes,
+person:anah_247,person:anah_249,Gen.36.2;Gen.36.24,"Gen.36.2 calls Oholibamah ""daughter of Anah and granddaughter of Zibeon""; Gen.36.24 names ""Anah"" among ""the sons of Zibeon"". Read together, the Anah of Gen.36.2 may be the son of Zibeon in Gen.36.24. Theographic has them as two people with two different Zibeons. The text does not say they are one.",yes,

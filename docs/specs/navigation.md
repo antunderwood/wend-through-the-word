@@ -64,7 +64,7 @@ Two small build changes support it: a weight on each Mention and Filed Under, so
 24. As a reader, I want each edge from the Focus labelled with the Relationship read from the Focus (son, wife, birthplace, took part), so that I know how each Neighbour connects.
 25. As a reader, I want a link that is only a Co-mention drawn dashed and labelled "together in N verses", so that I can tell derived links from stated ones.
 26. As a reader, I want edges to stop at the node's border and nodes to draw above every line, so that no line crosses a circle or its name.
-27. As a reader, I want a quiet note in a corner when nodes are hidden by the node limit ("39 faint nodes hidden to keep the view fast"), so that I know the scene is trimmed.
+27. As a reader, I want a quiet note in a corner when nodes are hidden by the node limit ("39 nodes hidden to keep the view fast"), so that I know the scene is trimmed.
 28. As a reader, I want two Entities with the same name and type told apart in labels and search (for example the three Anahs), so that I do not confuse them.
 29. As a reader, I want far nodes to lose their labels and near nodes to keep them, so that the scene is not a wall of text.
 
