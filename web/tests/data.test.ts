@@ -101,4 +101,22 @@ describe("data loader", () => {
     // Fixture: Easton's entry for Abraham; its first sentence is 139 characters.
     expect(data.quote(ABRAHAM)).toMatch(/^Father of a multitude, son of Terah, .*promises\.$/);
   });
+
+  it("gives the chapter of a Verse, named, with each Verse's BSB text in order", async () => {
+    const data = await createData(readExport, "");
+    const chapter = await data.chapter("01011027");
+    expect(chapter.title).toBe("Genesis 11");
+    expect(chapter.verses).toHaveLength(32);
+    expect(chapter.verses[25]).toEqual({ key: "01011026", text: "When Terah was 70 years old, he became the father of Abram, Nahor, and Haran." });
+  });
+
+  it("steps to the first Verse of the next or previous chapter in the build, and stops at its ends", async () => {
+    const data = await createData(readExport, "");
+    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 17, 3 John 1.
+    expect(data.nextChapter("01011027", 1)).toBe("01016001");
+    expect(data.nextChapter("01036024", 1)).toBe("40017001");
+    expect(data.nextChapter("40017020", -1)).toBe("01036001");
+    expect(data.nextChapter("01011001", -1)).toBeUndefined();
+    expect(data.nextChapter("64001001", 1)).toBeUndefined();
+  });
 });

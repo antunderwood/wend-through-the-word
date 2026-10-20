@@ -14,7 +14,11 @@ const firstFrameWith = async (page: Page, id: string) =>
     id,
     { polling: "raf" },
   ).then((h) => h.jsonValue())) as OnScreen[];
-const centre = (page: Page) => ({ x: page.viewportSize()!.width / 2, y: page.viewportSize()!.height / 2 });
+// The centre of the scene, which lies between the panels.
+const centre = async (page: Page) => {
+  const b = (await page.getByRole("application").boundingBox())!;
+  return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+};
 const far = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
 
 async function open(page: Page) {
@@ -43,7 +47,7 @@ test.describe("with reduced motion", () => {
     // No flight and no growth: the first frame already has Sarah at the centre and her Ring 1 in place.
     const frame = await firstFrameWith(page, SARAH);
     const focus = frame.find((n) => n.role === "focus")!;
-    expect(far(focus, centre(page))).toBeLessThan(2);
+    expect(far(focus, await centre(page))).toBeLessThan(2);
     expect(Math.max(...frame.filter((n) => n.role === "ring1").map((n) => far(n, focus)))).toBeGreaterThan(100);
     await expect(page.getByRole("status")).toHaveText("Sarah is the Focus.");
     await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Sarah");
@@ -74,7 +78,7 @@ test("the camera flies to the new Focus and new nodes grow out of it", async ({ 
   expect(Math.max(...frame.filter((n) => n.role === "ring1").map((n) => far(n, focus)))).toBeLessThan(30);
   // Then, after the 700 ms flight, the camera has arrived with Sarah at the centre.
   await page.clock.fastForward(800);
-  expect(far(await node(page, SARAH), centre(page))).toBeLessThan(2);
+  expect(far(await node(page, SARAH), await centre(page))).toBeLessThan(2);
 });
 
 test("the hint can be dismissed and stays dismissed after a reload", async ({ page }) => {
