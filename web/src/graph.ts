@@ -149,16 +149,16 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   // The white ring of the Selected Node, moved from node to node.
   const selRing = new THREE.Group().add(sprite(TEX.mask, BG, 1, SELECTED, LAYER.mask), sprite(TEX.ring, 0xffffff, 1, SELECTED, LAYER.ring));
   // The edge from a hovered Ring 2 node to its parent, at full opacity over the faint ones.
-  const lit = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pa, pb]), new THREE.LineBasicMaterial({ color: EDGE.ring2.color }));
-  lit.frustumCulled = false;
-  scene3.add(lit);
+  const hoverEdge = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pa, pb]), new THREE.LineBasicMaterial({ color: EDGE.ring2.color }));
+  hoverEdge.frustumCulled = false;
+  scene3.add(hoverEdge);
 
   // Test page switches (#30): the Focus glow, the free orbit fog, and a turning camera.
   let look = { glow: true, fog: true, spin: false };
   let view = VIEWS.A,
     controls: OrbitControls,
     deco: THREE.Object3D;
-  let current: { scene: Scene; selected: Id } | null = null;
+  let drawn: { scene: Scene; selected: Id } | null = null;
   let sprites = new Map<Id, THREE.Sprite>();
   let edges: Drawn[] = [];
   let faint: { line: THREE.LineSegments; pairs: THREE.Sprite[][] } | null = null; // Ring 2 edges, one draw call
@@ -227,7 +227,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
 
   // A Focus change: the camera glides by the same shift as the centre, new nodes grow out of the
   // clicked node, and the old scene fades. Under reduced motion all of it happens at once.
-  let move: { t0: number; from: THREE.Vector3; P: THREE.Vector3[]; T: THREE.Vector3[]; D: THREE.Vector3[]; old: THREE.Group } | null = null;
+  let move: { t0: number; from: THREE.Vector3; camera: THREE.Vector3[]; target: THREE.Vector3[]; deco: THREE.Vector3[]; old: THREE.Group } | null = null;
   function endMove() {
     if (!move) return;
     empty(move.old);
@@ -245,12 +245,16 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     scene3.add(old);
     const next = view.centreFrom?.(clicked, centre) ?? clicked.clone();
     const delta = next.clone().sub(centre);
-    const D = [centre, next];
     centre = next;
     draw();
-    const P = [camera.position.clone(), camera.position.clone().add(delta)];
-    const T = [controls.target.clone(), controls.target.clone().add(delta)];
-    move = { t0: performance.now(), from: clicked, P, T, D, old };
+    move = {
+      t0: performance.now(),
+      from: clicked,
+      camera: [camera.position.clone(), camera.position.clone().add(delta)],
+      target: [controls.target.clone(), controls.target.clone().add(delta)],
+      deco: [centre, next],
+      old,
+    };
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
     else step(move.t0);
   }
@@ -258,9 +262,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   function step(now: number) {
     if (!move) return;
     const k = ease(Math.min(1, (now - move.t0) / MOVE_MS));
-    camera.position.lerpVectors(move.P[0], move.P[1], k);
-    controls.target.lerpVectors(move.T[0], move.T[1], k);
-    deco.position.lerpVectors(move.D[0], move.D[1], k);
+    camera.position.lerpVectors(move.camera[0], move.camera[1], k);
+    controls.target.lerpVectors(move.target[0], move.target[1], k);
+    deco.position.lerpVectors(move.deco[0], move.deco[1], k);
     for (const s of sprites.values()) s.position.lerpVectors(move.from, s.userData.to, k);
     move.old.traverse((c) => {
       if (c instanceof THREE.Sprite || c instanceof THREE.Line) c.material.opacity = c.userData.opacity * (1 - k);
@@ -296,8 +300,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
 
   function draw() {
     clear();
-    if (!current) return;
-    const { scene, selected } = current;
+    if (!drawn) return;
+    const { scene, selected } = drawn;
     const rel = layout(scene, view.place);
     for (const n of scene.nodes) {
       const st = STYLE[n.role];
@@ -409,11 +413,11 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     }
     const h = hovered?.userData.node as SceneNode | undefined,
       via = h?.role === "ring2" && sprites.get(h.via!);
-    lit.visible = !!via && !touching(via, hovered!);
-    if (via && lit.visible) {
+    hoverEdge.visible = !!via && !touching(via, hovered!);
+    if (via && hoverEdge.visible) {
       onRim(pa, via.position, hovered!.position, rim(via));
       onRim(pb, hovered!.position, via.position, rim(hovered!));
-      lit.geometry.setFromPoints([pa, pb]);
+      hoverEdge.geometry.setFromPoints([pa, pb]);
     }
   }
   // Near labels show in full, far ones not at all; the Focus keeps its name.
@@ -522,13 +526,13 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     labels.render(scene3, camera);
   });
 
-  const focusOf = (sc: Scene) => sc.nodes.find((n) => n.role === "focus")!.id;
+  const focusOf = (scene: Scene) => scene.nodes.find((n) => n.role === "focus")!.id;
 
   return {
     // A new Selected Node in the same Scene only moves the selection mark.
     render(scene: Scene, selected: Id) {
-      const before = current;
-      current = { scene, selected };
+      const before = drawn;
+      drawn = { scene, selected };
       if (before?.scene === scene) return markSelected(selected);
       const clicked = before && focusOf(before.scene) !== focusOf(scene) && sprites.get(focusOf(scene));
       if (clicked) moveFocus(clicked.userData.to);
@@ -556,8 +560,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       endMove();
       clear();
       selRing.traverse((c) => c instanceof THREE.Sprite && c.material.dispose());
-      lit.geometry.dispose();
-      lit.material.dispose();
+      hoverEdge.geometry.dispose();
+      hoverEdge.material.dispose();
       controls.dispose();
       [...Object.values(TEX.type), TEX.plus, TEX.mask, TEX.ring, TEX.glow].forEach((t) => t.dispose());
       renderer.dispose();

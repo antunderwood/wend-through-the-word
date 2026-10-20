@@ -1,11 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The page is built and served with the export in WEND_DATA (the fixture export in CI).
+// The page is built and served with the export in WEND_DATA (the fixture export in CI). The e2e
+// mode build is the only one with the window.wendGraph hook the tests read.
 export default defineConfig({
   testDir: "e2e",
   use: { baseURL: "http://localhost:4173", trace: "retain-on-failure" },
   webServer: {
-    command: "npm run build && npx vite preview --port 4173 --strictPort",
+    command: "npx vite build --mode e2e && npx vite preview --port 4173 --strictPort",
     port: 4173,
     reuseExistingServer: !process.env.CI,
   },

@@ -25,6 +25,6 @@ export const viewA: ViewModule = {
     ring2: (a, rank) => flat(a, 32 + rank * 2.5),
     path: (i) => new THREE.Vector3(-50 - i * 6, 0, 14 + i * 2),
     pin: (i) => new THREE.Vector3(-26 + i * 26, 0, -62),
-    pinRing: (p, ti, rank) => p.clone().add(flat(-Math.PI / 2 + ti * W + (rank - 1) * 0.3, 8)),
+    pinRing: (p, typeIndex, rank) => p.clone().add(flat(-Math.PI / 2 + typeIndex * W + (rank - 1) * 0.3, 8)),
   },
 };

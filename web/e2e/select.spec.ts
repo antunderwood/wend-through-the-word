@@ -1,15 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
+import { nodes, type OnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473";
-const nodes = (page: Page) => page.evaluate(() => window.wendGraph!.testNodes());
 const node = async (page: Page, id: string) => (await nodes(page)).find((n) => n.id === id)!;
 // The first frame drawn with id as the Focus.
 const firstFrameWith = async (page: Page, id: string) =>

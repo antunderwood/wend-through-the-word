@@ -28,6 +28,9 @@ jobs:
         working-directory: web
       - run: npm test
         working-directory: web
+      - name: The production build has no test hooks
+        run: npm run build && ! grep -rq wendGraph dist
+        working-directory: web
       - run: npx playwright install --with-deps --only-shell chromium
         working-directory: web
       - run: npx playwright test

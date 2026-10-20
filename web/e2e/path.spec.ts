@@ -1,16 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-
-type OnScreen = { id: string; role: string; x: number; y: number };
-declare global {
-  interface Window {
-    wendGraph?: { testNodes(): OnScreen[] };
-  }
-}
+import { focusIs } from "./scene";
 
 const SARAH = "person:sarah_2473",
   HAGAR = "person:hagar_1348";
-const focusIs = (page: Page, id: string) =>
-  page.waitForFunction((id) => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id === id, id);
 // On the node's label, not its disc: in the tilted plane Abraham's label lies over Hagar's disc once
 // the next frame draws it. The label waits for that frame and fails if anything covers it.
 async function doubleClick(page: Page, name: string, id: string) {
@@ -44,8 +36,8 @@ test("the Your Path bar shows the Focus then Your Path newest first, and can be 
 
   await bar.getByRole("button", { name: "Clear", exact: true }).click();
   await expect(items).toHaveText(["Hagar"]);
-  // Abraham was on Your Path and is not pinned, so the selection gives way to the Focus.
-  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Hagar");
+  // Abraham is also in Hagar's Ring 1, so he is still in the scene and stays selected.
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Abraham");
 
   await bar.getByRole("button", { name: "Undo clear" }).click();
   await expect(items).toHaveText(["Hagar", "Sarah", "Abraham"]);

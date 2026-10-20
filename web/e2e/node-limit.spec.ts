@@ -19,7 +19,7 @@ test("the node limit page measures each view and gives the results as text", asy
     await page.getByRole("radio", { name: view, exact: true }).check();
     await page.getByLabel("Scene").selectOption({ label: choice });
     await expect(page.getByTestId("nodes")).toHaveText(nodes);
-    await page.waitForFunction((n) => (window as { wendGraph?: { testNodes(): unknown[] } }).wendGraph?.testNodes().length === n, +nodes);
+    await page.waitForFunction((n) => window.wendGraph?.testNodes().length === n, +nodes);
     await expect(page.getByTestId("fps")).toHaveText(/^\d+(\.\d)? fps/, { timeout: 20_000 });
     await record.click();
   }

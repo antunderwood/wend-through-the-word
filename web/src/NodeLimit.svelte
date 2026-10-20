@@ -20,7 +20,7 @@
   let choice = $state(CHOICES[0]);
   let nodeLimit = $state(500);
   let look = $state.raw({ glow: true, fog: true, spin: false });
-  let sc = $state.raw<Scene>();
+  let onScreen = $state.raw<Scene>();
   let readings = $state<number[]>([]);
   let message = $state("");
   let results = $state("");
@@ -41,11 +41,11 @@
         return;
       }
       const s = reduce(initialState(hub), { type: "setFilter", key: "nodeLimit", value: nodeLimit }, data!.label);
-      next = scene(s, data!.rec, data!.genderOf);
+      next = scene(s, data!.record, data!.genderOf);
     } else next = synthetic(parseInt(choice));
     if (mine !== shown) return;
-    sc = next;
-    graph!.render(sc, sc.nodes.find((n) => n.role === "focus")!.id);
+    onScreen = next;
+    graph!.render(onScreen, onScreen.nodes.find((n) => n.role === "focus")!.id);
     readings = [];
   }
 
@@ -62,7 +62,7 @@
 
   function record() {
     const on = (b: boolean) => (b ? "on" : "off");
-    const cells = [view, choice, sc!.count, sc!.demand, sc!.hidden, `glow ${on(look.glow)}`, VIEWS[view].fog ? `fog ${on(look.fog)}` : "no fog", look.spin ? "spinning" : "still"];
+    const cells = [view, choice, onScreen!.count, onScreen!.demand, onScreen!.hidden, `glow ${on(look.glow)}`, VIEWS[view].fog ? `fog ${on(look.fog)}` : "no fog", look.spin ? "spinning" : "still"];
     results += cells.map((c, i) => String(c).padEnd(WIDTHS[i])).join("") + `${fps!.toFixed(1)} fps\n`;
   }
 
@@ -83,7 +83,7 @@
       (d) => (data = d),
       (e) => (message = `Could not load the export, so the hubs are off: ${e.message}`),
     );
-    Object.assign(window, { wendGraph: graph }); // test only
+    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph }); // the browser tests' build only
     return () => graph?.dispose();
   });
 </script>
@@ -128,10 +128,10 @@
     <label><input type="checkbox" checked={look.fog} onchange={(e) => setLook({ ...look, fog: e.currentTarget.checked })} disabled={!VIEWS[view].fog} />Fog</label>
     <label><input type="checkbox" checked={look.spin} onchange={(e) => setLook({ ...look, spin: e.currentTarget.checked })} />Spin the camera</label>
   </div>
-  {#if sc}
+  {#if onScreen}
     <p>
-      Nodes <b data-testid="nodes">{sc.count}</b>, wanted <b data-testid="demand">{sc.demand}</b>, hidden
-      <b data-testid="hidden">{sc.hidden}</b>
+      Nodes <b data-testid="nodes">{onScreen.count}</b>, wanted <b data-testid="demand">{onScreen.demand}</b>, hidden
+      <b data-testid="hidden">{onScreen.hidden}</b>
     </p>
   {/if}
   <p>

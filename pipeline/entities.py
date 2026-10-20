@@ -1,5 +1,5 @@
 """People, Places, Events, and People Groups from Theographic. Sets `b.entities` (ID -> Entity)
-and `b.verse_sets` (ID -> whole-Bible Verse Keys, for each Entity in the book range). Then, once
+and `b.verse_sets` (ID -> whole-Bible Verse Keys, for every Theographic record). Then, once
 Themes are in, `verse_neighbours` turns each Entity's Verses into Verse Neighbours.
 
 Also sets, for the later steps, every Theographic record in or out of the book range:
@@ -71,12 +71,13 @@ def load(b):
         missing.update(v for v in f.get("verses") or [] if v not in b.verse_recs)
         if entity_id in b.entities:
             sys.exit(f"two Theographic records give the ID {entity_id}")
+        # Whole-Bible Verse set for the Co-mention weight (decision 95) and the same-name hint
+        # (decision 122), also for a record outside the range, which may ship as a stub. The
+        # themes step adds the Filed Under Verses of each Theme.
+        b.verse_sets[entity_id] = {b.rec_keys[v] for v in f.get("verses") or [] if v in b.rec_keys}
         in_range = [b.verse_recs[v] for v in f.get("verses") or [] if b.verse_recs.get(v)]
         if not in_range:
             continue
-        # Whole-Bible Verse set for the Co-mention weight (decision 95). The themes step adds
-        # the Filed Under Verses of each Theme.
-        b.verse_sets[entity_id] = {b.rec_keys[v] for v in f["verses"] if v in b.rec_keys}
         theographic = {"source": "Theographic", "licence": b.licence(source)}
         b.entities[entity_id] = {
             "id": entity_id,

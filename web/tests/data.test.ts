@@ -68,6 +68,19 @@ describe("data loader", () => {
     expect(data.label("place:canaan_272")).toBe("Canaan");
   });
 
+  it("says when a Verse is outside the build, without fetching it", async () => {
+    const read: string[] = [];
+    const data = await createData(async (url) => (read.push(url), readExport(url)), "");
+    // Gen 16:1 has a Cross-reference to Gal 4:24; the fixture builds Gen 11, 16, 25, 26, 36, Matt 17, 3 John 1.
+    expect((await data.load("01016001")).links.some((l) => l.id === "48004024")).toBe(true);
+    expect(data.outside("48004024")).toBe("Gal 4:24 is outside this build (Genesis, Matthew, 3 John only).");
+    expect(data.outside("01012001")).toBe("Gen 12:1 is outside this build (Genesis, Matthew, 3 John only).");
+    expect(data.outside("01016001")).toBe("");
+    expect(data.outside(ABRAHAM)).toBe("");
+    await expect(data.load("48004024")).rejects.toThrow("Gal 4:24 is outside this build");
+    expect(read.some((url) => url.includes("/Gal/"))).toBe(false);
+  });
+
   it("gives a Verse a short BSB quote once its record is loaded", async () => {
     const data = await createData(readExport, "");
     expect(data.quote("01025005")).toBe("");
