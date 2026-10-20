@@ -46,7 +46,16 @@ export async function createData(getJSON: GetJSON, root: string) {
   const records = new Map<Id, Rec>();
   const pending = new Map<Id, Promise<Rec>>();
 
-  const byWeight = (a: Link, b: Link) => b.weight - a.weight || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+  const reference = (id: Id) => `${books.get(id.slice(0, 2))?.osis ?? "?"} ${+id.slice(2, 5)}:${+id.slice(5)}`;
+  // A Verse in a chapter outside the build cannot load (a Cross-reference into another book): its
+  // note, or "" for any other node.
+  const built = searchIndex.books.filter((b) => b.chapters.length).map((b) => b.name).join(", ");
+  const outside = (id: Id) =>
+    typeOf(id) !== "verse" || books.get(id.slice(0, 2))?.chapters.includes(+id.slice(2, 5))
+      ? ""
+      : `${reference(id)} is outside this build (${built} only).`;
+
+  const byWeight =(a: Link, b: Link) => b.weight - a.weight || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
   async function fetchRecord(id: Id): Promise<Rec> {
     const type = typeOf(id);
@@ -64,6 +73,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   // A Verse becomes a record of the same shape, from its chapter file and the chapter's Ring 2
   // sidecar: Mentions and Filed Under weighted by rarity (decision 121), Cross-references by Votes.
   async function fetchVerse(id: Id): Promise<Rec> {
+    if (outside(id)) throw new Error(outside(id));
     const chapter = `${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}`;
     const [c, side] = await Promise.all([get<ChapterFile>(`${chapter}.json`), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
     const v = c.verses.find((x) => x.key === id);
@@ -144,6 +154,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       const keys = rb.links.filter((l) => l.type === "verse" && mine.has(l.id)).map((l) => l.id).sort();
       return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
     },
+    outside,
     rec: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry, cut at 90
@@ -153,10 +164,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       return first.length > 90 ? `${first.slice(0, 88)}...` : first;
     },
     label(id: Id): string {
-      if (typeOf(id) === "verse") {
-        const b = books.get(id.slice(0, 2));
-        return `${b?.osis ?? "?"} ${+id.slice(2, 5)}:${+id.slice(5)}`;
-      }
+      if (typeOf(id) === "verse") return reference(id);
       const e = entities.get(id);
       const name = e?.name ?? id;
       // Nave's headings are upper case ("FAITH"); show them as "Faith".

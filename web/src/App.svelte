@@ -71,8 +71,9 @@
   // The new Focus and its relatives load first; a later move wins over an earlier one still loading.
   let moves = 0;
   async function makeFocus(id: Id) {
-    if (typeOf(id) === "overflow") {
-      model = { ...model, notice: "An Overflow Node cannot be the Focus." };
+    const refused = typeOf(id) === "overflow" ? "An Overflow Node cannot be the Focus." : data!.outside(id);
+    if (refused) {
+      model = { ...model, notice: refused };
       return;
     }
     const mine = ++moves;
@@ -88,6 +89,10 @@
 
   // A pin's record must be loaded before the scene can draw its ring.
   async function pin(id: Id) {
+    if (data!.outside(id)) {
+      model = { ...model, notice: data!.outside(id) };
+      return;
+    }
     if (typeOf(id) !== "overflow") {
       failure = undefined;
       try {
@@ -114,22 +119,26 @@
 
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
+  // A Retry in the panel loads both lists again.
+  let retries = $state(0);
   // Both are read only once data is loaded. An Overflow Node lists all the Focus's Neighbours of its type.
-  const listing = $derived(
-    typeOf(listed) === "overflow"
+  const listing = $derived.by(() => {
+    retries;
+    return typeOf(listed) === "overflow"
       ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(listed)], whole: true }))
-      : data!.loadWithKin(listed).then((r) => ({ r, types: TYPES, whole: false })),
-  );
+      : data!.loadWithKin(listed).then((r) => ({ r, types: TYPES, whole: false }));
+  });
   const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
   // The Verses `versed` shares with the Focus, then with each pin.
   const pins = $derived(model.pins);
-  const sharing = $derived(
-    Promise.all(
+  const sharing = $derived.by(() => {
+    retries;
+    return Promise.all(
       [...new Set([focus, ...pins])]
         .filter((o) => o !== versed && isEntity(versed) && isEntity(o))
         .map(async (o) => ({ with: o, verses: await data!.shared(o, versed) })),
-    ),
-  );
+    );
+  });
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
@@ -206,6 +215,7 @@
       <h2>{label(selected)}</h2>
       <p class="muted">{selectedType}</p>
       <p>{#if link}Relationship: <b>{relation(link, data.genderOf).text}</b>{/if}</p>
+      {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
       <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
       {#if model.pins.includes(selected)}
         <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
@@ -226,7 +236,7 @@
           {/if}
         {/each}
       {:catch e}
-        <p class="muted">Could not load the shared verses: {e.message}</p>
+        {@render failed("the shared verses", e)}
       {/await}
     </section>
     {#await listing then list}
@@ -250,7 +260,8 @@
         {/if}
       {/each}
     {:catch e}
-      <p class="muted">Could not load the Neighbours: {e.message}</p>
+      <!-- A Verse outside the build has no lists; the note above says why. -->
+      {#if !data.outside(listed)}{@render failed("the Neighbours", e)}{/if}
     {/await}
   </aside>
   <PathBar {model} {label} {apply} />
@@ -262,6 +273,9 @@
     {label(id)}
     {#if words}<span class="muted">{words}</span>{/if}
   </button>
+{/snippet}
+{#snippet failed(what: string, e: Error)}
+  <p class="muted">Could not load {what}: {e.message} <button onclick={() => retries++}>Retry</button></p>
 {/snippet}
 {#if hint}
   <p class="hint">

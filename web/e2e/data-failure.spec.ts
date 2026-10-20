@@ -20,6 +20,52 @@ test("a data file that fails twice shows a message and a retry, and the scene st
   await expect(alert).toHaveCount(0);
 });
 
+test("a Verse outside the build is never fetched: Make Focus and Pin are refused, and the panel says why", async ({ page }) => {
+  const asked: string[] = [];
+  page.on("request", (r) => asked.push(r.url()));
+  await page.goto("/");
+  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 16:1");
+  await page.getByRole("searchbox", { name: "Search" }).press("Enter");
+  await focusIs(page, "01016001");
+  // Gen 16:1 has a Cross-reference to Gal 4:24, outside the fixture build.
+  const panel = page.getByRole("complementary", { name: "Selected Node" });
+  const note = "Gal 4:24 is outside this build (Genesis, Matthew, 3 John only).";
+  // Selected in the scene, so the panel also tries to list its Neighbours.
+  await page.locator(".labels").getByText("Gal 4:24", { exact: true }).click();
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Gal 4:24");
+  await expect(panel).toContainText(note);
+  await expect(panel).not.toContainText("Could not load");
+
+  await panel.getByRole("button", { name: "Make Focus" }).click();
+  await expect(page.getByRole("status")).toHaveText(note);
+  // Prev changes the notice, so the Pin notice below is a new one.
+  await panel.getByRole("button", { name: "Prev" }).click();
+  await expect(page.getByRole("status")).toHaveText("Gal 4:24 is not on Your Path.");
+  await panel.getByRole("button", { name: "Pin", exact: true }).click();
+  await expect(page.getByRole("status")).toHaveText(note);
+  await expect(panel.getByRole("button", { name: "Unpin" })).toHaveCount(0);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  expect((await page.evaluate(() => window.wendGraph!.testNodes())).find((n) => n.role === "focus")!.id).toBe("01016001");
+  expect(asked.filter((u) => u.includes("/Gal/"))).toEqual([]);
+});
+
+test("a panel list that fails twice shows a message and a retry", async ({ page }) => {
+  await page.goto("/");
+  await focusIs(page, "person:abraham_58");
+  // Ur's file is first needed when Ur is selected: for its Neighbours and the Verses it shares with Abraham.
+  await page.route("**/entity/place/ur_1189.json", (r) => r.abort());
+  const panel = page.getByRole("complementary", { name: "Selected Node" });
+  await page.locator(".labels").getByText("Ur of the Chaldees", { exact: true }).click();
+  await expect(panel).toContainText("Could not load the Neighbours");
+  await expect(panel).toContainText("Could not load the shared verses");
+
+  await page.unroute("**/entity/place/ur_1189.json");
+  await panel.getByRole("button", { name: "Retry" }).first().click();
+  await expect(panel.getByRole("list", { name: "Person (7)" })).toBeVisible();
+  await expect(panel.getByRole("heading", { name: "Together in 1 verse" })).toBeVisible();
+  await expect(panel).not.toContainText("Could not load");
+});
+
 test("a failed first load shows a message and a retry in place of the scene", async ({ page }) => {
   await page.route("**/search-index.json", (r) => r.abort());
   await page.goto("/");
