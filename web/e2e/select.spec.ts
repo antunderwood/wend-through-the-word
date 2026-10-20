@@ -68,7 +68,10 @@ test.describe("with reduced motion", () => {
 });
 
 test("the camera flies to the new Focus and new nodes grow out of it", async ({ page }) => {
+  // A fake clock moves the flight on, so a machine under load cannot starve it of frames.
+  await page.clock.install();
   await open(page);
+  await page.clock.pauseAt(Date.now() + 1000);
   const sarah = await node(page, SARAH);
   await page.mouse.dblclick(sarah.x, sarah.y);
   // The first frame: the camera has not moved yet, and every new node starts at the clicked node.
@@ -76,8 +79,9 @@ test("the camera flies to the new Focus and new nodes grow out of it", async ({ 
   const focus = frame.find((n) => n.role === "focus")!;
   expect(far(focus, sarah)).toBeLessThan(30);
   expect(Math.max(...frame.filter((n) => n.role === "ring1").map((n) => far(n, focus)))).toBeLessThan(30);
-  // Then the camera arrives with Sarah at the centre.
-  await expect.poll(async () => far(await node(page, SARAH), centre(page)), { timeout: 3000 }).toBeLessThan(2);
+  // Then, after the 700 ms flight, the camera has arrived with Sarah at the centre.
+  await page.clock.fastForward(800);
+  expect(far(await node(page, SARAH), centre(page))).toBeLessThan(2);
 });
 
 test("the hint can be dismissed and stays dismissed after a reload", async ({ page }) => {
