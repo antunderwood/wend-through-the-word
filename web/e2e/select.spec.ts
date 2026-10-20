@@ -7,7 +7,6 @@ declare global {
   }
 }
 
-// Sarah, not Isaac: in the tilted plane Sarah's label lies over Isaac's disc, so a click there selects her.
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473";
 const nodes = (page: Page) => page.evaluate(() => window.wendGraph!.testNodes());

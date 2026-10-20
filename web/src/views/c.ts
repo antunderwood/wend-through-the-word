@@ -13,6 +13,7 @@ export const viewC: ViewModule = {
     controls.maxDistance = 260;
   },
   decorate: () => new THREE.Group(),
+  fog: true,
   place: {
     focus: () => new THREE.Vector3(),
     ring1: (a, pos) => sph(a, ((pos % 3) - 1) * 0.4, 16 + (pos % 2) * 3),

@@ -3,7 +3,7 @@
   import { createData, type Data } from "./data";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type View } from "./model";
+  import { initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
@@ -28,6 +28,7 @@
   let failure = $state<{ message: string; retry: () => void }>();
   let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
+  let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
   // The panel lists the Neighbours of `listed` and the Verses `versed` shares with the Focus. A
   // click in a list keeps that list, so the second click of a double click lands on the same item.
@@ -62,7 +63,7 @@
 
   function apply(a: Action, from?: "neighbours" | "verses") {
     const next = reduce(model, a, label);
-    if (next.focus !== model.focus || next.path !== model.path || next.pins !== model.pins) sc = scene(next, data!.rec, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) sc = scene(next, data!.rec, data!.genderOf);
     if (next.selected !== model.selected || next.focus !== model.focus) {
       if (from !== "neighbours") listed = next.selected;
       if (from !== "verses") versed = next.selected;
@@ -107,6 +108,13 @@
   const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data?.rec(model.focus)?.links.find((l) => l.id === selected));
+
+  // An unlabelled node names itself on hover; Ring 2 also shows its way to the Focus.
+  function showTip(n: SceneNode | null, x: number, y: number) {
+    const named = n && ["ring2", "pinring", "path"].includes(n.role);
+    const text = n?.role === "ring2" ? [n.id, n.via!, model.focus].map(label).join(" → ") : named ? label(n.id) : "";
+    tip = text ? { text, x, y } : null;
+  }
 
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
@@ -170,8 +178,11 @@
     graph.setView(view);
     graph.onNodeClick((id) => apply({ type: "select", id }));
     graph.onNodeDoubleClick(makeFocus);
+    graph.onHover(showTip);
     graph.render(sc, model.selected);
-    Object.assign(window, { wendGraph: graph }); // test-only hook for the browser tests
+    // Test-only hooks for the browser tests. wendApply dispatches any action, such as a node limit,
+    // which has no entry yet (#30).
+    Object.assign(window, { wendGraph: graph, wendApply: apply });
   }
 
   onMount(() => {
@@ -276,6 +287,8 @@
   </div>
 {/if}
 <p class="notice" role="status">{model.notice}</p>
+{#if sc?.hidden}<p class="trimmed">{sc.hidden} faint node{sc.hidden === 1 ? "" : "s"} hidden to keep the view fast</p>{/if}
+{#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>
   :global(html, body) {
@@ -437,6 +450,23 @@
   .hint button {
     margin-left: 8px;
     padding: 0 7px;
+  }
+  .trimmed {
+    position: fixed;
+    left: 16px;
+    bottom: 40px; /* above the notice line */
+    margin: 0;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  .tip {
+    position: fixed;
+    pointer-events: none;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid #262a3c;
+    border-radius: 6px;
+    font-size: 12px;
   }
   .fallback {
     color: #ffd27a;

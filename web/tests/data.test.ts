@@ -78,4 +78,11 @@ describe("data loader", () => {
     // Gen 25:8 is one sentence of 103 characters, so it is cut.
     expect(data.quote("01025008")).toBe("And at a ripe old age he breathed his last and died, old and contented, and was gathered...");
   });
+
+  it("gives an Entity the first line of its Dictionary Entry once its record is loaded", async () => {
+    const data = await createData(readExport, "");
+    await data.load(ABRAHAM);
+    // Fixture: Easton's entry for Abraham; its first sentence is 139 characters, so it is cut.
+    expect(data.quote(ABRAHAM)).toBe("Father of a multitude, son of Terah, named (Gen. 11:27) before his older brothers Nahor ...");
+  });
 });

@@ -14,6 +14,7 @@ type EntityFile = {
   name?: string;
   title?: string;
   gender?: string;
+  dictionary_entry?: { text: string };
   neighbours: Link[];
   verses: { key: string; edge: string; direction: Edge["direction"]; weight: number }[];
   ring2: Rec["ring2"];
@@ -50,7 +51,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       // Entity to Verse: the weight is the number of other Entities in the Verse.
       ...d.verses.map((v) => ({ id: v.key, type: "verse" as const, weight: v.weight, edges: [{ edge: v.edge, direction: v.direction }] })),
     ];
-    return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender };
+    return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender, text: d.dictionary_entry?.text };
   }
 
   // A Verse becomes a record of the same shape, from its chapter file and the chapter's Ring 2
@@ -138,7 +139,8 @@ export async function createData(getJSON: GetJSON, root: string) {
     },
     rec: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
-    // The first sentence of a loaded Verse's BSB text, cut at 90 characters; "" until loaded.
+    // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry, cut at 90
+    // characters; "" until loaded.
     quote(id: Id): string {
       const first = (records.get(id)?.text ?? "").split(/(?<=\.)\s(?=[A-Z])/)[0];
       return first.length > 90 ? `${first.slice(0, 88)}...` : first;
