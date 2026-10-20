@@ -152,6 +152,82 @@ describe("select and focus", () => {
       [SARAH, ISAAC],
     ]);
   });
+
+  describe("Prev and Next", () => {
+    let s: State; // Your Path: Abraham, Isaac; Sarah the Focus
+    beforeAll(() => {
+      s = walk(initialState(ABRAHAM), ISAAC, SARAH);
+    });
+    const step = (t: State, ...dirs: (-1 | 1)[]) => dirs.reduce((u, dir) => reduce(u, { type: "step", dir }, data.label), t);
+
+    it("step the selection along Your Path without moving the Focus", () => {
+      expect(step(s, -1).selected).toBe(ISAAC);
+      expect(step(s, -1, -1).selected).toBe(ABRAHAM);
+      expect(step(s, -1, -1, 1).selected).toBe(ISAAC);
+      expect(step(s, -1, -1, 1, 1).selected).toBe(SARAH);
+      expect(draw(step(s, -1, -1))).toEqual(draw(s));
+    });
+
+    it("give a notice and change nothing at either end", () => {
+      const oldest = step(s, -1, -1);
+      expect({ ...step(oldest, -1), notice: "" }).toEqual({ ...oldest, notice: "" });
+      expect(step(oldest, -1).notice).toBe("No earlier node on Your Path.");
+      expect({ ...step(s, 1), notice: "" }).toEqual({ ...s, notice: "" });
+      expect(step(s, 1).notice).toBe("No later node on Your Path.");
+    });
+
+    it("give a notice and change nothing when the Selected Node is off Your Path", () => {
+      const off = reduce(s, { type: "select", id: HAGAR }, data.label);
+      for (const dir of [-1, 1] as const) {
+        expect({ ...step(off, dir), notice: "" }).toEqual(off);
+        expect(step(off, dir).notice).toBe("Hagar is not on Your Path.");
+      }
+    });
+  });
+
+  describe("Clear and Undo clear", () => {
+    const clear = (t: State) => reduce(t, { type: "clearPath" }, data.label);
+    const undo = (t: State) => reduce(t, { type: "undoClear" }, data.label);
+    let s: State; // Your Path: Abraham, Isaac, Hagar; Sarah the Focus
+    beforeAll(() => {
+      s = walk(initialState(ABRAHAM), ISAAC, HAGAR, SARAH);
+    });
+
+    it("Clear empties Your Path and keeps the Focus and pins", () => {
+      const pinned = reduce(s, { type: "pin", id: ISAAC }, data.label);
+      const t = clear(pinned);
+      expect([t.focus, t.path, t.pins]).toEqual([SARAH, [], [ISAAC]]);
+    });
+
+    it("a Selected Node only on Your Path gives way to the Focus; a pinned one stays", () => {
+      expect(clear(reduce(s, { type: "select", id: HAGAR }, data.label)).selected).toBe(SARAH);
+      const pinned = reduce(reduce(s, { type: "pin", id: ISAAC }, data.label), { type: "select", id: ISAAC }, data.label);
+      expect(clear(pinned).selected).toBe(ISAAC);
+      // A Ring 1 node off Your Path stays selected.
+      expect(clear(reduce(s, { type: "select", id: TERAH }, data.label)).selected).toBe(TERAH);
+    });
+
+    it("Undo clear with no visits in between gives back Your Path as it was", () => {
+      const t = undo(clear(s));
+      expect(t.path).toEqual([ABRAHAM, ISAAC, HAGAR]);
+      expect(t.notice).toBe("Restored Your Path.");
+    });
+
+    it("Undo clear puts the cleared nodes before the visits since, each once, with the Focus off Your Path", () => {
+      // Clear, then visit Abraham (cleared before) and Isaac (cleared before, now the Focus).
+      const t = walk(clear(s), ABRAHAM, ISAAC);
+      expect(t.path).toEqual([SARAH, ABRAHAM]);
+      // Hagar comes back first; Abraham keeps his latest visit; Isaac is the Focus, not on Your Path.
+      expect(undo(t).path).toEqual([HAGAR, SARAH, ABRAHAM]);
+      expect(undo(t).focus).toBe(ISAAC);
+    });
+
+    it("Undo clear with nothing cleared changes nothing", () => {
+      expect(undo(s)).toEqual(s);
+      const t = undo(clear(s));
+      expect(undo(t)).toEqual(t);
+    });
+  });
 });
 
 describe("Relationship words on the Focus edges", () => {
