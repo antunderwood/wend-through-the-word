@@ -9,7 +9,7 @@
   import Reader from "./Reader.svelte";
   import NoteBox from "./NoteBox.svelte";
   import { notesMarkdown } from "./notes";
-  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import Search from "./Search.svelte";
   import { store, stored } from "./storage";
 
@@ -77,6 +77,8 @@
 
   // A name for "son of ...": without a hint or a parenthesis ("Benjamin (patriarch)" is "Benjamin").
   const plainName = (id: Id) => data!.label(id, false).replace(/\s*\(.*\)$/, "");
+  // The page address to share (Copy link, the notes download, a correction): it names the Focus.
+  const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, true);
 
   function apply(a: Action, from?: "neighbours" | "verses") {
     let next = reduce(model, a, label);
@@ -229,8 +231,7 @@
     keepNotes(text ? { ...rest, [id]: text } : rest);
   }
   function downloadNotes() {
-    const link = (id: Id) => location.origin + location.pathname + write(initialState(id), "A");
-    const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], link, new Date());
+    const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], (id) => shareLink(initialState(id), "A"), new Date());
     const a = document.createElement("a");
     a.href = "data:text/markdown;charset=utf-8," + encodeURIComponent(text);
     a.download = "journey-notes.md";
@@ -313,7 +314,7 @@
   let warning: HTMLDialogElement;
   async function suggest(kind: Request["kind"], nodeIds: Id[], currentValue: string) {
     try {
-      const pageUrl = location.origin + location.pathname + write(model, view);
+      const pageUrl = shareLink(model, view);
       asking = correctionLink((await data!.credits()).curated_tables, { kind, nodeIds, currentValue, dataVersion: data!.version, pageUrl });
     } catch (e) {
       model = { ...model, notice: `Could not open the correction form: ${(e as Error).message}` };
@@ -324,7 +325,7 @@
   }
 
   async function copyLink() {
-    await navigator.clipboard.writeText(location.href);
+    await navigator.clipboard.writeText(shareLink(model, view));
     model = { ...model, notice: "Link copied." };
   }
 </script>

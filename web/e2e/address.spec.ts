@@ -81,3 +81,14 @@ test("Copy link puts the current address on the clipboard", async ({ page, conte
   await expect(page.getByRole("status")).toHaveText("Link copied.");
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
 });
+
+test("a copied link names the Focus, even Abraham with default settings", async ({ page, context }) => {
+  // The bare address restores this browser's own session, so a shared link never uses it.
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/");
+  await focusIs(page, ABRAHAM);
+  expect(search(page)).toBe("");
+  await page.getByRole("button", { name: "Copy link" }).click();
+  await expect(page.getByRole("status")).toHaveText("Link copied.");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(new URL("/?focus=person:abraham_58", page.url()).href);
+});

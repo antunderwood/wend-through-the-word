@@ -38,7 +38,7 @@ test("a note survives a reload, and the download holds it with a link back", asy
   const text = await readFile((await file.path())!, "utf8");
   const origin = new URL(page.url()).origin;
   expect(text).toMatch(/^# Journey notes, /);
-  expect(text).toContain(`## 1. Abraham\n\n*Person*, [open as the Focus](${origin}/)\n\nCalled out of Ur.\n`);
+  expect(text).toContain(`## 1. Abraham\n\n*Person*, [open as the Focus](${origin}/?focus=${ABRAHAM})\n\nCalled out of Ur.\n`);
   expect(text).toContain(`## 2. Isaac\n\n*Person*, [open as the Focus](${origin}/?focus=${ISAAC})\n\nThe son of the promise.\n`);
 });
 

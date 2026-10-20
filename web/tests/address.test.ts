@@ -42,6 +42,11 @@ describe("the page address", async () => {
     expect(write(initialState(ISAAC), "A")).toBe("?focus=person:isaac_616");
   });
 
+  it("names the Focus in a shared link, even Abraham with default settings", () => {
+    expect(write(initialState(START), "A", true)).toBe("?focus=person:abraham_58");
+    expect(write(shared, "B", true)).toBe(write(shared, "B"));
+  });
+
   it("drops unknown IDs, unknown views, and non-numeric votes with a notice", async () => {
     expect(await read("?focus=person:nobody_1&sel=place:nowhere_2&pins=person:nobody_3,person:isaac_616&view=D&votes=many")).toEqual({
       pins: [ISAAC],

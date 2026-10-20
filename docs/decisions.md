@@ -235,6 +235,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 132. **The credits page is its own page in the front end build.** It is rendered from `credits.json`, needs no state from the main page, and loads without WebGL. Reason: PRD 5 rule 6 and the CC BY-SA modification notice must be reachable by every reader.
 133. **Your Path lasts until cleared (owner).** Your Path and the Focus are kept in browser storage, so they survive reloads and closing the browser until the reader clears them; an address that names a Focus still wins. Amends the glossary's "this session" and decision 129. Reason: notes are kept per step of Your Path, and losing the steps on a reload would leave notes without their journey.
 
+## 2026-10-21: M4 review decisions
+
+134. **Shared links always name the Focus (owner).** "Copy link", the links in the notes download, and the page address in a correction request always include `focus`, even for Abraham with default settings. The bare address keeps meaning "restore my session" (decision 133). Amends decision 128's "defaults are left out" for `focus` only. Reason: a shared bare address would open on the receiver's own kept Focus, not the sender's.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

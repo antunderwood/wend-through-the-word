@@ -8,9 +8,11 @@ const DEFAULT = initialState(START);
 export type Asked = Partial<Omit<State, "filters">> & { filters?: Partial<State["filters"]>; view?: View };
 
 // Defaults are left out, so Abraham with default settings is "". IDs keep their colons and commas.
-export function write(s: State, view: View): string {
+// A shared link (`share`) always names the Focus, as the bare address restores the reader's own
+// session (decisions 133 and 134).
+export function write(s: State, view: View, share = false): string {
   const params: [string, string | number][] = [];
-  if (s.focus !== START) params.push(["focus", s.focus]);
+  if (share || s.focus !== START) params.push(["focus", s.focus]);
   if (s.selected !== s.focus) params.push(["sel", s.selected]);
   if (s.pins.length) params.push(["pins", s.pins.join(",")]);
   if (view !== "A") params.push(["view", view]);

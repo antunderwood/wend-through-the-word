@@ -147,7 +147,7 @@ Stable (decision 128): links shared now must still open after later releases, so
 
 | Parameter | Value | Default (left out) |
 |---|---|---|
-| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse Key (`01025001`) | `person:abraham_58` |
+| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse Key (`01025001`) | `person:abraham_58`, but a shared link always names it (decision 134) |
 | `sel` | The Selected Node: an Entity ID, a Verse Key, or an Overflow Node (`overflow:person`) | the Focus |
 | `pins` | Pinned Nodes, comma-separated, in pin order, at most 3 | none |
 | `view` | `A` (tilted plane), `B` (stacked discs), or `C` (free orbit) | the view kept in this browser, else `A` |
@@ -156,8 +156,8 @@ Stable (decision 128): links shared now must still open after later releases, so
 | `books` | The book filter (decision 130): `build` for the Verses in this build, or the OSIS codes (`Gen`) of books in this build, comma-separated, whose Verses show | all books |
 
 - Parameters are written in the order above. Colons and commas in IDs are not escaped; a reader of the address decodes it as usual form encoding, so escaped forms work too.
-- With every default, the address is the bare page: Abraham with default settings.
-- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A missing or unknown Focus opens on Abraham. Unknown parameter names are ignored.
+- With every default, the page's own address is the bare page: Abraham with default settings. The bare address names no Focus, so it restores the Focus and Your Path kept in this browser (decision 133). A shared link ("Copy link", the notes download, a correction request) always names the Focus (decision 134).
+- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A missing or unknown Focus opens on the Focus kept in this browser, else Abraham. Unknown parameter names are ignored.
 - A `view` in the address wins over the view kept in this browser.
 - Your Path is not in the address.
 - History: a Focus change pushes a new entry; a selection, pin, view, or filter change replaces the current one. Back and Forward make the entry's Focus the Focus again; the Selected Node, pins, view, and filters stay as they are.
