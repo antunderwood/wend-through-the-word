@@ -25,7 +25,7 @@
   .path {
     position: fixed;
     top: 16px;
-    left: 16px;
+    left: 350px; /* beside the search box (16 + 318 + 16) */
     right: 56px; /* clear of the panel chevron; the panel starts below the bar */
     display: flex;
     align-items: center;
