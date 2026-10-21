@@ -167,7 +167,7 @@
   let notes = $state.raw<Notes>(keptNotes());
   function setNotes(next: Notes) {
     notes = next;
-    if (tour !== "on") keepNotes(next);
+    if (!touring) keepNotes(next);
   }
   function downloadNotes() {
     const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], (id) => shareLink(initialState(id), "A"), new Date());
@@ -187,6 +187,7 @@
   // it ends, the reader's state comes back and a note written in it goes unless the reader keeps it.
   const TOUR_KEY = "wend.tourOffered";
   let tour = $state<"offer" | "on">();
+  const touring = $derived(tour === "on");
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes } | undefined;
   const tourPage: TourPage = {
@@ -222,7 +223,7 @@
   async function startTour() {
     store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
-    if (tour !== "on") saved = { model, reading, notes };
+    if (!touring) saved = { model, reading, notes };
     tour = "on";
     tours++;
     reading = undefined;
@@ -230,7 +231,7 @@
     await show(initialState(TOUR_START));
   }
   async function endTour(keep: boolean) {
-    if (tour === "on") {
+    if (touring) {
       if (keep) keepNotes(notes);
       else notes = saved!.notes;
       reading = saved!.reading;
@@ -284,13 +285,13 @@
   $effect(() => {
     if (!onScreen) return;
     const url = location.pathname + write(model, view, data!.osis);
-    if (entryFocus && model.focus !== entryFocus && tour !== "on") history.pushState(null, "", url);
+    if (entryFocus && model.focus !== entryFocus && !touring) history.pushState(null, "", url);
     else history.replaceState(null, "", url);
     entryFocus = model.focus;
   });
 
   $effect(() => {
-    if (onScreen && tour !== "on") keepPath(model);
+    if (onScreen && !touring) keepPath(model);
   });
 
   const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis), data!.verseKey);
