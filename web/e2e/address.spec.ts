@@ -68,6 +68,26 @@ test("a Verse number its chapter does not have is left out with a notice, not a 
   await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
+// Fixture stand-in: Gen 22 is not built, so Gen 16:1 stands in for the owner's Gen.22.2.
+test("a Verse in the address is its OSIS reference, and Copy link gives that form", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/?focus=Gen.16.1");
+  await focusIs(page, "01016001");
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 16:1");
+  await expect(page.getByRole("region", { name: "Reader" }).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
+  expect(search(page)).toBe("?focus=Gen.16.1");
+  await page.getByRole("button", { name: "Copy link" }).click();
+  await expect(page.getByRole("status")).toHaveText("Link copied.");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(new URL("/?focus=Gen.16.1", page.url()).href);
+});
+
+test("a link written with a Verse Key still opens, and the address then names the Verse its new way", async ({ page }) => {
+  await page.goto("/?focus=01016001&pins=01011031");
+  await focusIs(page, "01016001");
+  await expect(page.getByRole("region", { name: "Reader" }).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
+  await expect.poll(() => search(page)).toBe("?focus=Gen.16.1&pins=Gen.11.31");
+});
+
 test("Copy link puts the current address on the clipboard", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/?focus=person:isaac_616");

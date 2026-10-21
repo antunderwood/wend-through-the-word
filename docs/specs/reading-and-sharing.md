@@ -20,7 +20,7 @@ A reader can now walk the Genesis graph, but cannot read the Bible text around w
 
 ## Solution
 
-1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself whenever a Verse becomes the Focus, and opens from a "Read" button (decisions 138, 140).
+1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself whenever a Verse becomes the Focus or the page opens on an address whose Focus is a Verse, and opens from a "Read" button (decisions 138, 140, 147).
 2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link as a hover title (decision 139), curated notes with their Evidence Verses, and "Corrected after review" notes.
 3. **A filter panel** has node type toggles, the Vote Limit slider with its explanation, a book filter that can hide Verses outside the build, and an animation switch.
 4. **Shareable addresses**: the page address holds the Focus, the Selected Node, the pins, the filters, and the view. Opening it restores them. Back and Forward move between Foci.
@@ -34,7 +34,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 ### Reader: reading the text
 
-1. As a reader, I want a Verse's full BSB text in the detail panel under its reference, and the whole chapter in the reader panel beside the graph, which opens by itself when a Verse becomes the Focus (decision 138), so that I see each Verse in its context.
+1. As a reader, I want a Verse's full BSB text in the detail panel under its reference, and the whole chapter in the reader panel beside the graph, which opens by itself when a Verse becomes the Focus or a link to a Verse opens (decisions 138, 147), so that I see each Verse in its context.
 2. As a reader, I want a "Read" button that opens the reader panel at the chapter of the Focus (or of the Selected Node's first linked Verse), and closing the reader panel to last until the next Verse becomes the Focus (decision 140), so that I can start reading from any node and keep the space when I want it.
 3. As a reader, I want an open reader panel to scroll to and highlight the Selected Verse, while a click on a Verse only selects it and never opens the reader panel, so that I do not lose my place.
 4. As a reader, I want a click on a Verse in the reader panel to select it and a double click to make it the Focus, as in the scene and the lists, so that reading and exploring use one set of rules.
@@ -80,7 +80,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 32. As a reader, I want a small "Suggest a correction" link beside the Relationship, and on each fact and list row when I hover it, focus it with the keyboard, or select its node (decision 139), so that the request is about one specific thing and rows stay one line.
 33. As a reader, I want the request form already filled in with the node IDs, what the app shows now, the data version, and the page address, so that I only write the correction and my Evidence Verse.
 34. As a reader, I want to be told before I leave that a request needs at least one Evidence Verse and is published under CC BY-SA 4.0, so that I am not surprised by the form.
-35. As a reader without a GitHub account, I want to know there will be another way to send a request, so that I am not shut out (the email fallback waits for its address).
+35. As a reader without a GitHub account, I want a "Send it by email" link with the same filled-in fields, and to be told before I write that the owner copies each email into a GitHub issue without my name or email address, then deletes it (decision 145), so that I am not shut out.
 
 ### Student: journey notes
 
@@ -135,7 +135,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 ### Rules decided here
 
 - **Book filter** (decision 130): it applies to Verses only, not Entities. Its choices are each book in the build, "Verses outside this build", and all. The default is all, so the M3 behaviour is kept unless the reader chooses otherwise.
-- **Correction channel** (decision 131): M4 links to the GitHub issue form only. The mailto fallback (PRD 10.5) is a held ticket until the owner chooses a project-only address (PRD open question 13), before the M5 launch. The page says another way is coming for readers without a GitHub account. While the repository is private (decision 47) the form opens only for the owner; that is accepted until M5.
+- **Correction channel** (decisions 131 and 145): the GitHub issue form, and beside it a `mailto:` link to contact@wendtheword.flying-ant.uk with the same fields in its body (PRD 10.5). The dialog says how emails are handled before the reader writes. While the repository is private (decision 47) the form opens only for the owner; that is accepted until M5.
 - **Notes stay in the browser** (decision 112, PRD 3): no account, no server, no Worker. Deleting all notes asks for confirmation.
 - **Credits page as its own entry** (decision 132): it needs no state from the main page and must load without WebGL.
 
@@ -143,21 +143,22 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 Stable (decision 128): links shared now must still open after later releases, so a parameter may be added but never renamed, and a value's meaning never changes. Read and written by `web/src/address.ts`.
 
-`/?focus=person:isaac_616&sel=place:gerar_459&pins=person:abraham_58,place:gerar_459&view=B&votes=5&hide=event,theme&books=build`
+`/?focus=person:isaac_616&sel=place:gerar_459&pins=person:abraham_58,Gen.26.1&view=B&votes=5&hide=event,theme&books=build`
 
 | Parameter | Value | Default (left out) |
 |---|---|---|
-| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse Key (`01025001`) | `person:abraham_58`, but a shared link always names it (decision 134) |
-| `sel` | The Selected Node: an Entity ID, a Verse Key, or an Overflow Node (`overflow:person`) | the Focus |
-| `pins` | Pinned Nodes, comma-separated, in pin order, at most 3 | none |
+| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse, written as its OSIS reference with dots (`Gen.25.1`, decision 149) | `person:abraham_58`, but a shared link always names it (decision 134) |
+| `sel` | The Selected Node: an Entity ID, a Verse, or an Overflow Node (`overflow:person`) | the Focus |
+| `pins` | Pinned Nodes (Entity IDs or Verses), comma-separated, in pin order, at most 3 | none |
 | `view` | `A` (tilted plane), `B` (stacked discs), or `C` (free orbit) | the view kept in this browser, else `A` |
 | `votes` | The Vote Limit, a whole number | `1` |
 | `hide` | Node types turned off, comma-separated, in the order `person`, `place`, `event`, `group`, `theme`, `verse` | none |
 | `books` | The book filter (decision 130): `build` for the Verses in this build, or the OSIS codes (`Gen`) of books in this build, comma-separated, whose Verses show | all books |
 
 - Parameters are written in the order above. Colons and commas in IDs are not escaped; a reader of the address decodes it as usual form encoding, so escaped forms work too.
+- A Verse is written `Gen.22.2`, which needs no encoding. `focus`, `sel`, and `pins` also read a Verse as its Verse Key (`01022002`, the form written before decision 149, so older links keep working) and in any form the search box accepts (`Gen 22:2`, `Gen22:2`, `Genesis 22:2`).
 - With every default, the page's own address is the bare page: Abraham with default settings. The bare address names no Focus, so it restores the Focus and Your Path kept in this browser (decision 133). A shared link ("Copy link", the notes download, a correction request) always names the Focus (decision 134).
-- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A missing or unknown Focus opens on the Focus kept in this browser, else Abraham. Unknown parameter names are ignored.
+- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A node value that is neither an ID nor a Verse in any form gets a notice that says what was expected: "0102200 is not a Verse here. Write a Verse as Gen.22.2 or Gen 22:2." A missing or unknown Focus opens on the Focus kept in this browser, else Abraham. Unknown parameter names are ignored.
 - A `view` in the address wins over the view kept in this browser.
 - Your Path is not in the address.
 - History: a Focus change pushes a new entry; a selection, pin, view, or filter change replaces the current one. Back and Forward make the entry's Focus the Focus again; the Selected Node, pins, view, and filters stay as they are.
@@ -166,13 +167,12 @@ Stable (decision 128): links shared now must still open after later releases, so
 
 - **The same seams as M3** (#18): Vitest on pure modules and the Focus Model, fed by the export built from the fixture sources; Playwright on the built page with the fixture export, in the e2e build mode. The build seam is used only if a data change turns out to be needed.
 - **What makes a good test here.** It states a rule a reader could check: "opening `?focus=person:isaac_616&view=B` shows Isaac in the stacked discs", "a hidden type leaves Ring 1 and its Overflow Node", "the download lists the steps oldest first and ends with the Focus", "the correction link fills `node_ids`". It does not check component internals, storage keys, or three.js objects.
-- **Vitest cases:** URL state round trip, defaults left out, unknown IDs and bad values dropped with a notice; type and book filters across Ring 1, Overflow counts, Ring 2, pin rings, Shared Nodes and the node limit, never hiding the Focus or pins; correction link for a node, a Relationship (two IDs), a fact, and a linked Verse; notes Markdown for an empty journey, notes on some steps, and a cleared and restored Your Path.
+- **Vitest cases:** URL state round trip, defaults left out, unknown IDs and bad values dropped with a notice; type and book filters across Ring 1, Overflow counts, Ring 2, pin rings, Shared Nodes and the node limit, never hiding the Focus or pins; correction link for a node, a Relationship (two IDs), a fact, and a linked Verse, and the correction email with the same fields; notes Markdown for an empty journey, notes on some steps, and a cleared and restored Your Path.
 - **Playwright cases:** open a shared address in each view; Back and Forward between Foci; reader panel select and double click, chapter buttons, outside-build Verse; detail panel shows a correction note and a curated Evidence Verse (fixture: Anah's gender correction, the Anah and Beeri link); filter changes reach the scene and the address; a note survives a reload and the download contains it; the credits page lists every source in `credits.json`; the page works with animation off.
 - **Prior art.** M3's tests in the front end package (model, data, search, and the journey spec), and `tests/conftest.py` with `tests/test_search_and_credits.py` for the build seam and credits.
 
 ## Out of Scope
 
-- The mailto fallback for correction requests, until the owner chooses the address (held ticket).
 - The phone layout, including the reader panel as a bottom sheet tab (M7).
 - The Cloudflare deploy of the product and the repository going public (M5).
 - The whole Bible (M6). The book filter and reader panel must work for many books, but only Genesis ships.

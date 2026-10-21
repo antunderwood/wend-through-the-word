@@ -315,10 +315,35 @@
   .fallback {
     color: #ffd27a;
   }
+  /* A soft fade at the bottom edge while more of the section is below (decision 148). The scroll
+     timeline sets its height, and is inactive when nothing overflows, leaving it at 0. The second
+     mask layer keeps the bottom border. A control focused with the keyboard is never faded. */
+  @property --fade {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+  @keyframes fade-hint {
+    from {
+      --fade: 24px;
+    }
+    to {
+      --fade: 0px;
+    }
+  }
   .selected {
     height: 55%;
     overflow-y: auto;
     border-bottom: 1px solid #262a3c;
+    mask:
+      linear-gradient(#000 calc(100% - var(--fade)), transparent),
+      linear-gradient(#000 0 0) bottom / 100% 1px no-repeat;
+    animation: fade-hint linear both;
+    animation-timeline: scroll(self);
+    animation-range: calc(100% - 24px) 100%; /* it shrinks over the last 24px of scrolling */
+  }
+  .selected:has(:focus-visible) {
+    animation: none;
   }
   h2 {
     margin: 0;

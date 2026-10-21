@@ -32,7 +32,7 @@
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
-  // becomes the Focus; closing it lasts until then (decision 140).
+  // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
@@ -70,7 +70,7 @@
       : data!.label(id);
 
   // The page address to share (Copy link, the notes download, a correction): it names the Focus.
-  const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, true);
+  const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, data!.osis, true);
 
   function apply(a: Action) {
     let next = reduce(model, a, label);
@@ -189,6 +189,7 @@
       const next = restore(asked, keptPath(), data.known, data.label);
       await Promise.all([data.loadWithKin(next.focus), ...next.pins.map(data.load)]);
       model = next;
+      if (asked.focus && typeOf(next.focus) === "verse") reading = next.focus;
       if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
@@ -220,7 +221,7 @@
   let entryFocus = "";
   $effect(() => {
     if (!onScreen) return;
-    const url = location.pathname + write(model, view);
+    const url = location.pathname + write(model, view, data!.osis);
     if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
     else history.replaceState(null, "", url);
     entryFocus = model.focus;
@@ -230,7 +231,7 @@
     if (onScreen) keepPath(model);
   });
 
-  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis));
+  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis), data!.verseKey);
 
   // Back and Forward make the entry's Focus the Focus again.
   async function moved() {
