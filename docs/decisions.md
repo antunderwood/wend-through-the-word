@@ -284,6 +284,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 ## 2026-10-21: M5 review decisions
 
 158. **The deploy runs when the GitHub release is published, not on the tag push (owner).** A rollback is a manual run of the deploy workflow with an earlier tag. Amends decision 152. Reason: the release command pushes the tag before it uploads the data asset, so a workflow started by the tag could look for a zip that is not there yet.
+159. **An open page survives a deploy (owner).** A deploy removes the previous version's folder, so a page opened before it gets 404s for files under `/data/<version>/`. On such a 404 the page reads `index.json` again once, past the browser's cache; if it names a new version, the page switches to it, asks for the file again, and the notice line says "The data was updated to version X." If the version did not change, the page reports the failure as before. Rejected: keeping the previous version in the staged site, because M6's whole Bible would pass the 20,000 file limit with two versions. Reason: a reader who keeps the page open across a release should not meet a broken scene.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
