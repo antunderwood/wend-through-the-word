@@ -35,12 +35,25 @@ test("the page says so and the panel alone walks the journey", async ({ page }) 
   await expect(bar(page)).toHaveText(["Abraham", "Isaac", "Gen 16:1", "Sarah", "Clear"]);
 });
 
-test("the search box, hint, reader panel, and panel do not overlap", async ({ page }) => {
+test("the search box, hint, reader panel, panel, notice, and buttons do not overlap", async ({ page }) => {
   await page.goto("/");
   await panel(page).getByRole("button", { name: "Read", exact: true }).click();
   const reader = page.getByRole("region", { name: "Reader" });
   await expect(reader.getByRole("heading", { name: "Genesis 11" })).toBeVisible();
-  const boxes = await Promise.all([page.getByRole("search"), page.getByText("A click selects a node."), reader, panel(page)].map(async (l) => (await l.boundingBox())!));
+  // A move writes the notice line, which must clear the panel too.
+  await panel(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Sarah/ }).dblclick();
+  await expect(page.getByRole("status")).toHaveText("Sarah is the Focus.");
+  const boxes = await Promise.all(
+    [
+      page.getByRole("search"),
+      page.getByText("A click selects a node."),
+      reader,
+      panel(page),
+      page.getByRole("status"),
+      page.getByRole("button", { name: "Filters" }),
+      page.getByRole("button", { name: "Copy link" }),
+    ].map(async (l) => (await l.boundingBox())!),
+  );
   for (const [i, a] of boxes.entries())
     for (const b of boxes.slice(i + 1))
       expect(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y, JSON.stringify([a, b])).toBe(true);

@@ -630,7 +630,7 @@
     top: 132px;
     left: 0;
     width: auto;
-    bottom: 36px; /* above the footer */
+    bottom: 92px; /* above the footer, the notes, and the controls, as the reader drawer */
   }
   .panel.full.reading {
     left: 412px;
