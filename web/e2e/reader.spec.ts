@@ -97,24 +97,28 @@ test("a Verse that becomes the Focus opens the reader at its chapter; a click on
   expect(await family(reader(page).locator(".text"))).toBe(await family(page.locator("body")));
 });
 
-test("a reader who closes the reader panel keeps it closed for later Verse Foci, across a reload, until Read", async ({ page }) => {
+test("closing the reader panel lasts until the next Verse becomes the Focus", async ({ page }) => {
   await searchVerse(page, "Gen 16:1", "01016001");
   await page.getByRole("button", { name: "Close reader" }).click();
   await expect(reader(page)).toHaveCount(0);
-  await searchVerse(page, "Gen 11:31", "01011031");
-  await expect(panel(page)).toContainText("Terah took his son Abram");
+  // A reload keeps it closed: only a move of the Focus opens it.
   await page.reload();
-  await focusIs(page, "01011031");
-  await searchVerse(page, "Gen 16:2", "01016002");
+  await focusIs(page, "01016001");
   await expect(reader(page)).toHaveCount(0);
+  // The next Verse Focus opens it again (decision 140).
+  await searchVerse(page, "Gen 11:31", "01011031");
+  await expect(reader(page).getByRole("heading", { name: "Genesis 11" })).toBeVisible();
+});
 
-  // Read opens it again, and later Verse Foci open it once more.
-  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
-  await expect(reader(page).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
-  await page.reload();
-  await focusIs(page, "01016002");
-  await searchVerse(page, "Gen 25:21", "01025021");
-  await expect(reader(page).getByRole("heading", { name: "Genesis 25" })).toBeVisible();
+test("search results show above the open reader panel", async ({ page }) => {
+  await searchVerse(page, "Gen 16:1", "01016001");
+  await expect(reader(page)).toHaveCount(1);
+  const box = page.getByRole("searchbox", { name: "Search" });
+  await box.fill("zzzz");
+  const note = page.locator(".search").getByText("No match.");
+  // The topmost element at the note's centre is the note itself, not the reader panel.
+  const b = (await note.boundingBox())!;
+  expect(await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.textContent, [b.x + b.width / 2, b.y + b.height / 2])).toBe("No match.");
 });
 
 test("the reader follows the Selected Verse, and a Verse outside the build shows the note without a fetch", async ({ page }) => {

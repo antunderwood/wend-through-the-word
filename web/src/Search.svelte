@@ -50,8 +50,10 @@
 </div>
 
 <style>
+  /* Above the reader panel, so the results list is never hidden under it. */
   .search {
     position: fixed;
+    z-index: 5;
     top: 16px;
     left: 16px;
     width: 300px;
