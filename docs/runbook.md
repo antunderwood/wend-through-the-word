@@ -18,7 +18,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    uv run python -m pipeline.release v2026-10-19 --dry-run
    ```
 
-   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, `out/reports/file_count.tsv` shows files over the size limit, or `out/data` holds 20,000 files or more.
+   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, `out/reports/file_count.tsv` shows files over the size limit, `out/reports/split_or_trimmed.tsv` has a file that is not trimmed, `out/reports/curated_no_longer_matches.tsv` has rows (fix the curated tables, decision 77), or `out/data` holds 20,000 files or more. It prints a warning for each other report with rows: read them before releasing.
 4. Release:
 
    ```
@@ -35,13 +35,13 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    git tag -d v2026-10-19
    ```
 
-The live check can be run by hand at any time: `node web/live-check.ts https://wendtheword.flying-ant.uk <data version>`.
+The live check can be run by hand at any time: `node web/live-check.ts https://wendtheword.flying-ant.uk <data version> --email`. Leave out `--email` for any other address, such as a local `wrangler dev` server: only the live domain has Email Routing records (decision 162).
 
 ### After the first deploy: email
 
 Attaching the custom domain lets Wrangler change DNS records for wendtheword.flying-ant.uk without asking, because CI has no terminal. The Email Routing records (decision 151) must survive. After the first deploy, and after any deploy that fails on the domain:
 
-1. The live check already requires a Cloudflare MX record; also check the SPF record is there: `dig +short TXT wendtheword.flying-ant.uk` shows `v=spf1 include:_spf.mx.cloudflare.net ~all`.
+1. The deploy's live check already requires a Cloudflare MX record (it passes `--email`); also check the SPF record is there: `dig +short TXT wendtheword.flying-ant.uk` shows `v=spf1 include:_spf.mx.cloudflare.net ~all`.
 2. Send a test email to contact@wendtheword.flying-ant.uk from another account, and check it arrives.
 3. If either fails, open Email Routing for flying-ant.uk in the Cloudflare dashboard and add the subdomain's records again from its DNS settings (three `route1` to `route3.mx.cloudflare.net` MX records and the SPF record above, as on 2026-10-21).
 
@@ -76,3 +76,7 @@ The deploy uses the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_AC
 2. Store it without echoing it: `gh secret set CLOUDFLARE_API_TOKEN` and paste the token at the prompt.
 3. Check it works by deploying the current tag again: `gh workflow run deploy.yml -f tag=<current tag>`.
 4. When that run passes, delete the old token in the dashboard.
+
+## Updating the deploy workflow's actions
+
+The Deploy workflow pins each action to a commit, with its version in a comment (decision 160). To move to a newer version, choose a release at least two weeks old, find its commit with `gh api repos/<owner>/<action>/commits/<version> --jq .sha`, and replace both the SHA and the comment.

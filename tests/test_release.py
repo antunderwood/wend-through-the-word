@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -27,6 +28,11 @@ def repo(tmp_path, export):
     git(repo, "remote", "add", "origin", origin)
     git(repo, "push", "-q", "origin", "main")
     shutil.copytree(export, repo / "out")
+    # The fixture's curated tables hold rows that no longer match, to test that report; a release
+    # needs none.
+    (repo / "out" / "reports" / "curated_no_longer_matches.tsv").write_text(
+        "table\tline\tids\tdetail\n"
+    )
     return repo
 
 
@@ -49,6 +55,9 @@ def test_dry_run_zips_the_export_and_prints_the_release_without_making_it(repo):
     assert "git push origin v1" in run.stdout
     assert f"gh release create v1 out/wend-data-{VERSION}.zip" in run.stdout
     assert git(repo, "tag").stdout == ""
+    # Reports that do not stop a release are listed for the owner to read.
+    assert re.search(r"Warning: reports/aliases\.tsv has \d+ rows", run.stdout)
+    assert "files.tsv" not in run.stdout
 
 
 def test_refuses_a_dirty_tree_or_a_tag_that_exists_here_or_on_origin(repo):
@@ -77,3 +86,23 @@ def test_refuses_an_export_whose_reports_show_failures_or_that_breaks_the_file_l
     assert run.returncode == 1
     assert "reports/file_count.tsv: 2 files over the size limit" in run.stderr
     assert "out/data holds 20433 files, the limit is 20000" in run.stderr
+
+
+def test_refuses_an_untrimmed_file_or_a_curated_row_that_no_longer_matches(repo):
+    reports = repo / "out" / "reports"
+    with open(reports / "split_or_trimmed.tsv", "a") as f:
+        f.write(f"data/{VERSION}/big.json\tnot trimmed: over the limit\t0\t\n")
+    with open(reports / "curated_no_longer_matches.tsv", "a") as f:
+        f.write("corrections\t5\tperson:nobody_0 gender\tnot in Theographic\n")
+    run = release(repo, "v1")
+    assert run.returncode == 1
+    assert f"reports/split_or_trimmed.tsv: data/{VERSION}/big.json not trimmed" in run.stderr
+    assert "reports/curated_no_longer_matches.tsv: 1 curated rows no longer match" in run.stderr
+
+
+def test_the_deploy_workflow_pins_every_action_to_a_commit():
+    """Decision 160: a moved tag cannot change what runs with the Cloudflare token."""
+    workflow = (ROOT / ".github" / "workflows" / "deploy.yml").read_text()
+    uses = re.findall(r"uses: (.*)", workflow)
+    assert uses
+    assert [u for u in uses if not re.fullmatch(r"[\w./-]+@[0-9a-f]{40} # v[\d.]+", u)] == []

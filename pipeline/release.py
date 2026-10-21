@@ -23,6 +23,11 @@ def git(*args):
     return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout
 
 
+def rows(report):
+    with open(report) as f:
+        return list(csv.DictReader(f, delimiter="\t"))
+
+
 def problems(tag, out):
     """Why the export in `out` must not be released as `tag`; empty if it may be."""
     found = []
@@ -33,14 +38,30 @@ def problems(tag, out):
     if git("ls-remote", "--tags", "origin", f"refs/tags/{tag}"):
         found.append(f"tag {tag} already exists on origin")
     # The build writes the reports even when it fails on the size limit (pipeline/export.py).
-    with open(out / "reports" / "file_count.tsv") as f:
-        over = next(csv.DictReader(f, delimiter="\t"))["over_limit"]
+    over = rows(out / "reports" / "file_count.tsv")[0]["over_limit"]
     if over != "0":
         found.append(f"reports/file_count.tsv: {over} files over the size limit")
+    for row in rows(out / "reports" / "split_or_trimmed.tsv"):
+        if row["action"].startswith("not trimmed"):
+            found.append(f"reports/split_or_trimmed.tsv: {row['path']} {row['action']}")
+    if stale := rows(out / "reports" / "curated_no_longer_matches.tsv"):  # decision 77
+        found.append(
+            f"reports/curated_no_longer_matches.tsv: {len(stale)} curated rows no longer match"
+        )
     count = sum(1 for f in (out / "data").rglob("*") if f.is_file())
     if count >= FILE_LIMIT:
         found.append(f"{out / 'data'} holds {count} files, the limit is {FILE_LIMIT}")
     return found
+
+
+def warnings(out):
+    """The reports with rows that do not stop a release, for the owner to read. files.tsv and
+    file_count.tsv list the export, so they are not reports of problems."""
+    return [
+        f"Warning: reports/{r.name} has {n} rows"
+        for r in sorted((out / "reports").glob("*.tsv"))
+        if r.name not in ("files.tsv", "file_count.tsv") and (n := len(rows(r)))
+    ]
 
 
 def main(argv=None):
@@ -52,6 +73,7 @@ def main(argv=None):
 
     if found := problems(a.tag, a.out):
         sys.exit("Refusing to release:\n" + "\n".join(f"- {f}" for f in found))
+    print(*warnings(a.out), sep="\n")
     index = json.loads((a.out / "data" / "index.json").read_text())
     version = index["data_version"]
     archive = a.out / f"wend-data-{version}.zip"
