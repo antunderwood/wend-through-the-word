@@ -1,17 +1,16 @@
 import { expect, test, type Page } from "@playwright/test";
 import { doubleClickLabel, focusIs } from "./scene";
+import { STEPS } from "../src/tour";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
   HAGAR = "person:hagar_1348",
   NAHOR = "person:nahor_2143",
   ISAAC = "person:isaac_616";
-const offer = (page: Page) => page.getByRole("dialog", { name: "Tour" });
-const tour = offer;
+const tour = (page: Page) => page.getByRole("dialog", { name: "Tour" });
 // The tour's targets carry data-tour; names in the scene carry their node ID.
 const scene = (page: Page) => page.locator('[data-tour="scene"]');
 const help = (page: Page) => page.getByRole("contentinfo").getByRole("button", { name: "Help: take the tour" });
-const STEPS = 13;
 
 test.use({ reducedMotion: "reduce" });
 
@@ -59,8 +58,8 @@ for (const view of ["A", "B", "C"] as const) {
     page.on("request", (r) => (r.method() !== "GET" || !new URL(r.url()).pathname.startsWith("/data/")) && sent.push(`${r.method()} ${r.url()}`));
 
     await help(page).click();
-    for (let n = 1; n <= STEPS; n++) {
-      await expect(tour(page)).toContainText(`Step ${n} of ${STEPS}`);
+    for (let n = 1; n <= STEPS.length; n++) {
+      await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
       await uncovered(page);
       await tour(page).getByRole("button", { name: "Do it for me" }).click();
     }
@@ -115,7 +114,7 @@ for (const view of ["A", "B", "C"] as const) {
     const before = await state(page);
     await help(page).click();
     for (const [i, act] of BY_MOUSE.entries()) {
-      await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS}`);
+      await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
       await uncovered(page);
       await act(page);
     }
@@ -164,7 +163,7 @@ test("the whole tour with the keyboard only", async ({ page }) => {
   ];
   await enter(help(page));
   for (const [i, act] of BY_KEYBOARD.entries()) {
-    await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS}`);
+    await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
     await act();
   }
   await enter(tour(page).getByRole("button", { name: "Finish", exact: true }));
@@ -179,25 +178,25 @@ test.describe("a first visit", () => {
   test("the tour is offered until answered, a skip is remembered, and the footer restarts it", async ({ page }) => {
     await page.goto("/");
     await focusIs(page, ABRAHAM);
-    await expect(offer(page)).toContainText("studying Abraham");
+    await expect(tour(page)).toContainText("studying Abraham");
     // Offered until answered: a reload before an answer offers it again.
     await page.reload();
     await focusIs(page, ABRAHAM);
-    await offer(page).getByRole("button", { name: "Skip" }).click();
-    await expect(offer(page)).toBeHidden();
+    await tour(page).getByRole("button", { name: "Skip" }).click();
+    await expect(tour(page)).toBeHidden();
     await page.reload();
     await focusIs(page, ABRAHAM);
-    await expect(offer(page)).toBeHidden();
+    await expect(tour(page)).toBeHidden();
 
     await help(page).click();
-    await expect(offer(page)).toContainText("Step 1 of 13");
-    await offer(page).getByRole("button", { name: "End tour" }).click();
-    await expect(offer(page)).toBeHidden();
+    await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+    await tour(page).getByRole("button", { name: "End tour" }).click();
+    await expect(tour(page)).toBeHidden();
 
     // Taken from the offer.
     await page.evaluate(() => localStorage.clear());
     await page.reload();
-    await offer(page).getByRole("button", { name: "Take the tour" }).click();
-    await expect(tour(page)).toContainText("Step 1 of 13");
+    await tour(page).getByRole("button", { name: "Take the tour" }).click();
+    await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
   });
 });
