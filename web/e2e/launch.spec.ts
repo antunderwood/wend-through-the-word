@@ -17,9 +17,15 @@ for (const [path, title] of [
     expect(await meta(page, "og:description")).toBe(description);
     expect(`${title} ${description}`).not.toMatch(/[–—]/);
 
-    const icon = await request.get((await page.locator('link[rel="icon"]').getAttribute("href"))!);
-    expect(icon.status()).toBe(200);
-    expect(icon.headers()["content-type"]).toContain("image/svg+xml");
+    // The SVG icon, a PNG one for browsers without SVG icons, and the Apple touch icon.
+    const links = page.locator('link[rel="icon"], link[rel="apple-touch-icon"]');
+    const types = [];
+    for (const href of await links.evaluateAll((ls) => ls.map((l) => l.getAttribute("href")!))) {
+      const icon = await request.get(href);
+      expect(icon.status(), href).toBe(200);
+      types.push(icon.headers()["content-type"]);
+    }
+    expect(types).toEqual(["image/svg+xml", "image/png", "image/png"]);
   });
 }
 

@@ -44,6 +44,15 @@ describe("staged site", () => {
     expect(html).toContain('<a href="/">Back to the graph</a>');
   });
 
+  it("links the SVG icon, a PNG icon, and an Apple touch icon from every page, all staged", () => {
+    const icons = ["/icon.svg", "/icon.png", "/apple-touch-icon.png"];
+    for (const page of ["index.html", "credits.html", "404.html"]) {
+      const html = readFileSync(join(site, page), "utf8");
+      for (const icon of icons) expect(html, page).toContain(`href="${icon}"`);
+    }
+    for (const icon of icons) expect(existsSync(join(site, icon)), icon).toBe(true);
+  });
+
   it("writes no em or en dashes in the pages", () => {
     for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).not.toMatch(/[–—]/);
   });
