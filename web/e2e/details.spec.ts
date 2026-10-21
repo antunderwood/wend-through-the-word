@@ -32,7 +32,7 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
   await panel(page).getByRole("list", { name: "Person (11)" }).getByRole("button", { name: /^Beeri/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Beeri");
   // The first Evidence Verse is in the Relationship line (decision 135); the note has them all.
-  await expect(relationship(page)).toHaveText("Relationship: possibly the same person as Anah (Gen 26:34) Curated, CC BY-SA 4.0 Suggest a correction");
+  await expect(relationship(page)).toHaveText("Relationship: possibly the same person as Anah (Gen 26:34) Suggest a correction");
   await expect(notes(page)).toHaveText([
     'Note on the Relationship: Esau\'s wife is "Judith daughter of Beeri" in Gen.26.34 and "Oholibamah daughter of Anah" in Gen.36.2. Evidence: Gen 26:34, Gen 36:2, Gen 36:24.',
   ]);
@@ -64,8 +64,8 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   const y = async (item: typeof genealogy) => (await item.scrollIntoViewIfNeeded(), (await item.boundingBox())!.y);
   const neighbour = await y(genealogy);
   await genealogy.click();
-  await expect(panel(page).getByText("Theme, from Nave's Topical Bible, CC BY 4.0")).toBeVisible();
-  await expect(relationship(page)).toContainText("Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
+  await expect(panel(page).getByText("Theme", { exact: true })).toHaveAttribute("title", "Theme, from Nave's Topical Bible, CC BY 4.0");
+  await expect(relationship(page)).toHaveAttribute("title", /Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0$/);
   await settled();
   expect(await y(genealogy)).toBe(neighbour);
 
@@ -93,7 +93,7 @@ test("the Dictionary Entry is named as Easton's, folded after its first paragrap
   const entry = panel(page).getByRole("region", { name: "Easton's Bible Dictionary (1897)" });
   await expect(entry.getByRole("paragraph").first()).toHaveText(/^Father of a multitude, son of Terah/);
   await expect(entry).not.toContainText("Abram now, with a large household");
-  await expect(entry).toContainText("Public domain (1897)");
+  await expect(entry.getByRole("heading")).toHaveAttribute("title", "Public domain (1897)");
   const more = entry.getByRole("button", { name: "Read more" });
   await expect(more).toHaveAttribute("aria-expanded", "false");
   await more.click();
@@ -104,12 +104,10 @@ test("the Dictionary Entry is named as Easton's, folded after its first paragrap
 
 test("an Event shows its year as approx., Jones chronology; a Place its coordinates and their source", async ({ page }) => {
   await focusOn(page, "Birth of Arphaxad", /^Birth of Arphaxad/, "event:45");
-  await expect(facts(page).getByRole("listitem")).toHaveText(["Event Year 2346 BC (approx., Jones chronology) Theographic, CC BY-SA 4.0 Suggest a correction"]);
+  await expect(facts(page).getByRole("listitem")).toHaveText(["Event Year 2346 BC (approx., Jones chronology) Suggest a correction"]);
   await focusOn(page, "Gerar", /^Gerar/, "place:gerar_459");
-  await expect(facts(page).getByRole("listitem")).toHaveText([
-    "Other names Valley of Gerar Theographic, CC BY-SA 4.0 Suggest a correction",
-    "Coordinates 31.3821° N, 34.6065° E OpenBible.info Bible Geocoding Data, CC BY 4.0 Suggest a correction",
-  ]);
+  await expect(facts(page).getByRole("listitem")).toHaveText(["Other names Valley of Gerar Suggest a correction", "Coordinates 31.3821° N, 34.6065° E Suggest a correction"]);
+  await expect(facts(page).getByRole("listitem").nth(1)).toHaveAttribute("title", "OpenBible.info Bible Geocoding Data, CC BY 4.0");
 });
 
 test("an Entity's linked Verses are in Bible order, each with its source, and toggle with N more", async ({ page }) => {
@@ -120,32 +118,60 @@ test("an Entity's linked Verses are in Bible order, each with its source, and to
   await expect(verses.getByRole("listitem")).toHaveCount(26);
   const keys = (await verses.getByRole("button", { name: /^Gen/ }).allTextContents()).map((t) => t.match(/Gen (\d+):(\d+)/)!.slice(1).map(Number));
   expect(keys).toEqual([...keys].sort((a, b) => a[0] - b[0] || a[1] - b[1]));
-  await expect(verses.getByRole("listitem").first()).toContainText("Theographic, CC BY-SA 4.0");
+  await expect(verses.getByRole("listitem").first()).toHaveAttribute("title", "Theographic, CC BY-SA 4.0");
   await panel(page).getByRole("button", { name: "Show first 6" }).click();
   await expect(verses.getByRole("listitem")).toHaveCount(6);
   // A Theme's Verses are Filed Under it, from Nave's.
   await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).dblclick();
   await focusIs(page, "theme:genealogy");
-  await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem").first()).toContainText("Nave's Topical Bible, CC BY 4.0");
+  await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem").first()).toHaveAttribute("title", "Nave's Topical Bible, CC BY 4.0");
 });
 
-test("each fact and link says where it came from", async ({ page }) => {
-  await expect(panel(page).getByText("Person, from Theographic, CC BY-SA 4.0")).toBeVisible();
-  await expect(facts(page).getByRole("listitem")).toHaveText(["Also called Abram Theographic, CC BY-SA 4.0 Suggest a correction", "Gender Male Theographic, CC BY-SA 4.0 Suggest a correction"]);
+// Decision 139: sources and licences are hover titles only; the credits page lists them all.
+test("each fact and link keeps its source in a hover title, not in the text", async ({ page }) => {
+  await expect(panel(page).getByText("Person", { exact: true })).toHaveAttribute("title", "Person, from Theographic, CC BY-SA 4.0");
+  await expect(facts(page).getByRole("listitem")).toHaveText(["Also called Abram Suggest a correction", "Gender Male Suggest a correction"]);
+  await expect(facts(page).getByRole("listitem").first()).toHaveAttribute("title", "Theographic, CC BY-SA 4.0");
+  await expect(panel(page)).not.toContainText("CC BY");
   // A derived Neighbour: both sources, each with its own licence.
   await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
-  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0 Suggest a correction");
+  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Suggest a correction");
+  await expect(relationship(page)).toHaveAttribute("title", "Relationship: together in 6 verses. Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
   // Every Neighbour list item too, as the Relationship line says it.
-  await expect(panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveText(
-    "Genealogy together in 6 verses Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0 Suggest a correction",
+  await expect(panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveAttribute(
+    "title",
+    "Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0",
   );
 });
 
-test("a Verse's Neighbours, Cross-references included, each say where they came from", async ({ page }) => {
+test("a Verse's Neighbours, Cross-references included, each keep where they came from", async ({ page }) => {
   await page.goto("/?focus=01011029");
   await focusIs(page, "01011029");
   const sarah = panel(page).getByRole("list", { name: /^Person/ }).getByRole("listitem").filter({ hasText: "Sarah" });
-  await expect(sarah).toHaveText("Sarah named Theographic, CC BY-SA 4.0 Suggest a correction");
+  await expect(sarah).toHaveAttribute("title", "Theographic, CC BY-SA 4.0");
   // Fixture: Gen 11:29's one Cross-reference, to Ezek 16:3.
-  await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem")).toHaveText(["Ezek 16:3 cross-reference, 4 votes OpenBible.info, CC BY 4.0 Suggest a correction"]);
+  await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem")).toHaveAttribute("title", "OpenBible.info, CC BY 4.0");
+});
+
+test("a list row's correction link shows on hover, on keyboard focus, or for the Selected Node; rows are one line otherwise", async ({ page }) => {
+  const persons = panel(page).getByRole("list", { name: "Person (21)" });
+  const isaac = persons.getByRole("listitem").filter({ hasText: /^Isaac/ });
+  const link = isaac.getByRole("button", { name: "Suggest a correction to the link to Isaac" });
+  await expect(link).toBeHidden();
+  const line = (await isaac.boundingBox())!.height;
+  expect(line).toBeLessThan(30);
+  await isaac.hover();
+  await expect(link).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expect(link).toBeHidden();
+  // The keyboard reaches it from the row's name.
+  await isaac.getByRole("button", { name: /^Isaac/ }).focus();
+  await page.keyboard.press("Tab");
+  await expect(link).toBeFocused();
+  await expect(link).toBeVisible();
+  // Selected, the row keeps it.
+  await isaac.getByRole("button", { name: /^Isaac/ }).click();
+  await page.mouse.move(0, 0);
+  await page.getByRole("searchbox", { name: "Search" }).focus();
+  await expect(link).toBeVisible();
 });

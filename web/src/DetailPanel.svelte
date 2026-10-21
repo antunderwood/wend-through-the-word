@@ -137,18 +137,17 @@
          below never move between the two clicks of a double click; a long text is cut, and whole
          in its title. -->
     <h2 class="line" title={label(selected)}>{label(selected)}</h2>
-    {#await details}{@render typeLine(selectedType)}{:then d}{@render typeLine(d ? `${selectedType}, from ${credit([d])}` : selectedType)}{:catch}{@render typeLine(selectedType)}{/await}
+    {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
     {#if verseText}
       {#await verseText then t}<p class="verse-full">{t}</p>{/await}
     {/if}
-    <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
-         that item goes after it. A Verse's own text has no shared list below it to hold in place,
-         so an empty line is not kept for it. -->
+    <!-- Each item (type, Relationship, fact, linked Verse) has its source and licence in its hover
+         title only; the credits page lists them all (decision 139). A Verse's own text has no
+         shared list below it to hold in place, so an empty line is not kept for it. -->
     <p class="relationship" hidden={!link && !!verseText} title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
       {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
           {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
-        <span class="sourced"><small class="source line">{credit(linkEdges)}</small>
-          {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}</span>{/if}
+        {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
     </p>
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
     <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
@@ -190,14 +189,14 @@
       {#if d?.facts.length}
         <ul class="facts" aria-label="Facts">
           {#each d.facts as f (f.name)}
-            <li><span class="muted">{f.name}</span> {f.value} <small class="source">{credit([f])}</small> {@render fix(f.name, "fact", [selected], `${f.name}: ${f.value}`)}</li>
+            <li title={credit([f])}><span class="muted">{f.name}</span> {f.value} {@render fix(f.name, "fact", [selected], `${f.name}: ${f.value}`)}</li>
           {/each}
         </ul>
       {/if}
       {#if d?.corrections.length}
         <ul class="facts" aria-label="Corrections">
           {#each d.corrections as c, i (i)}
-            <li>Corrected after review: {c.field} ({cited(c.evidence)}). <span class="muted">{c.note}</span>{@render request(c.request)} <small class="source">{credit([c])}</small></li>
+            <li title={credit([c])}>Corrected after review: {c.field} ({cited(c.evidence)}). <span class="muted">{c.note}</span>{@render request(c.request)}</li>
           {/each}
         </ul>
       {/if}
@@ -205,12 +204,11 @@
         {@const [first, ...rest] = d.entry.text.split(/\n\s*\n\s*/)}
         {@const key = `${selected}|entry`}
         <section class="entry" aria-labelledby="entry">
-          <h3 id="entry">{d.entry.source}</h3>
+          <h3 id="entry" title={d.entry.licence}>{d.entry.source}</h3>
           {#each opened[key] ? [first, ...rest] : [first] as paragraph, i (i)}<p>{paragraph}</p>{/each}
           {#if rest.length}
             <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>{opened[key] ? "Read less" : "Read more"}</button>
           {/if}
-          <small class="source">{d.entry.licence}</small>
         </section>
       {/if}
     {:catch e}
@@ -219,7 +217,7 @@
   </section>
   {#await listing then list}
     <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
-         and a correction link on a quiet line below it; a link between two Entities is a
+         in its title and a correction link after it; a link between two Entities is a
          Relationship, sent as the Relationship line sends it. -->
     {#each list.types as t (t)}
       {@const linked = t === "verse" && isEntity(list.r.id)}
@@ -233,17 +231,14 @@
           {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
             {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
             {@const kin = isEntity(list.r.id) && isEntity(l.id)}
-            <li>
+            <li title={credit(l.edges)}>
               {@render item(l.id, words, "neighbours")}
-              <span class="about">
-                <small class="source">{credit(l.edges)}</small>
-                {@render fix(
-                  `the link to ${data.label(l.id)}`,
-                  kin ? "relationship" : "verse",
-                  [list.r.id, l.id],
-                  kin ? `${plainName(l.id)}: ${words}` : `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`,
-                )}
-              </span>
+              {@render fix(
+                `the link to ${data.label(l.id)}`,
+                kin ? "relationship" : "verse",
+                [list.r.id, l.id],
+                kin ? `${plainName(l.id)}: ${words}` : `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`,
+              )}
             </li>
           {/each}
         </ol>
@@ -272,8 +267,8 @@
 {#snippet fix(what: string, kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string)}
   <button class="fix" aria-label="Suggest a correction to {what}" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
 {/snippet}
-{#snippet typeLine(text: string)}
-  <p class="muted line" title={text}>{text}</p>
+{#snippet typeLine(source?: string)}
+  <p class="muted line" title={source ? `${selectedType}, from ${source}` : selectedType}>{selectedType}</p>
 {/snippet}
 {#snippet request(url?: string | null)}
   {#if url}{" "}<a href={url} target="_blank" rel="noopener">Request #{url.slice(url.lastIndexOf("/") + 1)}</a>{/if}
@@ -380,11 +375,6 @@
   .muted {
     color: #9aa0b4;
   }
-  /* Where a fact or link came from: quiet, after the item. */
-  .source {
-    font-size: 11px;
-    color: #7a8098;
-  }
   /* One line, cut with an ellipsis. */
   .line {
     display: block;
@@ -392,7 +382,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  /* Three lines whether or not there is a Relationship: two for the words, then the source and its
+  /* Three lines whether or not there is a Relationship: two for the words, then its correction
      link. */
   .relationship {
     height: 4.35em;
@@ -405,19 +395,13 @@
     line-clamp: 2;
     overflow: hidden;
   }
-  .sourced {
-    display: flex;
-    gap: 6px;
-    align-items: baseline;
-  }
-  .sourced .fix {
-    flex: none;
-  }
-  /* A list item's source and correction link: a quiet line under its name. */
-  .about {
-    display: block;
-    margin: 0 0 4px 4px;
-    line-height: 1.2;
+  /* A list row's correction link shows on hover, on keyboard focus, or for the Selected Node, so a
+     row is one line otherwise; hidden, it takes no space but stays in the tab order (decision 139). */
+  li:not(:hover, :focus-within, :has(.sel)) > .fix {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
   }
   /* An Evidence Verse in the Relationship line: a reference that selects it. */
   .ref {

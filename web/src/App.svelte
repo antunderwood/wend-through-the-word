@@ -330,7 +330,7 @@
 </div>
 <p class="notice" role="status">{model.notice}</p>
 <footer>
-  <a href="/credits.html">Data: CC BY-SA 4.0, credits</a>{#if data}<span class="muted">. Data version {data.version}</span>{/if}
+  <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {data.version}{/if}</span>
 </footer>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}

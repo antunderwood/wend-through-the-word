@@ -13,6 +13,9 @@ test.beforeEach(async ({ page }) => {
 
 // Opens the warning, checks it, and reads the form's fields from its link; the test never follows it.
 async function form(page: Page, opener: Locator) {
+  // A list row shows its link on hover (decision 139).
+  const row = opener.locator("xpath=ancestor::li[1]");
+  if (await row.count()) await row.hover();
   await opener.click();
   const dialog = page.getByRole("dialog", { name: "Suggest a correction" });
   await expect(dialog).toContainText("at least one Evidence Verse");

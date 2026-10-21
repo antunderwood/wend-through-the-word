@@ -148,6 +148,7 @@ for (const view of ["A", "B", "C"] as const) {
     await expect(panel(page).getByRole("list", { name: "Corrections" })).toContainText("Corrected after review: gender (Gen 36:24)");
 
     // The correction link for her gender fills the form; the test never follows it.
+    await panel(page).getByRole("list", { name: "Facts" }).getByRole("listitem").filter({ hasText: "Gender" }).hover();
     await panel(page).getByRole("button", { name: "Suggest a correction to Gender" }).click();
     const dialog = page.getByRole("dialog", { name: "Suggest a correction" });
     const fields = new URL((await dialog.getByRole("link", { name: "Open the form on GitHub" }).getAttribute("href"))!).searchParams;
@@ -186,7 +187,7 @@ for (const view of ["A", "B", "C"] as const) {
     expect(text).toContain("A man in Gen 36:24.");
 
     // The footer leads to the credits page.
-    await page.getByRole("link", { name: "Data: CC BY-SA 4.0, credits" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Credits");
+    await page.getByRole("link", { name: "About and credits" }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("About and credits");
   });
 }

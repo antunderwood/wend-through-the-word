@@ -21,12 +21,12 @@ A reader can now walk the Genesis graph, but cannot read the Bible text around w
 ## Solution
 
 1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself when a Verse becomes the Focus (unless the reader closed it), and opens from a "Read" button (decision 138).
-2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link, curated notes with their Evidence Verses, and "Corrected after review" notes.
+2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link as a hover title (decision 139), curated notes with their Evidence Verses, and "Corrected after review" notes.
 3. **A filter panel** has node type toggles, the Vote Limit slider with its explanation, a book filter that can hide Verses outside the build, and an animation switch.
 4. **Shareable addresses**: the page address holds the Focus, the Selected Node, the pins, the filters, and the view. Opening it restores them. Back and Forward move between Foci.
 5. **"Suggest a correction"** opens the GitHub issue form with the node IDs, the current value, the data version, and the page address filled in, from a button for the Selected Node and a small link beside each Relationship, fact, and linked Verse.
 6. **Journey notes**: a note on each step of Your Path, kept in the browser, downloadable as a Markdown file.
-7. **A credits page** lists every source, its licence, its link, and the modification notice, reached from a footer link.
+7. **An "About and credits" page** lists every source, its licence, its link, and the modification notice, reached from a footer link; it is the one place the page shows sources and licences (decision 139).
 
 No build change is expected: the export already carries corrections, Evidence Verses, notes, sources, licences, coordinates, Event Years, and credits. If one is needed, it goes through the existing build seam.
 
@@ -50,7 +50,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 11. As a reader, I want a long Dictionary Entry folded after its first paragraph with a "Read more" toggle, so that the panel stays short.
 12. As a reader, I want a Person's aliases and gender, a Place's other names and coordinates with their source, and an Event's year labelled "approx., Jones chronology", so that I have the facts the data holds.
 13. As a reader, I want every Verse a node is linked to listed (Mentions and Filed Under), in Bible order, with an "N more" toggle, so that I can read all of them, not only those in Ring 1.
-14. As a reader, I want each fact and link to say where it came from (for example "Theographic, CC BY-SA 4.0"), quietly, so that I can judge it and the licences are honoured.
+14. As a reader, I want each fact and link to keep where it came from (for example "Theographic, CC BY-SA 4.0") in its hover title, with every source and licence listed on the "About and credits" page (decision 139), so that I can judge it, the licences are honoured, and the panel stays uncluttered.
 15. As a reader, I want a curated Relationship (wife, concubine, possibly the same person) to show its note and Evidence Verses, so that I can check the owner's reading.
 16. As a reader, I want a corrected item to say "Corrected after review: gender (Gen 36:24)" with a link to the request when there is one, so that I know the data was changed and why (PRD 10.5 rule 6).
 17. As a reader, I want a Verse outside the build to show its reference and that it is outside the build, as now, and the reader panel to say the same, so that I am never offered text that cannot load.
@@ -77,7 +77,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 ### Reader: correction requests
 
 31. As a reader, I want a "Suggest a correction" button for the Selected Node, so that I can report a data error without leaving the page.
-32. As a reader, I want a small "Suggest a correction" link beside each Relationship, fact, and linked Verse, so that the request is about one specific thing.
+32. As a reader, I want a small "Suggest a correction" link beside the Relationship, and on each fact and list row when I hover it, focus it with the keyboard, or select its node (decision 139), so that the request is about one specific thing and rows stay one line.
 33. As a reader, I want the request form already filled in with the node IDs, what the app shows now, the data version, and the page address, so that I only write the correction and my Evidence Verse.
 34. As a reader, I want to be told before I leave that a request needs at least one Evidence Verse and is published under CC BY-SA 4.0, so that I am not surprised by the form.
 35. As a reader without a GitHub account, I want to know there will be another way to send a request, so that I am not shut out (the email fallback waits for its address).
@@ -95,7 +95,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 ### Reader: credits
 
-44. As a reader, I want a footer link "Data: CC BY-SA 4.0, credits", so that I can find where the data comes from.
+44. As a reader, I want a footer link "About and credits" beside the data licence (decision 139), so that I can find where the data comes from.
 45. As a reader, I want a credits page listing every source with its credit, licence, and link, the modification notice, and a link to the curated tables, so that the licences are met (PRD 5 rule 6, CC BY-SA modification notice).
 
 ### Owner
@@ -128,7 +128,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 4. **Correction link (new, pure).** `correctionLink({ nodeIds, kind, currentValue, dataVersion, pageUrl }) => string` builds the issue form address with the template and the stable field IDs (`kind`, `node_ids`, `current_value`, `data_version`, `page_url`). The repository address comes from `credits.json`'s curated tables link, so it is not repeated in code.
 5. **Journey notes (new).** Notes are a map from node ID to text, kept in browser storage with the M3 storage wrapper (decision 129). Your Path and the Focus are also kept in browser storage, so a reload restores the session; the address still wins when it names a Focus. `notesMarkdown(steps, notes, label, type, link, date) => string` builds the download: a title with the date, then one numbered heading per step, oldest first, ending with the Focus; each with the node's name and type, the note (or nothing), and a link to the page address with that node as the Focus. A step with no note is still listed, so the file reads as the journey.
 6. **Reader panel (new component).** Loads the chapter of the Selected Verse, or of the Focus's first linked Verse when "Read" is pressed on an Entity. Verse numbers are buttons with the same click and double click rules as the lists (two clicks within 400 ms, decision 24).
-7. **Detail panel (changed).** Adds the sections in the Solution, each item with its source and licence in small text, curated items with note and Evidence Verses (decision 75 shape), corrections from an Entity's `corrections` list, and the correction links.
+7. **Detail panel (changed).** Adds the sections in the Solution, each item with its source and licence in its hover title (decision 139), curated items with note and Evidence Verses (decision 75 shape), corrections from an Entity's `corrections` list, and the correction links.
 8. **Filter panel (new component).** Type toggles in the type colours, the Vote Limit slider with the PRD 10.1 text, the book filter, and the animation switch (which, with `prefers-reduced-motion`, turns off the camera flight and growth).
 9. **Credits page (new entry).** A separate page in the front end build, like the node limit page, rendered from `credits.json`.
 

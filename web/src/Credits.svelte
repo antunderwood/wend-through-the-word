@@ -9,7 +9,7 @@
 
 <main>
   <p><a href="/">Back to the graph</a></p>
-  <h1>Credits</h1>
+  <h1>About and credits</h1>
   {#await loading then { version, credits }}
     <p>The data (version {version}) is released under <a href={credits.licence_link}>{credits.licence}</a>.</p>
     <p>{credits.modified}</p>
