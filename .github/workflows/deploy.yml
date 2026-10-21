@@ -1,9 +1,9 @@
 name: Deploy
 # Deploys a release to wendtheword.flying-ant.uk (decisions 152, 153, 154): the release's data
 # asset, staged with the page built from the release tag, checked, deployed, then checked live.
-# It starts when the release command publishes the release, after the zip is uploaded (the tag is
-# pushed before, so a tag trigger could start before the zip exists). To roll back, run it by
-# hand with an earlier tag (docs/runbook.md).
+# It starts when the release command publishes the release (decision 158), after the zip is
+# uploaded (the tag is pushed before, so a tag trigger could start before the zip exists). To roll
+# back, run it by hand with an earlier tag (docs/runbook.md).
 on:
   release:
     types: [published]
@@ -58,7 +58,8 @@ jobs:
         # minute apart; it fails the workflow if the last one fails.
         run: |
           for try in 1 2 3 4 5 6; do
-            node web/live-check.ts https://wendtheword.flying-ant.uk "$DATA_VERSION" --email && exit 0
+            node web/live-check.ts https://wendtheword.flying-ant.uk "$DATA_VERSION" --email \
+              && exit 0
             [ "$try" = 6 ] || sleep 60
           done
           exit 1

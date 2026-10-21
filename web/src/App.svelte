@@ -74,8 +74,20 @@
   // The page address to share (Copy link, the notes download, a correction): it names the Focus.
   const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, data!.osis, true);
 
+  // A deploy while the page is open changes the data version (decision 159). The notice says so,
+  // and keeps saying so with the notice of the action that loaded the new version.
+  let version = $state("");
+  let updated = "";
+  function update(v: string) {
+    version = v;
+    updated = `The data was updated to version ${v}.`;
+    model = { ...model, notice: updated };
+  }
+
   function apply(a: Action) {
     let next = reduce(model, a, label);
+    if (updated && model.notice === updated) next = { ...next, notice: `${updated} ${next.notice}`.trim() };
+    updated = "";
     if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf, data!.bookOf);
     if (a.type === "clearPath") next = afterClear(next, onScreen!);
     // The open reader panel follows the Selected Verse.
@@ -243,7 +255,8 @@
   async function start() {
     failure = undefined;
     try {
-      data = await createData(fetchJSON, "/data");
+      data = await createData(fetchJSON, "/data", update);
+      version = data.version;
       const asked = await readAddress();
       const next = restore(asked, keptPath(), data.known, data.label);
       await Promise.all([data.loadWithKin(next.focus), ...next.pins.map(data.load)]);
@@ -392,7 +405,7 @@
 <p class="notice" role="status">{model.notice}</p>
 <footer>
   {#if onScreen && !noWebGL}<button class="link" onclick={startTour}>Help: take the tour</button><span class="muted">. </span>{/if}
-  <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {data.version}{/if}</span>
+  <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {version}{/if}</span>
 </footer>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
