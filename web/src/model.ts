@@ -86,15 +86,16 @@ export const MAX_PINS = 3;
 const SCENE_PATH = 5,
   PIN_K = 3;
 const isCrossRef = (l: Link) => l.edges.some((e) => e.edge === "CROSS_REF");
-// bookOf(id) gives a Verse's OSIS book, or undefined for a Verse outside this build.
-export type BookOf = (id: Id) => string | undefined;
+// bookOf(id) gives a Verse's OSIS book, and whether its chapter is in this build.
+export type BookOf = (id: Id) => { osis?: string; built: boolean };
 // A node the type or book filter hides; the book filter applies to Verses only (decision 130).
+// Only "build" hides unbuilt chapters; a chosen book keeps them.
 const hides = (id: Id, f: State["filters"], bookOf: BookOf) => {
   const t = typeOf(id) as NodeType;
   if (f.hidden.includes(t)) return true;
   if (t !== "verse" || f.books === "all") return false;
-  const book = bookOf(id);
-  return !book || (f.books !== "build" && !f.books.includes(book));
+  const { osis, built } = bookOf(id);
+  return f.books === "build" ? !built : !f.books.includes(osis!);
 };
 export const passes = (l: Link, f: State["filters"], bookOf: BookOf) => !hides(l.id, f, bookOf) && (!isCrossRef(l) || l.weight >= f.minVotes);
 // A Ring 2 entry is a Cross-reference when both ends are Verses; its weight is then Votes.

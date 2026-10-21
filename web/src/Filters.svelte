@@ -51,6 +51,10 @@
     <select value={chosen} onchange={(e) => choose(e.currentTarget.value)}>
       <option value="all">All books</option>
       <option value="build">This build</option>
+      <!-- Only an address can choose several books; the panel chooses one at a time. -->
+      {#if Array.isArray(filters.books) && filters.books.length > 1}
+        <option value={chosen} disabled>Several books: {books.filter((b) => filters.books.includes(b.osis)).map((b) => b.name).join(", ")}</option>
+      {/if}
       {#each books as b (b.osis)}<option value={b.osis}>{b.name}</option>{/each}
     </select>
   </label>

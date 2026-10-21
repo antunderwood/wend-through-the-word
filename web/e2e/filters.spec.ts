@@ -41,6 +41,19 @@ test.describe("with reduced motion", () => {
   });
 });
 
+test("an address with several books says so in the book filter", async ({ page }) => {
+  await open(page, "/?focus=person:abraham_58&books=Gen,3John");
+  await expect(filters(page).getByRole("combobox", { name: "Verses from" }).locator("option:checked")).toHaveText("Several books: Genesis, 3 John");
+});
+
+test("the book filter leaves the Verses two nodes share, as they are the evidence for their link", async ({ page }) => {
+  // Decision 136: Genealogy is together with Abraham in 6 Genesis verses, with only Matthew chosen.
+  await open(page, "/?focus=person:abraham_58&books=Matt");
+  await page.keyboard.press("Escape");
+  await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
+  await expect(panel(page).getByRole("list", { name: "Together in 6 verses" }).getByRole("listitem")).toHaveCount(6);
+});
+
 test("the animation switch stops the camera flight and the growth", async ({ page }) => {
   await open(page);
   await filters(page).getByRole("checkbox", { name: "Animation" }).uncheck();

@@ -239,6 +239,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 134. **Shared links always name the Focus (owner).** "Copy link", the links in the notes download, and the page address in a correction request always include `focus`, even for Abraham with default settings. The bare address keeps meaning "restore my session" (decision 133). Amends decision 128's "defaults are left out" for `focus` only. Reason: a shared bare address would open on the receiver's own kept Focus, not the sender's.
 135. **A curated Relationship's first Evidence Verse shows in the Relationship line (owner).** The line reads "wife of Abraham (Gen 11:29)"; the reference is a button that selects that Verse. The line keeps its fixed height, and the full note with every Evidence Verse stays further down the panel. Reason: the Evidence Verse is the proof of a curated reading, so it belongs beside the words it proves.
+136. **The book filter does not apply to the "Together in N verses" lists (owner).** They are the evidence for one link, so N stays true whatever books are chosen. Amends decision 130's reach. Reason: a list shorter than its N would contradict the link it explains.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 

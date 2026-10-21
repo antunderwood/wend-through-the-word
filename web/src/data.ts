@@ -206,8 +206,8 @@ export async function createData(getJSON: GetJSON, root: string) {
       return { ...own, facts, entry: d.dictionary_entry, corrections: d.corrections ?? [] };
     },
     outside,
-    // A Verse's OSIS book, or undefined for a Verse outside this build (the book filter).
-    bookOf: (id: Id) => (outside(id) ? undefined : books.get(id.slice(0, 2))?.osis),
+    // A Verse's OSIS book, and whether its chapter is built (the book filter).
+    bookOf: (id: Id) => ({ osis: books.get(id.slice(0, 2))?.osis, built: !outside(id) }),
     // The books with chapters in this build, in Bible order.
     builtBooks: searchIndex.books.filter((b) => b.chapters.length),
     // The chapter of a built Verse, for the reader panel.

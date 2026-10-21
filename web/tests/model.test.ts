@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { afterClear, hiddenNote, initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
+import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, type Action, type Edge, type Link, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -538,5 +538,15 @@ describe("type and book filters", () => {
     // Fixture: Gen 16:1's Cross-references in the build are all in Genesis.
     expect(ring1Of(draw(act(initialState(GEN_16_1), books(["Gen"]))), "verse")).toEqual(["01011030", "01025021", "01016008"]);
     expect(ring1Of(draw(act(initialState(GEN_16_1), books(["Matt"]))), "verse")).toEqual([]);
+  });
+
+  it("a chosen book keeps its chapters outside this build; only This build hides them", () => {
+    // Fixture: no link reaches an unbuilt chapter of a built book, so a Cross-reference to Gen 22:2
+    // (Gen 22 is not built) stands in.
+    const gen22: Link = { id: "01022002", type: "verse", weight: 5, edges: [{ edge: "CROSS_REF", direction: "out" }] };
+    const filters = (value: State["filters"]["books"]) => ({ ...initialState(ABRAHAM).filters, books: value });
+    expect(passes(gen22, filters(["Gen"]), data.bookOf)).toBe(true);
+    expect(passes(gen22, filters(["Matt"]), data.bookOf)).toBe(false);
+    expect(passes(gen22, filters("build"), data.bookOf)).toBe(false);
   });
 });
