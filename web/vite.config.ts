@@ -36,20 +36,22 @@ function serveData(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [svelte(), serveData()],
   // three.js alone is about 520 KB minified.
-  // The node limit test page (#30) is a second entry, not linked from the reader's page. The
-  // credits page is a third, so it loads without WebGL (decision 132).
+  // The node limit test page (#30) is a second entry, not linked from the reader's page, and left
+  // out of the "site" mode build that stage.ts deploys (decision 156). The credits page is a
+  // third, so it loads without WebGL (decision 132).
   build: {
     chunkSizeWarningLimit: 700,
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, "index.html"),
-        nodelimit: resolve(import.meta.dirname, "node-limit.html"),
+        ...(mode !== "site" && { nodelimit: resolve(import.meta.dirname, "node-limit.html") }),
         credits: resolve(import.meta.dirname, "credits.html"),
+        notfound: resolve(import.meta.dirname, "404.html"),
       },
     },
   },
   test: { include: ["tests/**/*.test.ts"], environment: "node" },
-});
+}));
