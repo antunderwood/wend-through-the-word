@@ -1,0 +1,78 @@
+# Runbook
+
+How to release, roll back, and look after the live site at https://wendtheword.flying-ant.uk (decisions 144, 152, 153). Commands run from the repository root.
+
+## Release
+
+1. Be on `main`, up to date with GitHub, with CI green, and `gh auth status` signed in.
+2. For new data, set a new `data_version` (and `build_date`) in `build.toml`, commit it, and build the export:
+
+   ```
+   uv run python -m pipeline.build build.toml
+   ```
+
+   Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
+3. Try the release first. The dry run checks everything and makes the zip, but pushes and creates nothing:
+
+   ```
+   uv run python -m pipeline.release v2026-10-19 --dry-run
+   ```
+
+   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, `out/reports/file_count.tsv` shows files over the size limit, or `out/data` holds 20,000 files or more.
+4. Release:
+
+   ```
+   uv run python -m pipeline.release v2026-10-19
+   ```
+
+   It zips `out/data` as `out/wend-data-<data version>.zip`, makes and pushes the tag, and creates the GitHub release with the zip attached and notes giving the data version, build date, and commit.
+5. Publishing the release starts the Deploy workflow (`.github/workflows/deploy.yml`). Follow it with `gh run watch` (pick the Deploy run). It downloads the zip, builds and stages the page from the tag, runs the staged site tests on the folder it deploys, deploys with Wrangler, and runs the live check (`node web/live-check.ts`). Any failed step fails the run, and GitHub emails the owner.
+6. If the command stops after pushing the tag (for example, `gh` failed), remove the tag and any draft release, then run it again:
+
+   ```
+   gh release delete v2026-10-19 --yes    # only if a draft release was made
+   git push origin --delete v2026-10-19
+   git tag -d v2026-10-19
+   ```
+
+The live check can be run by hand at any time: `node web/live-check.ts https://wendtheword.flying-ant.uk <data version>`.
+
+### After the first deploy: email
+
+Attaching the custom domain lets Wrangler change DNS records for wendtheword.flying-ant.uk without asking, because CI has no terminal. The Email Routing records (decision 151) must survive. After the first deploy, and after any deploy that fails on the domain:
+
+1. The live check already requires a Cloudflare MX record; also check the SPF record is there: `dig +short TXT wendtheword.flying-ant.uk` shows `v=spf1 include:_spf.mx.cloudflare.net ~all`.
+2. Send a test email to contact@wendtheword.flying-ant.uk from another account, and check it arrives.
+3. If either fails, open Email Routing for flying-ant.uk in the Cloudflare dashboard and add the subdomain's records again from its DNS settings (three `route1` to `route3.mx.cloudflare.net` MX records and the SPF record above, as on 2026-10-21).
+
+## Roll back
+
+Deploy an earlier tag again. Its own code and data are used, from that tag's release:
+
+```
+gh workflow run deploy.yml -f tag=v2026-10-19
+gh run watch
+```
+
+Or, on GitHub: Actions, Deploy, "Run workflow", and enter the tag. Readers get the earlier version within five minutes (the `index.json` cache rule).
+
+After a rollback, release the fix under a new data version, not the one rolled back: a browser that asked for a file of the rolled back version during those five minutes may have cached the not found answer.
+
+## Weekly usage check (PRD 8.5 rule 10)
+
+Once a week, in the Cloudflare dashboard:
+
+1. Workers and Pages, then `wend-through-the-word`, then Metrics: requests and errors for the last 7 days. The site has no Worker script, so its requests are static asset requests, which are free and unlimited.
+2. The account's Workers and Pages overview: Workers requests for each day. The free limit is 100,000 a day; act when a day passes 50,000 (half the limit).
+3. D1 and KV: none in version 1. If phase 2 adds them, check their daily reads and writes against half of each limit too.
+
+Acting means: find the cause (a crawler, a loop, a Worker added by mistake) and tell the owner before the limit is reached; the Workers Paid plan is the owner's decision (PRD 8.5 rule 11).
+
+## Renewing the Cloudflare API token
+
+The deploy uses the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Renew the token before it expires, or at once if it may have leaked:
+
+1. In the Cloudflare dashboard: My Profile, API Tokens, "Create Token", "Create Custom Token". Give it Account, Workers Scripts, Edit, for this account only, and an expiry date. If the first release recorded more permissions (for example Zone, DNS, Edit and Zone, Zone, Read for flying-ant.uk), give it those too, and no others.
+2. Store it without echoing it: `gh secret set CLOUDFLARE_API_TOKEN` and paste the token at the prompt.
+3. Check it works by deploying the current tag again: `gh workflow run deploy.yml -f tag=<current tag>`.
+4. When that run passes, delete the old token in the dashboard.
