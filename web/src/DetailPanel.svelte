@@ -151,15 +151,15 @@
         {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
     </p>
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
-    <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+    <button data-tour="make-focus" onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
     {#if model.pins.includes(selected)}
       <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
     {:else}
-      <button onclick={() => pin(selected)}>Pin</button>
+      <button data-tour="pin" onclick={() => pin(selected)}>Pin</button>
     {/if}
     <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-    <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
-    <button onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
+    <button data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+    <button data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
     <button onclick={() => suggest(typeOf(selected) === "verse" ? "verse" : "fact", [selected], `${selectedType}: ${label(selected)}`)} disabled={typeOf(selected) === "overflow"}>
       Suggest a correction
     </button>
@@ -228,7 +228,7 @@
       {@const k = model.filters.k}
       {#if all.length}
         <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
-        <ol aria-labelledby="list-{t}">
+        <ol aria-labelledby="list-{t}" data-tour="list-{t}">
           {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
             {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
             {@const shown = relationWords(list.r.type, l, data.genderOf, plainName(list.r.id)).text}
@@ -245,7 +245,7 @@
           {/each}
         </ol>
         {#if !list.whole && all.length > k}
-          <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
+          <button class="more" data-tour="more-{t}" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
             <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
             {opened[key] ? `Show ${linked ? "first" : "top"} ${k}` : `${all.length - k} more`}
           </button>

@@ -11,6 +11,8 @@
   import { notesMarkdown } from "./notes";
   import { afterClear, hiddenNote, initialState, reduce, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import Search from "./Search.svelte";
+  import Tour from "./Tour.svelte";
+  import { TOUR_START, type TourPage } from "./tour";
   import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
   import { store, stored } from "./storage";
 
@@ -72,8 +74,20 @@
   // The page address to share (Copy link, the notes download, a correction): it names the Focus.
   const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, data!.osis, true);
 
+  // A deploy while the page is open changes the data version (decision 159). The notice says so,
+  // and keeps saying so with the notice of the action that loaded the new version.
+  let version = $state("");
+  let updated = "";
+  function update(v: string) {
+    version = v;
+    updated = `The data was updated to version ${v}.`;
+    model = { ...model, notice: updated };
+  }
+
   function apply(a: Action) {
     let next = reduce(model, a, label);
+    if (updated && model.notice === updated) next = { ...next, notice: `${updated} ${next.notice}`.trim() };
+    updated = "";
     if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf, data!.bookOf);
     if (a.type === "clearPath") next = afterClear(next, onScreen!);
     // The open reader panel follows the Selected Verse.
@@ -165,7 +179,7 @@
   let notes = $state.raw<Notes>(keptNotes());
   function setNotes(next: Notes) {
     notes = next;
-    keepNotes(next);
+    if (!touring) keepNotes(next);
   }
   function downloadNotes() {
     const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], (id) => shareLink(initialState(id), "A"), new Date());
@@ -180,11 +194,72 @@
     store(HINT_KEY, "1");
   }
 
+  // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
+  // runs. While it runs nothing is kept in this browser and the address is replaced, not pushed; when
+  // it ends, the reader's state comes back and a note written in it goes unless the reader keeps it.
+  const TOUR_KEY = "wend.tourOffered";
+  let tour = $state<"offer" | "on">();
+  const touring = $derived(tour === "on");
+  let tours = $state(0); // each start draws a new tour box
+  let saved: { model: State; reading?: Id; notes: Notes } | undefined;
+  const tourPage: TourPage = {
+    get data() {
+      return data!;
+    },
+    get model() {
+      return model;
+    },
+    get view() {
+      return view;
+    },
+    get reading() {
+      return reading;
+    },
+    get notes() {
+      return notes;
+    },
+    apply,
+    makeFocus,
+    pin,
+    read: openReader,
+    note: (id, text) => setNotes(withNote(notes, id, text)),
+  };
+  // A whole new state: its Focus, kin, and pins load before it is shown.
+  async function show(next: State) {
+    await Promise.all([data!.loadWithKin(next.focus), ...next.pins.map(data!.load)]);
+    model = next;
+    onScreen = scene(next, data!.record, data!.genderOf, data!.bookOf);
+    graph?.render(onScreen, next.selected);
+  }
+  // The tour box appears with the tour's start state, loaded first.
+  async function startTour() {
+    store(TOUR_KEY, "1");
+    await data!.loadWithKin(TOUR_START);
+    if (!touring) saved = { model, reading, notes };
+    tour = "on";
+    tours++;
+    reading = undefined;
+    collapsed = false;
+    await show(initialState(TOUR_START));
+  }
+  async function endTour(keep: boolean) {
+    if (touring) {
+      if (keep) keepNotes(notes);
+      else notes = saved!.notes;
+      reading = saved!.reading;
+      await show({ ...saved!.model, notice: "" });
+      await tick(); // the address is replaced with the reader's before the tour lets go of it
+    }
+    store(TOUR_KEY, "1");
+    tour = undefined;
+  }
+
   // The page opens on the address (decision 128) and the session kept in this browser (decision 133).
   async function start() {
     failure = undefined;
     try {
-      data = await createData(fetchJSON, "/data");
+      data = await createData(fetchJSON, "/data", update);
+      version = data.version;
       const asked = await readAddress();
       const next = restore(asked, keptPath(), data.known, data.label);
       await Promise.all([data.loadWithKin(next.focus), ...next.pins.map(data.load)]);
@@ -208,6 +283,7 @@
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
     graph.render(onScreen, model.selected);
+    if (!stored(TOUR_KEY)) tour = "offer";
     // The browser tests read node positions; only their build (vite build --mode e2e) has the hook.
     if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph });
   }
@@ -222,13 +298,13 @@
   $effect(() => {
     if (!onScreen) return;
     const url = location.pathname + write(model, view, data!.osis);
-    if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
+    if (entryFocus && model.focus !== entryFocus && !touring) history.pushState(null, "", url);
     else history.replaceState(null, "", url);
     entryFocus = model.focus;
   });
 
   $effect(() => {
-    if (onScreen) keepPath(model);
+    if (onScreen && !touring) keepPath(model);
   });
 
   const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis), data!.verseKey);
@@ -249,7 +325,7 @@
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- The scene takes the space between the open panels. -->
-<div class="stage" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<div class="stage" data-tour="scene" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   <!-- The chevron points the way the panel will move. -->
@@ -289,6 +365,9 @@
     </div>
   {/if}
   <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
+  {#if tour}
+    {#key tours}<Tour offer={tour === "offer"} page={tourPage} onstart={startTour} onend={endTour} />{/key}
+  {/if}
 {/if}
 {#if hint}
   <p class="hint">
@@ -325,7 +404,8 @@
 </div>
 <p class="notice" role="status">{model.notice}</p>
 <footer>
-  <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {data.version}{/if}</span>
+  {#if onScreen && !noWebGL}<button class="link" onclick={startTour}>Help: take the tour</button><span class="muted">. </span>{/if}
+  <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {version}{/if}</span>
 </footer>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
@@ -481,7 +561,14 @@
     font-size: 12px;
     color: #9aa0b4;
   }
-  footer a {
+  footer a,
+  footer .link {
     color: inherit;
+  }
+  footer .link {
+    padding: 0;
+    border: 0;
+    background: none;
+    text-decoration: underline;
   }
 </style>

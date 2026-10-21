@@ -1,0 +1,13 @@
+// An assets-only Worker (no main, so no Worker script) serving the staged site (decision 144).
+// The compatibility date must not be newer than the pinned Wrangler's runtime, or dev fails.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "wend-through-the-word",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "../site",
+    "not_found_handling": "404-page"
+  },
+  // Cloudflare makes the DNS record and the certificate for a custom domain (decision 144).
+  "routes": [{ "pattern": "wendtheword.flying-ant.uk", "custom_domain": true }]
+}

@@ -10,14 +10,14 @@
   <ol>
     {#each items as id, i (id)}
       <li>
-        <button class:focus={i === 0} class:selected={id === model.selected} class:noted={notes[id]} title={notes[id] ? "Has a note" : undefined} onclick={() => apply({ type: "select", id })}>{label(id)}</button>
+        <button data-tour="path-{id}" class:focus={i === 0} class:selected={id === model.selected} class:noted={notes[id]} title={notes[id] ? "Has a note" : undefined} onclick={() => apply({ type: "select", id })}>{label(id)}</button>
       </li>
     {/each}
   </ol>
   {#if model.cleared}
-    <button class="clear" onclick={() => apply({ type: "undoClear" })}>Undo clear</button>
+    <button class="clear" data-tour="clear" onclick={() => apply({ type: "undoClear" })}>Undo clear</button>
   {:else if model.path.length}
-    <button class="clear" onclick={() => apply({ type: "clearPath" })}>Clear</button>
+    <button class="clear" data-tour="clear" onclick={() => apply({ type: "clearPath" })}>Clear</button>
   {/if}
 </nav>
 

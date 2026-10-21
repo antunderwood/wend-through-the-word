@@ -2,7 +2,7 @@
 
 Status: ready-for-agent
 Date: 2026-10-21
-Sources: `PRD.md` (Draft 5, sections 5, 8, 10.5, 11, 13), `GLOSSARY.md`, `docs/decisions.md` (decisions 47, 113, 120, 123, 128, 144 to 157), `docs/specs/navigation.md`, `docs/specs/reading-and-sharing.md`
+Sources: `PRD.md` (Draft 5, sections 5, 8, 10.5, 11, 13), `GLOSSARY.md`, `docs/decisions.md` (decisions 47, 113, 120, 123, 128, 144 to 158), `docs/specs/navigation.md`, `docs/specs/reading-and-sharing.md`
 
 Terms follow `GLOSSARY.md`. Published as issue #46. The issue is the working copy for agents. This file is the reference copy. M3 and M4 are merged; the page, the Genesis export, the credits page, correction links, and the contact address all exist. This spec ships them.
 
@@ -12,7 +12,7 @@ The application runs only on the owner's machine. Readers cannot reach it, links
 
 ## Solution
 
-1. **A release flow.** The owner builds the Genesis export locally, where the downloaded sources are, and runs one release command. It checks the export, attaches it to a GitHub release, and pushes the release tag. Pushing the tag starts a GitHub Actions workflow that downloads that export, builds the page, assembles the staged site, checks it, deploys it to Cloudflare Workers static assets at wendtheword.flying-ant.uk (decision 144), and runs a live check against the site. There is still no Worker script.
+1. **A release flow.** The owner builds the Genesis export locally, where the downloaded sources are, and runs one release command. It checks the export, pushes the release tag, and publishes a GitHub release with the export attached. Publishing the release starts a GitHub Actions workflow (decision 158) that downloads that export, builds the page, assembles the staged site, checks it, deploys it to Cloudflare Workers static assets at wendtheword.flying-ant.uk (decision 144), and runs a live check against the site. There is still no Worker script.
 2. **Cache and size rules.** Versioned data files and the page's hashed files are cached for a year; `index.json` and the pages for a short time (PRD 8.5 rule 6). The staged site stays under Cloudflare's file count and file size limits (PRD 8.4).
 3. **A first-run tour** of the student journey ("studying Abraham") that a new reader can take or skip, restart from a help link, in any view.
 4. **Launch polish**: a page title and description, an icon, and a not found page.
@@ -46,7 +46,7 @@ The application runs only on the owner's machine. Readers cannot reach it, links
 19. As the owner, I want one release command that checks my local export, attaches it to a GitHub release, and pushes the tag, so that releasing is one step (PRD 8.5 rule 9).
 20. As the owner, I want the release command to refuse an export that fails the build's checks (size limit, file count, reports with failures), so that I never ship broken data.
 21. As the owner, I want each release tag to pin the exact data and code that shipped, so that I can say what was live on any day and roll back.
-22. As the owner, I want the deploy to run in GitHub Actions on the tag, so that it does not depend on my machine's state.
+22. As the owner, I want the deploy to run in GitHub Actions when the release is published, so that it does not depend on my machine's state.
 23. As the owner, I want the Cloudflare API token and account ID kept as GitHub secrets with the narrowest permissions, so that a leak cannot touch the rest of my account.
 24. As the owner, I want the Wrangler configuration in the repository (PRD 8.5 rule 9), so that the deploy is reviewable.
 25. As the owner, I want the deploy to attach the custom domain wendtheword.flying-ant.uk, so that DNS and the certificate are handled by Cloudflare (decision 144).
@@ -72,7 +72,7 @@ The application runs only on the owner's machine. Readers cannot reach it, links
 ### Release and deploy
 
 - **Release asset** (decision 153). The owner builds the export locally. A release command (in the repository's task runner) runs the export checks, zips `out/data` with the data version in its name, creates a GitHub release for the given tag with the zip attached, and pushes the tag. The release notes list the data version, the build date, and the commit.
-- **Deploy on a tag** (decision 152). A GitHub Actions workflow runs on release tags only. It downloads the release's data asset, builds the page in production mode, runs the staging step and its tests, deploys with Wrangler, then runs the live check against wendtheword.flying-ant.uk. Amends PRD 8.5 rule 9 ("a deploy must run from one command"): the one command is the release command, and the tag push does the rest.
+- **Deploy on a published release** (decisions 152 and 158). A GitHub Actions workflow runs when a GitHub release is published, not on the tag push: the release command pushes the tag before it uploads the data asset. It downloads the release's data asset, builds the page in production mode, runs the staging step and its tests, deploys with Wrangler, then runs the live check against wendtheword.flying-ant.uk. Amends PRD 8.5 rule 9 ("a deploy must run from one command"): the one command is the release command, and publishing the release does the rest.
 - **Secrets.** `CLOUDFLARE_API_TOKEN` (scoped to Workers scripts and the flying-ant.uk zone's routes) and `CLOUDFLARE_ACCOUNT_ID` live as GitHub repository secrets, set by the owner (a ticket for the owner). Nothing else needs a secret.
 - **Wrangler configuration in the repository**: an assets-only Worker (no `main`, so no Worker script, PRD 3 and 12 item 12) named for the application, the staged folder as its assets directory, the custom domain `wendtheword.flying-ant.uk`, and not found handling that serves the not found page.
 - **Rollback**: re-run the deploy workflow on an earlier tag (workflow dispatch with a tag input). The runbook says how.
@@ -89,7 +89,7 @@ The application runs only on the owner's machine. Readers cannot reach it, links
 
 ### First-run tour
 
-- **In M5** (decision 155). Offered once per browser on the first visit (stored with the M3 storage wrapper), skippable, restartable from a "Help: take the tour" link in the footer.
+- **In M5** (decision 155). Offered on the first visit, and again until the reader takes or skips it (stored with the M3 storage wrapper), skippable, restartable from a "Help: take the tour" link in the footer.
 - **Steps as data**, lifted from the prototype's tour (branch `prototype/navigation`, about ten steps: move the camera, search Abraham, select Sarah, select Abraham, open his Themes, select a Theme and read the shared Verses, make Isaac the Focus, pin Abraham, Prev and Next, Clear and Undo clear), extended for M4: open the reader panel, write a note. Each step has a target, an instruction, a check that the reader did it, and a "Do it for me" action that uses the page's own actions. No timings or result copying (that was for the ABC test).
 - **Leaves no trace**: the tour saves the reader's Focus, Your Path, pins, selection, and filters on start and restores them on finish or skip; notes written during the tour are removed unless the reader keeps them.
 - Works in all three views and with the keyboard; respects reduced motion; the tour box never covers the step's target.
@@ -122,7 +122,7 @@ The application runs only on the owner's machine. Readers cannot reach it, links
 
 ## Further Notes
 
-1. **Decisions 152 to 157** record this spec's choices: deploy on a tag in GitHub Actions (owner, amends PRD 8.5 rule 9), the export as a release asset (owner), the staged site and live check seams (owner), the first-run tour in M5 (owner, settles decision 120), the node limit page left out (owner), and the cache rules.
+1. **Decisions 152 to 157** record this spec's choices: deploy in GitHub Actions (owner, amends PRD 8.5 rule 9; decision 158 runs it on the published release, not the tag push), the export as a release asset (owner), the staged site and live check seams (owner), the first-run tour in M5 (owner, settles decision 120), the node limit page left out (owner), and the cache rules.
 2. **Free tier check.** PRD 8.4 asks for the limits to be checked again on Cloudflare's official pages before launch; the first release ticket records the date and values.
 3. **Repository size.** Release assets do not enter git history, so M6's larger export (several hundred MB in files, compressed far smaller) does not bloat the repository.
 4. **Domain.** flying-ant.uk uses Cloudflare's nameservers (checked 2026-10-21), so the custom domain needs no DNS work by hand; the token must cover that zone.

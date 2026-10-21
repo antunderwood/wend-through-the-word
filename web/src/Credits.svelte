@@ -31,20 +31,6 @@
 </main>
 
 <style>
-  :global(body) {
-    margin: 0;
-    background: #0d0f17;
-    color: #e6e8f0;
-    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  main {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 24px 16px 48px;
-  }
-  a {
-    color: #ffd27a;
-  }
   ul {
     padding: 0;
     list-style: none;

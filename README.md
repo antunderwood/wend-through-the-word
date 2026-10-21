@@ -40,6 +40,10 @@ npx playwright test     # the built page in Chromium
 npm run check           # svelte-check
 ```
 
+## Release
+
+`uv run python -m pipeline.release <tag>` releases the local export, and the Deploy workflow puts it live. See `docs/runbook.md` for releasing, rolling back, and the weekly usage check.
+
 ## Corrections
 
 Use the "Correction request" issue form. Every request needs at least one verse as evidence.

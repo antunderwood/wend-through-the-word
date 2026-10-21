@@ -4,7 +4,12 @@ import { defineConfig, devices } from "@playwright/test";
 // mode build is the only one with the window.wendGraph hook the tests read.
 export default defineConfig({
   testDir: "e2e",
-  use: { baseURL: "http://localhost:4173", trace: "retain-on-failure" },
+  use: {
+    baseURL: "http://localhost:4173",
+    trace: "retain-on-failure",
+    // Every test starts in a browser that was already offered the first-run tour; tour.spec.ts clears it.
+    storageState: { cookies: [], origins: [{ origin: "http://localhost:4173", localStorage: [{ name: "wend.tourOffered", value: "1" }] }] },
+  },
   webServer: {
     command: "npx vite build --mode e2e && npx vite preview --port 4173 --strictPort",
     port: 4173,

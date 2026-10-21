@@ -9,7 +9,7 @@
 
 <section class="note">
   <label for="note">Note on {name}</label>
-  <textarea id="note" rows="4" value={text} oninput={(e) => onnote(e.currentTarget.value)}></textarea>
+  <textarea id="note" data-tour="note" rows="4" value={text} oninput={(e) => onnote(e.currentTarget.value)}></textarea>
   <p class="muted">Notes stay in this browser only. Download them to keep them.</p>
   <button onclick={download}>Download notes</button>
   <button onclick={askToDelete}>Delete all notes</button>
