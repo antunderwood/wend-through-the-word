@@ -15,9 +15,9 @@ let url: string;
 let version: string;
 
 // The check's exit code and its output, as the deploy workflow or the owner would see them.
-async function check(expected: string): Promise<{ code: number; output: string }> {
+async function check(expected: string, ...flags: string[]): Promise<{ code: number; output: string }> {
   try {
-    const { stdout } = await promisify(execFile)("node", ["live-check.ts", url, expected], { cwd: web });
+    const { stdout } = await promisify(execFile)("node", ["live-check.ts", url, expected, ...flags], { cwd: web });
     return { code: 0, output: stdout };
   } catch (e) {
     const { code, stdout, stderr } = e as { code: number; stdout: string; stderr: string };
@@ -56,6 +56,12 @@ describe("live check", () => {
     const { code, output } = await check("2000-01-01");
     expect(code).not.toBe(0);
     expect(output).toContain(`data version is ${version}, expected 2000-01-01`);
+  }, 30_000);
+
+  it("checks the Email Routing MX records only when asked", async () => {
+    const { code, output } = await check(version, "--email");
+    expect(code).not.toBe(0);
+    expect(output).toContain("127.0.0.1: no Cloudflare MX records");
   }, 30_000);
 
   it("fails, naming the file, when index.json loses its five minute rule", async () => {

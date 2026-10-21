@@ -35,13 +35,13 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    git tag -d v2026-10-19
    ```
 
-The live check can be run by hand at any time: `node web/live-check.ts https://wendtheword.flying-ant.uk <data version>`.
+The live check can be run by hand at any time: `node web/live-check.ts https://wendtheword.flying-ant.uk <data version> --email`. Leave out `--email` for any other address, such as a local `wrangler dev` server: only the live domain has Email Routing records (decision 162).
 
 ### After the first deploy: email
 
 Attaching the custom domain lets Wrangler change DNS records for wendtheword.flying-ant.uk without asking, because CI has no terminal. The Email Routing records (decision 151) must survive. After the first deploy, and after any deploy that fails on the domain:
 
-1. The live check already requires a Cloudflare MX record; also check the SPF record is there: `dig +short TXT wendtheword.flying-ant.uk` shows `v=spf1 include:_spf.mx.cloudflare.net ~all`.
+1. The deploy's live check already requires a Cloudflare MX record (it passes `--email`); also check the SPF record is there: `dig +short TXT wendtheword.flying-ant.uk` shows `v=spf1 include:_spf.mx.cloudflare.net ~all`.
 2. Send a test email to contact@wendtheword.flying-ant.uk from another account, and check it arrives.
 3. If either fails, open Email Routing for flying-ant.uk in the Cloudflare dashboard and add the subdomain's records again from its DNS settings (three `route1` to `route3.mx.cloudflare.net` MX records and the SPF record above, as on 2026-10-21).
 

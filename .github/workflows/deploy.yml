@@ -58,7 +58,7 @@ jobs:
         # minute apart; it fails the workflow if the last one fails.
         run: |
           for try in 1 2 3 4 5 6; do
-            node web/live-check.ts https://wendtheword.flying-ant.uk "$DATA_VERSION" && exit 0
+            node web/live-check.ts https://wendtheword.flying-ant.uk "$DATA_VERSION" --email && exit 0
             [ "$try" = 6 ] || sleep 60
           done
           exit 1

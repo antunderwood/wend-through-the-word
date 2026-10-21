@@ -1,10 +1,10 @@
 // Checks a deployed site (decision 154): pages, the not found page, cache rules, compression, the
-// data version, and that the domain kept its Email Routing MX records (decision 151).
-// Usage: node web/live-check.ts <base URL> <expected data version>
+// data version, and, with --email, that the domain kept its Email Routing MX records (decisions
+// 151, 162). Usage: node web/live-check.ts <base URL> <expected data version> [--email]
 import { resolveMx } from "node:dns/promises";
 
-const [base, expected] = process.argv.slice(2);
-if (!expected) throw new Error("Usage: node web/live-check.ts <base URL> <expected data version>");
+const [base, expected, flag] = process.argv.slice(2);
+if (!expected) throw new Error("Usage: node web/live-check.ts <base URL> <expected data version> [--email]");
 
 const YEAR = "public, max-age=31536000, immutable";
 const failures: string[] = [];
@@ -42,9 +42,10 @@ for (const path of [`/data/${expected}/chapter/Gen/25.json`, `/data/${expected}/
   if (encoding !== "gzip" && encoding !== "br") failures.push(`${path}: Content-Encoding is ${encoding}, expected gzip or br`);
 }
 
-// Attaching the custom domain must not remove Email Routing's records. A local server has none.
+// Attaching the custom domain must not remove Email Routing's records. Only the live domain has
+// them, so the deploy workflow asks for this check.
 const { hostname } = new URL(base);
-if (!["localhost", "127.0.0.1"].includes(hostname)) {
+if (flag === "--email") {
   const mx = await resolveMx(hostname).catch(() => []);
   if (!mx.some((r) => r.exchange.endsWith(".mx.cloudflare.net")))
     failures.push(`${hostname}: no Cloudflare MX records (${mx.map((r) => r.exchange).join(", ") || "none"})`);
