@@ -182,9 +182,9 @@
     store(HINT_KEY, "1");
   }
 
-  // The first-run tour (decision 155): offered once in this browser, "on" while it runs. While it runs
-  // nothing is kept in this browser and the address is replaced, not pushed; when it ends, the
-  // reader's state comes back and a note written in it goes unless the reader keeps it.
+  // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
+  // runs. While it runs nothing is kept in this browser and the address is replaced, not pushed; when
+  // it ends, the reader's state comes back and a note written in it goes unless the reader keeps it.
   const TOUR_KEY = "wend.tourOffered";
   let tour = $state<"offer" | "on">();
   let tours = $state(0); // each start draws a new tour box
@@ -220,6 +220,7 @@
   }
   // The tour box appears with the tour's start state, loaded first.
   async function startTour() {
+    store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
     if (tour !== "on") saved = { model, reading, notes };
     tour = "on";
@@ -236,6 +237,7 @@
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
+    store(TOUR_KEY, "1");
     tour = undefined;
   }
 
@@ -267,10 +269,7 @@
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
     graph.render(onScreen, model.selected);
-    if (!stored(TOUR_KEY)) {
-      tour = "offer";
-      store(TOUR_KEY, "1");
-    }
+    if (!stored(TOUR_KEY)) tour = "offer";
     // The browser tests read node positions; only their build (vite build --mode e2e) has the hook.
     if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph });
   }

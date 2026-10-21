@@ -174,17 +174,13 @@ test.describe("a first visit", () => {
   // A new browser: nothing kept, so the tour is offered (the other specs start with it offered).
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test("the tour is offered once, a skip is remembered, and the footer restarts it", async ({ page }) => {
+  test("the tour is offered until answered, a skip is remembered, and the footer restarts it", async ({ page }) => {
     await page.goto("/");
     await focusIs(page, ABRAHAM);
     await expect(offer(page)).toContainText("studying Abraham");
-    // Offered once: a reload that never answered it does not offer it again.
+    // Offered until answered: a reload before an answer offers it again.
     await page.reload();
     await focusIs(page, ABRAHAM);
-    await expect(offer(page)).toBeHidden();
-
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
     await offer(page).getByRole("button", { name: "Skip" }).click();
     await expect(offer(page)).toBeHidden();
     await page.reload();
