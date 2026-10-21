@@ -267,6 +267,11 @@ Numbers start at 56, because ticket #4 records decision 55.
 148. **The detail panel's fixed-height top section shows a fade hint when more is below (owner).** The section keeps its fixed height for the double click rule; a soft fade at its bottom edge shows while more content is below it, goes when the reader has scrolled to the end, and never covers a control focused with the keyboard. It is CSS only (a scroll-driven animation of a mask). Reason: the owner found long content cut off without a sign that it scrolls.
 149. **The page address writes a Verse as its OSIS reference with dots (owner).** `?focus=Gen.22.2`, the form the export's Evidence Verse labels already use; it needs no URL encoding. The address also reads the Verse Key (`01022002`, so links shared so far keep working) and the forms the search box accepts (`Gen 22:2`, `Gen22:2`, `Genesis 22:2`), with the search's own parsing. The same applies to `sel` and `pins`; Entity IDs are unchanged. A value that is neither an ID nor a Verse in any form gets a notice that says what was expected: "0102200 is not a Verse here. Write a Verse as Gen.22.2 or Gen 22:2." Amends decision 128. Reason: a Verse Key is hard to read and easy to mistype (the owner's link lost a digit).
 
+## 2026-10-21: Launch checks
+
+150. **The desktop node limit is 500, confirmed on a mid-range laptop (owner).** The re-test decision 123 asked for before M5 passed at 500. Closes decision 123's open check. The phone limit waits for M7.
+151. **Email Routing for contact@wendtheword.flying-ant.uk is live (owner).** Cloudflare's MX and SPF records for the subdomain resolve (checked 2026-10-21); the forwarding address is set in the dashboard only (decision 145).
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
