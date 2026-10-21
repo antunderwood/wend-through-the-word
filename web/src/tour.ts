@@ -34,12 +34,10 @@ const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
   ISAAC = "person:isaac_616";
 
+// The components mark each target with data-tour; a name in the scene carries its node ID.
 const one = (s: string) => document.querySelector(s);
-const label = (id: Id) => one(`.stage .nl[data-node="${id}"]`);
-const button = (scope: string, name: string) => [...document.querySelectorAll(`${scope} button`)].find((b) => b.textContent!.trim() === name);
-const panelButton = (name: string) => button("#panel .selected", name);
-const pathButton = (name: string) => button(".path", name);
-const THEMES_MORE = "#list-theme + ol + button.more";
+const tour = (name: string) => one(`[data-tour="${name}"]`);
+const label = (id: Id) => one(`[data-tour="scene"] [data-node="${id}"]`);
 const onPath = (s: State) => [...s.path, s.focus];
 // Waits a few frames for the panel to draw what an action asked for.
 async function drawn(find: () => Element | null | undefined) {
@@ -57,14 +55,14 @@ export const STEPS: Step[] = [
   {
     title: "Move the camera",
     text: (p) => `The tour starts at Gen 11:27 with Your Path empty and no pins; yours come back when it ends. ${CAMERA[p.view]} Try it on the scene.`,
-    target: () => one(".stage .nl.focus"),
+    target: (p) => label(p.model.focus),
     check: (_, at) => at.moved,
-    act: () => one(".stage canvas")!.dispatchEvent(new WheelEvent("wheel", { deltaY: -240, bubbles: true, cancelable: true, clientX: innerWidth / 2, clientY: innerHeight / 2 })),
+    act: () => one('[data-tour="scene"] canvas')!.dispatchEvent(new WheelEvent("wheel", { deltaY: -240, bubbles: true, cancelable: true, clientX: innerWidth / 2, clientY: innerHeight / 2 })),
   },
   {
     title: "Find Abraham",
     text: () => 'Type "Abraham" in the search box and choose him. A search result becomes the Focus, the centre of the scene.',
-    target: () => one(".search"),
+    target: () => tour("search"),
     check: (p) => p.model.focus === ABRAHAM,
     act: (p) => p.makeFocus(ABRAHAM),
   },
@@ -85,31 +83,31 @@ export const STEPS: Step[] = [
   {
     title: "Open his Themes",
     text: () => 'In the panel, press "more" under his Themes to list them all.',
-    target: () => one(THEMES_MORE),
-    check: () => one(THEMES_MORE)?.getAttribute("aria-expanded") === "true",
+    target: () => tour("more-theme"),
+    check: () => tour("more-theme")?.getAttribute("aria-expanded") === "true",
     act: async (p) => {
-      if (!one(THEMES_MORE)) p.apply({ type: "select", id: ABRAHAM });
-      (await drawn(() => one(THEMES_MORE)))?.click();
+      if (!tour("more-theme")) p.apply({ type: "select", id: ABRAHAM });
+      (await drawn(() => tour("more-theme")))?.click();
     },
   },
   {
     title: "Choose a Theme",
     text: () => "Select a Theme in his list, Faith for one. Under its name the panel lists the Verses it shares with Abraham, with their text.",
-    target: () => one('#panel ol[aria-labelledby="list-theme"]'),
+    target: () => tour("list-theme"),
     check: (p) => typeOf(p.model.selected) === "theme",
     act: (p) => p.apply({ type: "select", id: p.data.record(ABRAHAM)!.links.find((l) => l.type === "theme")!.id }),
   },
   {
     title: "Make Isaac the Focus",
     text: () => "Double click Isaac in the scene, or select him and press Make Focus. The scene moves to him.",
-    target: (p) => (p.model.selected === ISAAC && panelButton("Make Focus")) || label(ISAAC),
+    target: (p) => (p.model.selected === ISAAC && tour("make-focus")) || label(ISAAC),
     check: (p) => p.model.focus === ISAAC,
     act: (p) => p.makeFocus(ISAAC),
   },
   {
     title: "Pin Abraham",
     text: () => "Abraham joined Your Path, the bar at the top. Click him there to select him, then press Pin in the panel.",
-    target: (p) => (p.model.selected === ABRAHAM && panelButton("Pin")) || pathButton("Abraham"),
+    target: (p) => (p.model.selected === ABRAHAM && tour("pin")) || tour(`path-${ABRAHAM}`),
     check: (p) => p.model.pins.includes(ABRAHAM),
     act: async (p) => {
       p.apply({ type: "select", id: ABRAHAM });
@@ -119,7 +117,7 @@ export const STEPS: Step[] = [
   {
     title: "Walk Your Path",
     text: () => "Rings mark the nodes Isaac shares with the pinned Abraham. Press Prev or Next in the panel to walk Your Path; the Focus stays.",
-    target: () => panelButton("Next"),
+    target: () => tour("next"),
     check: (p, at) => p.model.selected !== at.model.selected && onPath(p.model).includes(p.model.selected),
     act: (p) => {
       if (!onPath(p.model).includes(p.model.selected)) p.apply({ type: "select", id: p.model.focus });
@@ -129,28 +127,28 @@ export const STEPS: Step[] = [
   {
     title: "Clear Your Path",
     text: () => "Press Clear at the end of the Your Path bar. The Focus and pins stay.",
-    target: () => one(".path .clear"),
+    target: () => tour("clear"),
     check: (p) => !!p.model.cleared,
     act: (p) => p.apply({ type: "clearPath" }),
   },
   {
     title: "Undo clear",
     text: () => "Press Undo clear to bring Your Path back.",
-    target: () => one(".path .clear"),
+    target: () => tour("clear"),
     check: (p) => !p.model.cleared && p.model.path.length > 0,
     act: (p) => p.apply({ type: "undoClear" }),
   },
   {
     title: "Read",
     text: () => "Press Read in the panel. The reader panel opens at the Selected Node's first Verse; a click on a Verse there selects it.",
-    target: () => panelButton("Read"),
+    target: () => tour("read"),
     check: (p) => !!p.reading,
     act: (p) => p.read(),
   },
   {
     title: "Write a note",
     text: () => "Type a note in the box in the panel. Each step of Your Path can have one, kept in this browser only.",
-    target: () => one("#note") ?? one(".path button.focus"),
+    target: (p) => tour("note") ?? tour(`path-${p.model.focus}`),
     check: (p, at) => JSON.stringify(p.notes) !== JSON.stringify(at.notes),
     act: (p) => {
       if (!onPath(p.model).includes(p.model.selected)) p.apply({ type: "select", id: p.model.focus });

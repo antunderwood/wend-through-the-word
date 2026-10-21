@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="search" role="search">
+<div class="search" role="search" data-tour="search">
   <input
     type="search"
     aria-label="Search"

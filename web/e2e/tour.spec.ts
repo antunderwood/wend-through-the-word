@@ -8,6 +8,8 @@ const ABRAHAM = "person:abraham_58",
   ISAAC = "person:isaac_616";
 const offer = (page: Page) => page.getByRole("dialog", { name: "Tour" });
 const tour = offer;
+// The tour's targets carry data-tour; names in the scene carry their node ID.
+const scene = (page: Page) => page.locator('[data-tour="scene"]');
 const help = (page: Page) => page.getByRole("contentinfo").getByRole("button", { name: "Help: take the tour" });
 const STEPS = 13;
 
@@ -83,7 +85,7 @@ const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
 // Abraham has no link to in the fixture.
 const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   async (page) => {
-    const s = (await page.locator(".stage").boundingBox())!;
+    const s = (await scene(page).boundingBox())!;
     await page.mouse.move(s.x + s.width - 40, s.y + s.height / 2);
     await page.mouse.wheel(0, -200);
   },
@@ -91,8 +93,8 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
     await page.getByRole("searchbox", { name: "Search" }).fill("Abraham");
     await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
   },
-  (page) => page.locator(`.labels .nl[data-node="${SARAH}"]`).click(),
-  (page) => page.locator(`.labels .nl[data-node="${ABRAHAM}"]`).click(),
+  (page) => scene(page).locator(`[data-node="${SARAH}"]`).click(),
+  (page) => scene(page).locator(`[data-node="${ABRAHAM}"]`).click(),
   (page) => panel(page).getByRole("button", { name: "30 more" }).click(),
   (page) => panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Genealogy/ }).click(),
   (page) => doubleClickLabel(page, "Isaac", ISAAC),
@@ -139,7 +141,7 @@ test("the whole tour with the keyboard only", async ({ page }) => {
     () => enter(tour(page).getByRole("button", { name: "Do it for me" })), // the camera has no keys
     () => search("Abraham"),
     async () => {
-      await page.locator(".stage").focus();
+      await scene(page).focus();
       await page.keyboard.press("ArrowRight");
       await page.keyboard.press("ArrowDown");
     },

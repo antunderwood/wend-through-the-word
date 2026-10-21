@@ -55,7 +55,7 @@
   // The camera step: a drag of more than 5 px or a wheel on the scene. Names in the scene stop
   // pointerdown, so a click on one is not a drag.
   let down: { x: number; y: number } | undefined;
-  const onScene = (e: Event) => !!(e.target as Element).closest?.(".stage");
+  const onScene = (e: Event) => !!(e.target as Element).closest?.('[data-tour="scene"]');
 </script>
 
 <svelte:window
