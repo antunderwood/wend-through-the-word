@@ -6,8 +6,9 @@ import { join } from "node:path";
 import "./fixture";
 
 // The staged site (decision 154): the one command stages the fixture export, and the tests read
-// the folder that would be deployed.
-const site = join(mkdtempSync(join(tmpdir(), "wend-stage-")), "site");
+// the folder that would be deployed. With WEND_SITE set, they read that staged folder instead
+// (the deploy workflow points it at the folder it deploys).
+const site = process.env.WEND_SITE ?? join(mkdtempSync(join(tmpdir(), "wend-stage-")), "site");
 const files = () => readdirSync(site, { recursive: true, encoding: "utf8" }).filter((f) => statSync(join(site, f)).isFile());
 
 // The Cache-Control a path gets from _headers, read the way Workers static assets read it: a
@@ -28,6 +29,7 @@ const YEAR = "public, max-age=31536000, immutable";
 
 describe("staged site", () => {
   beforeAll(() => {
+    if (process.env.WEND_SITE) return;
     execFileSync("node", ["stage.ts", process.env.WEND_DATA!, site], { cwd: join(import.meta.dirname, "..") });
   }, 120_000);
 

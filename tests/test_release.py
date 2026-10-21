@@ -1,0 +1,79 @@
+import os
+import shutil
+import subprocess
+import sys
+import zipfile
+from pathlib import Path
+
+import pytest
+from conftest import VERSION
+
+ROOT = Path(__file__).parent.parent
+
+
+def git(repo, *args):
+    return subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True, text=True)
+
+
+@pytest.fixture
+def repo(tmp_path, export):
+    """A clean checkout with an origin, and a copy of the fixture export in its ignored out/."""
+    origin, repo = tmp_path / "origin.git", tmp_path / "repo"
+    git(tmp_path, "init", "-q", "--bare", origin)
+    git(tmp_path, "init", "-q", "-b", "main", repo)
+    (repo / ".gitignore").write_text("out/\n")
+    git(repo, "add", ".")
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "first")
+    git(repo, "remote", "add", "origin", origin)
+    git(repo, "push", "-q", "origin", "main")
+    shutil.copytree(export, repo / "out")
+    return repo
+
+
+def release(repo, *args):
+    """The release command as the owner runs it, from the checkout, in dry-run mode."""
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    cmd = [sys.executable, "-m", "pipeline.release", *args, "--dry-run"]
+    return subprocess.run(cmd, check=False, cwd=repo, env=env, capture_output=True, text=True)
+
+
+def test_dry_run_zips_the_export_and_prints_the_release_without_making_it(repo):
+    run = release(repo, "v1")
+    assert run.returncode == 0, run.stderr
+    with zipfile.ZipFile(repo / "out" / f"wend-data-{VERSION}.zip") as z:
+        assert "data/index.json" in z.namelist()
+        assert f"data/{VERSION}/search-index.json" in z.namelist()
+    commit = git(repo, "rev-parse", "HEAD").stdout.strip()
+    for line in (f"Data version: {VERSION}", "Build date: 2026-10-19", f"Commit: {commit}"):
+        assert line in run.stdout
+    assert "git push origin v1" in run.stdout
+    assert f"gh release create v1 out/wend-data-{VERSION}.zip" in run.stdout
+    assert git(repo, "tag").stdout == ""
+
+
+def test_refuses_a_dirty_tree_or_a_tag_that_exists_here_or_on_origin(repo):
+    (repo / "notes.txt").write_text("not committed\n")
+    run = release(repo, "v1")
+    assert run.returncode == 1
+    assert "the working tree has uncommitted changes" in run.stderr
+    (repo / "notes.txt").unlink()
+
+    git(repo, "tag", "v1")
+    assert "tag v1 already exists here" in release(repo, "v1").stderr
+    git(repo, "push", "-q", "origin", "v1")
+    git(repo, "tag", "-d", "v1")
+    assert "tag v1 already exists on origin" in release(repo, "v1").stderr
+    assert not (repo / "out" / f"wend-data-{VERSION}.zip").exists()
+
+
+def test_refuses_an_export_whose_reports_show_failures_or_that_breaks_the_file_limit(repo):
+    data = repo / "out" / "data"
+    (repo / "out" / "reports" / "file_count.tsv").write_text("files\tover_limit\n433\t2\n")
+    extra = data / VERSION / "extra"
+    extra.mkdir()
+    for i in range(20_000):
+        (extra / f"{i}.json").touch()
+    run = release(repo, "v1")
+    assert run.returncode == 1
+    assert "reports/file_count.tsv: 2 files over the size limit" in run.stderr
+    assert "out/data holds 20433 files, the limit is 20000" in run.stderr
