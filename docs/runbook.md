@@ -76,3 +76,7 @@ The deploy uses the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_AC
 2. Store it without echoing it: `gh secret set CLOUDFLARE_API_TOKEN` and paste the token at the prompt.
 3. Check it works by deploying the current tag again: `gh workflow run deploy.yml -f tag=<current tag>`.
 4. When that run passes, delete the old token in the dashboard.
+
+## Updating the deploy workflow's actions
+
+The Deploy workflow pins each action to a commit, with its version in a comment (decision 160). To move to a newer version, choose a release at least two weeks old, find its commit with `gh api repos/<owner>/<action>/commits/<version> --jq .sha`, and replace both the SHA and the comment.

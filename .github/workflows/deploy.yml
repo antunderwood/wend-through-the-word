@@ -22,15 +22,19 @@ jobs:
       DATA: ${{ github.workspace }}/release/data
       SITE: ${{ github.workspace }}/site
     steps:
-      - uses: actions/checkout@v5
-        with: { ref: "${{ env.TAG }}" }
+      # Actions are pinned to a commit, so a moved tag cannot change what runs (decision 160).
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with: { ref: "${{ env.TAG }}", persist-credentials: false }
       - name: Download the release's data
         env: { GH_TOKEN: "${{ github.token }}", GH_REPO: "${{ github.repository }}" }
         run: |
           gh release download "$TAG" --pattern 'wend-data-*.zip' --dir release
           unzip -q release/wend-data-*.zip -d release
-          echo "DATA_VERSION=$(jq -er .data_version "$DATA/index.json")" >> "$GITHUB_ENV"
-      - uses: actions/setup-node@v7
+          # The version comes from the release asset, so check its form before it reaches the env.
+          version=$(jq -er .data_version "$DATA/index.json")
+          [[ "$version" =~ ^[0-9][0-9-]*$ ]] || { echo "Bad data version: $version"; exit 1; }
+          echo "DATA_VERSION=$version" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 24, cache: npm, cache-dependency-path: web/package-lock.json }
       - run: npm ci
         working-directory: web

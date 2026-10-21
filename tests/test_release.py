@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -77,3 +78,11 @@ def test_refuses_an_export_whose_reports_show_failures_or_that_breaks_the_file_l
     assert run.returncode == 1
     assert "reports/file_count.tsv: 2 files over the size limit" in run.stderr
     assert "out/data holds 20433 files, the limit is 20000" in run.stderr
+
+
+def test_the_deploy_workflow_pins_every_action_to_a_commit():
+    """Decision 160: a moved tag cannot change what runs with the Cloudflare token."""
+    workflow = (ROOT / ".github" / "workflows" / "deploy.yml").read_text()
+    uses = re.findall(r"uses: (.*)", workflow)
+    assert uses
+    assert [u for u in uses if not re.fullmatch(r"[\w./-]+@[0-9a-f]{40} # v[\d.]+", u)] == []
