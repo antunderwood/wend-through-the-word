@@ -143,22 +143,27 @@ export async function createData(getJSON: GetJSON, root: string) {
     return pending.get(id)!;
   }
 
+  // The Verse Key a verse reference names, built or not: "Gen 22:2", "gen 22.2", "Gen.22.2",
+  // "Genesis 22", "3 John 1:4". The book is its OSIS name or a prefix of its name (2 letters or
+  // more). A chapter alone gives its first Verse.
+  function verseKey(text: string): Id | undefined {
+    const ref = text.trim().toLowerCase().match(/^((?:[1-3]\s*)?[a-z]+)\.?\s*(\d+)(?:\s*[:.]\s*(\d+))?$/);
+    if (!ref) return undefined;
+    const [, b, chapter, verse] = ref;
+    const s = b.replace(/\s+/g, "");
+    const book = searchIndex.books.find((x) => x.osis.toLowerCase() === s || (s.length >= 2 && x.name.toLowerCase().replace(/\s+/g, "").startsWith(s)));
+    return book && `${book.number}${chapter.padStart(3, "0")}${(verse ?? "1").padStart(3, "0")}`;
+  }
+
   // Search over names, aliases, and verse references (decision 22: no verse text search in v1).
   // Matches rank exact, then prefix, then word start, then anywhere, a name before an alias in each;
   // ties go to the shorter name.
   function search(query: string, type?: NodeType): Hit[] {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    // "Gen 22:2", "gen 22.2", "Genesis 22", "3 John 1:4": the book is its OSIS name or a prefix of its
-    // name (2 letters or more). A chapter alone gives its first Verse. Only built chapters count.
-    const ref = q.match(/^((?:[1-3]\s*)?[a-z]+)\.?\s*(\d+)(?:\s*[:.]\s*(\d+))?$/);
-    if (ref && (!type || type === "verse")) {
-      const [, b, chapter, verse] = ref;
-      const s = b.replace(/\s+/g, "");
-      const book = searchIndex.books.find((x) => x.osis.toLowerCase() === s || (s.length >= 2 && x.name.toLowerCase().replace(/\s+/g, "").startsWith(s)));
-      if (book?.chapters.includes(+chapter))
-        return [{ id: `${book.number}${chapter.padStart(3, "0")}${(verse ?? "1").padStart(3, "0")}`, hint: verse ? "" : "first verse of the chapter" }];
-    }
+    // Only built chapters count.
+    const key = verseKey(q);
+    if (key && !outside(key) && (!type || type === "verse")) return [{ id: key, hint: /\d\s*[:.]\s*\d+$/.test(q) ? "" : "first verse of the chapter" }];
     if (type === "verse") return [];
     const rank = (name: string) => {
       const n = name.toLowerCase();
@@ -234,6 +239,9 @@ export async function createData(getJSON: GetJSON, root: string) {
       return c && `${c}001`;
     },
     known,
+    verseKey,
+    // A Verse as the page address writes it: its OSIS reference, "Gen.22.2".
+    osis: (id: Id) => reference(id).replace(/[ :]/g, "."),
     // known, and a Verse's number is in its chapter: reads the chapter (for an address from outside).
     exists: async (id: Id) => known(id) && (typeOf(id) !== "verse" || (await chapterFile(id)).verses.some((v) => v.key === id)),
     record: (id: Id) => records.get(id),

@@ -70,7 +70,7 @@
       : data!.label(id);
 
   // The page address to share (Copy link, the notes download, a correction): it names the Focus.
-  const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, true);
+  const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, data!.osis, true);
 
   function apply(a: Action) {
     let next = reduce(model, a, label);
@@ -221,7 +221,7 @@
   let entryFocus = "";
   $effect(() => {
     if (!onScreen) return;
-    const url = location.pathname + write(model, view);
+    const url = location.pathname + write(model, view, data!.osis);
     if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
     else history.replaceState(null, "", url);
     entryFocus = model.focus;
@@ -231,7 +231,7 @@
     if (onScreen) keepPath(model);
   });
 
-  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis));
+  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis), data!.verseKey);
 
   // Back and Forward make the entry's Focus the Focus again.
   async function moved() {
