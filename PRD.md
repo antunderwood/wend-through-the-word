@@ -223,7 +223,7 @@ Checked on 2026-10-17 against the Cloudflare documentation. Check again before l
 | Workers CPU time | 10 ms for each request | developers.cloudflare.com/workers/platform/limits |
 | Workers subrequests | 50 for each request | developers.cloudflare.com/workers/about/limits |
 | Static asset requests | Free and unlimited | developers.cloudflare.com/workers/about/pricing |
-| Static asset files | 20,000 for each Worker version; 25 MiB for each file (checked 2026-10-19) | developers.cloudflare.com/workers/platform/limits#static-assets |
+| Static asset files | 20,000 for each Worker version; 25 MiB for each file; requests to static assets free and unlimited (checked 2026-10-21 against the limits page updated 2026-10-12) | developers.cloudflare.com/workers/platform/limits#static-assets |
 | D1 rows read | 5 million per day | developers.cloudflare.com/d1/platform/pricing |
 | D1 rows written | 100,000 per day | developers.cloudflare.com/d1/platform/pricing |
 | D1 storage | 5 GB in total, for all databases | developers.cloudflare.com/d1/platform/pricing |
@@ -252,7 +252,7 @@ These values were checked on the official pages on 2026-10-19 (`docs/licences.md
 5. **NLT cache (phase 2).** The KV write limit is low (1,000 per day, unconfirmed). Cache each passage once. Respect the 30-day refresh rule from API.Bible.
 6. **Cache headers for data files.** Put a version or hash in each data file name. Use long cache times. The `index.json` file holds the current version and uses a short cache time.
 7. **Compression.** Check that Cloudflare serves the JSON files compressed. Do not assume it.
-8. **Static asset limits.** The free plan allows 20,000 files and 25 MiB for each file (checked 2026-10-18). The whole Bible needs about 7,000 to 12,000 files (1,189 chapters, their Ring 2 files, about 4,800 entities, and themes). Recheck before launch.
+8. **Static asset limits.** The free plan allows 20,000 files and 25 MiB for each file (checked 2026-10-21). The whole Bible needs about 7,000 to 12,000 files (1,189 chapters, their Ring 2 files, about 4,800 entities, and themes). Recheck before launch.
 9. **Configuration in the repository.** Keep the Wrangler configuration file in the repository. A deploy must run from one command.
 10. **Monitoring.** Check the Workers and D1 usage dashboards each week after launch. Act when usage passes 50% of a daily limit.
 11. **Free tier first.** The application stays on the free tier at launch. The Workers Paid plan is the later upgrade path. The owner decides when.
@@ -518,7 +518,7 @@ The Genesis prototype is complete when all of these are true.
 | Source network access from the build sandbox | Failed downloads | GitHub hosts most sources. If a host is blocked, the owner supplies the file. |
 | The free Worker limit (100,000 requests per day) is reached | Worker errors for the rest of the UTC day | Static first design. No Worker call in a normal session. Error message in the front end. |
 | D1 daily limits are reached (5 million reads, 100,000 writes) | D1 queries fail until 00:00 UTC | Use D1 for optional features only. Index every query. Load large tables in batches. |
-| Static asset limits change | A deploy may fail | 20,000 files and 25 MiB for each file (checked 2026-10-18). Recheck before launch. |
+| Static asset limits change | A deploy may fail | 20,000 files and 25 MiB for each file (checked 2026-10-21, before the first release). Recheck before M6. |
 | KV and R2 limits come from secondary sources | Wrong budget | Check the official pages in M0 |
 | Readers without a GitHub account do not report errors | Fewer corrections | Email fallback to a project-only address |
 | Correction requests are spam or opinion | Owner time | A verse is required. The owner can decline with a reason. |
