@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import { correctionLink, KINDS } from "../src/correction";
+import { correctionEmail, correctionLink, KINDS, type CorrectionRequest } from "../src/correction";
 import { createData } from "../src/data";
 import { readExport } from "./fixture";
 
@@ -49,5 +49,34 @@ describe("the correction link", () => {
     const form = await readFile(new URL("../../.github/ISSUE_TEMPLATE/correction-request.yml", import.meta.url), "utf8");
     for (const id of ["kind", "node_ids", "current_value", "data_version", "page_url"]) expect(form).toContain(`id: ${id}\n`);
     for (const option of Object.values(KINDS)) expect(form).toContain(`- ${option}\n`);
+  });
+});
+
+describe("the correction email", () => {
+  const request: CorrectionRequest = { kind: "fact", nodeIds: ["person:anah_247"], currentValue: "Gender: Male", dataVersion: data.version, pageUrl: PAGE };
+
+  it("writes to the project address with the form's fields in its body", () => {
+    const email = new URL(correctionEmail(request));
+    expect(email.protocol + email.pathname).toBe("mailto:contact@wendtheword.flying-ant.uk");
+    expect(email.searchParams.get("subject")).toBe("Correction: Gender: Male");
+    expect(email.searchParams.get("body")).toBe(
+      [
+        "What is wrong? An entity fact (for example, gender, name, aliases, place, or year)",
+        "Node IDs: person:anah_247",
+        "What the app shows now: Gender: Male",
+        "What it should be:",
+        "Evidence verses (at least one, and what each shows):",
+        "Data version: test1",
+        "Page URL: https://example.org/?focus=person:anah_247&sel=person:beeri_432",
+        "",
+        "By submitting, you agree that your suggestion may be included in the dataset under CC BY-SA 4.0.",
+      ].join("\r\n"),
+    );
+  });
+
+  it("has every field the form link fills, with the same value", () => {
+    const link = new URL(correctionLink(tables, request)).searchParams;
+    const body = new URL(correctionEmail(request)).searchParams.get("body")!;
+    for (const id of ["kind", "node_ids", "current_value", "data_version", "page_url"]) expect(body).toContain(link.get(id));
   });
 });

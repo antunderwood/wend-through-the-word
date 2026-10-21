@@ -20,8 +20,13 @@ async function form(page: Page, opener: Locator) {
   const dialog = page.getByRole("dialog", { name: "Suggest a correction" });
   await expect(dialog).toContainText("at least one Evidence Verse");
   await expect(dialog).toContainText("CC BY-SA 4.0");
+  // Before the reader writes, the email way says how the owner handles it (PRD 10.5, decision 145).
   await expect(dialog).toContainText("without a GitHub account");
+  await expect(dialog).toContainText("copies each email into a GitHub issue without your name or email address, then deletes the email");
+  await expect(dialog).not.toContainText("coming");
   const href = await dialog.getByRole("link", { name: "Open the form on GitHub" }).getAttribute("href");
+  const email = new URL((await dialog.getByRole("link", { name: "Send it by email" }).getAttribute("href"))!);
+  expect(email.protocol).toBe("mailto:");
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await expect(dialog).toBeHidden();
   const url = new URL(href!);
@@ -30,6 +35,8 @@ async function form(page: Page, opener: Locator) {
   // The page address in the form is the shareable address of what the reader sees.
   expect(fields.page_url).toBe(page.url());
   expect(fields.data_version).toBe((await page.getByRole("contentinfo").textContent())!.match(/Data version (\S+)/)![1]);
+  // The email carries the same filled-in fields.
+  for (const id of ["kind", "node_ids", "current_value", "data_version", "page_url"]) expect(email.searchParams.get("body")).toContain(fields[id]);
   return fields;
 }
 

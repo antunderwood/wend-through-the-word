@@ -80,7 +80,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 32. As a reader, I want a small "Suggest a correction" link beside the Relationship, and on each fact and list row when I hover it, focus it with the keyboard, or select its node (decision 139), so that the request is about one specific thing and rows stay one line.
 33. As a reader, I want the request form already filled in with the node IDs, what the app shows now, the data version, and the page address, so that I only write the correction and my Evidence Verse.
 34. As a reader, I want to be told before I leave that a request needs at least one Evidence Verse and is published under CC BY-SA 4.0, so that I am not surprised by the form.
-35. As a reader without a GitHub account, I want to know there will be another way to send a request, so that I am not shut out (the email fallback waits for its address).
+35. As a reader without a GitHub account, I want a "Send it by email" link with the same filled-in fields, and to be told before I write that the owner copies each email into a GitHub issue without my name or email address, then deletes it (decision 145), so that I am not shut out.
 
 ### Student: journey notes
 
@@ -135,7 +135,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 ### Rules decided here
 
 - **Book filter** (decision 130): it applies to Verses only, not Entities. Its choices are each book in the build, "Verses outside this build", and all. The default is all, so the M3 behaviour is kept unless the reader chooses otherwise.
-- **Correction channel** (decision 131): M4 links to the GitHub issue form only. The mailto fallback (PRD 10.5) is a held ticket until the owner chooses a project-only address (PRD open question 13), before the M5 launch. The page says another way is coming for readers without a GitHub account. While the repository is private (decision 47) the form opens only for the owner; that is accepted until M5.
+- **Correction channel** (decisions 131 and 145): the GitHub issue form, and beside it a `mailto:` link to contact@wendtheword.flying-ant.uk with the same fields in its body (PRD 10.5). The dialog says how emails are handled before the reader writes. While the repository is private (decision 47) the form opens only for the owner; that is accepted until M5.
 - **Notes stay in the browser** (decision 112, PRD 3): no account, no server, no Worker. Deleting all notes asks for confirmation.
 - **Credits page as its own entry** (decision 132): it needs no state from the main page and must load without WebGL.
 
@@ -166,13 +166,12 @@ Stable (decision 128): links shared now must still open after later releases, so
 
 - **The same seams as M3** (#18): Vitest on pure modules and the Focus Model, fed by the export built from the fixture sources; Playwright on the built page with the fixture export, in the e2e build mode. The build seam is used only if a data change turns out to be needed.
 - **What makes a good test here.** It states a rule a reader could check: "opening `?focus=person:isaac_616&view=B` shows Isaac in the stacked discs", "a hidden type leaves Ring 1 and its Overflow Node", "the download lists the steps oldest first and ends with the Focus", "the correction link fills `node_ids`". It does not check component internals, storage keys, or three.js objects.
-- **Vitest cases:** URL state round trip, defaults left out, unknown IDs and bad values dropped with a notice; type and book filters across Ring 1, Overflow counts, Ring 2, pin rings, Shared Nodes and the node limit, never hiding the Focus or pins; correction link for a node, a Relationship (two IDs), a fact, and a linked Verse; notes Markdown for an empty journey, notes on some steps, and a cleared and restored Your Path.
+- **Vitest cases:** URL state round trip, defaults left out, unknown IDs and bad values dropped with a notice; type and book filters across Ring 1, Overflow counts, Ring 2, pin rings, Shared Nodes and the node limit, never hiding the Focus or pins; correction link for a node, a Relationship (two IDs), a fact, and a linked Verse, and the correction email with the same fields; notes Markdown for an empty journey, notes on some steps, and a cleared and restored Your Path.
 - **Playwright cases:** open a shared address in each view; Back and Forward between Foci; reader panel select and double click, chapter buttons, outside-build Verse; detail panel shows a correction note and a curated Evidence Verse (fixture: Anah's gender correction, the Anah and Beeri link); filter changes reach the scene and the address; a note survives a reload and the download contains it; the credits page lists every source in `credits.json`; the page works with animation off.
 - **Prior art.** M3's tests in the front end package (model, data, search, and the journey spec), and `tests/conftest.py` with `tests/test_search_and_credits.py` for the build seam and credits.
 
 ## Out of Scope
 
-- The mailto fallback for correction requests, until the owner chooses the address (held ticket).
 - The phone layout, including the reader panel as a bottom sheet tab (M7).
 - The Cloudflare deploy of the product and the repository going public (M5).
 - The whole Bible (M6). The book filter and reader panel must work for many books, but only Genesis ships.
