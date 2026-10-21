@@ -36,6 +36,16 @@ describe("staged site", () => {
     expect(files().filter((f) => /node-?limit/i.test(f))).toEqual([]);
   });
 
+  it("has a not found page with a short message and a link back to the graph", () => {
+    const html = readFileSync(join(site, "404.html"), "utf8");
+    expect(html).toContain("<h1>Page not found</h1>");
+    expect(html).toContain('<a href="/">Back to the graph</a>');
+  });
+
+  it("writes no em or en dashes in the pages", () => {
+    for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).not.toMatch(/[–—]/);
+  });
+
   it("stays under Cloudflare's free limits: fewer than 20,000 files, none over 25 MiB", () => {
     expect(files().length).toBeLessThan(20_000);
     expect(files().filter((f) => statSync(join(site, f)).size > 25 * 1024 * 1024)).toEqual([]);
