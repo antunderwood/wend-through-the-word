@@ -430,7 +430,9 @@
       {/await}
     </section>
     {#await listing then list}
-      <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so), each with its source. -->
+      <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
+           and a correction link on a quiet line below it; a link between two Entities is a
+           Relationship, sent as the Relationship line sends it. -->
       {#each list.types as t (t)}
         {@const linked = t === "verse" && isEntity(list.r.id)}
         {@const found = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters, data!.bookOf))}
@@ -442,12 +444,18 @@
           <ol aria-labelledby="list-{t}">
             {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
               {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
+              {@const kin = isEntity(list.r.id) && isEntity(l.id)}
               <li>
                 {@render item(l.id, words, "neighbours")}
-                {#if linked}
+                <span class="about">
                   <small class="source">{credit(l.edges)}</small>
-                  {@render fix(`the link to ${data.label(l.id)}`, "verse", [list.r.id, l.id], `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`)}
-                {/if}
+                  {@render fix(
+                    `the link to ${data.label(l.id)}`,
+                    kin ? "relationship" : "verse",
+                    [list.r.id, l.id],
+                    kin ? `${plainName(l.id)}: ${words}` : `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`,
+                  )}
+                </span>
               </li>
             {/each}
           </ol>
@@ -747,6 +755,12 @@
   }
   .sourced .fix {
     flex: none;
+  }
+  /* A list item's source and correction link: a quiet line under its name. */
+  .about {
+    display: block;
+    margin: 0 0 4px 4px;
+    line-height: 1.2;
   }
   /* An Evidence Verse in the Relationship line: a reference that selects it. */
   .ref {

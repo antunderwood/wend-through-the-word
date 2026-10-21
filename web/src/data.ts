@@ -43,7 +43,7 @@ const POINT_SOURCE: Record<string, string> = { OpenBible: "OpenBible.info Bible 
 // Theographic's years are astronomical: 0 is 1 BC.
 const year = (y: number) => (y > 0 ? `AD ${y}` : `${1 - y} BC`);
 const degrees = (x: number, plus: string, minus: string) => `${+Math.abs(x).toFixed(4)}° ${x < 0 ? minus : plus}`;
-type Mention = { id: Id; edge: string; weight: number };
+type Mention = Sourced & { id: Id; edge: string; weight: number };
 type ChapterFile = {
   verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[] }[];
 };
@@ -114,7 +114,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       id: mention.id,
       type: typeOf(mention.id) as NodeType,
       weight: mention.weight,
-      edges: [{ edge: mention.edge, direction: "out" as const }],
+      edges: [{ edge: mention.edge, direction: "out" as const, source: mention.source, licence: mention.licence }],
     }));
     return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb };
   }

@@ -124,4 +124,17 @@ test("each fact and link says where it came from", async ({ page }) => {
   // A derived Neighbour: both sources, each with its own licence.
   await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
   await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0 Suggest a correction");
+  // Every Neighbour list item too, as the Relationship line says it.
+  await expect(panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveText(
+    "Genealogy together in 6 verses Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0 Suggest a correction",
+  );
+});
+
+test("a Verse's Neighbours, Cross-references included, each say where they came from", async ({ page }) => {
+  await page.goto("/?focus=01011029");
+  await focusIs(page, "01011029");
+  const sarah = panel(page).getByRole("list", { name: /^Person/ }).getByRole("listitem").filter({ hasText: "Sarah" });
+  await expect(sarah).toHaveText("Sarah named Theographic, CC BY-SA 4.0 Suggest a correction");
+  // Fixture: Gen 11:29's one Cross-reference, to Ezek 16:3.
+  await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem")).toHaveText(["Ezek 16:3 cross-reference, 4 votes OpenBible.info, CC BY 4.0 Suggest a correction"]);
 });

@@ -57,9 +57,22 @@ test("a Relationship names both nodes", async ({ page }) => {
   await panel(page).getByRole("button", { name: "5 more" }).click();
   await panel(page).getByRole("button", { name: /^Beeri/ }).click();
   await expect(page).toHaveURL(/sel=person:beeri_432/);
-  expect(await form(page, panel(page).getByRole("button", { name: "Suggest a correction to the Relationship" }))).toMatchObject({
+  const expected = {
     kind: "A relationship (for example, a wrong or missing family link)",
     node_ids: `${ANAH}, person:beeri_432`,
     current_value: "Beeri: possibly the same person as Anah",
+  };
+  expect(await form(page, panel(page).getByRole("button", { name: "Suggest a correction to the Relationship" }))).toMatchObject(expected);
+  // Its item in the Neighbour list fills the form the same way.
+  expect(await form(page, panel(page).getByRole("button", { name: "Suggest a correction to the link to Beeri" }))).toMatchObject(expected);
+});
+
+test("a Cross-reference has its own link", async ({ page }) => {
+  await page.goto("/?focus=01011029");
+  await focusIs(page, "01011029");
+  expect(await form(page, panel(page).getByRole("button", { name: "Suggest a correction to the link to Ezek 16:3" }))).toMatchObject({
+    kind: "A verse link (for example, a verse names someone but has no link)",
+    node_ids: "01011029, 26016003",
+    current_value: "Gen 11:29: cross-reference, 4 votes (Ezek 16:3)",
   });
 });
