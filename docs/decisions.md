@@ -272,6 +272,15 @@ Numbers start at 56, because ticket #4 records decision 55.
 150. **The desktop node limit is 500, confirmed on a mid-range laptop (owner).** The re-test decision 123 asked for before M5 passed at 500. Closes decision 123's open check. The phone limit waits for M7.
 151. **Email Routing for contact@wendtheword.flying-ant.uk is live (owner).** Cloudflare's MX and SPF records for the subdomain resolve, and a test email reached the owner (2026-10-21); the forwarding address is set in the dashboard only (decision 145).
 
+## 2026-10-21: Launch spec (M5)
+
+152. **A deploy runs in GitHub Actions on a release tag (owner).** The workflow builds the page, stages the site, deploys it with Wrangler to Workers static assets (no Worker script), and runs a live check. Amends PRD 8.5 rule 9: the "one command" is the owner's release command, and the tag push does the rest. Reason: the deploy does not depend on the owner's machine, and each tag records what shipped.
+153. **The data export reaches the deploy as a GitHub release asset (owner).** The owner builds the export locally, where the downloaded sources are; the release command checks it, zips it, and attaches it to the release for the tag. Reason: several sources change over time (Wikidata query results, daily GeoNames dumps), so CI cannot rebuild the same data, and committing the export would grow git history by tens of MB per version.
+154. **M5 adds two test seams: the staged site and a live check (owner).** Tests assert on the exact folder that is deployed (limits, cache rules, no node limit page); a script checks the live site after each deploy and can be pointed at any URL.
+155. **The first-run tour is in M5 (owner).** It is offered once per browser, skippable, restartable from a help link, works in every view and with the keyboard, records nothing, and restores the reader's state when it ends. Settles decision 120.
+156. **The node limit test page is not deployed (owner).** It stays available locally with the preview. Reason: it is an owner tool.
+157. **Cache rules.** Versioned data files and the page's hashed files: one year, immutable; `/data/index.json`: five minutes; HTML pages: revalidate every time. Reason: PRD 8.5 rule 6; versioned paths make long caching safe, and the short `index.json` cache lets a new release reach readers within minutes.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
