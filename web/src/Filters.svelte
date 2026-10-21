@@ -1,7 +1,7 @@
 <script lang="ts">
   // The filter panel (PRD 10.1 item 5), a popover opened from the Filters button: node types, the
   // Vote Limit, the book filter (decision 130), and animation.
-  import { TYPE_COLOUR } from "./graph";
+  import { typeColour as colour } from "./graph";
   import { TYPES, TYPE_PLURAL, type NodeType, type State } from "./model";
 
   type Filters = State["filters"];
@@ -21,7 +21,6 @@
     setMotion: (on: boolean) => void;
   } = $props();
 
-  const colour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
   const show = (t: NodeType, on: boolean) => set("hidden", on ? filters.hidden.filter((x) => x !== t) : [...filters.hidden, t]);
   // One choice at a time: all books, this build only, or one book of the build.
   const chosen = $derived(Array.isArray(filters.books) ? filters.books.join(",") : filters.books);

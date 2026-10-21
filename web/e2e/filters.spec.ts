@@ -1,12 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, type OnScreen } from "./scene";
+import { focusIs, nodes, themesOnScreen, type OnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const filters = (page: Page) => page.getByRole("dialog", { name: "Filters" });
 const search = (page: Page) => new URL(page.url()).search;
-const themesOnScreen = async (page: Page) => (await nodes(page)).filter((n) => /^(overflow:)?theme/.test(n.id)).length;
 
 async function open(page: Page, address = "/") {
   await page.goto(address);

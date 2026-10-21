@@ -2,7 +2,7 @@
   // The detail panel: the Selected Node, the Verses it shares with the Focus and pins, its own data,
   // and the Neighbour lists. Props only; App owns the Focus Model state.
   import { untrack } from "svelte";
-  import type { Request } from "./correction";
+  import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
   import { passes, relation, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
@@ -32,7 +32,7 @@
     makeFocus: (id: Id) => void;
     pin: (id: Id) => void;
     onread: () => void;
-    suggest: (kind: Request["kind"], nodeIds: Id[], currentValue: string) => void;
+    suggest: (kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string) => void;
     notes: Notes;
     onnote: (id: Id, text: string) => void;
     download: () => void;
@@ -262,7 +262,7 @@
   </button>
 {/snippet}
 <!-- A small link that opens the correction form for one item. -->
-{#snippet fix(what: string, kind: Request["kind"], nodeIds: Id[], currentValue: string)}
+{#snippet fix(what: string, kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string)}
   <button class="fix" aria-label="Suggest a correction to {what}" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
 {/snippet}
 {#snippet typeLine(text: string)}

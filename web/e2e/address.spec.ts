@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "./scene";
+import { doubleClickLabel, focusIs } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -9,11 +9,6 @@ const panel = (page: Page) => page.getByRole("complementary", { name: "Selected 
 const picker = (page: Page) => page.getByRole("radiogroup", { name: "View" });
 const search = (page: Page) => new URL(page.url()).search;
 const historyLength = (page: Page) => page.evaluate(() => history.length);
-// On the node's label, as in path.spec.ts.
-async function doubleClick(page: Page, name: string, id: string) {
-  await page.locator(".labels").getByText(name, { exact: true }).dblclick();
-  await focusIs(page, id);
-}
 
 test.use({ reducedMotion: "reduce" });
 
@@ -41,8 +36,8 @@ test("Back and Forward move between Foci", async ({ page }) => {
   await page.goto("/");
   await focusIs(page, ABRAHAM);
   expect(search(page)).toBe("");
-  await doubleClick(page, "Sarah", SARAH);
-  await doubleClick(page, "Hagar", HAGAR);
+  await doubleClickLabel(page, "Sarah", SARAH);
+  await doubleClickLabel(page, "Hagar", HAGAR);
   await expect.poll(() => search(page)).toBe("?focus=person:hagar_1348");
 
   await page.goBack();

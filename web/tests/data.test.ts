@@ -148,8 +148,8 @@ describe("details of an Entity", () => {
   it("gives an Event's year as approximate, in the Jones chronology, with BC and AD", async () => {
     const data = await createData(readExport, "");
     // Astronomical years (PRD 3): Theographic's -2245 is 2246 BC.
-    expect((await data.details("event:53")).facts).toEqual([{ name: "Year", value: "2246 BC (approx., Jones chronology)", ...THEO }]);
-    expect((await data.details("event:407")).facts).toEqual([{ name: "Year", value: "AD 29 (approx., Jones chronology)", ...THEO }]);
+    expect((await data.details("event:53")).facts).toEqual([{ name: "Event Year", value: "2246 BC (approx., Jones chronology)", ...THEO }]);
+    expect((await data.details("event:407")).facts).toEqual([{ name: "Event Year", value: "AD 29 (approx., Jones chronology)", ...THEO }]);
   });
 
   it("gives a Place's other names, and its coordinates with the source and licence of the point", async () => {

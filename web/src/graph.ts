@@ -29,6 +29,8 @@ export const TYPE_COLOUR: Record<NodeType, number> = {
   theme: 0xe0869b,
   verse: 0xa9b1c6,
 };
+// The type colour as CSS, so a search result or a filter reads like its node.
+export const typeColour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
 const STYLE: Record<Role, { size: number; opacity: number; labelled: boolean }> = {
   focus: { size: 4.2, opacity: 1, labelled: true },
   ring1: { size: 2.0, opacity: 0.95, labelled: true },

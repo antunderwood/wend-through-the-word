@@ -93,7 +93,7 @@ test("the Dictionary Entry is named as Easton's, folded after its first paragrap
 
 test("an Event shows its year as approx., Jones chronology; a Place its coordinates and their source", async ({ page }) => {
   await focusOn(page, "Birth of Arphaxad", /^Birth of Arphaxad/, "event:45");
-  await expect(facts(page).getByRole("listitem")).toHaveText(["Year 2346 BC (approx., Jones chronology) Theographic, CC BY-SA 4.0 Suggest a correction"]);
+  await expect(facts(page).getByRole("listitem")).toHaveText(["Event Year 2346 BC (approx., Jones chronology) Theographic, CC BY-SA 4.0 Suggest a correction"]);
   await focusOn(page, "Gerar", /^Gerar/, "place:gerar_459");
   await expect(facts(page).getByRole("listitem")).toHaveText([
     "Other names Valley of Gerar Theographic, CC BY-SA 4.0 Suggest a correction",

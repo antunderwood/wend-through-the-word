@@ -2,7 +2,7 @@
   // "Suggest a correction" (decision 131): the issue form's address, shown after a warning about what
   // a request needs. pageUrl() is the shareable address of what the reader sees.
   import { tick } from "svelte";
-  import { correctionLink, type Request } from "./correction";
+  import { correctionLink, type CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import type { Id } from "./model";
 
@@ -10,7 +10,7 @@
   let asking = $state<string>();
   let warning: HTMLDialogElement;
 
-  export async function suggest(kind: Request["kind"], nodeIds: Id[], currentValue: string) {
+  export async function suggest(kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string) {
     try {
       asking = correctionLink((await data.credits()).curated_tables, { kind, nodeIds, currentValue, dataVersion: data.version, pageUrl: pageUrl() });
     } catch (e) {

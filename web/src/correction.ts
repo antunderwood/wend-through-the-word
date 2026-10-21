@@ -9,10 +9,10 @@ export const KINDS = {
   verse: "A verse link (for example, a verse names someone but has no link)",
 };
 
-export type Request = { kind: keyof typeof KINDS; nodeIds: Id[]; currentValue: string; dataVersion: string; pageUrl: string };
+export type CorrectionRequest = { kind: keyof typeof KINDS; nodeIds: Id[]; currentValue: string; dataVersion: string; pageUrl: string };
 
 // tables is credits.json's curated tables link, "https://github.com/<owner>/<repo>/tree/...".
-export function correctionLink(tables: string, r: Request): string {
+export function correctionLink(tables: string, r: CorrectionRequest): string {
   const repository = tables.split("/").slice(0, 5).join("/");
   const fields = { kind: KINDS[r.kind], node_ids: r.nodeIds.join(", "), current_value: r.currentValue, data_version: r.dataVersion, page_url: r.pageUrl };
   return `${repository}/issues/new?template=correction-request.yml` + Object.entries(fields).map(([k, v]) => `&${k}=${encodeURIComponent(v)}`).join("");

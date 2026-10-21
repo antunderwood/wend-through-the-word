@@ -36,7 +36,19 @@ type EntityFile = Sourced & {
   verses: (Sourced & { key: string; edge: string; direction: Edge["direction"]; weight: number })[];
   ring2: Rec["ring2"];
 };
-type Credits = { licence: string; curated_tables: string; sources: (Sourced & { name: string })[] };
+// credits.json, for the detail panel and the credits page.
+export type Credits = {
+  licence: string;
+  licence_link: string;
+  modified: string;
+  curated_tables: string;
+  sources: (Sourced & { name: string; credit: string; licence_link: string | null; link: string; bibliography?: string })[];
+};
+// The credits page reads only index.json and credits.json (decision 132), not the search index.
+export async function readCredits(getJSON: GetJSON, root: string) {
+  const { data_version } = (await getJSON(`${root}/index.json`)) as { data_version: string };
+  return { version: data_version, credits: (await getJSON(`${root}/${data_version}/credits.json`)) as Credits };
+}
 // A Place's coord_source, as credits.json names it. A "Curated" point is not there: it has the
 // licence of the data itself.
 const POINT_SOURCE: Record<string, string> = { OpenBible: "OpenBible.info Bible Geocoding Data", Pleiades: "Pleiades", Wikidata: "Wikidata", GeoNames: "GeoNames" };
@@ -196,7 +208,7 @@ export async function createData(getJSON: GetJSON, root: string) {
       const facts: Fact[] = [];
       if (d.aliases?.length) facts.push({ name: typeOf(id) === "place" ? "Other names" : "Also called", value: d.aliases.join(", "), ...own });
       if (d.gender) facts.push({ name: "Gender", value: d.gender, ...own });
-      if (d.event_year !== undefined) facts.push({ name: "Year", value: `${year(d.event_year)} (approx., Jones chronology)`, ...own });
+      if (d.event_year !== undefined) facts.push({ name: "Event Year", value: `${year(d.event_year)} (approx., Jones chronology)`, ...own });
       if (d.lat !== undefined && d.lon !== undefined) {
         const c = await credits();
         const source = POINT_SOURCE[d.coord_source!] ?? d.coord_source!;

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { focusIs, nodes } from "./scene";
+import { doubleClickLabel, focusIs, nodes, themesOnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -119,7 +119,6 @@ const verse = (page: Page, ref: string) => reader(page).getByRole("button", { na
 const persons = (page: Page) => panel(page).getByRole("list", { name: /^Person/ });
 const filters = (page: Page) => page.getByRole("dialog", { name: "Filters" });
 const search = (page: Page) => new URL(page.url()).search;
-const themesOnScreen = async (page: Page) => (await nodes(page)).filter((n) => /^(overflow:)?theme/.test(n.id)).length;
 
 for (const view of ["A", "B", "C"] as const) {
   test(`the M4 journey, from a shared link to the credits, in view ${view}`, async ({ page }) => {
@@ -175,8 +174,7 @@ for (const view of ["A", "B", "C"] as const) {
 
     // A double click on Anah's name in the scene makes her the Focus; a note on her is kept across a
     // reload and in the download.
-    await page.locator(".labels").getByText("Anah, son of Zibeon (Gen 36:2)", { exact: true }).dblclick();
-    await focusIs(page, ANAH);
+    await doubleClickLabel(page, "Anah, son of Zibeon (Gen 36:2)", ANAH);
     await panel(page).getByRole("textbox", { name: /^Note on Anah/ }).fill("A man in Gen 36:24.");
     await page.reload();
     await focusIs(page, ANAH);

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { focusIs } from "./scene";
+import { doubleClickLabel, focusIs } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -8,11 +8,6 @@ const ABRAHAM = "person:abraham_58",
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
 const note = (page: Page, name: string) => panel(page).getByRole("textbox", { name: `Note on ${name}` });
-// On the node's label, as in path.spec.ts.
-async function doubleClick(page: Page, name: string, id: string) {
-  await page.locator(".labels").getByText(name, { exact: true }).dblclick();
-  await focusIs(page, id);
-}
 
 test.use({ reducedMotion: "reduce" });
 
@@ -21,7 +16,7 @@ test("a note survives a reload, and the download holds it with a link back", asy
   await focusIs(page, ABRAHAM);
   await expect(panel(page)).toContainText("Notes stay in this browser only.");
   await note(page, "Abraham").fill("Called out of Ur.");
-  await doubleClick(page, "Isaac", ISAAC);
+  await doubleClickLabel(page, "Isaac", ISAAC);
   await note(page, "Isaac").fill("The son of the promise.");
   // A step with a note is marked in the Your Path bar.
   await expect(bar(page).getByRole("button", { name: "Abraham" })).toHaveAccessibleDescription("Has a note");
@@ -45,7 +40,7 @@ test("a note survives a reload, and the download holds it with a link back", asy
 test("an address naming a Focus wins over the one kept in this browser", async ({ page }) => {
   await page.goto("/");
   await focusIs(page, ABRAHAM);
-  await doubleClick(page, "Isaac", ISAAC);
+  await doubleClickLabel(page, "Isaac", ISAAC);
   await page.goto(`/?focus=${SARAH}`);
   await focusIs(page, SARAH);
   await expect(bar(page).getByRole("listitem")).toHaveText(["Sarah", "Isaac", "Abraham"]);
@@ -58,7 +53,7 @@ test("Clear and Undo clear keep notes; Delete all notes asks first", async ({ pa
   await page.goto("/");
   await focusIs(page, ABRAHAM);
   await note(page, "Abraham").fill("Called out of Ur.");
-  await doubleClick(page, "Isaac", ISAAC);
+  await doubleClickLabel(page, "Isaac", ISAAC);
   await bar(page).getByRole("button", { name: "Clear", exact: true }).click();
   await expect(bar(page).getByRole("listitem")).toHaveText(["Isaac"]);
   await bar(page).getByRole("button", { name: "Undo clear" }).click();

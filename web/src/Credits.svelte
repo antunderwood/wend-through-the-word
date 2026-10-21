@@ -1,20 +1,9 @@
 <script lang="ts">
   // The credits page (decision 132): every source in credits.json with its credit, licence, and
   // link, and the modification notice the CC BY-SA licence asks for (PRD 5 rule 6). No WebGL.
-  import { fetchJSON } from "./data";
+  import { fetchJSON, readCredits } from "./data";
 
-  type Credits = {
-    licence: string;
-    licence_link: string;
-    modified: string;
-    curated_tables: string;
-    sources: { name: string; credit: string; licence: string; licence_link: string | null; link: string; bibliography?: string }[];
-  };
-
-  async function load() {
-    const { data_version } = (await fetchJSON("/data/index.json")) as { data_version: string };
-    return { version: data_version, credits: (await fetchJSON(`/data/${data_version}/credits.json`)) as Credits };
-  }
+  const load = () => readCredits(fetchJSON, "/data");
   let loading = $state(load());
 </script>
 
