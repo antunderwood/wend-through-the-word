@@ -4,6 +4,7 @@
 import { build } from "vite";
 import { cpSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { FIVE_MINUTES, REVALIDATE, YEAR } from "./cache-rules.ts";
 
 const [data, site] = process.argv.slice(2).map((p) => resolve(p));
 if (!site) throw new Error("Usage: node web/stage.ts <export data folder> <site folder>");
@@ -17,14 +18,14 @@ cpSync(data, join(site, "data"), { recursive: true });
 writeFileSync(
   join(site, "_headers"),
   `/data/:version/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: ${YEAR}
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: ${YEAR}
 /data/index.json
-  Cache-Control: public, max-age=300
+  Cache-Control: ${FIVE_MINUTES}
 /
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: ${REVALIDATE}
 /credits
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: ${REVALIDATE}
 `,
 );

@@ -2,11 +2,11 @@
 // data version, and, with --email, that the domain kept its Email Routing MX records (decisions
 // 151, 162). Usage: node web/live-check.ts <base URL> <expected data version> [--email]
 import { resolveMx } from "node:dns/promises";
+import { FIVE_MINUTES, YEAR } from "./cache-rules.ts";
 
 const [base, expected, flag] = process.argv.slice(2);
 if (!expected) throw new Error("Usage: node web/live-check.ts <base URL> <expected data version> [--email]");
 
-const YEAR = "public, max-age=31536000, immutable";
 const failures: string[] = [];
 
 // The Free plan compresses with zstd unless asked for gzip or br; fetch decodes either.
@@ -33,7 +33,7 @@ try {
   await status("/node-limit", 404);
 
   const index = await status("/data/index.json", 200);
-  cacheControl("/data/index.json", index, "public, max-age=300");
+  cacheControl("/data/index.json", index, FIVE_MINUTES);
   const json = await index.json().catch(() => null);
   if (!json) failures.push("/data/index.json: not JSON");
   else if (json.data_version !== expected) failures.push(`/data/index.json: data version is ${json.data_version}, expected ${expected}`);
