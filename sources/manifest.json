@@ -1,0 +1,306 @@
+{
+  "bsb": {
+    "date": "2026-10-19",
+    "file": "bsb.txt",
+    "how": "downloaded",
+    "licence": "CC0 1.0",
+    "sha256": "2ac3af1de52d4e68261cba91d85c320b7eadc6560e830d99e591767b8ff5ca96",
+    "url": "https://bereanbible.com/bsb.txt"
+  },
+  "crossrefs": {
+    "date": "2026-10-19",
+    "file": "cross-references.zip",
+    "how": "downloaded",
+    "licence": "CC BY",
+    "sha256": "3b694f0db9ea81e125c78e88b1845ec18e8b99e63ac94eee3be58ab92cca27f1",
+    "url": "https://a.openbible.info/data/cross-references.zip"
+  },
+  "geo-ancient": {
+    "date": "2026-10-19",
+    "file": "ancient.jsonl",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "b8187aa4737e8517ccc090f765d2be11da4c548cd2a59d3cdcb62e952cb8c0f2",
+    "url": "https://raw.githubusercontent.com/openbibleinfo/Bible-Geocoding-Data/main/data/ancient.jsonl"
+  },
+  "geo-modern": {
+    "date": "2026-10-19",
+    "file": "modern.jsonl",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "da731f6e110bac4ea66a9f037a0a31cfb11c4f1efc1206aa9e109092b2c60087",
+    "url": "https://raw.githubusercontent.com/openbibleinfo/Bible-Geocoding-Data/main/data/modern.jsonl"
+  },
+  "geo-source": {
+    "date": "2026-10-19",
+    "file": "source.jsonl",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "b93709cfd947430a3befe3a02a82787ef589c3223c903f4f234adaa46727856a",
+    "url": "https://raw.githubusercontent.com/openbibleinfo/Bible-Geocoding-Data/main/data/source.jsonl"
+  },
+  "geonames-CY": {
+    "date": "2026-10-19",
+    "file": "CY.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "003ab100067bbf5423b295d2b75bdc5e7817629d0b1cbf2c9884bfa6b4912d64",
+    "url": "https://download.geonames.org/export/dump/CY.zip"
+  },
+  "geonames-EG": {
+    "date": "2026-10-19",
+    "file": "EG.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "92d2e3ed0c4d72d44c63ae05aeef3a514c14dc9c5639d8456596228b99066ead",
+    "url": "https://download.geonames.org/export/dump/EG.zip"
+  },
+  "geonames-ER": {
+    "date": "2026-10-19",
+    "file": "ER.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "faa52b3e5be97365bdfef971e388686fd932864fec89306e235467181a9d6107",
+    "url": "https://download.geonames.org/export/dump/ER.zip"
+  },
+  "geonames-ES": {
+    "date": "2026-10-19",
+    "file": "ES.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "d3d1d6aece1e891d78acd6e44f659f5896257acb3bdba999bd41f4c7e2cf2599",
+    "url": "https://download.geonames.org/export/dump/ES.zip"
+  },
+  "geonames-ET": {
+    "date": "2026-10-19",
+    "file": "ET.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "2eb1bafd5574e03c7f9ac9c4649702f90e5e1219bfdd0434fabedb8004576188",
+    "url": "https://download.geonames.org/export/dump/ET.zip"
+  },
+  "geonames-GR": {
+    "date": "2026-10-19",
+    "file": "GR.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "0682cbe8132be7b16ed5b66bcf6fd644ba0dc071036df653e652f2a8e3b0760c",
+    "url": "https://download.geonames.org/export/dump/GR.zip"
+  },
+  "geonames-IL": {
+    "date": "2026-10-19",
+    "file": "IL.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "fb3c17ba49931217a1c1489f6540faa6a5f325d54e8c277850df5219c96ee9a4",
+    "url": "https://download.geonames.org/export/dump/IL.zip"
+  },
+  "geonames-IQ": {
+    "date": "2026-10-19",
+    "file": "IQ.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "e1cbbbf7d404d240de4ce8c3d332c4938c2f96b4615b084f87411e908b146c9d",
+    "url": "https://download.geonames.org/export/dump/IQ.zip"
+  },
+  "geonames-IR": {
+    "date": "2026-10-19",
+    "file": "IR.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "8c949b1c8a1129432797eb4b3e64a2c338050b5b9ace55e44243cd7a5be8e0c7",
+    "url": "https://download.geonames.org/export/dump/IR.zip"
+  },
+  "geonames-IT": {
+    "date": "2026-10-19",
+    "file": "IT.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "04b0d7a286c96ec136f57f17d6c277a3b5b60a7a9cd4a4b14438bce47a67f2c9",
+    "url": "https://download.geonames.org/export/dump/IT.zip"
+  },
+  "geonames-JO": {
+    "date": "2026-10-19",
+    "file": "JO.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "9c9103a5430dad6e2c01026c06c812ec517bba0cde84939d7a346de9995da80e",
+    "url": "https://download.geonames.org/export/dump/JO.zip"
+  },
+  "geonames-KW": {
+    "date": "2026-10-19",
+    "file": "KW.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "9c536a187d653e4417b8c01a803d1affc58560cc0860cf1d6e00b1f89d3eb017",
+    "url": "https://download.geonames.org/export/dump/KW.zip"
+  },
+  "geonames-LB": {
+    "date": "2026-10-19",
+    "file": "LB.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "7d4bbcedca7197a0e30cf5048710d8becd9e3b5d13d811bd4e6bb7207ea52ebb",
+    "url": "https://download.geonames.org/export/dump/LB.zip"
+  },
+  "geonames-LY": {
+    "date": "2026-10-19",
+    "file": "LY.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "3f18044cbc1c54b497912027f8392e6cbf0ec7c76510363554c98e2c0e0a4ef2",
+    "url": "https://download.geonames.org/export/dump/LY.zip"
+  },
+  "geonames-MT": {
+    "date": "2026-10-19",
+    "file": "MT.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "70f5346a2362407d9d467164a74ab01de548c26d22f9d783d21932aa9470ce53",
+    "url": "https://download.geonames.org/export/dump/MT.zip"
+  },
+  "geonames-OM": {
+    "date": "2026-10-19",
+    "file": "OM.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "5f7fa7b11ac15ba081546e680087cb3d02990d55b2ffee6a303886dcbad8c60a",
+    "url": "https://download.geonames.org/export/dump/OM.zip"
+  },
+  "geonames-PS": {
+    "date": "2026-10-19",
+    "file": "PS.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "e4e25794571e40db59d1906f1f00264189a212cdc1f1c46693ae0ad93633f57a",
+    "url": "https://download.geonames.org/export/dump/PS.zip"
+  },
+  "geonames-SA": {
+    "date": "2026-10-19",
+    "file": "SA.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "e14ce4f760c6531e67534608ceadc92f4f0244d4a061d3587917ce5a3c950f51",
+    "url": "https://download.geonames.org/export/dump/SA.zip"
+  },
+  "geonames-SD": {
+    "date": "2026-10-19",
+    "file": "SD.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "948f69cfa7803f1d0292cec3016168a922b85250cae89b2484db39a089ddb1cc",
+    "url": "https://download.geonames.org/export/dump/SD.zip"
+  },
+  "geonames-SY": {
+    "date": "2026-10-19",
+    "file": "SY.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "6ea44d282f259472dab07d8bd92884b09760a708ce07e1dea8b227622cf384c9",
+    "url": "https://download.geonames.org/export/dump/SY.zip"
+  },
+  "geonames-TR": {
+    "date": "2026-10-19",
+    "file": "TR.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "93b368d96d6aa7473aad919a149089423af9408f43b40513da48707bc8545e96",
+    "url": "https://download.geonames.org/export/dump/TR.zip"
+  },
+  "geonames-YE": {
+    "date": "2026-10-19",
+    "file": "YE.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "b01231683a9bb0c673a3b8df859be41ff3c2881b9348a0a0f82750b22bffb372",
+    "url": "https://download.geonames.org/export/dump/YE.zip"
+  },
+  "geonames-no-country": {
+    "date": "2026-10-19",
+    "file": "no-country.zip",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "6182dcfe6fcc620b1039870dd52e0ad11d31ec385e3daa3955be97fa3483ab0d",
+    "url": "https://download.geonames.org/export/dump/no-country.zip"
+  },
+  "naves": {
+    "date": "2026-10-19",
+    "file": "NavesTopicalDictionary.csv",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "84f54e0c90293ed0674589cb417fa11a7dab572716735e5d626cc58645f1d49b",
+    "url": "https://raw.githubusercontent.com/BradyStephenson/bible-data/main/NavesTopicalDictionary.csv"
+  },
+  "pleiades-locations": {
+    "date": "2026-10-19",
+    "file": "pleiades-locations-latest.csv.gz",
+    "how": "downloaded",
+    "licence": "CC BY 3.0",
+    "sha256": "58df56dc7194cf5bc5456089116c10a9a78c90e1cd3c35a1921c7e01b4b78dd9",
+    "url": "https://atlantides.org/downloads/pleiades/dumps/pleiades-locations-latest.csv.gz"
+  },
+  "theo-easton": {
+    "date": "2026-10-19",
+    "file": "easton.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "3b8b86a5ec0fba3a3c157e703d1d809d0de055a427d7c4d86fd918d0333740d4",
+    "url": "https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/master/json/easton.json"
+  },
+  "theo-events": {
+    "date": "2026-10-19",
+    "file": "events.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "e616381e79402b15842ce668d0884f6659250487c260a0cc41dada2e1748ddf5",
+    "url": "https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/master/json/events.json"
+  },
+  "theo-people": {
+    "date": "2026-10-19",
+    "file": "people.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "6fb7b4e7aaae55f244867e74252ec7f91f3a583b8811b49f8966733f08f44047",
+    "url": "https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/master/json/people.json"
+  },
+  "theo-peopleGroups": {
+    "date": "2026-10-19",
+    "file": "peopleGroups.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "fcda249cb8b122919e22d1d1d3aa5760237832ac300507ca34e4311d4ae940fb",
+    "url": "https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/master/json/peopleGroups.json"
+  },
+  "theo-places": {
+    "date": "2026-10-19",
+    "file": "places.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "9900903564e452c997ac0c711b9c1e1d6d2f1a0f2cbca9ea317fda2c80e0c1e0",
+    "url": "https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/master/json/places.json"
+  },
+  "theo-verses": {
+    "date": "2026-10-19",
+    "file": "verses.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "056ca2a13683ca4aca020aae6655f0b488a8abc291959b385ef83ba1c7db0fff",
+    "url": "https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/master/json/verses.json"
+  },
+  "tipnr": {
+    "date": "2026-10-19",
+    "file": "TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt",
+    "how": "downloaded",
+    "licence": "CC BY 4.0",
+    "sha256": "dc2fba41f24ed85ce0e29b426208e7ea06efc2b85ae8f2a14a06cda01648cd43",
+    "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Proper%20Nouns/TIPNR%20-%20Translators%20Individualised%20Proper%20Names%20with%20all%20References%20-%20STEPBible.org%20CC%20BY.txt"
+  },
+  "wikidata-coords": {
+    "date": "2026-10-19",
+    "file": "wikidata-coords.json",
+    "how": "downloaded",
+    "licence": "CC0 1.0",
+    "sha256": "dbda73bfd75f00c97b366ba40dcd73b2e354eba08abcc58aed211813481a52a9",
+    "url": "https://query.wikidata.org/sparql"
+  }
+}

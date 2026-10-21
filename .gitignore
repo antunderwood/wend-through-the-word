@@ -12,3 +12,4 @@ web/dist/
 web/test-results/
 site/
 web/.wrangler/
+.wrangler/
