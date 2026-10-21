@@ -20,7 +20,7 @@ A reader can now walk the Genesis graph, but cannot read the Bible text around w
 
 ## Solution
 
-1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, and opens from a "Read" button.
+1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself when a Verse becomes the Focus (unless the reader closed it), and opens from a "Read" button (decision 138).
 2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link, curated notes with their Evidence Verses, and "Corrected after review" notes.
 3. **A filter panel** has node type toggles, the Vote Limit slider with its explanation, a book filter that can hide Verses outside the build, and an animation switch.
 4. **Shareable addresses**: the page address holds the Focus, the Selected Node, the pins, the filters, and the view. Opening it restores them. Back and Forward move between Foci.
@@ -34,13 +34,13 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 ### Reader: reading the text
 
-1. As a reader, I want to read the whole BSB chapter of the Selected Verse beside the graph, so that I see each Verse in its context.
-2. As a reader, I want a "Read" button that opens the reader panel at the chapter of the Focus (or of the Selected Node's first linked Verse), so that I can start reading from any node.
-3. As a reader, I want the reader panel to scroll to and highlight the Selected Verse, so that I do not lose my place.
+1. As a reader, I want a Verse's full BSB text in the detail panel under its reference, and the whole chapter in the reader panel beside the graph, which opens by itself when a Verse becomes the Focus (decision 138), so that I see each Verse in its context.
+2. As a reader, I want a "Read" button that opens the reader panel at the chapter of the Focus (or of the Selected Node's first linked Verse), and a closed reader panel to stay closed for later Verse Foci until I press "Read" again, so that I can start reading from any node and keep the space when I want it.
+3. As a reader, I want an open reader panel to scroll to and highlight the Selected Verse, while a click on a Verse only selects it and never opens the reader panel, so that I do not lose my place.
 4. As a reader, I want a click on a Verse in the reader panel to select it and a double click to make it the Focus, as in the scene and the lists, so that reading and exploring use one set of rules.
 5. As a reader, I want the Verses in the reader panel that are in the scene marked quietly, so that I can see which ones the graph links.
 6. As a reader, I want previous and next chapter buttons in the reader panel, within the build, so that I can read on.
-7. As a reader, I want the reader panel to use a serif font, large type, and wide spacing (PRD 10.4 page design), so that long reading is comfortable.
+7. As a reader, I want the reader panel to use the app's sans font, large type, and wide spacing (PRD 10.4 page design, decision 137), so that long reading is comfortable.
 8. As a reader, I want to close the reader panel and have the scene use the space, so that I can explore with the whole screen.
 9. As a reader, I want the reader panel to say which translation it is (Berean Standard Bible), so that I know what I am reading.
 

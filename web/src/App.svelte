@@ -31,8 +31,14 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // The Verse the reader panel is open at; undefined when it is closed.
+  // The Verse the reader panel is open at; undefined when it is closed. It opens when a Verse becomes
+  // the Focus, unless the reader closed it and has not pressed Read since (decision 138).
   let reading = $state<Id>();
+  const READER_STORE = "wend.readerClosed";
+  function closeReader(closed: boolean) {
+    store(READER_STORE, closed ? "1" : "");
+    if (closed) reading = undefined;
+  }
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -100,7 +106,9 @@
       if (mine === moves) loadFailed(id, e, () => makeFocus(id));
       return;
     }
-    if (mine === moves) apply({ type: "focus", id });
+    if (mine !== moves) return;
+    apply({ type: "focus", id });
+    if (typeOf(id) === "verse" && !stored(READER_STORE)) reading = id;
   }
 
   // A pin's record must be loaded before the scene can draw its ring.
@@ -123,6 +131,7 @@
 
   // Opens the reader panel at the Selected Verse, or at an Entity's first Verse in Bible order.
   async function openReader() {
+    closeReader(false);
     if (typeOf(selected) === "verse") return (reading = selected);
     const first = (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
     if (first) reading = first;
@@ -280,7 +289,7 @@
         onselect={(id) => apply({ type: "select", id })}
         onfocus={makeFocus}
         onmove={(id) => (reading = id)}
-        onclose={() => (reading = undefined)}
+        onclose={() => closeReader(true)}
       />
     </div>
   {/if}

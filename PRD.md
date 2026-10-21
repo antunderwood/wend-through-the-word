@@ -399,7 +399,7 @@ Rules:
 #### Page design
 
 1. Use translucent panels over the graph for the reader and detail views.
-2. Use a serif font for scripture text. Use a clean sans font for the interface.
+2. Use one clean sans font for the interface and for scripture text; scripture is set larger, with wider line spacing (decision 137).
 3. The camera flies to the new focus in about 600 to 800 ms with easing. Turn this off when the `prefers-reduced-motion` setting is on.
 4. Use large type and wide spacing. Do not use dense toolbars.
 5. Keyboard control: arrow keys move between ring 1 nodes, Enter sets the focus, and Backspace goes back.

@@ -117,6 +117,9 @@
         .map(async (o) => ({ with: o, verses: await data.shared(o, versesOf) })),
     );
   });
+  // A built Verse's BSB text under its name (decision 138); not when the click came from the shared
+  // list, which already shows it and must not move.
+  const verseText = $derived(typeOf(selected) === "verse" && versesOf === selected && !data.outside(selected) ? data.load(selected).then((r) => r.text) : undefined);
   // The facts, corrections, and Dictionary Entry of the Selected Node, when it is an Entity.
   const details = $derived.by(() => {
     retries;
@@ -135,9 +138,13 @@
          in its title. -->
     <h2 class="line" title={label(selected)}>{label(selected)}</h2>
     {#await details}{@render typeLine(selectedType)}{:then d}{@render typeLine(d ? `${selectedType}, from ${credit([d])}` : selectedType)}{:catch}{@render typeLine(selectedType)}{/await}
+    {#if verseText}
+      {#await verseText then t}<p class="verse-full">{t}</p>{/await}
+    {/if}
     <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
-         that item goes after it. -->
-    <p class="relationship" title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
+         that item goes after it. A Verse's own text has no shared list below it to hold in place,
+         so an empty line is not kept for it. -->
+    <p class="relationship" hidden={!link && !!verseText} title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
       {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
           {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
         <span class="sourced"><small class="source line">{credit(linkEdges)}</small>
@@ -353,6 +360,12 @@
   .verse-text {
     margin: 0 0 8px 4px;
     opacity: 0.85;
+  }
+  /* A long Verse scrolls in its own box, so the buttons below it stay in reach. */
+  .verse-full {
+    max-height: 11.6em;
+    overflow-y: auto;
+    margin: 6px 0;
   }
   .more {
     margin: 4px 0;

@@ -76,6 +76,17 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   await expect(relationship(page)).toContainText("Suggest a correction");
   await settled();
   expect(await y(verse)).toBe(shared);
+
+  // A Verse's text above the lists (decision 138) leaves them where they were.
+  await focusOn(page, "Gen 16:1", /^Gen 16:1/, "01016001");
+  await expect(panel(page)).toContainText("Now Abram’s wife Sarai had borne him no children");
+  const cross = panel(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: /^Gen 11:30/ });
+  const crossY = await y(cross);
+  await cross.click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:30");
+  await expect(panel(page)).toContainText("But Sarai was barren; she had no children.");
+  await settled();
+  expect(await y(cross)).toBe(crossY);
 });
 
 test("the Dictionary Entry is named as Easton's, folded after its first paragraph, and opens with Read more", async ({ page }) => {

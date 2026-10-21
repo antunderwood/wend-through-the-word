@@ -99,7 +99,9 @@
   h2 {
     flex: 1;
     margin: 0;
-    font: 600 17px/1.3 Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
     text-align: center;
   }
   header button {
@@ -119,7 +121,8 @@
     overflow-y: auto;
     margin-top: 10px;
     padding-right: 6px;
-    font: 18px/1.75 Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 1.75;
     color: #e6e8f0;
   }
   .verse {

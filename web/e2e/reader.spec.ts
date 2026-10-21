@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { focusIs, nodes } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
@@ -74,13 +74,53 @@ test("previous and next chapter stay within the build", async ({ page }) => {
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:31");
 });
 
+// Makes a Verse the Focus through the search box.
+async function searchVerse(page: Page, ref: string, id: string) {
+  await page.getByRole("searchbox", { name: "Search" }).fill(ref);
+  await page.getByRole("searchbox", { name: "Search" }).press("Enter");
+  await focusIs(page, id);
+}
+
+test("a Verse that becomes the Focus opens the reader at its chapter; a click on a Verse only selects it", async ({ page }) => {
+  // A click selects: the panel shows the Verse's text, and the reader stays closed.
+  await panel(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: /^Gen 11:31/ }).click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:31");
+  await expect(panel(page)).toContainText("Terah took his son Abram, his grandson Lot son of Haran, and his daughter-in-law Sarai");
+  await expect(reader(page)).toHaveCount(0);
+
+  await searchVerse(page, "Gen 16:1", "01016001");
+  await expect(reader(page).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
+  await expect(verse(page, "Gen 16:1")).toHaveAttribute("aria-current", "true");
+  await expect(panel(page)).toContainText("Now Abram’s wife Sarai had borne him no children, but she had an Egyptian maidservant named Hagar.");
+  // The scripture is in the app's sans font (decision 137).
+  const family = (l: Locator) => l.evaluate((e) => getComputedStyle(e).fontFamily);
+  expect(await family(reader(page).locator(".text"))).toBe(await family(page.locator("body")));
+});
+
+test("a reader who closes the reader panel keeps it closed for later Verse Foci, across a reload, until Read", async ({ page }) => {
+  await searchVerse(page, "Gen 16:1", "01016001");
+  await page.getByRole("button", { name: "Close reader" }).click();
+  await expect(reader(page)).toHaveCount(0);
+  await searchVerse(page, "Gen 11:31", "01011031");
+  await expect(panel(page)).toContainText("Terah took his son Abram");
+  await page.reload();
+  await focusIs(page, "01011031");
+  await searchVerse(page, "Gen 16:2", "01016002");
+  await expect(reader(page)).toHaveCount(0);
+
+  // Read opens it again, and later Verse Foci open it once more.
+  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
+  await expect(reader(page).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
+  await page.reload();
+  await focusIs(page, "01016002");
+  await searchVerse(page, "Gen 25:21", "01025021");
+  await expect(reader(page).getByRole("heading", { name: "Genesis 25" })).toBeVisible();
+});
+
 test("the reader follows the Selected Verse, and a Verse outside the build shows the note without a fetch", async ({ page }) => {
   const asked: string[] = [];
   page.on("request", (r) => asked.push(r.url()));
-  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 16:1");
-  await page.getByRole("searchbox", { name: "Search" }).press("Enter");
-  await focusIs(page, "01016001");
-  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
+  await searchVerse(page, "Gen 16:1", "01016001");
   await expect(reader(page).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
   // Gen 16:1 has a Cross-reference to Gal 4:24, outside the fixture build.
   await page.locator(".labels").getByText("Gal 4:24", { exact: true }).click();
