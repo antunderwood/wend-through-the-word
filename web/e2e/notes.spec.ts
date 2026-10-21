@@ -71,3 +71,15 @@ test("Clear and Undo clear keep notes; Delete all notes asks first", async ({ pa
   await expect(note(page, "Abraham")).toHaveValue("");
   await expect(bar(page).getByRole("button", { name: "Abraham" })).not.toHaveAccessibleDescription("Has a note");
 });
+
+test("a focused note box has the app's focus ring, not the browser's blue one", async ({ page }) => {
+  await page.goto("/");
+  await focusIs(page, ABRAHAM);
+  await note(page, "Abraham").focus();
+  const style = await note(page, "Abraham").evaluate((e) => {
+    const s = getComputedStyle(e);
+    return { outline: `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`, border: s.borderColor };
+  });
+  // Visible, in the accent (#ffd27a) at 40% with an accent border, and no blue.
+  expect(style).toEqual({ outline: "solid 2px rgba(255, 210, 122, 0.4)", border: "rgb(255, 210, 122)" });
+});

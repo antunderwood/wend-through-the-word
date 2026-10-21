@@ -1,0 +1,13 @@
+/* One focus ring for every page, in the accent in place of the browser's blue; keyboard users
+   always see where they are (PRD 10.2 rule 9). A text box shows it whenever it has focus, other
+   controls only when focused from the keyboard. */
+:focus-visible {
+  outline: 2px solid rgba(255, 210, 122, 0.4);
+  outline-offset: 0;
+}
+/* :is() takes its most specific choice, so this wins over a component's own border. */
+:is(textarea, input:not([type="checkbox"], [type="radio"], [type="range"])):focus {
+  border-color: #ffd27a;
+  outline: 2px solid rgba(255, 210, 122, 0.4);
+  outline-offset: 0;
+}
