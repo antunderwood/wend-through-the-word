@@ -18,7 +18,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    uv run python -m pipeline.release v2026-10-19 --dry-run
    ```
 
-   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, `out/reports/file_count.tsv` shows files over the size limit, or `out/data` holds 20,000 files or more.
+   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, `out/reports/file_count.tsv` shows files over the size limit, `out/reports/split_or_trimmed.tsv` has a file that is not trimmed, `out/reports/curated_no_longer_matches.tsv` has rows (fix the curated tables, decision 77), or `out/data` holds 20,000 files or more. It prints a warning for each other report with rows: read them before releasing.
 4. Release:
 
    ```

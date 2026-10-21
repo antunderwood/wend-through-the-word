@@ -284,6 +284,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 ## 2026-10-21: M5 review decisions
 
 160. **The deploy workflow pins its actions and checks the data version.** Every action is pinned to a full commit SHA, with its version in a comment; checkout keeps no credentials (`persist-credentials: false`); the data version read from the release asset must match `^[0-9][0-9-]*$` before it is written to `$GITHUB_ENV`. Checked by actionlint and a test that the workflow has no unpinned `uses:`. Reason: the job holds the Cloudflare token, so a moved tag or a crafted version string must not be able to run code in it.
+161. **The release command refuses an export with a file over the size limit, a file not trimmed, or a curated row that no longer matches its source.** These come from `file_count.tsv`, `split_or_trimmed.tsv`, and `curated_no_longer_matches.tsv` (decision 77). Every other report with rows prints as a warning and does not stop the release; `files.tsv` and `file_count.tsv` list the export and are not warned about. Reason: spec story 20; the other reports (aliases, dropped edges, disagreements) always have rows on the real export and describe choices the build made, not broken data.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
