@@ -264,6 +264,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 ## 2026-10-21: Owner answers
 
 147. **A shared address whose Focus is a Verse opens the reader panel at its chapter (owner).** A reload of such an address does the same; an address that names no Focus, or an Entity Focus, leaves the reader panel closed. Amends decision 140, which opened it only on moves of the Focus. Reason: a link to a Verse should land with its chapter open.
+148. **The detail panel's fixed-height top section shows a fade hint when more is below (owner).** The section keeps its fixed height for the double click rule; a soft fade at its bottom edge shows while more content is below it, goes when the reader has scrolled to the end, and never covers a control focused with the keyboard. It is CSS only (a scroll-driven animation of a mask). Reason: the owner found long content cut off without a sign that it scrolls.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
