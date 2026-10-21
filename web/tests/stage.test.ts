@@ -54,7 +54,7 @@ describe("staged site", () => {
   });
 
   it("writes no em or en dashes in the pages", () => {
-    for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).not.toMatch(/[–—]/);
+    for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).not.toMatch(/[\u2013\u2014]/);
   });
 
   it("stays under Cloudflare's free limits: fewer than 20,000 files, none over 25 MiB", () => {

@@ -15,7 +15,7 @@ for (const [path, title] of [
     expect(description).toMatch(/\w/);
     expect(await meta(page, "og:title")).toBe(title);
     expect(await meta(page, "og:description")).toBe(description);
-    expect(`${title} ${description}`).not.toMatch(/[–—]/);
+    expect(`${title} ${description}`).not.toMatch(/[\u2013\u2014]/);
 
     // The SVG icon, a PNG one for browsers without SVG icons, and the Apple touch icon.
     const links = page.locator('link[rel="icon"], link[rel="apple-touch-icon"]');
