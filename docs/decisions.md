@@ -270,7 +270,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 ## 2026-10-21: Launch checks
 
 150. **The desktop node limit is 500, confirmed on a mid-range laptop (owner).** The re-test decision 123 asked for before M5 passed at 500. Closes decision 123's open check. The phone limit waits for M7.
-151. **Email Routing for contact@wendtheword.flying-ant.uk is live (owner).** Cloudflare's MX and SPF records for the subdomain resolve (checked 2026-10-21); the forwarding address is set in the dashboard only (decision 145).
+151. **Email Routing for contact@wendtheword.flying-ant.uk is live (owner).** Cloudflare's MX and SPF records for the subdomain resolve, and a test email reached the owner (2026-10-21); the forwarding address is set in the dashboard only (decision 145).
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
