@@ -11,10 +11,31 @@ import "./fixture";
 // The live check (decision 154), run against Wrangler's local dev server serving the staged
 // fixture site with its own headers file and the repository's Wrangler configuration.
 const web = join(import.meta.dirname, "..");
-const site = join(mkdtempSync(join(tmpdir(), "wend-live-")), "site");
-let server: ChildProcess;
+const servers: ChildProcess[] = [];
 let url: string;
 let version: string;
+
+// Stages the fixture to a new folder and serves it with wrangler dev; returns the folder and the
+// server's address. A test that edits its site serves its own, so the others never see the edit.
+async function serve(): Promise<{ site: string; url: string }> {
+  const site = join(mkdtempSync(join(tmpdir(), "wend-live-")), "site");
+  execFileSync("node", ["stage.ts", process.env.WEND_DATA!, site], { cwd: web });
+  const server = spawn(join(web, "node_modules", ".bin", "wrangler"), ["dev", "--assets", site, "--ip", "127.0.0.1", "--port", "0"], {
+    cwd: web,
+    env: { ...process.env, WRANGLER_SEND_METRICS: "false" },
+  });
+  servers.push(server);
+  const url = await new Promise<string>((done, fail) => {
+    let log = "";
+    server.stdout!.on("data", (chunk) => {
+      log += chunk;
+      const ready = log.match(/Ready on (http\S+)/);
+      if (ready) done(ready[1]);
+    });
+    server.on("exit", () => fail(new Error(`wrangler dev exited:\n${log}`)));
+  });
+  return { site, url };
+}
 
 // The check's exit code and its output, as the deploy workflow or the owner would see them.
 async function check(base: string, expected: string, ...flags: string[]): Promise<{ code: number; output: string }> {
@@ -35,25 +56,13 @@ async function listen(local: Server): Promise<string> {
 
 describe("live check", () => {
   beforeAll(async () => {
-    execFileSync("node", ["stage.ts", process.env.WEND_DATA!, site], { cwd: web });
-    version = JSON.parse(readFileSync(join(site, "data", "index.json"), "utf8")).data_version;
-    server = spawn(join(web, "node_modules", ".bin", "wrangler"), ["dev", "--assets", site, "--ip", "127.0.0.1", "--port", "0"], {
-      cwd: web,
-      env: { ...process.env, WRANGLER_SEND_METRICS: "false" },
-    });
-    url = await new Promise((done, fail) => {
-      let log = "";
-      server.stdout!.on("data", (chunk) => {
-        log += chunk;
-        const ready = log.match(/Ready on (http\S+)/);
-        if (ready) done(ready[1]);
-      });
-      server.on("exit", () => fail(new Error(`wrangler dev exited:\n${log}`)));
-    });
+    const served = await serve();
+    url = served.url;
+    version = JSON.parse(readFileSync(join(served.site, "data", "index.json"), "utf8")).data_version;
   }, 180_000);
 
   afterAll(() => {
-    server?.kill();
+    for (const server of servers) server.kill();
   });
 
   it("passes the staged site serving the expected data version", async () => {
@@ -93,14 +102,16 @@ describe("live check", () => {
   }, 30_000);
 
   it("fails, naming the file, when index.json loses its five minute rule", async () => {
-    const headers = join(site, "_headers");
+    const own = await serve();
+    const headers = join(own.site, "_headers");
     writeFileSync(headers, readFileSync(headers, "utf8").replace(/\/data\/index.json\n.*\n/, ""));
     // Wrangler dev reloads the headers file when it changes.
     await expect
-      .poll(async () => (await fetch(`${url}/data/index.json`)).headers.get("cache-control"), { timeout: 15_000 })
+      .poll(async () => (await fetch(`${own.url}/data/index.json`)).headers.get("cache-control"), { timeout: 15_000 })
       .not.toBe("public, max-age=300");
-    const { code, output } = await check(url, version);
+    const { code, output } = await check(own.url, version);
     expect(code).not.toBe(0);
     expect(output).toMatch(/\/data\/index\.json: Cache-Control is .*, expected public, max-age=300/);
-  }, 30_000);
+    expect((await check(url, version)).code).toBe(0);
+  }, 180_000);
 });
