@@ -415,7 +415,7 @@ The data has errors. Readers can ask for a correction. The owner reviews each re
 **Channel**
 
 1. The primary channel is a GitHub Issue Form ("Correction request") in the public repository.
-2. The fallback is email to a project-only address (not a personal address). The owner copies each email into a GitHub issue without the sender's name or address, then deletes the email. The page says this before the reader writes.
+2. The fallback is email to a project-only address (not a personal address): contact@wendtheword.flying-ant.uk (decision 145). The owner copies each email into a GitHub issue without the sender's name or address, then deletes the email. The page says this before the reader writes.
 3. Both channels state: "By submitting, you agree that your suggestion may be included in the dataset under CC BY-SA 4.0."
 
 **Entry points**
@@ -539,7 +539,7 @@ The Genesis prototype is complete when all of these are true.
 10. Paid plan: stay on the free tier at first. The owner decides on the paid plan later. (Decided.)
 11. Visual references: decide from the node look prototype in M3. (Deferred.)
 12. Does the owner want the whole-graph overview (cosmos.gl, 2D) in phase 2? The recommendation is yes, after M7. (Open.)
-13. Which project-only email address receives correction requests? (Open.)
+13. Which project-only email address receives correction requests? contact@wendtheword.flying-ant.uk, through Cloudflare Email Routing (decision 145). (Decided.)
 
 ## 16. Instructions for Claude Code
 

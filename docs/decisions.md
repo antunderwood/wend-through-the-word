@@ -254,6 +254,11 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 143. **A list row's "Suggest a correction" is a small flag laid over the row's right edge (owner).** It fades in on hover, keyboard focus, or selection, and showing it never moves the list; faded, it stays reachable by keyboard and screen readers. The Relationship line keeps its text link. Amends decision 139, whose link opened on a new line under the row. Reason: on the owner's walkthrough the link pushed the rows below down as the pointer moved over the list.
 
+## 2026-10-21: Domain and contact address
+
+144. **The application lives at wendtheword.flying-ant.uk (owner).** The M5 deploy attaches the Worker to this subdomain as a Cloudflare custom domain; flying-ant.uk already uses Cloudflare's nameservers, so Cloudflare makes the DNS record and the certificate. Names are written in lower case (DNS is not case sensitive). Reason: a stable, project-specific address for shared links (decision 128) and the correction form's page URL.
+145. **Correction requests by email go to contact@wendtheword.flying-ant.uk (owner).** Cloudflare Email Routing forwards it to the owner's inbox; the owner sets the forwarding address in the Cloudflare dashboard, so it is never in the repository. The PRD 10.5 handling applies: each email is copied into a GitHub issue without the sender's name or address, then deleted. Closes PRD open question 13 and unblocks #41. Reason: readers without a GitHub account need a way to send a Correction Request.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
