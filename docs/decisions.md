@@ -252,6 +252,8 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 142. **The Relationship line under the Selected Node keeps the full words (owner).** Decision 141 drops fixed words from the lists and the scene edge, where they repeat on every row; the single Relationship line still reads "cross-reference, 5 votes", "named in this verse", or "filed under". Amends decision 141. Reason: "Relationship: 5 votes" alone did not say what the number counts, and one line adds no clutter.
 
+143. **A list row's "Suggest a correction" is a small flag laid over the row's right edge (owner).** It fades in on hover, keyboard focus, or selection, and showing it never moves the list; faded, it stays reachable by keyboard and screen readers. The Relationship line keeps its text link. Amends decision 139, whose link opened on a new line under the row. Reason: on the owner's walkthrough the link pushed the rows below down as the pointer moved over the list.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).

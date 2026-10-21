@@ -161,25 +161,31 @@ test("a Verse's Neighbours, Cross-references included, each keep where they came
   await expect(panel(page).getByRole("list", { name: /^Verse/ }).locator(".item .muted")).toHaveText("4 votes");
 });
 
-test("a list row's correction link shows on hover, on keyboard focus, or for the Selected Node; rows are one line otherwise", async ({ page }) => {
+test("a list row's correction link shows on hover, on keyboard focus, or for the Selected Node, and never moves the list", async ({ page }) => {
   const persons = panel(page).getByRole("list", { name: "Person (21)" });
   const isaac = persons.getByRole("listitem").filter({ hasText: /^Isaac/ });
+  const next = persons.getByRole("listitem").nth(1);
   const link = isaac.getByRole("button", { name: "Suggest a correction to the link to Isaac" });
-  await expect(link).toBeHidden();
+  // Faded out, not removed, so the keyboard and screen readers still find it (decision 143).
+  const shown = () => link.evaluate((e) => getComputedStyle(e).opacity);
+  await expect.poll(shown).toBe("0");
   const line = (await isaac.boundingBox())!.height;
   expect(line).toBeLessThan(30);
+  const below = (await next.boundingBox())!.y;
   await isaac.hover();
-  await expect(link).toBeVisible();
+  await expect.poll(shown).toBe("1");
+  // Laid over the row's right edge: nothing below moves.
+  expect((await next.boundingBox())!.y).toBe(below);
   await page.mouse.move(0, 0);
-  await expect(link).toBeHidden();
+  await expect.poll(shown).toBe("0");
   // The keyboard reaches it from the row's name.
   await isaac.getByRole("button", { name: /^Isaac/ }).focus();
   await page.keyboard.press("Tab");
   await expect(link).toBeFocused();
-  await expect(link).toBeVisible();
+  await expect.poll(shown).toBe("1");
   // Selected, the row keeps it.
   await isaac.getByRole("button", { name: /^Isaac/ }).click();
   await page.mouse.move(0, 0);
   await page.getByRole("searchbox", { name: "Search" }).focus();
-  await expect(link).toBeVisible();
+  await expect.poll(shown).toBe("1");
 });

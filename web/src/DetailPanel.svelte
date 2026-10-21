@@ -267,7 +267,7 @@
 {/snippet}
 <!-- A small link that opens the correction form for one item. -->
 {#snippet fix(what: string, kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string)}
-  <button class="fix" aria-label="Suggest a correction to {what}" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
+  <button class="fix" aria-label="Suggest a correction to {what}" title="Suggest a correction" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
 {/snippet}
 {#snippet typeLine(source?: string)}
   <p class="muted line" title={source ? `${selectedType}, from ${source}` : selectedType}>{selectedType}</p>
@@ -397,13 +397,34 @@
     line-clamp: 2;
     overflow: hidden;
   }
-  /* A list row's correction link shows on hover, on keyboard focus, or for the Selected Node, so a
-     row is one line otherwise; hidden, it takes no space but stays in the tab order (decision 139). */
-  li:not(:hover, :focus-within, :has(.sel)) > .fix {
+  /* A list row's correction link shows on hover, on keyboard focus, or for the Selected Node
+     (decision 139). */
+  /* In a list row it is a small flag at the row's right edge, laid over the row so showing it never
+     moves anything; it stays in the tab order and shows on keyboard focus (decision 143). */
+  li:has(> .fix) {
+    position: relative;
+    padding-right: 22px;
+  }
+  li > .fix {
     position: absolute;
-    width: 0;
-    height: 0;
+    top: 0;
+    right: 0;
+    width: 20px;
     overflow: hidden;
+    text-decoration: none;
+    font-size: 0;
+  }
+  li > .fix::before {
+    content: "\2691";
+    font-size: 12px;
+  }
+  li > .fix:hover,
+  li > .fix:focus-visible {
+    color: #ffd27a;
+  }
+  /* Faded, not hidden, so screen readers and the keyboard still find it. */
+  li:not(:hover, :focus-within, :has(.sel)) > .fix {
+    opacity: 0;
   }
   /* An Evidence Verse in the Relationship line: a reference that selects it. */
   .ref {
