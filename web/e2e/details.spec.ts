@@ -73,10 +73,10 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   const shared = await y(verse);
   await verse.click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
-  // A Verse's words never vary, so the line shows nothing and keeps its height (decision 141).
+  // The one Relationship line keeps the full words the lists drop (decision 142), at its fixed height.
   const line = panel(page).locator(".relationship");
   await expect(line).toHaveAttribute("title", /^Relationship: named in this verse\./);
-  await expect(line).toHaveText("");
+  await expect(line).toContainText("Relationship: named in this verse");
   await settled();
   expect(await y(verse)).toBe(shared);
 
@@ -138,8 +138,8 @@ test("each fact and link keeps its source in a hover title, not in the text", as
   await expect(panel(page)).not.toContainText("CC BY");
   // A derived Neighbour: both sources, each with its own licence.
   await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
-  // A Theme's words never vary, so only the count shows (decision 141); the title keeps them.
-  await expect(relationship(page)).toHaveText("Relationship: 6 verses Suggest a correction");
+  // The Relationship line keeps the full words (decision 142); the lists show only the count.
+  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Suggest a correction");
   await expect(relationship(page)).toHaveAttribute("title", "Relationship: together in 6 verses. Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
   // Every Neighbour list item too, as the Relationship line says it.
   await expect(panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveAttribute(
