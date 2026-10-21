@@ -89,7 +89,7 @@ The application runs only on the owner's machine. Readers cannot reach it, links
 
 ### First-run tour
 
-- **In M5** (decision 155). Offered once per browser on the first visit (stored with the M3 storage wrapper), skippable, restartable from a "Help: take the tour" link in the footer.
+- **In M5** (decision 155). Offered on the first visit, and again until the reader takes or skips it (stored with the M3 storage wrapper), skippable, restartable from a "Help: take the tour" link in the footer.
 - **Steps as data**, lifted from the prototype's tour (branch `prototype/navigation`, about ten steps: move the camera, search Abraham, select Sarah, select Abraham, open his Themes, select a Theme and read the shared Verses, make Isaac the Focus, pin Abraham, Prev and Next, Clear and Undo clear), extended for M4: open the reader panel, write a note. Each step has a target, an instruction, a check that the reader did it, and a "Do it for me" action that uses the page's own actions. No timings or result copying (that was for the ABC test).
 - **Leaves no trace**: the tour saves the reader's Focus, Your Path, pins, selection, and filters on start and restores them on finish or skip; notes written during the tour are removed unless the reader keeps them.
 - Works in all three views and with the keyboard; respects reduced motion; the tour box never covers the step's target.
