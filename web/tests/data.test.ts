@@ -32,6 +32,42 @@ describe("data loader", () => {
     expect((await data.load(ABRAHAM)).id).toBe(ABRAHAM);
   });
 
+  // A deploy replaces version test1 with test2: test1's files answer 404, and only a read of
+  // index.json past the browser's cache sees test2 (decision 159).
+  function deployable(newVersion: string) {
+    const site = { deployed: false, indexReads: [] as boolean[] };
+    const getJSON = async (url: string, fresh = false) => {
+      if (url === "/index.json") {
+        site.indexReads.push(fresh);
+        return { ...((await readExport(url)) as object), data_version: site.deployed && fresh ? newVersion : "test1" };
+      }
+      if (site.deployed === url.startsWith("/test1/")) throw Object.assign(new Error(`404 ${url}`), { status: 404 });
+      return readExport(url.replace(`/${newVersion}/`, "/test1/"));
+    };
+    return { site, getJSON };
+  }
+
+  it("switches to the new version when a deploy removed the one it was reading, and says so", async () => {
+    const { site, getJSON } = deployable("test2");
+    const updated: string[] = [];
+    const data = await createData(getJSON, "", (v) => updated.push(v));
+    site.deployed = true;
+    const [abraham, sarah] = await Promise.all([data.load(ABRAHAM), data.load("person:sarah_2473")]);
+    expect([abraham.id, sarah.id]).toEqual([ABRAHAM, "person:sarah_2473"]);
+    expect(data.version).toBe("test2");
+    expect(updated).toEqual(["test2"]);
+    expect(site.indexReads).toEqual([false, true]);
+  });
+
+  it("reports a missing file as before when index.json still names the same version", async () => {
+    const { site, getJSON } = deployable("test1");
+    const updated: string[] = [];
+    const data = await createData(getJSON, "", (v) => updated.push(v));
+    site.deployed = true;
+    await expect(data.load(ABRAHAM)).rejects.toThrow("404 /test1/entity/person/abraham_58.json");
+    expect(updated).toEqual([]);
+  });
+
   it("gives an Entity record its Neighbours and Verses as links, by weight then ID", async () => {
     const data = await createData(readExport, "");
     const abraham = await data.load(ABRAHAM);

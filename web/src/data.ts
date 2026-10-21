@@ -3,12 +3,13 @@
 // mixes with a cached old one.
 import { typeOf, type Curated, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
 
-export type GetJSON = (url: string) => Promise<unknown>;
+// fresh: ask the server, past the browser's cache.
+export type GetJSON = (url: string, fresh?: boolean) => Promise<unknown>;
 
-// getJSON in the browser: an HTTP error is a failure too.
-export const fetchJSON: GetJSON = async (url) => {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${r.status} ${url}`);
+// getJSON in the browser: an HTTP error is a failure too, with its status.
+export const fetchJSON: GetJSON = async (url, fresh) => {
+  const r = await fetch(url, fresh ? { cache: "no-cache" } : undefined);
+  if (!r.ok) throw Object.assign(new Error(`${r.status} ${url}`), { status: r.status });
   return r.json();
 };
 
@@ -64,14 +65,50 @@ export type Data = Awaited<ReturnType<typeof createData>>;
 
 const KIN = new Set(["PARENT_OF", "SPOUSE_OF", "SIBLING_OF", "HALF_SIBLING_OF"]);
 
-export async function createData(getJSON: GetJSON, root: string) {
+// onUpdate is told the new data version when the loader switches to it (decision 159).
+export async function createData(getJSON: GetJSON, root: string, onUpdate?: (version: string) => void) {
   // A failed fetch is retried once; a second failure is thrown to the caller and nothing is kept.
-  const get = <T>(url: string) => getJSON(url).catch(() => getJSON(url)) as Promise<T>;
-  const index = await get<{ data_version: string }>(`${root}/index.json`);
-  const base = `${root}/${index.data_version}`;
-  const searchIndex = await get<SearchIndex>(`${base}/search-index.json`);
-  const entities = new Map(searchIndex.entities.map((e) => [e.id, e]));
-  const books = new Map(searchIndex.books.map((b) => [b.number, b]));
+  const read = <T>(url: string) => getJSON(url).catch(() => getJSON(url)) as Promise<T>;
+  let version: string, base: string, searchIndex: SearchIndex;
+  let entities: Map<Id, SearchIndex["entities"][number]>, books: Map<string, SearchIndex["books"][number]>;
+  let built: string, chapters: string[];
+  // Reads a version's search index. Records already loaded stay.
+  async function open(v: string) {
+    searchIndex = await read<SearchIndex>(`${root}/${v}/search-index.json`);
+    [version, base] = [v, `${root}/${v}`];
+    entities = new Map(searchIndex.entities.map((e) => [e.id, e]));
+    books = new Map(searchIndex.books.map((b) => [b.number, b]));
+    built = searchIndex.books.filter((b) => b.chapters.length).map((b) => b.name).join(", ");
+    // The built chapters in Bible order, as the first 5 digits of their Verse Keys.
+    chapters = searchIndex.books.flatMap((b) => b.chapters.map((c) => `${b.number}${String(c).padStart(3, "0")}`));
+  }
+  await open((await read<{ data_version: string }>(`${root}/index.json`)).data_version);
+
+  // A deploy removes the previous version's files (decision 159). On a 404 for one, index.json is
+  // read again past the browser's cache; if it names a new version, the loader switches to it and
+  // asks again. Files that fail together share one switch.
+  let switching: Promise<boolean> | undefined;
+  async function get<T>(url: string): Promise<T> {
+    const was = base;
+    try {
+      return await read<T>(url);
+    } catch (e) {
+      if ((e as { status?: number }).status !== 404 || !url.startsWith(`${was}/`)) throw e;
+      if (base === was) {
+        switching ??= (getJSON(`${root}/index.json`, true) as Promise<{ data_version: string }>)
+          .then(async ({ data_version }) => {
+            if (data_version === version) return false;
+            await open(data_version);
+            onUpdate?.(data_version);
+            return true;
+          })
+          .catch(() => false)
+          .finally(() => (switching = undefined));
+        if (!(await switching)) throw e;
+      }
+      return read<T>(base + url.slice(was.length));
+    }
+  }
   const records = new Map<Id, Rec>();
   const files = new Map<Id, EntityFile>(); // for the detail panel
   const pending = new Map<Id, Promise<Rec>>();
@@ -79,14 +116,10 @@ export async function createData(getJSON: GetJSON, root: string) {
   const reference = (id: Id) => `${books.get(id.slice(0, 2))?.osis ?? "?"} ${+id.slice(2, 5)}:${+id.slice(5)}`;
   // A Verse in a chapter outside the build cannot load (a Cross-reference into another book): its
   // note, or "" for any other node.
-  const built = searchIndex.books.filter((b) => b.chapters.length).map((b) => b.name).join(", ");
   const outside = (id: Id) =>
     typeOf(id) !== "verse" || books.get(id.slice(0, 2))?.chapters.includes(+id.slice(2, 5))
       ? ""
       : `${reference(id)} is outside this build (${built} only).`;
-
-  // The built chapters in Bible order, as the first 5 digits of their Verse Keys.
-  const chapters = searchIndex.books.flatMap((b) => b.chapters.map((c) => `${b.number}${String(c).padStart(3, "0")}`));
 
   const credits = () => get<Credits>(`${base}/credits.json`);
   const chapterFile = (id: Id) => get<ChapterFile>(`${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}.json`);
@@ -185,7 +218,9 @@ export async function createData(getJSON: GetJSON, root: string) {
   }
 
   return {
-    version: index.data_version,
+    get version() {
+      return version;
+    },
     credits,
     load,
     search,
@@ -226,7 +261,9 @@ export async function createData(getJSON: GetJSON, root: string) {
     // A Verse's OSIS book, and whether its chapter is built (the book filter).
     bookOf: (id: Id) => ({ osis: books.get(id.slice(0, 2))?.osis, built: !outside(id) }),
     // The books with chapters in this build, in Bible order.
-    builtBooks: searchIndex.books.filter((b) => b.chapters.length),
+    get builtBooks() {
+      return searchIndex.books.filter((b) => b.chapters.length);
+    },
     // The chapter of a built Verse, for the reader panel.
     async chapter(id: Id): Promise<{ title: string; verses: { key: Id; text: string }[] }> {
       const book = books.get(id.slice(0, 2))!;
