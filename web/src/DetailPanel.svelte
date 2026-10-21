@@ -5,7 +5,7 @@
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
-  import { passes, relation, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import { passes, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import type { Notes } from "./session";
 
   let {
@@ -82,6 +82,8 @@
   // The Relationship is read from the Focus: Isaac is Abraham's son.
   const link = $derived(selected === model.focus ? undefined : data.record(model.focus)?.links.find((l) => l.id === selected));
   const linkWords = $derived(link && relation(link, data.genderOf, plainName(model.focus)));
+  // The words the line shows: none when they never vary for the pair of types (decision 141).
+  const shownWords = $derived(link && relationWords(typeOf(model.focus) as NodeType, link, data.genderOf, plainName(model.focus)).text);
   // The edges that give the words: the Co-mention for "together in N verses", else the others.
   const linkEdges = $derived(link?.edges.filter((e) => (e.edge === "CO_MENTION") === linkWords!.derived) ?? []);
   // A curated Relationship's first Evidence Verse, shown in the Relationship line (decision 135).
@@ -145,7 +147,7 @@
          title only; the credits page lists them all (decision 139). A Verse's own text has no
          shared list below it to hold in place, so an empty line is not kept for it. -->
     <p class="relationship" hidden={!link && !!verseText} title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
-      {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
+      {#if shownWords}<span class="words">Relationship: <b>{shownWords}</b>
           {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
         {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
     </p>
@@ -230,9 +232,10 @@
         <ol aria-labelledby="list-{t}">
           {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
             {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
+            {@const shown = relationWords(list.r.type, l, data.genderOf, plainName(list.r.id)).text}
             {@const kin = isEntity(list.r.id) && isEntity(l.id)}
             <li title={credit(l.edges)}>
-              {@render item(l.id, words, "neighbours")}
+              {@render item(l.id, shown, "neighbours")}
               {@render fix(
                 `the link to ${data.label(l.id)}`,
                 kin ? "relationship" : "verse",

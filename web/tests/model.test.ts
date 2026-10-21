@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, type Action, type Edge, type Link, type NodeType, type Scene, type State } from "../src/model";
+import { afterClear, hiddenNote, initialState, passes, reduce, relation, relationWords, scene, type Action, type Edge, type Link, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -371,7 +371,8 @@ describe("Relationship words on the Focus edges", () => {
         .map((e) => [e.b, e.dashed ? `${e.label} (dashed)` : e.label]),
     );
     // Fixture edges in Abraham's file: Hagar is a curated wife and concubine; Canaan and Genealogy
-    // are only Co-mentions (2 and 6 shared Verses).
+    // are only Co-mentions (2 and 6 shared Verses). A People Group and a Theme show no fixed words
+    // (decision 141).
     expect(words).toMatchObject({
       "person:isaac_616": "son",
       "person:sarah_2473": "wife",
@@ -380,9 +381,9 @@ describe("Relationship words on the Focus edges", () => {
       "person:terah_2841": "father",
       "place:ur_1189": "birthplace",
       "event:65": "took part",
-      "group:genealogy_of_jesus": "member of",
+      "group:genealogy_of_jesus": "",
       "place:canaan_272": "together in 2 verses (dashed)",
-      "theme:genealogy": "together in 6 verses (dashed)",
+      "theme:genealogy": "6 verses (dashed)",
     });
   });
 
@@ -444,6 +445,48 @@ describe("Relationship words on the Focus edges", () => {
     expect(words(undefined, "verse", out("CROSS_REF"))).toBe("cross-reference, 3 votes");
     expect([words(undefined, "verse", inn("MENTIONS")), words(undefined, "person", out("MENTIONS"))]).toEqual(["named in this verse", "named"]);
     expect([words(undefined, "verse", inn("FILED_UNDER")), words(undefined, "theme", out("FILED_UNDER"))]).toEqual(["filed here", "filed under"]);
+  });
+});
+
+describe("Relationship words that never vary for a pair of node types are dropped (decision 141)", () => {
+  const link = (type: NodeType, weight: number, ...edges: Edge[]): Link => ({ id: "n", type, weight, edges });
+  const shown = (owner: NodeType, l: Link, gender?: string) => relationWords(owner, l, () => gender);
+  const co = (n: number): Edge => ({ edge: "CO_MENTION", direction: "both", shared_verses: n });
+  const one = (edge: string, direction: Edge["direction"]): Edge => ({ edge, direction });
+
+  it("shows nothing between a Verse and the Entities it names or is filed under", () => {
+    for (const t of ["person", "place", "event"] as const) {
+      expect(shown("verse", link(t, 1, one("MENTIONS", "out")))).toEqual({ text: "", derived: false });
+      expect(shown(t, link("verse", 1, one("MENTIONS", "in"))).text).toBe("");
+    }
+    expect(shown("verse", link("theme", 1, one("FILED_UNDER", "out"))).text).toBe("");
+    expect(shown("theme", link("verse", 1, one("FILED_UNDER", "in"))).text).toBe("");
+  });
+
+  it("shows only the Votes between two Verses", () => {
+    expect(shown("verse", link("verse", 43, one("CROSS_REF", "out"), one("CROSS_REF", "in")))).toEqual({ text: "43 votes", derived: false });
+    expect(shown("verse", link("verse", 1, one("CROSS_REF", "in"))).text).toBe("1 vote");
+  });
+
+  it("shows nothing between a People Group and its members", () => {
+    expect(shown("group", link("person", 0, one("MEMBER_OF", "in")), "Male").text).toBe("");
+    expect(shown("person", link("group", 0, one("MEMBER_OF", "out"))).text).toBe("");
+  });
+
+  it("shows only the shared Verse count for pairs that only ever link by Co-mention", () => {
+    for (const [owner, t] of [["theme", "person"], ["person", "theme"], ["place", "theme"], ["theme", "event"], ["theme", "theme"], ["place", "place"], ["event", "event"]] as const)
+      expect(shown(owner, link(t, 1, co(18)))).toEqual({ text: "18 verses", derived: true });
+    expect(shown("place", link("place", 1, co(1))).text).toBe("1 verse");
+  });
+
+  it("keeps the words of mixed pairs, Co-mentions included", () => {
+    expect(shown("person", link("person", 1, co(18), one("SIBLING_OF", "both")), "Female").text).toBe("sister");
+    expect(shown("person", link("person", 1, co(18))).text).toBe("together in 18 verses");
+    expect(shown("person", link("event", 1, one("PARTICIPATED_IN", "out"))).text).toBe("took part");
+    expect(shown("event", link("person", 1, co(2))).text).toBe("together in 2 verses");
+    expect(shown("person", link("place", 1, one("BORN_AT", "out"))).text).toBe("birthplace");
+    expect(shown("place", link("event", 1, co(3)))).toEqual({ text: "together in 3 verses", derived: true });
+    expect(shown("event", link("place", 1, one("OCCURRED_AT", "out"))).text).toBe("where it happened");
   });
 });
 

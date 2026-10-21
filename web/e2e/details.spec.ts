@@ -73,7 +73,10 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   const shared = await y(verse);
   await verse.click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
-  await expect(relationship(page)).toContainText("Suggest a correction");
+  // A Verse's words never vary, so the line shows nothing and keeps its height (decision 141).
+  const line = panel(page).locator(".relationship");
+  await expect(line).toHaveAttribute("title", /^Relationship: named in this verse\./);
+  await expect(line).toHaveText("");
   await settled();
   expect(await y(verse)).toBe(shared);
 
@@ -135,7 +138,8 @@ test("each fact and link keeps its source in a hover title, not in the text", as
   await expect(panel(page)).not.toContainText("CC BY");
   // A derived Neighbour: both sources, each with its own licence.
   await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
-  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Suggest a correction");
+  // A Theme's words never vary, so only the count shows (decision 141); the title keeps them.
+  await expect(relationship(page)).toHaveText("Relationship: 6 verses Suggest a correction");
   await expect(relationship(page)).toHaveAttribute("title", "Relationship: together in 6 verses. Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
   // Every Neighbour list item too, as the Relationship line says it.
   await expect(panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveAttribute(
@@ -151,6 +155,10 @@ test("a Verse's Neighbours, Cross-references included, each keep where they came
   await expect(sarah).toHaveAttribute("title", "Theographic, CC BY-SA 4.0");
   // Fixture: Gen 11:29's one Cross-reference, to Ezek 16:3.
   await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem")).toHaveAttribute("title", "OpenBible.info, CC BY 4.0");
+  // Words that never vary for the pair are dropped: a named Person shows none, a Cross-reference
+  // only its Votes (decision 141).
+  await expect(sarah.locator(".item .muted")).toHaveCount(0);
+  await expect(panel(page).getByRole("list", { name: /^Verse/ }).locator(".item .muted")).toHaveText("4 votes");
 });
 
 test("a list row's correction link shows on hover, on keyboard focus, or for the Selected Node; rows are one line otherwise", async ({ page }) => {

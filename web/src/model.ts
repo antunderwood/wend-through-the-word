@@ -140,6 +140,19 @@ export function relation(link: Link, genderOf: (id: Id) => string | undefined, o
   return { text: link.edges.map((e) => e.edge).join(", "), derived: false };
 }
 
+// The words shown on an edge or a panel row, read from an `owner` of this type. Words that never
+// vary for the pair of types are dropped (decision 141): a Verse and an Entity it names or is filed
+// under, and a People Group and its members, show nothing; two Verses show their Votes; pairs that
+// only ever link by Co-mention show the shared Verse count. Hover titles keep `relation`'s words.
+export function relationWords(owner: NodeType, link: Link, genderOf: (id: Id) => string | undefined, of?: string) {
+  const r = relation(link, genderOf, of);
+  const pair = [owner, link.type];
+  if (pair.includes("verse")) return { ...r, text: owner === link.type ? `${link.weight} vote${link.weight === 1 ? "" : "s"}` : "" };
+  if (pair.includes("group")) return { ...r, text: "" };
+  if (pair.includes("theme") || (owner === link.type && owner !== "person")) return { ...r, text: r.text.replace(/^together in /, "") };
+  return r;
+}
+
 export const initialState = (focus: Id): State => ({
   focus,
   selected: focus,
@@ -330,7 +343,7 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
   const edges: SceneEdge[] = [];
   for (const t of TYPES)
     for (const l of ring1[t]) {
-      const r = relation(l, genderOf);
+      const r = relationWords(typeOf(s.focus) as NodeType, l, genderOf);
       edges.push({ a: s.focus, b: l.id, kind: "focus", label: r.text, dashed: r.derived });
     }
   for (const t of TYPES) if (overflow[t].length) edges.push({ a: s.focus, b: `overflow:${t}`, kind: "overflow" });
