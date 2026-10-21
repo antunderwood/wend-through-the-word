@@ -23,23 +23,29 @@ function cacheControl(path: string, res: Response, want: string) {
   if (got !== want) failures.push(`${path}: Cache-Control is ${got}, expected ${want}`);
 }
 
-for (const path of ["/", "/credits", "/?focus=Gen.22.2"]) await status(path, 200);
-// /404 serves the not found page itself, so an unknown path must answer 404 with the same page.
-const notFound = await (await get("/404")).text();
-const unknown = await status("/no-such-page", 404);
-if ((await unknown.text()) !== notFound) failures.push("/no-such-page: not the not found page");
-await status("/node-limit", 404);
+// A site that cannot be reached is one more failure in the list, not a stack trace.
+try {
+  for (const path of ["/", "/credits", "/?focus=Gen.22.2"]) await status(path, 200);
+  // /404 serves the not found page itself, so an unknown path must answer 404 with the same page.
+  const notFound = await (await get("/404")).text();
+  const unknown = await status("/no-such-page", 404);
+  if ((await unknown.text()) !== notFound) failures.push("/no-such-page: not the not found page");
+  await status("/node-limit", 404);
 
-const index = await status("/data/index.json", 200);
-cacheControl("/data/index.json", index, "public, max-age=300");
-const served = (await index.json()).data_version;
-if (served !== expected) failures.push(`/data/index.json: data version is ${served}, expected ${expected}`);
+  const index = await status("/data/index.json", 200);
+  cacheControl("/data/index.json", index, "public, max-age=300");
+  const json = await index.json().catch(() => null);
+  if (!json) failures.push("/data/index.json: not JSON");
+  else if (json.data_version !== expected) failures.push(`/data/index.json: data version is ${json.data_version}, expected ${expected}`);
 
-for (const path of [`/data/${expected}/chapter/Gen/25.json`, `/data/${expected}/entity/person/abraham_58.json`]) {
-  const res = await status(path, 200);
-  cacheControl(path, res, YEAR);
-  const encoding = res.headers.get("content-encoding");
-  if (encoding !== "gzip" && encoding !== "br") failures.push(`${path}: Content-Encoding is ${encoding}, expected gzip or br`);
+  for (const path of [`/data/${expected}/chapter/Gen/25.json`, `/data/${expected}/entity/person/abraham_58.json`]) {
+    const res = await status(path, 200);
+    cacheControl(path, res, YEAR);
+    const encoding = res.headers.get("content-encoding");
+    if (encoding !== "gzip" && encoding !== "br") failures.push(`${path}: Content-Encoding is ${encoding}, expected gzip or br`);
+  }
+} catch (e) {
+  failures.push(`${base}: ${(e as Error & { cause?: Error }).cause?.message ?? (e as Error).message}`);
 }
 
 // Attaching the custom domain must not remove Email Routing's records. Only the live domain has

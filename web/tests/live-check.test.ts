@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { execFile, execFileSync, spawn, type ChildProcess } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { createServer, type Server } from "node:http";
+import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -15,14 +17,20 @@ let url: string;
 let version: string;
 
 // The check's exit code and its output, as the deploy workflow or the owner would see them.
-async function check(expected: string, ...flags: string[]): Promise<{ code: number; output: string }> {
+async function check(base: string, expected: string, ...flags: string[]): Promise<{ code: number; output: string }> {
   try {
-    const { stdout } = await promisify(execFile)("node", ["live-check.ts", url, expected, ...flags], { cwd: web });
+    const { stdout } = await promisify(execFile)("node", ["live-check.ts", base, expected, ...flags], { cwd: web });
     return { code: 0, output: stdout };
   } catch (e) {
     const { code, stdout, stderr } = e as { code: number; stdout: string; stderr: string };
     return { code, output: stdout + stderr };
   }
+}
+
+// A plain Node server on a free local port, and its address.
+async function listen(local: Server): Promise<string> {
+  await new Promise<void>((done) => local.listen(0, "127.0.0.1", done));
+  return `http://127.0.0.1:${(local.address() as AddressInfo).port}`;
 }
 
 describe("live check", () => {
@@ -49,19 +57,39 @@ describe("live check", () => {
   });
 
   it("passes the staged site serving the expected data version", async () => {
-    expect(await check(version)).toEqual({ code: 0, output: expect.stringContaining("passed") });
+    expect(await check(url, version)).toEqual({ code: 0, output: expect.stringContaining("passed") });
   }, 30_000);
 
   it("fails, naming both versions, when the served data version is not the expected one", async () => {
-    const { code, output } = await check("2000-01-01");
+    const { code, output } = await check(url, "2000-01-01");
     expect(code).not.toBe(0);
     expect(output).toContain(`data version is ${version}, expected 2000-01-01`);
   }, 30_000);
 
   it("checks the Email Routing MX records only when asked", async () => {
-    const { code, output } = await check(version, "--email");
+    const { code, output } = await check(url, version, "--email");
     expect(code).not.toBe(0);
     expect(output).toContain("127.0.0.1: no Cloudflare MX records");
+  }, 30_000);
+
+  it("lists a failure, not a stack trace, when the site cannot be reached", async () => {
+    const closed = createServer();
+    const base = await listen(closed);
+    closed.close();
+    const { code, output } = await check(base, version);
+    expect(code).not.toBe(0);
+    expect(output).toMatch(/failed:\n- .*ECONNREFUSED/);
+    expect(output).not.toMatch(/^\s+at /m);
+  }, 30_000);
+
+  it("lists a failure, not a stack trace, when index.json is not JSON", async () => {
+    const html = createServer((_, res) => res.end("<!doctype html><p>Not the site</p>"));
+    const base = await listen(html);
+    const { code, output } = await check(base, version);
+    html.close();
+    expect(code).not.toBe(0);
+    expect(output).toContain("- /data/index.json: not JSON");
+    expect(output).not.toMatch(/^\s+at /m);
   }, 30_000);
 
   it("fails, naming the file, when index.json loses its five minute rule", async () => {
@@ -71,7 +99,7 @@ describe("live check", () => {
     await expect
       .poll(async () => (await fetch(`${url}/data/index.json`)).headers.get("cache-control"), { timeout: 15_000 })
       .not.toBe("public, max-age=300");
-    const { code, output } = await check(version);
+    const { code, output } = await check(url, version);
     expect(code).not.toBe(0);
     expect(output).toMatch(/\/data\/index\.json: Cache-Control is .*, expected public, max-age=300/);
   }, 30_000);
