@@ -26,5 +26,5 @@ export function synthetic(n: number): Scene {
   links.forEach((l, i) => (ring2[l.id] = Array.from({ length: RING2_K }, (_, r) => ({ id: node(i + r + 1), weight: 1 }))));
   const F: Rec = { id: focus, type: "person", links, ring2 };
   const s = initialState(focus);
-  return scene({ ...s, filters: { ...s.filters, k, nodeLimit: n } }, (id) => (id === focus ? F : undefined), () => undefined);
+  return scene({ ...s, filters: { ...s.filters, k, nodeLimit: n } }, (id) => (id === focus ? F : undefined), () => undefined, () => ({ built: true }));
 }

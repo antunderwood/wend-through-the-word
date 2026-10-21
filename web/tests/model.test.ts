@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createData, type Data } from "../src/data";
-import { afterClear, hiddenNote, initialState, reduce, relation, scene, type Action, type Edge, type NodeType, type Scene, type State } from "../src/model";
+import { afterClear, hiddenNote, initialState, passes, reduce, relation, relationWords, scene, type Action, type Edge, type Link, type NodeType, type Scene, type State } from "../src/model";
 import { readExport } from "./fixture";
 
 const ABRAHAM = "person:abraham_58";
@@ -11,7 +11,7 @@ beforeAll(async () => {
   await data.loadWithKin(ABRAHAM);
 });
 
-const draw = (s: State) => scene(s, data.record, data.genderOf);
+const draw = (s: State) => scene(s, data.record, data.genderOf, data.bookOf);
 const ids = (drawn: Scene, role: string) => drawn.nodes.filter((n) => n.role === role).map((n) => n.id);
 const ring1Of = (drawn: Scene, type: string) =>
   drawn.nodes.filter((n) => n.role === "ring1" && n.type === type).sort((a, b) => a.ring1!.pos - b.ring1!.pos).map((n) => n.id);
@@ -371,7 +371,8 @@ describe("Relationship words on the Focus edges", () => {
         .map((e) => [e.b, e.dashed ? `${e.label} (dashed)` : e.label]),
     );
     // Fixture edges in Abraham's file: Hagar is a curated wife and concubine; Canaan and Genealogy
-    // are only Co-mentions (2 and 6 shared Verses).
+    // are only Co-mentions (2 and 6 shared Verses). A People Group and a Theme show no fixed words
+    // (decision 141).
     expect(words).toMatchObject({
       "person:isaac_616": "son",
       "person:sarah_2473": "wife",
@@ -380,9 +381,9 @@ describe("Relationship words on the Focus edges", () => {
       "person:terah_2841": "father",
       "place:ur_1189": "birthplace",
       "event:65": "took part",
-      "group:genealogy_of_jesus": "member of",
+      "group:genealogy_of_jesus": "",
       "place:canaan_272": "together in 2 verses (dashed)",
-      "theme:genealogy": "together in 6 verses (dashed)",
+      "theme:genealogy": "6 verses (dashed)",
     });
   });
 
@@ -447,6 +448,48 @@ describe("Relationship words on the Focus edges", () => {
   });
 });
 
+describe("Relationship words that never vary for a pair of node types are dropped (decision 141)", () => {
+  const link = (type: NodeType, weight: number, ...edges: Edge[]): Link => ({ id: "n", type, weight, edges });
+  const shown = (owner: NodeType, l: Link, gender?: string) => relationWords(owner, l, () => gender);
+  const co = (n: number): Edge => ({ edge: "CO_MENTION", direction: "both", shared_verses: n });
+  const one = (edge: string, direction: Edge["direction"]): Edge => ({ edge, direction });
+
+  it("shows nothing between a Verse and the Entities it names or is filed under", () => {
+    for (const t of ["person", "place", "event"] as const) {
+      expect(shown("verse", link(t, 1, one("MENTIONS", "out")))).toEqual({ text: "", derived: false });
+      expect(shown(t, link("verse", 1, one("MENTIONS", "in"))).text).toBe("");
+    }
+    expect(shown("verse", link("theme", 1, one("FILED_UNDER", "out"))).text).toBe("");
+    expect(shown("theme", link("verse", 1, one("FILED_UNDER", "in"))).text).toBe("");
+  });
+
+  it("shows only the Votes between two Verses", () => {
+    expect(shown("verse", link("verse", 43, one("CROSS_REF", "out"), one("CROSS_REF", "in")))).toEqual({ text: "43 votes", derived: false });
+    expect(shown("verse", link("verse", 1, one("CROSS_REF", "in"))).text).toBe("1 vote");
+  });
+
+  it("shows nothing between a People Group and its members", () => {
+    expect(shown("group", link("person", 0, one("MEMBER_OF", "in")), "Male").text).toBe("");
+    expect(shown("person", link("group", 0, one("MEMBER_OF", "out"))).text).toBe("");
+  });
+
+  it("shows only the shared Verse count for pairs that only ever link by Co-mention", () => {
+    for (const [owner, t] of [["theme", "person"], ["person", "theme"], ["place", "theme"], ["theme", "event"], ["theme", "theme"], ["place", "place"], ["event", "event"]] as const)
+      expect(shown(owner, link(t, 1, co(18)))).toEqual({ text: "18 verses", derived: true });
+    expect(shown("place", link("place", 1, co(1))).text).toBe("1 verse");
+  });
+
+  it("keeps the words of mixed pairs, Co-mentions included", () => {
+    expect(shown("person", link("person", 1, co(18), one("SIBLING_OF", "both")), "Female").text).toBe("sister");
+    expect(shown("person", link("person", 1, co(18))).text).toBe("together in 18 verses");
+    expect(shown("person", link("event", 1, one("PARTICIPATED_IN", "out"))).text).toBe("took part");
+    expect(shown("event", link("person", 1, co(2))).text).toBe("together in 2 verses");
+    expect(shown("person", link("place", 1, one("BORN_AT", "out"))).text).toBe("birthplace");
+    expect(shown("place", link("event", 1, co(3)))).toEqual({ text: "together in 3 verses", derived: true });
+    expect(shown("event", link("place", 1, one("OCCURRED_AT", "out"))).text).toBe("where it happened");
+  });
+});
+
 describe("a Verse as the Focus", () => {
   const GEN_25_5 = "01025005",
     GEN_25_8 = "01025008";
@@ -480,5 +523,73 @@ describe("a Verse as the Focus", () => {
     const via = (drawn: Scene) => drawn.nodes.filter((n) => n.role === "ring2" && n.via === "01025017").map((n) => n.id);
     expect(via(verseFocus(GEN_25_8))).toEqual(["01025007", "05032050", "04020024"]);
     expect(via(verseFocus(GEN_25_8, 3))).toEqual(["01025007", "05032050"]);
+  });
+});
+
+describe("type and book filters", () => {
+  const [ISAAC, GOD, GEN_16_1, GEN_25_8] = ["person:isaac_616", "theme:god", "01016001", "01025008"];
+  beforeAll(() => Promise.all([ISAAC, GOD, GEN_16_1, GEN_25_8].map(data.load)));
+  const act = (s: State, ...actions: Action[]) => actions.reduce((t, a) => reduce(t, a, data.label), s);
+  const hide = (...types: NodeType[]): Action => ({ type: "setFilter", key: "hidden", value: types });
+  const books = (value: State["filters"]["books"]): Action => ({ type: "setFilter", key: "books", value });
+  const roles = (drawn: Scene, type: NodeType) => [...new Set(drawn.nodes.filter((n) => n.type === type).map((n) => n.role))].sort();
+  // Abraham and God (a Theme) pinned, Isaac the Focus, Sarah selected.
+  const isaac = () =>
+    act(initialState(ABRAHAM), { type: "pin", id: ABRAHAM }, { type: "pin", id: GOD }, { type: "focus", id: ISAAC }, { type: "select", id: "person:sarah_2473" });
+
+  it("a hidden type leaves Ring 1, its Overflow Node, Ring 2, pin rings, and Shared Nodes; the Focus and pins stay", () => {
+    const shown = draw(isaac());
+    expect(roles(shown, "theme")).toEqual(["overflow", "pinned", "pinring", "ring1", "ring2"]);
+    expect(shown.nodes.filter((n) => n.shared && n.type === "theme").map((n) => n.id)).toEqual(["theme:blessing"]);
+
+    const s = act(isaac(), hide("theme"));
+    expect(s.selected).toBe("person:sarah_2473");
+    const drawn = draw(s);
+    expect(drawn.nodes.filter((n) => n.type === "theme").map((n) => [n.id, n.role])).toEqual([[GOD, "pinned"]]);
+    expect(ring1Of(drawn, "person")).toEqual(ring1Of(shown, "person"));
+    // A hidden Focus type still shows the Focus.
+    expect(ids(draw(act(initialState(GOD), hide("theme"))), "focus")).toEqual([GOD]);
+  });
+
+  it("a hidden type frees room under the node limit", () => {
+    // Fixture: 99 nodes wanted with Themes, 39 hidden at a limit of 60 (above).
+    const drawn = draw(act(limit(60), hide("theme")));
+    expect([drawn.demand, drawn.hidden]).toEqual([67, 7]);
+  });
+
+  it("the book filter hides only Verses", () => {
+    const shown = draw(initialState(ABRAHAM));
+    const drawn = draw(act(initialState(ABRAHAM), books(["Matt"])));
+    expect(roles(drawn, "verse")).toEqual([]);
+    for (const t of ["person", "place", "event", "group", "theme"] as const) expect(ring1Of(drawn, t)).toEqual(ring1Of(shown, t));
+  });
+
+  it("Verses outside this build leave Ring 1 and Ring 2", () => {
+    // Stand-in for Gen 22:2 and its Cross-references to John, Romans, and Hebrews (Gen 22 is not in
+    // the fixture build): Gen 16:1 has Cross-references to Galatians, Judges, and Luke.
+    expect(ring1Of(draw(initialState(GEN_16_1)), "verse")).toEqual(["48004024", "07013002", "01011030", "01025021", "42001007", "42001036"]);
+    const drawn = draw(act(initialState(GEN_16_1), books("build")));
+    expect(ring1Of(drawn, "verse")).toEqual(["01011030", "01025021", "01016008"]);
+    expect(ids(drawn, "overflow")).not.toContain("overflow:verse");
+    // Gen 25:8's Ring 2 Verses: Deut 32:50 and Num 20:24 (from Gen 25:17's Cross-references) go.
+    const ring2Verses = (d: Scene) => ids(d, "ring2").filter((id) => /^\d+$/.test(id));
+    expect(ring2Verses(draw(initialState(GEN_25_8)))).toContain("05032050");
+    expect(ring2Verses(draw(act(initialState(GEN_25_8), books("build"))))).toEqual([]);
+  });
+
+  it("a chosen book hides Verses of the other books in the build too", () => {
+    // Fixture: Gen 16:1's Cross-references in the build are all in Genesis.
+    expect(ring1Of(draw(act(initialState(GEN_16_1), books(["Gen"]))), "verse")).toEqual(["01011030", "01025021", "01016008"]);
+    expect(ring1Of(draw(act(initialState(GEN_16_1), books(["Matt"]))), "verse")).toEqual([]);
+  });
+
+  it("a chosen book keeps its chapters outside this build; only This build hides them", () => {
+    // Fixture: no link reaches an unbuilt chapter of a built book, so a Cross-reference to Gen 22:2
+    // (Gen 22 is not built) stands in.
+    const gen22: Link = { id: "01022002", type: "verse", weight: 5, edges: [{ edge: "CROSS_REF", direction: "out" }] };
+    const filters = (value: State["filters"]["books"]) => ({ ...initialState(ABRAHAM).filters, books: value });
+    expect(passes(gen22, filters(["Gen"]), data.bookOf)).toBe(true);
+    expect(passes(gen22, filters(["Matt"]), data.bookOf)).toBe(false);
+    expect(passes(gen22, filters("build"), data.bookOf)).toBe(false);
   });
 });

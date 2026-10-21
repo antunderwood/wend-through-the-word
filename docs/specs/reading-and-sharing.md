@@ -20,13 +20,13 @@ A reader can now walk the Genesis graph, but cannot read the Bible text around w
 
 ## Solution
 
-1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, and opens from a "Read" button.
-2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link, curated notes with their Evidence Verses, and "Corrected after review" notes.
+1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself whenever a Verse becomes the Focus, and opens from a "Read" button (decisions 138, 140).
+2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link as a hover title (decision 139), curated notes with their Evidence Verses, and "Corrected after review" notes.
 3. **A filter panel** has node type toggles, the Vote Limit slider with its explanation, a book filter that can hide Verses outside the build, and an animation switch.
 4. **Shareable addresses**: the page address holds the Focus, the Selected Node, the pins, the filters, and the view. Opening it restores them. Back and Forward move between Foci.
 5. **"Suggest a correction"** opens the GitHub issue form with the node IDs, the current value, the data version, and the page address filled in, from a button for the Selected Node and a small link beside each Relationship, fact, and linked Verse.
 6. **Journey notes**: a note on each step of Your Path, kept in the browser, downloadable as a Markdown file.
-7. **A credits page** lists every source, its licence, its link, and the modification notice, reached from a footer link.
+7. **An "About and credits" page** lists every source, its licence, its link, and the modification notice, reached from a footer link; it is the one place the page shows sources and licences (decision 139).
 
 No build change is expected: the export already carries corrections, Evidence Verses, notes, sources, licences, coordinates, Event Years, and credits. If one is needed, it goes through the existing build seam.
 
@@ -34,13 +34,13 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 ### Reader: reading the text
 
-1. As a reader, I want to read the whole BSB chapter of the Selected Verse beside the graph, so that I see each Verse in its context.
-2. As a reader, I want a "Read" button that opens the reader panel at the chapter of the Focus (or of the Selected Node's first linked Verse), so that I can start reading from any node.
-3. As a reader, I want the reader panel to scroll to and highlight the Selected Verse, so that I do not lose my place.
+1. As a reader, I want a Verse's full BSB text in the detail panel under its reference, and the whole chapter in the reader panel beside the graph, which opens by itself when a Verse becomes the Focus (decision 138), so that I see each Verse in its context.
+2. As a reader, I want a "Read" button that opens the reader panel at the chapter of the Focus (or of the Selected Node's first linked Verse), and closing the reader panel to last until the next Verse becomes the Focus (decision 140), so that I can start reading from any node and keep the space when I want it.
+3. As a reader, I want an open reader panel to scroll to and highlight the Selected Verse, while a click on a Verse only selects it and never opens the reader panel, so that I do not lose my place.
 4. As a reader, I want a click on a Verse in the reader panel to select it and a double click to make it the Focus, as in the scene and the lists, so that reading and exploring use one set of rules.
 5. As a reader, I want the Verses in the reader panel that are in the scene marked quietly, so that I can see which ones the graph links.
 6. As a reader, I want previous and next chapter buttons in the reader panel, within the build, so that I can read on.
-7. As a reader, I want the reader panel to use a serif font, large type, and wide spacing (PRD 10.4 page design), so that long reading is comfortable.
+7. As a reader, I want the reader panel to use the app's sans font, large type, and wide spacing (PRD 10.4 page design, decision 137), so that long reading is comfortable.
 8. As a reader, I want to close the reader panel and have the scene use the space, so that I can explore with the whole screen.
 9. As a reader, I want the reader panel to say which translation it is (Berean Standard Bible), so that I know what I am reading.
 
@@ -50,7 +50,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 11. As a reader, I want a long Dictionary Entry folded after its first paragraph with a "Read more" toggle, so that the panel stays short.
 12. As a reader, I want a Person's aliases and gender, a Place's other names and coordinates with their source, and an Event's year labelled "approx., Jones chronology", so that I have the facts the data holds.
 13. As a reader, I want every Verse a node is linked to listed (Mentions and Filed Under), in Bible order, with an "N more" toggle, so that I can read all of them, not only those in Ring 1.
-14. As a reader, I want each fact and link to say where it came from (for example "Theographic, CC BY-SA 4.0"), quietly, so that I can judge it and the licences are honoured.
+14. As a reader, I want each fact and link to keep where it came from (for example "Theographic, CC BY-SA 4.0") in its hover title, with every source and licence listed on the "About and credits" page (decision 139), so that I can judge it, the licences are honoured, and the panel stays uncluttered.
 15. As a reader, I want a curated Relationship (wife, concubine, possibly the same person) to show its note and Evidence Verses, so that I can check the owner's reading.
 16. As a reader, I want a corrected item to say "Corrected after review: gender (Gen 36:24)" with a link to the request when there is one, so that I know the data was changed and why (PRD 10.5 rule 6).
 17. As a reader, I want a Verse outside the build to show its reference and that it is outside the build, as now, and the reader panel to say the same, so that I am never offered text that cannot load.
@@ -77,7 +77,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 ### Reader: correction requests
 
 31. As a reader, I want a "Suggest a correction" button for the Selected Node, so that I can report a data error without leaving the page.
-32. As a reader, I want a small "Suggest a correction" link beside each Relationship, fact, and linked Verse, so that the request is about one specific thing.
+32. As a reader, I want a small "Suggest a correction" link beside the Relationship, and on each fact and list row when I hover it, focus it with the keyboard, or select its node (decision 139), so that the request is about one specific thing and rows stay one line.
 33. As a reader, I want the request form already filled in with the node IDs, what the app shows now, the data version, and the page address, so that I only write the correction and my Evidence Verse.
 34. As a reader, I want to be told before I leave that a request needs at least one Evidence Verse and is published under CC BY-SA 4.0, so that I am not surprised by the form.
 35. As a reader without a GitHub account, I want to know there will be another way to send a request, so that I am not shut out (the email fallback waits for its address).
@@ -95,7 +95,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 ### Reader: credits
 
-44. As a reader, I want a footer link "Data: CC BY-SA 4.0, credits", so that I can find where the data comes from.
+44. As a reader, I want a footer link "About and credits" beside the data licence (decision 139), so that I can find where the data comes from.
 45. As a reader, I want a credits page listing every source with its credit, licence, and link, the modification notice, and a link to the curated tables, so that the licences are met (PRD 5 rule 6, CC BY-SA modification notice).
 
 ### Owner
@@ -123,12 +123,12 @@ No build change is expected: the export already carries corrections, Evidence Ve
 ### Modules
 
 1. **URL state (new, pure).** `read(search: string, known: (id) => boolean) => Partial<State> & { view?, notice? }` and `write(state, view) => string`. Parameters (decision 128): `focus`, `sel`, `pins` (comma-separated IDs), `view` (A, B, or C), `votes` (Vote Limit), `hide` (comma-separated node types turned off), `books` (comma-separated OSIS codes, or `build` for "only books in this build"). Defaults are left out, so Abraham with default filters is the bare address. Unknown IDs and bad values are dropped with a notice. Your Path is not in the address. A Focus change pushes a history entry; everything else replaces the current one; Back and Forward apply the stored Focus as a `focus` action. Document the format in the spec's reference copy and keep it stable.
-2. **Focus Model (changed).** `filters` gains `hidden: NodeType[]` and `books: string[] | "all" | "build"`. A hidden type, and a Verse outside the chosen books, are left out of Ring 1, Overflow counts, Ring 2, pin rings, Shared Nodes, and `passes` (used by the lists). The Focus and Pinned Nodes are never hidden by a filter. Selection is not changed by a filter.
+2. **Focus Model (changed).** `filters` gains `hidden: NodeType[]` and `books: string[] | "all" | "build"`. A hidden type, and a Verse outside the chosen books, are left out of Ring 1, Overflow counts, Ring 2, pin rings, Shared Nodes, and `passes` (used by the Neighbour lists). A chosen book keeps its chapters outside the build; only `build` hides them. The book filter does not apply to the "Together in N verses" lists (decision 136). The Focus and Pinned Nodes are never hidden by a filter. Selection is not changed by a filter. `relationWords(owner, link, genderOf, of?)`, built on `relation`, gives the Relationship words the Neighbour lists, the Relationship line, and the Focus to Selected Node edge show: words that never vary for the pair of node types are dropped, so a Verse and an Entity it names or is filed under, and a People Group and its member, show nothing, two Verses show "N votes", and pairs that only ever link by Co-mention show "N verses" (decision 141). Hover titles keep the full words.
 3. **Data loader (changed).** Adds the chapter of a Verse (for the reader panel), the linked Verses of an Entity in Bible order, an Entity's facts with their sources, and the build's book and chapter list (already used by `outside`).
 4. **Correction link (new, pure).** `correctionLink({ nodeIds, kind, currentValue, dataVersion, pageUrl }) => string` builds the issue form address with the template and the stable field IDs (`kind`, `node_ids`, `current_value`, `data_version`, `page_url`). The repository address comes from `credits.json`'s curated tables link, so it is not repeated in code.
 5. **Journey notes (new).** Notes are a map from node ID to text, kept in browser storage with the M3 storage wrapper (decision 129). Your Path and the Focus are also kept in browser storage, so a reload restores the session; the address still wins when it names a Focus. `notesMarkdown(steps, notes, label, type, link, date) => string` builds the download: a title with the date, then one numbered heading per step, oldest first, ending with the Focus; each with the node's name and type, the note (or nothing), and a link to the page address with that node as the Focus. A step with no note is still listed, so the file reads as the journey.
 6. **Reader panel (new component).** Loads the chapter of the Selected Verse, or of the Focus's first linked Verse when "Read" is pressed on an Entity. Verse numbers are buttons with the same click and double click rules as the lists (two clicks within 400 ms, decision 24).
-7. **Detail panel (changed).** Adds the sections in the Solution, each item with its source and licence in small text, curated items with note and Evidence Verses (decision 75 shape), corrections from an Entity's `corrections` list, and the correction links.
+7. **Detail panel (changed).** Adds the sections in the Solution, each item with its source and licence in its hover title (decision 139), curated items with note and Evidence Verses (decision 75 shape), corrections from an Entity's `corrections` list, and the correction links.
 8. **Filter panel (new component).** Type toggles in the type colours, the Vote Limit slider with the PRD 10.1 text, the book filter, and the animation switch (which, with `prefers-reduced-motion`, turns off the camera flight and growth).
 9. **Credits page (new entry).** A separate page in the front end build, like the node limit page, rendered from `credits.json`.
 
@@ -138,6 +138,29 @@ No build change is expected: the export already carries corrections, Evidence Ve
 - **Correction channel** (decision 131): M4 links to the GitHub issue form only. The mailto fallback (PRD 10.5) is a held ticket until the owner chooses a project-only address (PRD open question 13), before the M5 launch. The page says another way is coming for readers without a GitHub account. While the repository is private (decision 47) the form opens only for the owner; that is accepted until M5.
 - **Notes stay in the browser** (decision 112, PRD 3): no account, no server, no Worker. Deleting all notes asks for confirmation.
 - **Credits page as its own entry** (decision 132): it needs no state from the main page and must load without WebGL.
+
+### Page address format
+
+Stable (decision 128): links shared now must still open after later releases, so a parameter may be added but never renamed, and a value's meaning never changes. Read and written by `web/src/address.ts`.
+
+`/?focus=person:isaac_616&sel=place:gerar_459&pins=person:abraham_58,place:gerar_459&view=B&votes=5&hide=event,theme&books=build`
+
+| Parameter | Value | Default (left out) |
+|---|---|---|
+| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse Key (`01025001`) | `person:abraham_58`, but a shared link always names it (decision 134) |
+| `sel` | The Selected Node: an Entity ID, a Verse Key, or an Overflow Node (`overflow:person`) | the Focus |
+| `pins` | Pinned Nodes, comma-separated, in pin order, at most 3 | none |
+| `view` | `A` (tilted plane), `B` (stacked discs), or `C` (free orbit) | the view kept in this browser, else `A` |
+| `votes` | The Vote Limit, a whole number | `1` |
+| `hide` | Node types turned off, comma-separated, in the order `person`, `place`, `event`, `group`, `theme`, `verse` | none |
+| `books` | The book filter (decision 130): `build` for the Verses in this build, or the OSIS codes (`Gen`) of books in this build, comma-separated, whose Verses show | all books |
+
+- Parameters are written in the order above. Colons and commas in IDs are not escaped; a reader of the address decodes it as usual form encoding, so escaped forms work too.
+- With every default, the page's own address is the bare page: Abraham with default settings. The bare address names no Focus, so it restores the Focus and Your Path kept in this browser (decision 133). A shared link ("Copy link", the notes download, a correction request) always names the Focus (decision 134).
+- A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A missing or unknown Focus opens on the Focus kept in this browser, else Abraham. Unknown parameter names are ignored.
+- A `view` in the address wins over the view kept in this browser.
+- Your Path is not in the address.
+- History: a Focus change pushes a new entry; a selection, pin, view, or filter change replaces the current one. Back and Forward make the entry's Focus the Focus again; the Selected Node, pins, view, and filters stay as they are.
 
 ## Testing Decisions
 

@@ -21,7 +21,7 @@ beforeAll(async () => {
     { type: "pin", id: ABRAHAM },
   ] as const)
     s = reduce(s, a, data.label);
-  drawn = scene(s, data.record, data.genderOf);
+  drawn = scene(s, data.record, data.genderOf, data.bookOf);
 });
 
 describe("the views (decision 114)", () => {

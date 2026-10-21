@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes } from "./scene";
+import { readFile } from "node:fs/promises";
+import { doubleClickLabel, focusIs, nodes, themesOnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -102,9 +103,91 @@ for (const view of ["A", "B", "C"] as const) {
     await expect(heading(page)).toHaveText("Abraham");
     await expect(items).toHaveText(["Isaac", "Abraham"]);
 
-    // A reload remembers the view.
+    // A reload opens the address, so the Focus, the pin, and the view are kept.
     await page.reload();
-    await focusIs(page, ABRAHAM);
+    await focusIs(page, ISAAC);
+    expect((await at(page, ABRAHAM)).role).toBe("pinned");
     await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName(VIEW_NAME[NEXT[view]]);
+  });
+}
+
+// M4: a student opens a shared link, reads Gen 11 on to Gen 36, checks what the data says about
+// Anah, reports it, filters, writes a note, and finds the credits.
+const ANAH = "person:anah_247";
+const reader = (page: Page) => page.getByRole("region", { name: "Reader" });
+const verse = (page: Page, ref: string) => reader(page).getByRole("button", { name: ref, exact: true });
+const persons = (page: Page) => panel(page).getByRole("list", { name: /^Person/ });
+const filters = (page: Page) => page.getByRole("dialog", { name: "Filters" });
+const search = (page: Page) => new URL(page.url()).search;
+
+for (const view of ["A", "B", "C"] as const) {
+  test(`the M4 journey, from a shared link to the credits, in view ${view}`, async ({ page }) => {
+    // A shared link: Abraham the Focus, Gen 11:31 selected, in this view.
+    await page.goto(`/?sel=01011031&view=${view}`);
+    await focusIs(page, ABRAHAM);
+    await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName(VIEW_NAME[view]);
+    await expect(heading(page)).toHaveText("Gen 11:31");
+
+    // Read the chapter, read on to Gen 36 (the fixture builds Gen 11, 16, 25, 26, 36), and make
+    // Gen 36:2 the Focus from the reader panel.
+    await panel(page).getByRole("button", { name: "Read", exact: true }).click();
+    await expect(reader(page).getByRole("heading", { name: "Genesis 11" })).toBeVisible();
+    await expect(verse(page, "Gen 11:31")).toHaveAttribute("aria-current", "true");
+    for (const title of ["Genesis 16", "Genesis 25", "Genesis 26", "Genesis 36"]) {
+      await reader(page).getByRole("button", { name: "Next chapter" }).click();
+      await expect(reader(page).getByRole("heading", { name: title })).toBeVisible();
+    }
+    await verse(page, "Gen 36:2").dblclick();
+    await focusIs(page, "01036002");
+    await expect(heading(page)).toHaveText("Gen 36:2");
+
+    // Oholibamah's Dictionary Entry, then Anah's correction note.
+    await persons(page).getByRole("button", { name: /^Aholibamah/ }).click();
+    await expect(panel(page).getByRole("region", { name: "Easton's Bible Dictionary (1897)" })).toContainText("the daughter of Beeri the Hittite");
+    await persons(page).getByRole("button", { name: /^Anah/ }).click();
+    await expect(panel(page).getByRole("list", { name: "Corrections" })).toContainText("Corrected after review: gender (Gen 36:24)");
+
+    // The correction link for her gender fills the form; the test never follows it.
+    await panel(page).getByRole("list", { name: "Facts" }).getByRole("listitem").filter({ hasText: "Gender" }).hover();
+    await panel(page).getByRole("button", { name: "Suggest a correction to Gender" }).click();
+    const dialog = page.getByRole("dialog", { name: "Suggest a correction" });
+    const fields = new URL((await dialog.getByRole("link", { name: "Open the form on GitHub" }).getAttribute("href"))!).searchParams;
+    expect(fields.get("node_ids")).toBe(ANAH);
+    expect(fields.get("current_value")).toBe("Gender: Male");
+    expect(fields.get("page_url")).toBe(page.url());
+    await dialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(dialog).toBeHidden();
+
+    // Hide Themes; opening the address again keeps them hidden, and turning them on brings them back.
+    await page.getByRole("button", { name: "Filters" }).click();
+    await filters(page).getByRole("checkbox", { name: "Themes" }).uncheck();
+    await expect.poll(() => themesOnScreen(page)).toBe(0);
+    await expect.poll(() => search(page)).toContain("hide=theme");
+    await page.reload();
+    await focusIs(page, "01036002");
+    await expect(heading(page)).toHaveText(/^Anah/);
+    expect(await themesOnScreen(page)).toBe(0);
+    await page.getByRole("button", { name: "Filters" }).click();
+    await filters(page).getByRole("checkbox", { name: "Themes" }).check();
+    await expect.poll(() => themesOnScreen(page)).toBeGreaterThan(0);
+    expect(search(page)).not.toContain("hide=");
+    await page.keyboard.press("Escape");
+
+    // A double click on Anah's name in the scene makes her the Focus; a note on her is kept across a
+    // reload and in the download.
+    await doubleClickLabel(page, "Anah, son of Zibeon (Gen 36:2)", ANAH);
+    await panel(page).getByRole("textbox", { name: /^Note on Anah/ }).fill("A man in Gen 36:24.");
+    await page.reload();
+    await focusIs(page, ANAH);
+    await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName(VIEW_NAME[view]);
+    await expect(panel(page).getByRole("textbox", { name: /^Note on Anah/ })).toHaveValue("A man in Gen 36:24.");
+    const [file] = await Promise.all([page.waitForEvent("download"), panel(page).getByRole("button", { name: "Download notes" }).click()]);
+    const text = await readFile((await file.path())!, "utf8");
+    expect(text.match(/^## .*/gm)).toEqual(["## 1. Abraham", "## 2. Gen 36:2", expect.stringMatching(/^## 3\. Anah/)]);
+    expect(text).toContain("A man in Gen 36:24.");
+
+    // The footer leads to the credits page.
+    await page.getByRole("link", { name: "About and credits" }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("About and credits");
   });
 }

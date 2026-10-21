@@ -41,7 +41,7 @@
         return;
       }
       const s = reduce(initialState(hub), { type: "setFilter", key: "nodeLimit", value: nodeLimit }, data!.label);
-      next = scene(s, data!.record, data!.genderOf);
+      next = scene(s, data!.record, data!.genderOf, data!.bookOf);
     } else next = synthetic(parseInt(choice));
     if (mine !== shown) return;
     onScreen = next;

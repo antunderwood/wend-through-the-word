@@ -1,13 +1,19 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
+  import { read, START, write } from "./address";
+  import CorrectionDialog from "./CorrectionDialog.svelte";
   import { createData, fetchJSON, type Data } from "./data";
+  import DetailPanel from "./DetailPanel.svelte";
+  import Filters from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
-  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type View } from "./model";
+  import Reader from "./Reader.svelte";
+  import { notesMarkdown } from "./notes";
+  import { afterClear, hiddenNote, initialState, reduce, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import Search from "./Search.svelte";
+  import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
   import { store, stored } from "./storage";
 
-  const START = "person:abraham_58";
   const HINT_KEY = "wend.hintDismissed";
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
@@ -25,14 +31,22 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // The nodes whose Neighbours, and whose Verses shared with the Focus, the panel lists. A click in
-  // a list keeps that list, so the second click of a double click lands on the same item.
-  let neighboursOf = $state(START);
-  let versesOf = $state(START);
-  let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
+  // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
+  // becomes the Focus; closing it lasts until then (decision 140).
+  let reading = $state<Id>();
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
+  // Animation turned off in the filter panel is kept in this browser (PRD 10.2 rule 6).
+  const MOTION_STORE = "wend.motion";
+  let motion = $state(stored(MOTION_STORE) !== "off");
+  let correction = $state<CorrectionDialog>();
+
+  function setMotion(on: boolean) {
+    motion = on;
+    store(MOTION_STORE, on ? "on" : "off");
+    graph?.setMotion(on);
+  }
 
   function choose(v: View) {
     view = v;
@@ -50,23 +64,20 @@
     (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-checked="true"]')!.focus();
   }
 
-  const overflowType = (id: Id) => id.slice("overflow:".length) as NodeType;
   const label = (id: Id) =>
     typeOf(id) === "overflow"
-      ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
+      ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[id.slice("overflow:".length) as NodeType]}`
       : data!.label(id);
 
-  // A name for "son of ...": without a hint or a parenthesis ("Benjamin (patriarch)" is "Benjamin").
-  const plainName = (id: Id) => data!.label(id, false).replace(/\s*\(.*\)$/, "");
+  // The page address to share (Copy link, the notes download, a correction): it names the Focus.
+  const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, true);
 
-  function apply(a: Action, from?: "neighbours" | "verses") {
+  function apply(a: Action) {
     let next = reduce(model, a, label);
-    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf);
+    if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf, data!.bookOf);
     if (a.type === "clearPath") next = afterClear(next, onScreen!);
-    if (next.selected !== model.selected || next.focus !== model.focus) {
-      if (from !== "neighbours") neighboursOf = next.selected;
-      if (from !== "verses") versesOf = next.selected;
-    }
+    // The open reader panel follows the Selected Verse.
+    if (reading && next.selected !== model.selected && typeOf(next.selected) === "verse") reading = next.selected;
     model = next;
     graph?.render(onScreen!, model.selected);
   }
@@ -90,7 +101,9 @@
       if (mine === moves) loadFailed(id, e, () => makeFocus(id));
       return;
     }
-    if (mine === moves) apply({ type: "focus", id });
+    if (mine !== moves) return;
+    apply({ type: "focus", id });
+    if (typeOf(id) === "verse") reading = id;
   }
 
   // A pin's record must be loaded before the scene can draw its ring.
@@ -111,10 +124,16 @@
     apply({ type: "pin", id });
   }
 
+  // Opens the reader panel at the Selected Verse, or at an Entity's first Verse in Bible order.
+  async function openReader() {
+    if (typeOf(selected) === "verse") return (reading = selected);
+    const first = (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
+    if (first) reading = first;
+    else model = { ...model, notice: `${label(selected)} has no linked Verses.` };
+  }
+
   const selected = $derived(model.selected);
-  const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
-  // The Relationship is read from the Focus: Isaac is Abraham's son.
-  const link = $derived(selected === model.focus ? undefined : data?.record(model.focus)?.links.find((l) => l.id === selected));
+  const inScene = $derived(new Set(onScreen?.nodes.map((n) => n.id)));
 
   // An unlabelled node names itself on hover; Ring 2 also shows its way to the Focus.
   function showTip(n: SceneNode | null, x: number, y: number) {
@@ -122,29 +141,6 @@
     const text = n?.role === "ring2" ? [n.id, n.via!, model.focus].map(label).join(" → ") : named ? label(n.id) : "";
     tip = text ? { text, x, y } : null;
   }
-
-  // Separate from model so a list is loaded again only when its owner or the Focus changes.
-  const focus = $derived(model.focus);
-  // A Retry in the panel loads both lists again.
-  let retries = $state(0);
-  // Both are read only once data is loaded. An Overflow Node lists all the Focus's Neighbours of its type.
-  const listing = $derived.by(() => {
-    retries;
-    return typeOf(neighboursOf) === "overflow"
-      ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(neighboursOf)], whole: true }))
-      : data!.loadWithKin(neighboursOf).then((r) => ({ r, types: TYPES, whole: false }));
-  });
-  const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
-  // The Verses `versesOf` shares with the Focus, then with each pin.
-  const pins = $derived(model.pins);
-  const sharing = $derived.by(() => {
-    retries;
-    return Promise.all(
-      [...new Set([focus, ...pins])]
-        .filter((o) => o !== versesOf && isEntity(versesOf) && isEntity(o))
-        .map(async (o) => ({ with: o, verses: await data!.shared(o, versesOf) })),
-    );
-  });
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
@@ -165,21 +161,40 @@
     e.preventDefault();
   }
 
+  // Journey notes (decision 129): a note per node ID, kept in this browser with Your Path and the Focus.
+  let notes = $state.raw<Notes>(keptNotes());
+  function setNotes(next: Notes) {
+    notes = next;
+    keepNotes(next);
+  }
+  function downloadNotes() {
+    const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], (id) => shareLink(initialState(id), "A"), new Date());
+    const a = document.createElement("a");
+    a.href = "data:text/markdown;charset=utf-8," + encodeURIComponent(text);
+    a.download = "journey-notes.md";
+    a.click();
+  }
+
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
   }
 
+  // The page opens on the address (decision 128) and the session kept in this browser (decision 133).
   async function start() {
     failure = undefined;
     try {
       data = await createData(fetchJSON, "/data");
-      await data.loadWithKin(START);
+      const asked = await readAddress();
+      const next = restore(asked, keptPath(), data.known, data.label);
+      await Promise.all([data.loadWithKin(next.focus), ...next.pins.map(data.load)]);
+      model = next;
+      if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
       return;
     }
-    onScreen = scene(model, data.record, data.genderOf);
+    onScreen = scene(model, data.record, data.genderOf, data.bookOf);
     try {
       graph = createGraph(host, data.label, data.quote);
     } catch {
@@ -187,6 +202,7 @@
       return;
     }
     graph.setView(view);
+    graph.setMotion(motion);
     graph.onNodeClick((id) => apply({ type: "select", id }));
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
@@ -199,89 +215,80 @@
     start();
     return () => graph?.dispose();
   });
+
+  // The address follows the page: a new Focus is a new history entry, any other change replaces it.
+  let entryFocus = "";
+  $effect(() => {
+    if (!onScreen) return;
+    const url = location.pathname + write(model, view);
+    if (entryFocus && model.focus !== entryFocus) history.pushState(null, "", url);
+    else history.replaceState(null, "", url);
+    entryFocus = model.focus;
+  });
+
+  $effect(() => {
+    if (onScreen) keepPath(model);
+  });
+
+  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis));
+
+  // Back and Forward make the entry's Focus the Focus again.
+  async function moved() {
+    entryFocus = (await readAddress()).focus ?? START;
+    makeFocus(entryFocus);
+  }
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(shareLink(model, view));
+    model = { ...model, notice: "Link copied." };
+  }
 </script>
 
-<svelte:window onkeydown={sceneKey} />
+<svelte:window onkeydown={sceneKey} onpopstate={moved} />
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<div class="stage" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<!-- The scene takes the space between the open panels. -->
+<div class="stage" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   <!-- The chevron points the way the panel will move. -->
   <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
     {collapsed ? "‹" : "›"}
   </button>
-  <aside id="panel" class="panel" class:collapsed class:full={noWebGL} aria-label="Selected Node">
-    {#if noWebGL}
-      <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
-    {/if}
-    <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
-    <section class="selected">
-      <h2>{label(selected)}</h2>
-      <p class="muted">{selectedType}</p>
-      <p>{#if link}Relationship: <b>{relation(link, data.genderOf, plainName(model.focus)).text}</b>{/if}</p>
-      {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
-      <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
-      {#if model.pins.includes(selected)}
-        <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
-      {:else}
-        <button onclick={() => pin(selected)}>Pin</button>
-      {/if}
-      <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-      <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
-      {#await sharing then lists}
-        {#each lists as { with: o, verses }, i (o)}
-          {#if verses.length}
-            <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
-            <ul aria-labelledby="shared-{i}">
-              {#each verses as v (v.key)}
-                <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
-              {/each}
-            </ul>
-          {/if}
-        {/each}
-      {:catch e}
-        {@render failed("the shared verses", e)}
-      {/await}
-    </section>
-    {#await listing then list}
-      {#each list.types as t (t)}
-        {@const all = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters))}
-        {@const key = `${neighboursOf}|${t}`}
-        {@const k = model.filters.k}
-        {#if all.length}
-          <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
-          <ol aria-labelledby="list-{t}">
-            {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
-              <li>{@render item(l.id, relation(l, data.genderOf, plainName(list.r.id)).text, "neighbours")}</li>
-            {/each}
-          </ol>
-          {#if !list.whole && all.length > k}
-            <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
-              <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
-              {opened[key] ? `Show top ${k}` : `${all.length - k} more`}
-            </button>
-          {/if}
-        {/if}
-      {/each}
-    {:catch e}
-      <!-- A Verse outside the build has no lists; the note above says why. -->
-      {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
-    {/await}
-  </aside>
-  <PathBar {model} {label} {apply} />
+  <DetailPanel
+    {data}
+    {model}
+    {label}
+    {apply}
+    {makeFocus}
+    {pin}
+    onread={openReader}
+    suggest={(kind, nodeIds, currentValue) => correction?.suggest(kind, nodeIds, currentValue)}
+    {notes}
+    onnote={(id, text) => setNotes(withNote(notes, id, text))}
+    download={downloadNotes}
+    deleteAll={() => setNotes({})}
+    {noWebGL}
+    {collapsed}
+    reading={!!reading}
+  />
+  <PathBar {model} {label} {apply} {notes} />
+  {#if reading}
+    <div class="drawer">
+      <Reader
+        {data}
+        at={reading}
+        {selected}
+        inScene={(id) => inScene.has(id)}
+        onselect={(id) => apply({ type: "select", id })}
+        onfocus={makeFocus}
+        onmove={(id) => (reading = id)}
+        onclose={() => (reading = undefined)}
+      />
+    </div>
+  {/if}
+  <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
 {/if}
-
-<!-- A click selects and a double click makes the Focus, as in the scene. -->
-{#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
-  <button class="item" class:sel={id === selected} onclick={() => apply({ type: "select", id }, from)} ondblclick={() => makeFocus(id)}>
-    {data!.label(id, false)}
-    {#if words}<span class="muted">{words}</span>{/if}
-  </button>
-{/snippet}
-{#snippet failed(what: string, e: Error)}
-  <p class="muted">Could not load {what}: {e.message} <button onclick={() => retries++}>Retry</button></p>
-{/snippet}
 {#if hint}
   <p class="hint">
     A click selects a node. A double click, Make Focus, or search moves the Focus.
@@ -294,14 +301,31 @@
     <button onclick={failure.retry}>Retry</button>
   </div>
 {/if}
-{#if !noWebGL}
-  <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-    {#each VIEW_KEYS as key (key)}
-      <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-    {/each}
-  </div>
-{/if}
+<div class="controls">
+  {#if !noWebGL}
+    <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+      {#each VIEW_KEYS as key (key)}
+        <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+      {/each}
+    </div>
+  {/if}
+  {#if onScreen && data}
+    <button class="pill" popovertarget="filters">Filters</button>
+    <Filters
+      filters={model.filters}
+      entityFocus={!["verse", "overflow"].includes(typeOf(model.focus))}
+      books={data.builtBooks}
+      {motion}
+      set={(key, value) => apply({ type: "setFilter", key, value })}
+      {setMotion}
+    />
+    <button class="pill" onclick={copyLink}>Copy link</button>
+  {/if}
+</div>
 <p class="notice" role="status">{model.notice}</p>
+<footer>
+  <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {data.version}{/if}</span>
+</footer>
 {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
@@ -314,19 +338,30 @@
     color: #e6e8f0;
     font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
+  /* Below the top strip of the search box and the Your Path bar, like the panel. */
   .stage {
     position: fixed;
-    inset: 0;
+    inset: 56px 0 0;
+  }
+  .stage.reading {
+    left: 412px; /* the reader drawer's right edge (16 + 380) and a gap */
+  }
+  .stage.narrow {
+    right: 340px; /* the panel's width */
   }
   .stage :global(canvas) {
     display: block;
     touch-action: none;
   }
-  .views {
+  .controls {
     position: fixed;
     left: 50%;
     bottom: 16px;
     transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  .views {
     display: flex;
     gap: 2px;
     padding: 3px;
@@ -342,35 +377,25 @@
     font: inherit;
     cursor: pointer;
   }
+  .pill {
+    border-radius: 999px;
+  }
   .views button[aria-checked="true"] {
     background: #2a3048;
     color: #ffd27a;
   }
-  /* The panel starts below the top strip, so it never covers the Your Path bar there. */
-  .panel {
+  /* Under the search box, clear of the notes in the bottom left corner. */
+  .drawer {
     position: fixed;
-    top: 56px;
-    right: 0;
-    bottom: 0;
-    width: 340px;
+    top: 132px;
+    left: 16px;
+    bottom: 92px;
+    width: 380px;
     box-sizing: border-box;
     padding: 12px 16px;
-    overflow-y: auto;
     background: rgba(20, 23, 34, 0.92);
-    border-left: 1px solid #262a3c;
-    transition: transform 0.2s;
-  }
-  .panel.full {
-    left: 0;
-    width: auto;
-  }
-  .panel.collapsed {
-    transform: translateX(100%);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .panel {
-      transition: none;
-    }
+    border: 1px solid #262a3c;
+    border-radius: 8px;
   }
   .chevron {
     position: fixed;
@@ -383,59 +408,6 @@
     font-size: 20px;
     line-height: 1;
   }
-  .selected {
-    height: 300px;
-    overflow-y: auto;
-    border-bottom: 1px solid #262a3c;
-  }
-  .panel h2 {
-    margin: 0;
-    font-size: 17px;
-  }
-  .panel h3 {
-    margin: 14px 0 4px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #9aa0b4;
-  }
-  .panel p {
-    margin: 4px 0;
-    min-height: 1.45em;
-  }
-  .panel ol,
-  .panel ul {
-    margin: 0;
-    padding-left: 22px;
-  }
-  .item {
-    padding: 1px 4px;
-    border: 0;
-    background: none;
-    text-align: left;
-    vertical-align: top; /* a name that wraps keeps its number on the first line */
-  }
-  .item.sel {
-    background: #262a3c;
-  }
-  .item .muted {
-    font-size: 12px;
-  }
-  .panel .verse-text {
-    margin: 0 0 8px 4px;
-    opacity: 0.85;
-  }
-  .more {
-    margin: 4px 0;
-    padding: 1px 8px;
-    border-radius: 999px;
-    font-size: 12px;
-    color: #9aa0b4;
-  }
-  .more[aria-expanded="true"] {
-    color: #ffd27a;
-  }
   .muted {
     color: #9aa0b4;
   }
@@ -447,10 +419,6 @@
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;
-  }
-  button:disabled {
-    opacity: 0.45;
-    cursor: default;
   }
   .hint {
     position: fixed;
@@ -470,7 +438,7 @@
   .trimmed {
     position: fixed;
     left: 16px;
-    bottom: 40px; /* above the notice line */
+    bottom: 64px; /* above the notice line */
     margin: 0;
     font-size: 12px;
     color: #9aa0b4;
@@ -483,9 +451,6 @@
     border: 1px solid #262a3c;
     border-radius: 6px;
     font-size: 12px;
-  }
-  .fallback {
-    color: #ffd27a;
   }
   .failure {
     position: fixed;
@@ -504,8 +469,18 @@
   .notice {
     position: fixed;
     left: 16px;
-    bottom: 16px;
+    bottom: 40px; /* above the footer */
     margin: 0;
     color: #9aa0b4;
+  }
+  footer {
+    position: fixed;
+    left: 16px;
+    bottom: 12px;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  footer a {
+    color: inherit;
   }
 </style>

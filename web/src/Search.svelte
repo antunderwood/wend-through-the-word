@@ -2,11 +2,8 @@
   // Search by name, alias, or verse reference, with a type filter. Choosing a result (a click, or
   // Enter for the first) makes it the Focus at once and closes the list (decision 115).
   import type { Data } from "./data";
-  import { TYPE_COLOUR } from "./graph";
+  import { typeColour as colour } from "./graph";
   import { TYPES, TYPE_NAME, typeOf, type Id, type NodeType } from "./model";
-
-  // The type colour of the scene, so a result reads like its node.
-  const colour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
 
   let { data, onchoose }: { data: Data; onchoose: (id: Id) => void } = $props();
   let query = $state("");
@@ -53,8 +50,10 @@
 </div>
 
 <style>
+  /* Above the reader panel, so the results list is never hidden under it. */
   .search {
     position: fixed;
+    z-index: 5;
     top: 16px;
     left: 16px;
     width: 300px;

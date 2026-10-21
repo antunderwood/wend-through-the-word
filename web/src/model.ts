@@ -26,8 +26,11 @@ export const typeOf = (id: Id): NodeType | "overflow" =>
   /^\d{8}$/.test(id) ? "verse" : (id.slice(0, id.indexOf(":")) as NodeType | "overflow");
 
 // direction "out": the link owner is the source (owner PARENT_OF neighbour, so the neighbour is the
-// child). role on PARENT_OF is the parent's word (father or mother).
-export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number };
+// child). role on PARENT_OF is the parent's word (father or mother). An edge from the export says
+// where it came from; a curated one also has a note, Evidence Verses, and a request (decision 75).
+export type Evidence = { verse_key: Id; label: string };
+export type Curated = { source: string; licence: string; note: string; evidence: Evidence[]; request: string | null };
+export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number } & Partial<Curated>;
 export type Link = { id: Id; type: NodeType; weight: number; edges: Edge[] };
 // A loaded node: links sorted by weight, then ID; ring2 maps a Ring 1 ID to its stored top 10.
 // text is a Verse's BSB text or an Entity's Dictionary Entry.
@@ -40,13 +43,15 @@ export type State = {
   path: Id[]; // every earlier Focus, each once, latest visit last
   pins: Id[]; // at most 3
   cleared: Id[] | null; // what the last clearPath removed, for undoClear
-  filters: { k: number; minVotes: number; nodeLimit: number };
+  // hidden: node types turned off. books: OSIS codes of the books whose Verses show, "build" for
+  // every Verse in this build, or "all" (decision 130).
+  filters: { k: number; minVotes: number; nodeLimit: number; hidden: NodeType[]; books: string[] | "all" | "build" };
   notice: string;
 };
 export type Action =
   | { type: "focus" | "select" | "pin" | "unpin"; id: Id }
   | { type: "step"; dir: -1 | 1 } // Prev and Next along [...path, focus]
-  | { type: "setFilter"; key: keyof State["filters"]; value: number }
+  | { type: "setFilter"; key: keyof State["filters"]; value: State["filters"][keyof State["filters"]] }
   | { type: "clearPath" }
   | { type: "undoClear" };
 export type Role = "focus" | "pinned" | "ring1" | "pinring" | "path" | "ring2" | "overflow";
@@ -77,13 +82,24 @@ export type Scene = {
 };
 
 export const RING2_K = 3; // Ring 2 nodes per Ring 1 node
+export const MAX_PINS = 3;
 const SCENE_PATH = 5,
-  PIN_K = 3,
-  MAX_PINS = 3;
+  PIN_K = 3;
 const isCrossRef = (l: Link) => l.edges.some((e) => e.edge === "CROSS_REF");
-export const passes = (l: Link, f: State["filters"]) => !isCrossRef(l) || l.weight >= f.minVotes;
+// bookOf(id) gives a Verse's OSIS book, and whether its chapter is in this build.
+export type BookOf = (id: Id) => { osis?: string; built: boolean };
+// A node the type or book filter hides; the book filter applies to Verses only (decision 130).
+// Only "build" hides unbuilt chapters; a chosen book keeps them.
+const hides = (id: Id, f: State["filters"], bookOf: BookOf) => {
+  const t = typeOf(id) as NodeType;
+  if (f.hidden.includes(t)) return true;
+  if (t !== "verse" || f.books === "all") return false;
+  const { osis, built } = bookOf(id);
+  return f.books === "build" ? !built : !f.books.includes(osis!);
+};
+export const passes = (l: Link, f: State["filters"], bookOf: BookOf) => !hides(l.id, f, bookOf) && (!isCrossRef(l) || l.weight >= f.minVotes);
 // A Ring 2 entry is a Cross-reference when both ends are Verses; its weight is then Votes.
-const passesRing2 = (parent: Id, c: { id: Id; weight: number }, f: State["filters"]) =>
+const passesVotes = (parent: Id, c: { id: Id; weight: number }, f: State["filters"]) =>
   !(typeOf(parent) === "verse" && typeOf(c.id) === "verse") || c.weight >= f.minVotes;
 
 // The words on an edge, read from the node that owns the link list towards the Neighbour.
@@ -124,13 +140,26 @@ export function relation(link: Link, genderOf: (id: Id) => string | undefined, o
   return { text: link.edges.map((e) => e.edge).join(", "), derived: false };
 }
 
+// The words shown on an edge or a panel row, read from an `owner` of this type. Words that never
+// vary for the pair of types are dropped (decision 141): a Verse and an Entity it names or is filed
+// under, and a People Group and its members, show nothing; two Verses show their Votes; pairs that
+// only ever link by Co-mention show the shared Verse count. Hover titles keep `relation`'s words.
+export function relationWords(owner: NodeType, link: Link, genderOf: (id: Id) => string | undefined, of?: string) {
+  const r = relation(link, genderOf, of);
+  const pair = [owner, link.type];
+  if (pair.includes("verse")) return { ...r, text: owner === link.type ? `${link.weight} vote${link.weight === 1 ? "" : "s"}` : "" };
+  if (pair.includes("group")) return { ...r, text: "" };
+  if (pair.includes("theme") || (owner === link.type && owner !== "person")) return { ...r, text: r.text.replace(/^together in /, "") };
+  return r;
+}
+
 export const initialState = (focus: Id): State => ({
   focus,
   selected: focus,
   path: [],
   pins: [],
   cleared: null,
-  filters: { k: 6, minVotes: 1, nodeLimit: 500 },
+  filters: { k: 6, minVotes: 1, nodeLimit: 500, hidden: [], books: "all" },
   notice: "",
 });
 
@@ -183,8 +212,9 @@ export const hiddenNote = (drawn: Scene) => (drawn.hidden ? `${drawn.hidden} nod
 export const afterClear = (s: State, drawn: Scene): State =>
   s.cleared?.includes(s.selected) && !drawn.nodes.some((n) => n.id === s.selected) ? { ...s, selected: s.focus } : s;
 
-// record(id) gives a loaded record; the Focus and every pin must be loaded.
-export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined): Scene {
+// record(id) gives a loaded record; the Focus and every pin must be loaded. The type and book
+// filters never hide the Focus or a pin.
+export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (id: Id) => string | undefined, bookOf: BookOf): Scene {
   const f = s.filters,
     F = record(s.focus)!;
   const roles = new Map<Id, Set<Role>>();
@@ -198,15 +228,15 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
   pathShown.forEach((id) => tag(id, "path"));
 
   // The top K of each type, after filters, by weight then ID (decision 94). Links are pre-sorted.
-  const topK = (R: Rec, t: NodeType, k: number) => R.links.filter((l) => l.type === t && l.id !== R.id && passes(l, f)).slice(0, k);
+  const topK = (R: Rec, t: NodeType, k: number) => R.links.filter((l) => l.type === t && l.id !== R.id && passes(l, f, bookOf)).slice(0, k);
 
   let hiddenVotes = 0;
   const ring1 = {} as Record<NodeType, Link[]>,
     overflow = {} as Record<NodeType, Link[]>,
     ring1Meta = new Map<Id, SceneNode["ring1"]>();
   TYPES.forEach((t, sector) => {
-    const all = F.links.filter((l) => l.type === t && l.id !== s.focus);
-    const ok = all.filter((l) => passes(l, f));
+    const all = F.links.filter((l) => l.type === t && l.id !== s.focus && !hides(l.id, f, bookOf));
+    const ok = all.filter((l) => passes(l, f, bookOf));
     hiddenVotes += all.length - ok.length;
     ring1[t] = ok.slice(0, f.k);
     overflow[t] = ok.slice(f.k);
@@ -236,7 +266,8 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
       let rank = 0;
       for (const c of F.ring2[r.id] ?? []) {
         if (rank === RING2_K) break;
-        if (!passesRing2(r.id, c, f)) {
+        if (hides(c.id, f, bookOf)) continue;
+        if (!passesVotes(r.id, c, f)) {
           hiddenVotes++;
           continue;
         }
@@ -312,7 +343,7 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
   const edges: SceneEdge[] = [];
   for (const t of TYPES)
     for (const l of ring1[t]) {
-      const r = relation(l, genderOf);
+      const r = relationWords(typeOf(s.focus) as NodeType, l, genderOf);
       edges.push({ a: s.focus, b: l.id, kind: "focus", label: r.text, dashed: r.derived });
     }
   for (const t of TYPES) if (overflow[t].length) edges.push({ a: s.focus, b: `overflow:${t}`, kind: "overflow" });

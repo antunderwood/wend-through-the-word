@@ -29,6 +29,8 @@ export const TYPE_COLOUR: Record<NodeType, number> = {
   theme: 0xe0869b,
   verse: 0xa9b1c6,
 };
+// The type colour as CSS, so a search result or a filter reads like its node.
+export const typeColour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
 const STYLE: Record<Role, { size: number; opacity: number; labelled: boolean }> = {
   focus: { size: 4.2, opacity: 1, labelled: true },
   ring1: { size: 2.0, opacity: 0.95, labelled: true },
@@ -179,7 +181,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     crowded = true;
   }
   resize();
-  window.addEventListener("resize", resize);
+  // The page's panels change the scene's size as well as the window.
+  const sized = new ResizeObserver(resize);
+  sized.observe(host);
 
   function useView(v: ViewModule) {
     controls?.dispose();
@@ -234,7 +238,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   }
 
   // A Focus change: the camera glides by the same shift as the centre, new nodes grow out of the
-  // clicked node, and the old scene fades. Under reduced motion all of it happens at once.
+  // clicked node, and the old scene fades. Under reduced motion, or with animation turned off in
+  // the filter panel, all of it happens at once.
+  let motion = true;
   let move: { t0: number; from: THREE.Vector3; camera: THREE.Vector3[]; target: THREE.Vector3[]; deco: THREE.Vector3[]; old: THREE.Group } | null = null;
   function endMove() {
     if (!move) return;
@@ -263,7 +269,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       deco: [centre, next],
       old,
     };
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
+    if (!motion || matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
     else step(move.t0);
   }
   const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
@@ -591,6 +597,9 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       useView(VIEWS[key]);
       draw();
     },
+    setMotion(on: boolean) {
+      motion = on;
+    },
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),
     onNodeDoubleClick: (f: (id: Id) => void) => handlers.double.push(f),
     onHover: (f: (n: SceneNode | null, x: number, y: number) => void) => handlers.hover.push(f),
@@ -604,7 +613,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     },
     dispose() {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
+      sized.disconnect();
       endMove();
       clear();
       selRing.traverse((c) => c instanceof THREE.Sprite && c.material.dispose());

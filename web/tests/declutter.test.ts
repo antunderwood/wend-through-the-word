@@ -34,7 +34,7 @@ describe("the order names are placed in (decision 124)", () => {
       { type: "focus", id: ISAAC },
     ] as const)
       s = reduce(s, a, data.label);
-    drawn = scene(s, data.record, data.genderOf);
+    drawn = scene(s, data.record, data.genderOf, data.bookOf);
   });
   // The labelled nodes, most important first, as role and rank (place in its sector, or in its pin's ring).
   const order = (selected: string) =>

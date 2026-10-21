@@ -1,7 +1,7 @@
 // The data loader: reads the static export. getJSON(url) is injected (fetch in the browser, files
 // in tests). Reads index.json first, then only files under its data_version, so a new build never
 // mixes with a cached old one.
-import { typeOf, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
+import { typeOf, type Curated, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
 
 export type GetJSON = (url: string) => Promise<unknown>;
 
@@ -17,16 +17,45 @@ type SearchIndex = {
   books: { number: string; osis: string; name: string; chapters: number[] }[];
 };
 export type Hit = { id: Id; hint: string };
-type EntityFile = {
+type Sourced = { source: string; licence: string };
+export type Fact = Sourced & { name: string; value: string };
+// A "Corrected after review" item (decision 75): the field, its upstream value, and the fix.
+export type Correction = Curated & { field: string; was: string; value: string };
+type EntityFile = Sourced & {
   name?: string;
   title?: string;
+  aliases?: string[];
   gender?: string;
-  dictionary_entry?: { text: string };
+  event_year?: number;
+  lat?: number;
+  lon?: number;
+  coord_source?: string;
+  dictionary_entry?: Sourced & { text: string };
+  corrections?: Correction[];
   neighbours: Link[];
-  verses: { key: string; edge: string; direction: Edge["direction"]; weight: number }[];
+  verses: (Sourced & { key: string; edge: string; direction: Edge["direction"]; weight: number })[];
   ring2: Rec["ring2"];
 };
-type Mention = { id: Id; edge: string; weight: number };
+// credits.json, for the detail panel and the credits page.
+export type Credits = {
+  licence: string;
+  licence_link: string;
+  modified: string;
+  curated_tables: string;
+  sources: (Sourced & { name: string; credit: string; licence_link: string | null; link: string; bibliography?: string })[];
+};
+// The credits page reads only index.json and credits.json (decision 132), not the search index.
+export async function readCredits(getJSON: GetJSON, root: string) {
+  const { data_version } = (await getJSON(`${root}/index.json`)) as { data_version: string };
+  return { version: data_version, credits: (await getJSON(`${root}/${data_version}/credits.json`)) as Credits };
+}
+// A Place's coord_source, as credits.json names it. A "Curated" point is not there: it has the
+// licence of the data itself.
+const POINT_SOURCE: Record<string, string> = { OpenBible: "OpenBible.info Bible Geocoding Data", Pleiades: "Pleiades", Wikidata: "Wikidata", GeoNames: "GeoNames" };
+// Theographic's years are astronomical: 0 is 1 BC.
+const year = (y: number) => (y > 0 ? `AD ${y}` : `${1 - y} BC`);
+const degrees = (x: number, plus: string, minus: string) => `${+Math.abs(x).toFixed(4)}° ${x < 0 ? minus : plus}`;
+type Mention = Sourced & { id: Id; edge: string; weight: number };
 type ChapterFile = {
   verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[] }[];
 };
@@ -44,6 +73,7 @@ export async function createData(getJSON: GetJSON, root: string) {
   const entities = new Map(searchIndex.entities.map((e) => [e.id, e]));
   const books = new Map(searchIndex.books.map((b) => [b.number, b]));
   const records = new Map<Id, Rec>();
+  const files = new Map<Id, EntityFile>(); // for the detail panel
   const pending = new Map<Id, Promise<Rec>>();
 
   const reference = (id: Id) => `${books.get(id.slice(0, 2))?.osis ?? "?"} ${+id.slice(2, 5)}:${+id.slice(5)}`;
@@ -55,6 +85,14 @@ export async function createData(getJSON: GetJSON, root: string) {
       ? ""
       : `${reference(id)} is outside this build (${built} only).`;
 
+  // The built chapters in Bible order, as the first 5 digits of their Verse Keys.
+  const chapters = searchIndex.books.flatMap((b) => b.chapters.map((c) => `${b.number}${String(c).padStart(3, "0")}`));
+
+  const credits = () => get<Credits>(`${base}/credits.json`);
+  const chapterFile = (id: Id) => get<ChapterFile>(`${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}.json`);
+  // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
+  const known = (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id));
+
   const byWeight =(a: Link, b: Link) => b.weight - a.weight || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
   async function fetchRecord(id: Id): Promise<Rec> {
@@ -62,10 +100,16 @@ export async function createData(getJSON: GetJSON, root: string) {
     if (type === "verse") return fetchVerse(id);
     if (type === "overflow") throw new Error(`No record for ${id}`);
     const d = await get<EntityFile>(`${base}/entity/${type}/${id.slice(type.length + 1)}.json`);
+    files.set(id, d);
     const links = [
       ...d.neighbours,
       // Entity to Verse: the weight is the number of other Entities in the Verse.
-      ...d.verses.map((v) => ({ id: v.key, type: "verse" as const, weight: v.weight, edges: [{ edge: v.edge, direction: v.direction }] })),
+      ...d.verses.map((v) => ({
+        id: v.key,
+        type: "verse" as const,
+        weight: v.weight,
+        edges: [{ edge: v.edge, direction: v.direction, source: v.source, licence: v.licence }],
+      })),
     ];
     return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender, text: d.dictionary_entry?.text };
   }
@@ -75,14 +119,14 @@ export async function createData(getJSON: GetJSON, root: string) {
   async function fetchVerse(id: Id): Promise<Rec> {
     if (outside(id)) throw new Error(outside(id));
     const chapter = `${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}`;
-    const [c, side] = await Promise.all([get<ChapterFile>(`${chapter}.json`), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
+    const [c, side] = await Promise.all([chapterFile(id), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
     const v = c.verses.find((x) => x.key === id);
     if (!v) throw new Error(`No verse ${id} in ${chapter}.json`);
     const named = [...v.mentions, ...v.filed_under].map((mention) => ({
       id: mention.id,
       type: typeOf(mention.id) as NodeType,
       weight: mention.weight,
-      edges: [{ edge: mention.edge, direction: "out" as const }],
+      edges: [{ edge: mention.edge, direction: "out" as const, source: mention.source, licence: mention.licence }],
     }));
     return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb };
   }
@@ -136,6 +180,8 @@ export async function createData(getJSON: GetJSON, root: string) {
   }
 
   return {
+    version: index.data_version,
+    credits,
     load,
     search,
     // Family words (son or daughter, husband or wife) follow the relative's gender, which only the
@@ -154,7 +200,42 @@ export async function createData(getJSON: GetJSON, root: string) {
       const keys = rb.links.filter((l) => l.type === "verse" && mine.has(l.id)).map((l) => l.id).sort();
       return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
     },
+    // What the export holds about an Entity beyond its links, each part with its source and licence.
+    async details(id: Id) {
+      await load(id);
+      const d = files.get(id)!;
+      const own = { source: d.source, licence: d.licence };
+      const facts: Fact[] = [];
+      if (d.aliases?.length) facts.push({ name: typeOf(id) === "place" ? "Other names" : "Also called", value: d.aliases.join(", "), ...own });
+      if (d.gender) facts.push({ name: "Gender", value: d.gender, ...own });
+      if (d.event_year !== undefined) facts.push({ name: "Event Year", value: `${year(d.event_year)} (approx., Jones chronology)`, ...own });
+      if (d.lat !== undefined && d.lon !== undefined) {
+        const c = await credits();
+        const source = POINT_SOURCE[d.coord_source!] ?? d.coord_source!;
+        const licence = c.sources.find((s) => s.name === source)?.licence ?? c.licence;
+        facts.push({ name: "Coordinates", value: `${degrees(d.lat, "N", "S")}, ${degrees(d.lon, "E", "W")}`, source, licence });
+      }
+      return { ...own, facts, entry: d.dictionary_entry, corrections: d.corrections ?? [] };
+    },
     outside,
+    // A Verse's OSIS book, and whether its chapter is built (the book filter).
+    bookOf: (id: Id) => ({ osis: books.get(id.slice(0, 2))?.osis, built: !outside(id) }),
+    // The books with chapters in this build, in Bible order.
+    builtBooks: searchIndex.books.filter((b) => b.chapters.length),
+    // The chapter of a built Verse, for the reader panel.
+    async chapter(id: Id): Promise<{ title: string; verses: { key: Id; text: string }[] }> {
+      const book = books.get(id.slice(0, 2))!;
+      const c = await chapterFile(id);
+      return { title: `${book.name} ${+id.slice(2, 5)}`, verses: c.verses.map((v) => ({ key: v.key, text: v.text_bsb ?? "" })) };
+    },
+    // The first Verse of the built chapter after (dir 1) or before (dir -1) a Verse's own; none at the ends.
+    nextChapter(id: Id, dir: -1 | 1): Id | undefined {
+      const c = chapters[chapters.indexOf(id.slice(0, 5)) + dir];
+      return c && `${c}001`;
+    },
+    known,
+    // known, and a Verse's number is in its chapter: reads the chapter (for an address from outside).
+    exists: async (id: Id) => known(id) && (typeOf(id) !== "verse" || (await chapterFile(id)).verses.some((v) => v.key === id)),
     record: (id: Id) => records.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until
