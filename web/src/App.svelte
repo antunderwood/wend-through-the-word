@@ -1,21 +1,20 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
   import { read, START, write } from "./address";
-  import { correctionLink, type Request } from "./correction";
+  import CorrectionDialog from "./CorrectionDialog.svelte";
   import { createData, fetchJSON, type Data } from "./data";
+  import DetailPanel from "./DetailPanel.svelte";
   import Filters from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
-  import NoteBox from "./NoteBox.svelte";
   import { notesMarkdown } from "./notes";
-  import { afterClear, hiddenNote, initialState, passes, reduce, relation, scene, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
+  import { afterClear, hiddenNote, initialState, reduce, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import Search from "./Search.svelte";
+  import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
   import { store, stored } from "./storage";
 
   const HINT_KEY = "wend.hintDismissed";
-  const NOTES_KEY = "wend.notes";
-  const JOURNEY_KEY = "wend.journey";
 
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
   const VIEW_KEYS = Object.keys(VIEWS) as View[];
@@ -32,12 +31,6 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // The nodes whose Neighbours, and whose Verses shared with the Focus, the panel lists. A click in
-  // a list keeps that list, so the second click of a double click lands on the same item.
-  let neighboursOf = $state(START);
-  let versesOf = $state(START);
-  let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
-  let selectedBox = $state<HTMLElement>();
   // The Verse the reader panel is open at; undefined when it is closed.
   let reading = $state<Id>();
   const storedView = stored(VIEW_STORE);
@@ -46,6 +39,7 @@
   // Animation turned off in the filter panel is kept in this browser (PRD 10.2 rule 6).
   const MOTION_STORE = "wend.motion";
   let motion = $state(stored(MOTION_STORE) !== "off");
+  let correction = $state<CorrectionDialog>();
 
   function setMotion(on: boolean) {
     motion = on;
@@ -69,30 +63,20 @@
     (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-checked="true"]')!.focus();
   }
 
-  const overflowType = (id: Id) => id.slice("overflow:".length) as NodeType;
   const label = (id: Id) =>
     typeOf(id) === "overflow"
-      ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[overflowType(id)]}`
+      ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[id.slice("overflow:".length) as NodeType]}`
       : data!.label(id);
 
-  // A name for "son of ...": without a hint or a parenthesis ("Benjamin (patriarch)" is "Benjamin").
-  const plainName = (id: Id) => data!.label(id, false).replace(/\s*\(.*\)$/, "");
   // The page address to share (Copy link, the notes download, a correction): it names the Focus.
   const shareLink = (s: State, v: View) => location.origin + location.pathname + write(s, v, true);
 
-  function apply(a: Action, from?: "neighbours" | "verses") {
+  function apply(a: Action) {
     let next = reduce(model, a, label);
     if (next.focus !== model.focus || next.path !== model.path || next.filters !== model.filters || next.pins !== model.pins) onScreen = scene(next, data!.record, data!.genderOf, data!.bookOf);
     if (a.type === "clearPath") next = afterClear(next, onScreen!);
-    if (next.selected !== model.selected || next.focus !== model.focus) {
-      if (from !== "neighbours") neighboursOf = next.selected;
-      if (from !== "verses") {
-        versesOf = next.selected;
-        selectedBox?.scrollTo(0, 0); // read from the name down, not from where a long entry was left
-      }
-      // The open reader panel follows the Selected Verse.
-      if (reading && typeOf(next.selected) === "verse") reading = next.selected;
-    }
+    // The open reader panel follows the Selected Verse.
+    if (reading && next.selected !== model.selected && typeOf(next.selected) === "verse") reading = next.selected;
     model = next;
     graph?.render(onScreen!, model.selected);
   }
@@ -147,25 +131,6 @@
 
   const selected = $derived(model.selected);
   const inScene = $derived(new Set(onScreen?.nodes.map((n) => n.id)));
-  const selectedType = $derived(typeOf(selected) === "overflow" ? "Overflow Node" : TYPE_NAME[typeOf(selected) as NodeType]);
-  // The Relationship is read from the Focus: Isaac is Abraham's son.
-  const link = $derived(selected === model.focus ? undefined : data?.record(model.focus)?.links.find((l) => l.id === selected));
-  const linkWords = $derived(link && relation(link, data!.genderOf, plainName(model.focus)));
-  // The edges that give the words: the Co-mention for "together in N verses", else the others.
-  const linkEdges = $derived(link?.edges.filter((e) => (e.edge === "CO_MENTION") === linkWords!.derived) ?? []);
-  // A curated Relationship's first Evidence Verse, shown in the Relationship line (decision 135).
-  const evidence = $derived(linkEdges.find((e) => e.evidence?.length)?.evidence![0].verse_key);
-
-  // "Theographic, CC BY-SA 4.0"; a derived link has two sources, each with its own licence.
-  function credit(edges: { source?: string; licence?: string }[]) {
-    const each = edges.flatMap((e) => {
-      const licences = e.licence?.split("; ") ?? [];
-      return e.source?.split("; ").map((s, i) => `${s}, ${licences[i]}`) ?? [];
-    });
-    return [...new Set(each)].join("; ");
-  }
-  // Evidence Verses by reference, "Gen 36:24", as the rest of the page names Verses.
-  const cited = (evidence: Evidence[]) => evidence.map((v) => data!.label(v.verse_key)).join(", ");
 
   // An unlabelled node names itself on hover; Ring 2 also shows its way to the Focus.
   function showTip(n: SceneNode | null, x: number, y: number) {
@@ -173,34 +138,6 @@
     const text = n?.role === "ring2" ? [n.id, n.via!, model.focus].map(label).join(" → ") : named ? label(n.id) : "";
     tip = text ? { text, x, y } : null;
   }
-
-  // Separate from model so a list is loaded again only when its owner or the Focus changes.
-  const focus = $derived(model.focus);
-  // A Retry in the panel loads both lists again.
-  let retries = $state(0);
-  // Both are read only once data is loaded. An Overflow Node lists all the Focus's Neighbours of its type.
-  const listing = $derived.by(() => {
-    retries;
-    return typeOf(neighboursOf) === "overflow"
-      ? data!.loadWithKin(focus).then((r) => ({ r, types: [overflowType(neighboursOf)], whole: true }))
-      : data!.loadWithKin(neighboursOf).then((r) => ({ r, types: TYPES, whole: false }));
-  });
-  const isEntity = (id: Id) => !["verse", "overflow"].includes(typeOf(id));
-  // The Verses `versesOf` shares with the Focus, then with each pin.
-  const pins = $derived(model.pins);
-  const sharing = $derived.by(() => {
-    retries;
-    return Promise.all(
-      [...new Set([focus, ...pins])]
-        .filter((o) => o !== versesOf && isEntity(versesOf) && isEntity(o))
-        .map(async (o) => ({ with: o, verses: await data!.shared(o, versesOf) })),
-    );
-  });
-  // The facts, corrections, and Dictionary Entry of the Selected Node, when it is an Entity.
-  const details = $derived.by(() => {
-    retries;
-    return isEntity(selected) ? data!.details(selected) : undefined;
-  });
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
@@ -222,15 +159,10 @@
   }
 
   // Journey notes (decision 129): a note per node ID, kept in this browser with Your Path and the Focus.
-  let notes = $state.raw<Record<Id, string>>(JSON.parse(stored(NOTES_KEY) ?? "{}"));
-  function keepNotes(next: Record<Id, string>) {
+  let notes = $state.raw<Notes>(keptNotes());
+  function setNotes(next: Notes) {
     notes = next;
-    store(NOTES_KEY, JSON.stringify(next));
-  }
-  // An emptied note is removed, so its step is no longer marked.
-  function writeNote(id: Id, text: string) {
-    const { [id]: _, ...rest } = notes;
-    keepNotes(text ? { ...rest, [id]: text } : rest);
+    keepNotes(next);
   }
   function downloadNotes() {
     const text = notesMarkdown([...model.path, model.focus], notes, data!.label, (id) => TYPE_NAME[typeOf(id) as NodeType], (id) => shareLink(initialState(id), "A"), new Date());
@@ -245,22 +177,15 @@
     store(HINT_KEY, "1");
   }
 
-  // The page opens on the address (decision 128): a missing or unknown Focus is Abraham.
+  // The page opens on the address (decision 128) and the session kept in this browser (decision 133).
   async function start() {
     failure = undefined;
     try {
       data = await createData(fetchJSON, "/data");
       const asked = await readAddress();
-      // Your Path and the Focus kept in this browser, less any node a newer build no longer has.
-      const kept: { focus: Id; path: Id[] } | null = JSON.parse(stored(JOURNEY_KEY) ?? "null");
-      let journey = { ...initialState(kept && data.known(kept.focus) ? kept.focus : START), path: kept?.path.filter(data.known) ?? [] };
-      // The address wins when it names a Focus; the kept Focus then joins Your Path, as on any move.
-      if (asked.focus) journey = reduce(journey, { type: "focus", id: asked.focus }, data.label);
-      const focus = journey.focus,
-        pins = asked.pins ?? [];
-      await Promise.all([data.loadWithKin(focus), ...pins.map(data.load)]);
-      model = { ...journey, selected: asked.selected ?? focus, pins, filters: { ...model.filters, ...asked.filters }, notice: asked.notice ?? "" };
-      neighboursOf = versesOf = model.selected;
+      const next = restore(asked, keptPath(), data.known, data.label);
+      await Promise.all([data.loadWithKin(next.focus), ...next.pins.map(data.load)]);
+      model = next;
       if (asked.view) view = asked.view; // the address wins over the view kept in this browser
     } catch (e) {
       failure = { message: `Could not load the data: ${(e as Error).message}`, retry: start };
@@ -299,7 +224,7 @@
   });
 
   $effect(() => {
-    if (onScreen) store(JOURNEY_KEY, JSON.stringify({ focus: model.focus, path: model.path }));
+    if (onScreen) keepPath(model);
   });
 
   const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis));
@@ -308,22 +233,6 @@
   async function moved() {
     entryFocus = (await readAddress()).focus ?? START;
     makeFocus(entryFocus);
-  }
-
-  // "Suggest a correction" (decision 131): the issue form's address, shown after a warning about
-  // what a request needs. The page address in it is the shareable one.
-  let asking = $state<string>();
-  let warning: HTMLDialogElement;
-  async function suggest(kind: Request["kind"], nodeIds: Id[], currentValue: string) {
-    try {
-      const pageUrl = shareLink(model, view);
-      asking = correctionLink((await data!.credits()).curated_tables, { kind, nodeIds, currentValue, dataVersion: data!.version, pageUrl });
-    } catch (e) {
-      model = { ...model, notice: `Could not open the correction form: ${(e as Error).message}` };
-      return;
-    }
-    await tick();
-    warning.showModal();
   }
 
   async function copyLink() {
@@ -343,135 +252,23 @@
   <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
     {collapsed ? "‹" : "›"}
   </button>
-  <aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node">
-    {#if noWebGL}
-      <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
-    {/if}
-    <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
-    <section class="selected" bind:this={selectedBox}>
-      <!-- The name, the type line, and the Relationship line have fixed heights, so the shared Verses
-           below never move between the two clicks of a double click; a long text is cut, and whole
-           in its title. -->
-      <h2 class="line" title={label(selected)}>{label(selected)}</h2>
-      {#await details}{@render typeLine(selectedType)}{:then d}{@render typeLine(d ? `${selectedType}, from ${credit([d])}` : selectedType)}{:catch}{@render typeLine(selectedType)}{/await}
-      <!-- Each item (Relationship, fact, linked Verse) ends with its source; anything else about
-           that item goes after it. -->
-      <p class="relationship" title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
-        {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
-            {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
-          <span class="sourced"><small class="source line">{credit(linkEdges)}</small>
-            {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}</span>{/if}
-      </p>
-      {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
-      <button onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
-      {#if model.pins.includes(selected)}
-        <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
-      {:else}
-        <button onclick={() => pin(selected)}>Pin</button>
-      {/if}
-      <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-      <button onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
-      <button onclick={openReader} disabled={typeOf(selected) === "overflow"}>Read</button>
-      <button onclick={() => suggest(typeOf(selected) === "verse" ? "verse" : "fact", [selected], `${selectedType}: ${label(selected)}`)} disabled={typeOf(selected) === "overflow"}>
-        Suggest a correction
-      </button>
-      {#await sharing then lists}
-        {#each lists as { with: o, verses }, i (o)}
-          {#if verses.length}
-            <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
-            <ul aria-labelledby="shared-{i}">
-              {#each verses as v (v.key)}
-                <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
-              {/each}
-            </ul>
-          {/if}
-        {/each}
-      {:catch e}
-        {@render failed("the shared verses", e)}
-      {/await}
-      <!-- Below the shared Verses, whose list must not move between the two clicks of a double
-           click: the journey note and what the Selected Node's own data says, which a click on a
-           shared Verse removes. -->
-      {#if selected === model.focus || model.path.includes(selected)}
-        <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => writeNote(selected, t)} download={downloadNotes} deleteAll={() => keepNotes({})} />
-      {/if}
-      {#each linkEdges.filter((e) => e.note) as e, i (i)}
-        <p class="note">Note on the Relationship: {e.note} Evidence: {cited(e.evidence!)}.{@render request(e.request)}</p>
-      {/each}
-      {#await details then d}
-        {#if d?.facts.length}
-          <ul class="facts" aria-label="Facts">
-            {#each d.facts as f (f.name)}
-              <li><span class="muted">{f.name}</span> {f.value} <small class="source">{credit([f])}</small> {@render fix(f.name, "fact", [selected], `${f.name}: ${f.value}`)}</li>
-            {/each}
-          </ul>
-        {/if}
-        {#if d?.corrections.length}
-          <ul class="facts" aria-label="Corrections">
-            {#each d.corrections as c, i (i)}
-              <li>Corrected after review: {c.field} ({cited(c.evidence)}). <span class="muted">{c.note}</span>{@render request(c.request)} <small class="source">{credit([c])}</small></li>
-            {/each}
-          </ul>
-        {/if}
-        {#if d?.entry}
-          {@const [first, ...rest] = d.entry.text.split(/\n\s*\n\s*/)}
-          {@const key = `${selected}|entry`}
-          <section class="entry" aria-labelledby="entry">
-            <h3 id="entry">{d.entry.source}</h3>
-            {#each opened[key] ? [first, ...rest] : [first] as paragraph, i (i)}<p>{paragraph}</p>{/each}
-            {#if rest.length}
-              <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>{opened[key] ? "Read less" : "Read more"}</button>
-            {/if}
-            <small class="source">{d.entry.licence}</small>
-          </section>
-        {/if}
-      {:catch e}
-        {@render failed("the details", e)}
-      {/await}
-    </section>
-    {#await listing then list}
-      <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
-           and a correction link on a quiet line below it; a link between two Entities is a
-           Relationship, sent as the Relationship line sends it. -->
-      {#each list.types as t (t)}
-        {@const linked = t === "verse" && isEntity(list.r.id)}
-        {@const found = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters, data!.bookOf))}
-        {@const all = linked ? found.sort((a, b) => (a.id < b.id ? -1 : 1)) : found}
-        {@const key = `${neighboursOf}|${t}`}
-        {@const k = model.filters.k}
-        {#if all.length}
-          <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
-          <ol aria-labelledby="list-{t}">
-            {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
-              {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
-              {@const kin = isEntity(list.r.id) && isEntity(l.id)}
-              <li>
-                {@render item(l.id, words, "neighbours")}
-                <span class="about">
-                  <small class="source">{credit(l.edges)}</small>
-                  {@render fix(
-                    `the link to ${data.label(l.id)}`,
-                    kin ? "relationship" : "verse",
-                    [list.r.id, l.id],
-                    kin ? `${plainName(l.id)}: ${words}` : `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`,
-                  )}
-                </span>
-              </li>
-            {/each}
-          </ol>
-          {#if !list.whole && all.length > k}
-            <button class="more" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
-              <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
-              {opened[key] ? `Show ${linked ? "first" : "top"} ${k}` : `${all.length - k} more`}
-            </button>
-          {/if}
-        {/if}
-      {/each}
-    {:catch e}
-      <!-- A Verse outside the build has no lists; the note above says why. -->
-      {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
-    {/await}
-  </aside>
+  <DetailPanel
+    {data}
+    {model}
+    {label}
+    {apply}
+    {makeFocus}
+    {pin}
+    onread={openReader}
+    suggest={(kind, nodeIds, currentValue) => correction?.suggest(kind, nodeIds, currentValue)}
+    {notes}
+    onnote={(id, text) => setNotes(withNote(notes, id, text))}
+    download={downloadNotes}
+    deleteAll={() => setNotes({})}
+    {noWebGL}
+    {collapsed}
+    reading={!!reading}
+  />
   <PathBar {model} {label} {apply} {notes} />
   {#if reading}
     <div class="drawer">
@@ -487,28 +284,8 @@
       />
     </div>
   {/if}
+  <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
 {/if}
-
-<!-- A click selects and a double click makes the Focus, as in the scene. -->
-{#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
-  <button class="item" class:sel={id === selected} onclick={() => apply({ type: "select", id }, from)} ondblclick={() => makeFocus(id)}>
-    {data!.label(id, false)}
-    {#if words}<span class="muted">{words}</span>{/if}
-  </button>
-{/snippet}
-<!-- A small link that opens the correction form for one item. -->
-{#snippet fix(what: string, kind: Request["kind"], nodeIds: Id[], currentValue: string)}
-  <button class="fix" aria-label="Suggest a correction to {what}" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
-{/snippet}
-{#snippet typeLine(text: string)}
-  <p class="muted line" title={text}>{text}</p>
-{/snippet}
-{#snippet request(url?: string | null)}
-  {#if url}{" "}<a href={url} target="_blank" rel="noopener">Request #{url.slice(url.lastIndexOf("/") + 1)}</a>{/if}
-{/snippet}
-{#snippet failed(what: string, e: Error)}
-  <p class="muted">Could not load {what}: {e.message} <button onclick={() => retries++}>Retry</button></p>
-{/snippet}
 {#if hint}
   <p class="hint">
     A click selects a node. A double click, Make Focus, or search moves the Focus.
@@ -533,7 +310,7 @@
     <button class="pill" popovertarget="filters">Filters</button>
     <Filters
       filters={model.filters}
-      entityFocus={isEntity(model.focus)}
+      entityFocus={!["verse", "overflow"].includes(typeOf(model.focus))}
       books={data.builtBooks}
       {motion}
       set={(key, value) => apply({ type: "setFilter", key, value })}
@@ -542,13 +319,6 @@
     <button class="pill" onclick={copyLink}>Copy link</button>
   {/if}
 </div>
-<dialog class="warning" bind:this={warning} aria-labelledby="warning">
-  <h2 id="warning">Suggest a correction</h2>
-  <p>The form is on GitHub. A request needs at least one Evidence Verse, and is published under CC BY-SA 4.0.</p>
-  <p class="muted">For readers without a GitHub account, another way to send a request is coming.</p>
-  <a href={asking} target="_blank" rel="noopener" onclick={() => warning.close()}>Open the form on GitHub</a>
-  <button onclick={() => warning.close()}>Cancel</button>
-</dialog>
 <p class="notice" role="status">{model.notice}</p>
 <footer>
   <a href="/credits.html">Data: CC BY-SA 4.0, credits</a>{#if data}<span class="muted">. Data version {data.version}</span>{/if}
@@ -611,38 +381,6 @@
     background: #2a3048;
     color: #ffd27a;
   }
-  /* The panel starts below the top strip, so it never covers the Your Path bar there. */
-  .panel {
-    position: fixed;
-    top: 56px;
-    right: 0;
-    bottom: 0;
-    width: 340px;
-    box-sizing: border-box;
-    padding: 12px 16px;
-    overflow-y: auto;
-    background: rgba(20, 23, 34, 0.92);
-    border-left: 1px solid #262a3c;
-    transition: transform 0.2s;
-  }
-  /* Below the search box and the hint, and right of the reader drawer when it is open. */
-  .panel.full {
-    top: 132px;
-    left: 0;
-    width: auto;
-    bottom: 92px; /* above the footer, the notes, and the controls, as the reader drawer */
-  }
-  .panel.full.reading {
-    left: 412px;
-  }
-  .panel.collapsed {
-    transform: translateX(100%);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .panel {
-      transition: none;
-    }
-  }
   /* Under the search box, clear of the notes in the bottom left corner. */
   .drawer {
     position: fixed;
@@ -667,146 +405,8 @@
     font-size: 20px;
     line-height: 1;
   }
-  .selected {
-    height: 55%;
-    overflow-y: auto;
-    border-bottom: 1px solid #262a3c;
-  }
-  .panel h2 {
-    margin: 0;
-    font-size: 17px;
-  }
-  .panel h3 {
-    margin: 14px 0 4px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #9aa0b4;
-  }
-  .panel p {
-    margin: 4px 0;
-    min-height: 1.45em;
-  }
-  .panel ol,
-  .panel ul {
-    margin: 0;
-    padding-left: 22px;
-  }
-  .item {
-    padding: 1px 4px;
-    border: 0;
-    background: none;
-    text-align: left;
-    vertical-align: top; /* a name that wraps keeps its number on the first line */
-  }
-  .item.sel {
-    background: #262a3c;
-  }
-  .item .muted {
-    font-size: 12px;
-  }
-  .panel .verse-text {
-    margin: 0 0 8px 4px;
-    opacity: 0.85;
-  }
-  .more {
-    margin: 4px 0;
-    padding: 1px 8px;
-    border-radius: 999px;
-    font-size: 12px;
-    color: #9aa0b4;
-  }
-  .more[aria-expanded="true"] {
-    color: #ffd27a;
-  }
   .muted {
     color: #9aa0b4;
-  }
-  /* Where a fact or link came from: quiet, after the item. */
-  .source {
-    font-size: 11px;
-    color: #7a8098;
-  }
-  /* One line, cut with an ellipsis. */
-  .line {
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  /* Three lines whether or not there is a Relationship: two for the words, then the source and its
-     link. */
-  .panel .relationship {
-    height: 4.35em;
-    overflow: hidden;
-  }
-  .words {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow: hidden;
-  }
-  .sourced {
-    display: flex;
-    gap: 6px;
-    align-items: baseline;
-  }
-  .sourced .fix {
-    flex: none;
-  }
-  /* A list item's source and correction link: a quiet line under its name. */
-  .about {
-    display: block;
-    margin: 0 0 4px 4px;
-    line-height: 1.2;
-  }
-  /* An Evidence Verse in the Relationship line: a reference that selects it. */
-  .ref {
-    padding: 0;
-    border: 0;
-    background: none;
-    color: #ffd27a;
-  }
-  .fix {
-    padding: 0;
-    border: 0;
-    background: none;
-    font-size: 11px;
-    color: #9aa0b4;
-    text-decoration: underline;
-  }
-  .warning {
-    max-width: 360px;
-    padding: 16px 20px;
-    background: #161a28;
-    color: inherit;
-    border: 1px solid #3a4060;
-    border-radius: 8px;
-  }
-  .warning h2 {
-    margin: 0 0 8px;
-    font-size: 17px;
-  }
-  .warning a {
-    margin-right: 12px;
-    color: #ffd27a;
-  }
-  .panel .facts {
-    margin: 8px 0;
-    padding: 0;
-    list-style: none;
-  }
-  .panel .note {
-    font-size: 13px;
-    color: #c8cde0;
-  }
-  .panel a {
-    color: #ffd27a;
-  }
-  .entry p {
-    min-height: 0;
   }
   button {
     font: inherit;
@@ -816,10 +416,6 @@
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;
-  }
-  button:disabled {
-    opacity: 0.45;
-    cursor: default;
   }
   .hint {
     position: fixed;
@@ -852,9 +448,6 @@
     border: 1px solid #262a3c;
     border-radius: 6px;
     font-size: 12px;
-  }
-  .fallback {
-    color: #ffd27a;
   }
   .failure {
     position: fixed;
