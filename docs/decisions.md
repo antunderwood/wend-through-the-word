@@ -281,6 +281,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 156. **The node limit test page is not deployed (owner).** It stays available locally with the preview. Reason: it is an owner tool.
 157. **Cache rules.** Versioned data files and the page's hashed files: one year, immutable; `/data/index.json`: five minutes; HTML pages: revalidate every time. Reason: PRD 8.5 rule 6; versioned paths make long caching safe, and the short `index.json` cache lets a new release reach readers within minutes.
 
+## 2026-10-21: M5 review decisions
+
+158. **The deploy runs when the GitHub release is published, not on the tag push (owner).** A rollback is a manual run of the deploy workflow with an earlier tag. Amends decision 152. Reason: the release command pushes the tag before it uploads the data asset, so a workflow started by the tag could look for a zip that is not there yet.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
