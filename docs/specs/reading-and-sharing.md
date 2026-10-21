@@ -20,7 +20,7 @@ A reader can now walk the Genesis graph, but cannot read the Bible text around w
 
 ## Solution
 
-1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself whenever a Verse becomes the Focus, and opens from a "Read" button (decisions 138, 140).
+1. **A reader panel** on the left, under the search box, shows the BSB text of a chapter. A click on a Verse selects it, a double click makes it the Focus. It follows the Selected Verse, opens by itself whenever a Verse becomes the Focus or the page opens on an address whose Focus is a Verse, and opens from a "Read" button (decisions 138, 140, 147).
 2. **The full detail panel** adds the Dictionary Entry (named as Easton's), aliases, gender, Event Year ("approx., Jones chronology"), Place coordinates with their source, all linked Verses, the source and licence of each fact and link as a hover title (decision 139), curated notes with their Evidence Verses, and "Corrected after review" notes.
 3. **A filter panel** has node type toggles, the Vote Limit slider with its explanation, a book filter that can hide Verses outside the build, and an animation switch.
 4. **Shareable addresses**: the page address holds the Focus, the Selected Node, the pins, the filters, and the view. Opening it restores them. Back and Forward move between Foci.
@@ -34,7 +34,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 
 ### Reader: reading the text
 
-1. As a reader, I want a Verse's full BSB text in the detail panel under its reference, and the whole chapter in the reader panel beside the graph, which opens by itself when a Verse becomes the Focus (decision 138), so that I see each Verse in its context.
+1. As a reader, I want a Verse's full BSB text in the detail panel under its reference, and the whole chapter in the reader panel beside the graph, which opens by itself when a Verse becomes the Focus or a link to a Verse opens (decisions 138, 147), so that I see each Verse in its context.
 2. As a reader, I want a "Read" button that opens the reader panel at the chapter of the Focus (or of the Selected Node's first linked Verse), and closing the reader panel to last until the next Verse becomes the Focus (decision 140), so that I can start reading from any node and keep the space when I want it.
 3. As a reader, I want an open reader panel to scroll to and highlight the Selected Verse, while a click on a Verse only selects it and never opens the reader panel, so that I do not lose my place.
 4. As a reader, I want a click on a Verse in the reader panel to select it and a double click to make it the Focus, as in the scene and the lists, so that reading and exploring use one set of rules.

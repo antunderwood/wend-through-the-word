@@ -101,13 +101,25 @@ test("closing the reader panel lasts until the next Verse becomes the Focus", as
   await searchVerse(page, "Gen 16:1", "01016001");
   await page.getByRole("button", { name: "Close reader" }).click();
   await expect(reader(page)).toHaveCount(0);
-  // A reload keeps it closed: only a move of the Focus opens it.
-  await page.reload();
-  await focusIs(page, "01016001");
-  await expect(reader(page)).toHaveCount(0);
   // The next Verse Focus opens it again (decision 140).
   await searchVerse(page, "Gen 11:31", "01011031");
   await expect(reader(page).getByRole("heading", { name: "Genesis 11" })).toBeVisible();
+  // So does a reload of an address whose Focus is a Verse (decision 147).
+  await page.getByRole("button", { name: "Close reader" }).click();
+  await page.reload();
+  await focusIs(page, "01011031");
+  await expect(reader(page).getByRole("heading", { name: "Genesis 11" })).toBeVisible();
+});
+
+test("a shared address whose Focus is a Verse opens the reader at its chapter", async ({ page }) => {
+  await page.goto("/?focus=01016001");
+  await focusIs(page, "01016001");
+  await expect(reader(page).getByRole("heading", { name: "Genesis 16" })).toBeVisible();
+  await expect(verse(page, "Gen 16:1")).toHaveAttribute("aria-current", "true");
+  // An Entity Focus leaves it closed.
+  await page.goto("/?focus=" + ABRAHAM);
+  await focusIs(page, ABRAHAM);
+  await expect(reader(page)).toHaveCount(0);
 });
 
 test("search results show above the open reader panel", async ({ page }) => {

@@ -261,6 +261,10 @@ Numbers start at 56, because ticket #4 records decision 55.
 
 146. **The ABC test is over and the prototype site is gone (owner, 2026-10-20).** The Worker `wend-nav-prototype` was deleted, so wend-nav-prototype.email2ants.workers.dev no longer answers. The prototype stays on the branch `prototype/navigation`. Closes decision 113.
 
+## 2026-10-21: Owner answers
+
+147. **A shared address whose Focus is a Verse opens the reader panel at its chapter (owner).** A reload of such an address does the same; an address that names no Focus, or an Entity Focus, leaves the reader panel closed. Amends decision 140, which opened it only on moves of the Focus. Reason: a link to a Verse should land with its chapter open.
+
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
 **Context.** The dataset is released under CC BY-SA 4.0, because Theographic is CC BY-SA. Some OpenBible.info geocoding data comes from OpenStreetMap, which uses ODbL 1.0. Both licences are share-alike. Neither one lists the other as compatible. A dataset derived from both cannot meet both licences. The ODbL parts are 51 locations with `coordinates_source.type` "osm" and all precise and local geometry. The build also drops 11 points from a commercial source, whose licence is not stated (61 locations in all; one is in both groups).
