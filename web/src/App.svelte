@@ -423,6 +423,7 @@
   .stage {
     position: fixed;
     inset: 56px 0 0;
+    touch-action: none; /* a touch on the scene or a name moves the camera, never the page */
   }
   .stage.reading {
     left: 412px; /* the reader drawer's right edge (16 + 380) and a gap */
@@ -432,7 +433,6 @@
   }
   .stage :global(canvas) {
     display: block;
-    touch-action: none;
   }
   .controls {
     position: fixed;
