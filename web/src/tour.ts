@@ -10,6 +10,8 @@ export type TourPage = {
   readonly data: Data;
   readonly model: State;
   readonly view: View;
+  // A coarse pointer (touch) has no wheel to scroll.
+  readonly coarse: boolean;
   readonly reading: Id | undefined;
   readonly notes: Notes;
   apply(a: Action): void;
@@ -49,15 +51,15 @@ async function drawn(find: () => Element | null | undefined) {
 }
 
 const CAMERA: Record<View, string> = {
-  A: "In the tilted plane, drag to pan and scroll or pinch to zoom.",
-  B: "In the stacked discs, drag to spin the scene around its centre and scroll or pinch to zoom.",
-  C: "In the free orbit, drag to turn the scene any way and scroll or pinch to zoom.",
+  A: "In the tilted plane, drag to pan",
+  B: "In the stacked discs, drag to spin the scene around its centre",
+  C: "In the free orbit, drag to turn the scene any way",
 };
 
 export const STEPS: Step[] = [
   {
     title: "Move the camera",
-    text: (p) => `The tour starts at John 1:1 with an empty Your Path and no pins. Your own Path, pins, and notes are set aside and come back when the tour ends. ${CAMERA[p.view]} Try it on the scene.`,
+    text: (p) => `The tour starts at John 1:1 with an empty Your Path and no pins. Your own Path, pins, and notes are set aside and come back when the tour ends. ${CAMERA[p.view]} and ${p.coarse ? "" : "scroll or "}pinch to zoom. Try it on the scene.`,
     target: (p) => label(p.model.focus),
     check: (_, at) => at.moved,
     act: () => one('[data-tour="scene"] canvas')!.dispatchEvent(new WheelEvent("wheel", { deltaY: -240, bubbles: true, cancelable: true, clientX: innerWidth / 2, clientY: innerHeight / 2 })),

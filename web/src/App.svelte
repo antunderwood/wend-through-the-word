@@ -46,7 +46,7 @@
   let sheetTab = $state(stored(TAB_STORE) === "reader" ? "reader" : "details");
   function chooseTab(t: string) {
     sheetTab = t;
-    store(TAB_STORE, t);
+    if (!touring) store(TAB_STORE, t);
   }
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
@@ -221,12 +221,13 @@
 
   // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
   // runs. While it runs nothing is kept in this browser and the address is replaced, not pushed; when
-  // it ends, the reader's state comes back and a note written in it goes unless the reader keeps it.
+  // it ends, the reader's state comes back (on a phone the sheet's tab too) and a note written in it
+  // goes unless the reader keeps it.
   const TOUR_KEY = "wend.tourOffered";
   let tour = $state<"offer" | "on">();
   const touring = $derived(tour === "on");
   let tours = $state(0); // each start draws a new tour box
-  let saved: { model: State; reading?: Id; notes: Notes } | undefined;
+  let saved: { model: State; reading?: Id; notes: Notes; tab: string } | undefined;
   const tourPage: TourPage = {
     get data() {
       return data!;
@@ -236,6 +237,9 @@
     },
     get view() {
       return shown;
+    },
+    get coarse() {
+      return screen.coarse;
     },
     get reading() {
       return reading;
@@ -260,7 +264,7 @@
   async function startTour() {
     store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
-    if (!touring) saved = { model, reading, notes };
+    if (!touring) saved = { model, reading, notes, tab: sheetTab };
     tour = "on";
     tours++;
     reading = undefined;
@@ -272,6 +276,7 @@
       if (keep) keepNotes(notes);
       else notes = saved!.notes;
       reading = saved!.reading;
+      sheetTab = saved!.tab;
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
