@@ -83,6 +83,7 @@ test("Your Path is one row that scrolls sideways, with Clear at its end, and a t
   // Seven Foci by search: Abraham, then six more.
   const search = page.getByRole("searchbox", { name: "Search" });
   for (const name of ["Sarah", "Hagar", "Isaac", "Jacob", "Lot", "Nahor"]) {
+    await page.getByRole("button", { name: "Search" }).tap();
     await search.fill(name);
     await page.getByRole("list", { name: "Search results" }).getByRole("button").first().tap();
     await expect(page.getByRole("tabpanel", { name: "Details" }).getByRole("heading", { level: 2 })).toHaveText(new RegExp(`^${name}`));
