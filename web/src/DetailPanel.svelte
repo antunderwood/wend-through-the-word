@@ -58,6 +58,8 @@
   const paged = <T,>(key: string, rows: T[]) => rows.slice(0, pages[key] ?? PAGE);
 
   const selected = $derived(model.selected);
+  // A phone, or a phone on its side: the Selected Node's section is too short to hold its actions.
+  const compact = $derived(screen.phone || screen.short);
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
 
@@ -158,7 +160,7 @@
         {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
     </p>
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
-    {#if !screen.phone}{@render actions()}{/if}
+    {#if !compact}{@render actions()}{/if}
     {#await sharing then lists}
       {#each lists as { with: o, verses }, i (o)}
         {#if verses.length}
@@ -213,7 +215,7 @@
       {@render failed("the details", e)}
     {/await}
   </section>
-  {#if screen.phone}<div class="actions">{@render actions()}</div>{/if}
+  {#if compact}<div class="actions">{@render actions()}</div>{/if}
   {#await listing then list}
     <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
          in its title and a correction link after it; a link between two Entities is a
@@ -259,8 +261,9 @@
   {@render end?.()}
 </aside>
 
-<!-- What the reader can do with the Selected Node. On a phone they are one row below its section,
-     held at the top of the Details tab while the lists scroll, and the correction link is a flag. -->
+<!-- What the reader can do with the Selected Node. On a phone, upright or on its side, they are one
+     row below its section, held at the top of the panel while the lists scroll, and the correction
+     link is a flag. -->
 {#snippet actions()}
   <button data-tour="make-focus" onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
   {#if model.pins.includes(selected)}
@@ -272,13 +275,13 @@
   <button data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
   <button data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
   <button
-    class:flag={screen.phone}
-    aria-label={screen.phone ? "Suggest a correction" : undefined}
-    title={screen.phone ? "Suggest a correction" : undefined}
+    class:flag={compact}
+    aria-label={compact ? "Suggest a correction" : undefined}
+    title={compact ? "Suggest a correction" : undefined}
     onclick={() => suggest(typeOf(selected) === "verse" ? "verse" : "fact", [selected], `${selectedType}: ${label(selected)}`)}
     disabled={typeOf(selected) === "overflow"}
   >
-    {screen.phone ? "\u2691" : "Suggest a correction"}
+    {compact ? "\u2691" : "Suggest a correction"}
   </button>
 {/snippet}
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
@@ -390,7 +393,7 @@
     height: calc(var(--sheet) * 0.4);
   }
   /* On a phone the actions are one row of fixed height between the section and the lists, held at
-     the top of the tab while the lists scroll under it; the lists below never move between two taps. */
+     the top of the panel while the lists scroll under it; the lists below never move between two taps. */
   .actions {
     position: sticky;
     top: 0;

@@ -613,6 +613,40 @@
     min-height: 44px;
     min-width: 44px;
   }
+  /* A phone on its side has the desktop layout on a short screen: the hint, the notes, and the
+     controls are one column in the bottom left corner of the scene, clear of the panel and above the
+     footer, and the reader drawer takes the panel's place. */
+  :global(html[data-short]:not([data-phone])) .dock {
+    position: fixed;
+    left: 16px;
+    right: 356px; /* the panel's width and a gap */
+    bottom: 36px; /* above the footer */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    pointer-events: none;
+  }
+  :global(html[data-short]:not([data-phone]):has(.panel.collapsed)) .dock {
+    right: 16px;
+  }
+  :global(html[data-short]:not([data-phone])) .dock > * {
+    position: static;
+    transform: none;
+    pointer-events: auto;
+  }
+  :global(html[data-short]:not([data-phone])) .drawer {
+    top: 56px;
+    left: auto;
+    right: 0;
+    bottom: 0;
+    width: 340px;
+    border-radius: 0;
+    background: rgb(20, 23, 34); /* opaque over the panel */
+  }
+  :global(html[data-short]:not([data-phone])) .stage.reading {
+    left: 0;
+  }
   :global(html[data-phone]) .views button {
     padding: 4px 10px;
   }
