@@ -163,17 +163,17 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
 
 
 def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(
-    genesis_export, trimmed_export
+    untrimmed_export, trimmed_export
 ):
-    small = trimmed_export  # Gen 36 Ring 2 is about 50 KB
-    path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
+    small = trimmed_export
+    path = f"data/{VERSION}/chapter/Gen/25.ring2.json"
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [r["action"] for r in rows if r["path"] == path] == ["trimmed"]
 
     def entities(out):
         return {k: v for k, v in read_json(out / path)["ring2"].items() if ":" in k}
 
-    assert entities(small) == entities(genesis_export)
+    assert entities(small) and entities(small) == entities(untrimmed_export)
 
 
 def test_a_theme_neighbour_is_weighted_by_shared_verses_times_the_rarity_of_the_heading(export):

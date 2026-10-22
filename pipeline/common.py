@@ -25,9 +25,7 @@ class Build:
         self.out = Path(cfg["out"])
         self.used = set()  # source names read by this build, for index.json and credits
         self.reports = {}  # report name -> (header, rows); every declared report is written
-        # Set only in tests: a lower gzipped limit, or level 0 to store without compressing.
-        self.size_limit = cfg.get("size_limit", SIZE_RULE["gzip_limit"])
-        self.gzip_level = cfg.get("gzip_level", SIZE_RULE["gzip_level"])
+        self.size_limit = cfg.get("size_limit", SIZE_RULE["gzip_limit"])  # lower only in tests
 
     def source(self, name):
         """Path of a downloaded source. Records that this build used it."""
@@ -60,15 +58,15 @@ def report_mismatches(b, counts, cause):
         b.report("verse_mismatches", verse=verse, cause=cause, count=count)
 
 
-def sizes(data, level=SIZE_RULE["gzip_level"]):
+def sizes(data):
     """Raw and gzipped bytes of `data`."""
-    return len(data), len(gzip.compress(data, level))
+    return len(data), len(gzip.compress(data, SIZE_RULE["gzip_level"]))
 
 
-def file_sizes(paths, level=SIZE_RULE["gzip_level"]):
+def file_sizes(paths):
     """`sizes` of each file, in threads (zlib releases the lock)."""
     with ThreadPoolExecutor() as pool:
-        return list(pool.map(lambda p: sizes(p.read_bytes(), level), paths))
+        return list(pool.map(lambda p: sizes(p.read_bytes()), paths))
 
 
 def over_limit(raw, gzipped, limit=SIZE_RULE["gzip_limit"]):

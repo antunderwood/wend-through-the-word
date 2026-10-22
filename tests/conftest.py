@@ -1,8 +1,11 @@
 import csv
 import gzip
 import json
+import random
+import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -18,7 +21,7 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 
 def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
-    config keys with TOML values, such as `size_limit` (the gzipped limit), `gzip_level`, or
+    config keys with TOML values, such as `size_limit` (the gzipped limit) or
     `previous_reports='"path"'`."""
     config = out.parent / f"{out.name}.toml"
     config.write_text(
@@ -39,40 +42,41 @@ def export(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def genesis_export(tmp_path_factory):
-    """The fixture's Genesis chapters alone, for the trimming tests: with Matthew's genealogy in
-    range, the search index and some Theme files outgrow the window of `trim_config`."""
-    return run_build(tmp_path_factory.mktemp("genesis") / "out", books=("Gen",))
+def untrimmed_export(tmp_path_factory):
+    """The build from a copy of the fixture sources (in `sources` beside it) with one more
+    cross-reference from a Gen 25 Verse to each fixture Verse outside the built books, with
+    random Votes, for the trimming tests (story 74). Random targets and Votes stay large when
+    gzipped, so the Gen 25 chapter file and Ring 2 sidecar (about 23 and 24 KB gzipped) are the
+    largest files, about twice the next."""
+    tmp = tmp_path_factory.mktemp("untrimmed")
+    sources = shutil.copytree(FIXTURES, tmp / "sources")
+    keys = [r["fields"]["osisRef"] for r in read_json(FIXTURES / "verses.json")]
+    rng = random.Random(0)
+    gen25 = [k for k in keys if k.startswith("Gen.25.")]
+    rows = "".join(
+        f"{rng.choice(gen25)}\t{key}\t{rng.randint(1, 99)}\n"
+        for key in keys
+        if key.split(".")[0] not in ("Gen", "Matt", "3John")
+    )
+    with zipfile.ZipFile(FIXTURES / "cross-references.zip") as z:
+        text = z.read("cross_references.txt").decode()
+    with zipfile.ZipFile(sources / "cross-references.zip", "w") as z:
+        z.writestr("cross_references.txt", text + rows)
+    return run_build(tmp / "out", sources=sources)
 
 
 @pytest.fixture(scope="session")
-def trim_config(genesis_export):
-    """Build config that makes the Genesis build trim cross-references in chapter files and a
-    Ring 2 sidecar (story 74). Gzipped, the fixture's entity files are larger than its chapter
-    files, so a limit that trims a chapter leaves them over: level 0 stores without compressing,
-    which makes the gzipped size the raw size plus a few bytes. In compact JSON (decision 168) a
-    sidecar grows more slowly than its chapter file as the chapter keeps cross-references, so here
-    no limit trims a sidecar and lets the build succeed. The limit sits just above the Gen 36
-    sidecar with every Verse's Ring 2 list emptied (Entity entries are never trimmed, decision
-    96), its smallest while the Gen 36 chapter keeps every cross-reference, and below that chapter
-    with none (about 1.4 KB above): the chapter is left whole and fails the build, and the sidecar
-    is trimmed. Derived from the fixture build, so the window moves with the fixture."""
-    path = genesis_export / "data" / VERSION / "chapter" / "Gen" / "36.ring2.json"
-    sidecar = read_json(path)
-    sidecar["ring2"] = {k: v if ":" in k else [] for k, v in sidecar["ring2"].items()}
-    limit = len(gzip.compress(compact_json(sidecar).encode(), 0)) + 200
-    return {"books": ("Gen",), "size_limit": limit, "gzip_level": 0}
+def trim_limit(untrimmed_export):
+    """A gzipped limit just above every file of `untrimmed_export` but Gen 25's two."""
+    rows = read_tsv(untrimmed_export / "reports" / "files.tsv")
+    return max(int(r["gzipped_bytes"]) for r in rows if "/Gen/25." not in r["path"]) + 1
 
 
 @pytest.fixture(scope="session")
-def trimmed_export(tmp_path_factory, trim_config):
-    """The Genesis build under `trim_config`, which fails on its one file over the limit."""
+def trimmed_export(tmp_path_factory, untrimmed_export, trim_limit):
+    """`untrimmed_export` built again under `trim_limit`."""
     out = tmp_path_factory.mktemp("trimmed") / "out"
-    with pytest.raises(subprocess.CalledProcessError):
-        run_build(out, **trim_config)
-    over = [r["path"] for r in read_tsv(out / "reports" / "files.tsv") if r["over_limit"] == "yes"]
-    assert over == [f"data/{VERSION}/chapter/Gen/36.json"]
-    return out
+    return run_build(out, sources=untrimmed_export.parent / "sources", size_limit=trim_limit)
 
 
 def compact_json(data):

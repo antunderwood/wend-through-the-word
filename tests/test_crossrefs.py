@@ -1,3 +1,5 @@
+import gzip
+
 from conftest import VERSION, read_json, read_tsv
 
 
@@ -97,17 +99,17 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
 
 
 def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is_reported(
-    genesis_export, trimmed_export, trim_config
+    untrimmed_export, trimmed_export, trim_limit
 ):
-    small = trimmed_export  # Gen 25 is about 77 KB raw
+    small = trimmed_export
     path = f"data/{VERSION}/chapter/Gen/25.json"
-    assert (small / path).stat().st_size < trim_config["size_limit"]
+    assert len(gzip.compress((small / path).read_bytes(), 9)) < trim_limit
 
     def neighbours(out):
         verses = read_json(out / path)["verses"]
         return {(v["key"], n["id"], n["weight"]) for v in verses for n in v["cross_references"]}
 
-    kept, dropped = neighbours(small), neighbours(genesis_export) - neighbours(small)
+    kept, dropped = neighbours(small), neighbours(untrimmed_export) - neighbours(small)
     assert kept and dropped
     assert min(e[2] for e in kept) >= max(e[2] for e in dropped)
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
@@ -117,11 +119,11 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(
-    genesis_export, trimmed_export, trim_config
+    untrimmed_export, trimmed_export, trim_limit
 ):
-    small = trimmed_export  # Gen 36 Ring 2 is about 50 KB raw
-    path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
-    assert (small / path).stat().st_size < trim_config["size_limit"]
+    small = trimmed_export
+    path = f"data/{VERSION}/chapter/Gen/25.ring2.json"
+    assert len(gzip.compress((small / path).read_bytes(), 9)) < trim_limit
     # Compare only the Verses' entries: Entity entries are never trimmed (decision 96).
     nodes = {k for k in read_json(small / path)["ring2"] if ":" not in k}
 
@@ -129,7 +131,7 @@ def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(
         ring2 = read_json(out / path)["ring2"]
         return {(node, e["id"], e["weight"]) for node in nodes for e in ring2[node]}
 
-    kept, dropped = entries(small), entries(genesis_export) - entries(small)
+    kept, dropped = entries(small), entries(untrimmed_export) - entries(small)
     assert dropped
     assert min(e[2] for e in kept) >= max(e[2] for e in dropped)
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")

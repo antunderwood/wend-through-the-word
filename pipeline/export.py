@@ -82,10 +82,7 @@ def write(b):
 
     b.new_report("files", "path", "bytes", "gzipped_bytes", "over_limit")
     paths = sorted(data.rglob("*.json"))
-    files = [
-        (p.relative_to(b.out).as_posix(), *size)
-        for p, size in zip(paths, file_sizes(paths, b.gzip_level))
-    ]
+    files = [(p.relative_to(b.out).as_posix(), *size) for p, size in zip(paths, file_sizes(paths))]
     over = [path for path, raw, gz in files if over_limit(raw, gz, b.size_limit)]
     for path, raw, gz in files:
         flag = "yes" if path in over else ""
@@ -109,7 +106,7 @@ def write(b):
 
 
 def fits(b, data):
-    return not over_limit(*sizes(to_json(data).encode(), b.gzip_level), b.size_limit)
+    return not over_limit(*sizes(to_json(data).encode()), b.size_limit)
 
 
 def fit(b, path, data, lists):
