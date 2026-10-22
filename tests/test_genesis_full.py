@@ -88,13 +88,16 @@ def test_genesis_half_siblings_are_the_242_links_theographic_gives(genesis):
     ]
 
 
-def test_genesis_drops_only_edges_to_places_and_events_outside_the_range(genesis):
+def test_genesis_drops_only_edges_outside_the_range(genesis):
     rows = read_tsv(genesis / "reports" / "dropped_edges.tsv")
     assert Counter(r["field"] for r in rows) == {
         "participants": 135,
         "locations": 44,
         "birthPlace": 16,
         "deathPlace": 1,
+        # Possibly Same Person rows with no end in Genesis (#66): Abimelech, Gideon and
+        # Jerubbesheth, Gershom, Hiram and Huram-abi.
+        "possibly_same.csv": 4,
     }
     assert all("outside the book range" in r["cause"] for r in rows)
 

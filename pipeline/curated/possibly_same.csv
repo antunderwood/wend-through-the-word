@@ -1,3 +1,9 @@
 a_id,b_id,evidence,note,reviewed,request
 person:anah_247,person:beeri_432,Gen.26.34;Gen.36.2;Gen.36.24,"Esau's wife is ""Judith daughter of Beeri"" in Gen.26.34 and ""Oholibamah daughter of Anah"" in Gen.36.2. A traditional harmonisation (attributed to Rashi, not checked against the source) reads them as one person. The text does not say so.",yes,
 person:anah_247,person:anah_249,Gen.36.2;Gen.36.24,"Gen.36.2 calls Oholibamah ""daughter of Anah and granddaughter of Zibeon""; Gen.36.24 names ""Anah"" among ""the sons of Zibeon"". Read together, the Anah of Gen.36.2 may be the son of Zibeon in Gen.36.24. Theographic has them as two people with two different Zibeons. The text does not say they are one.",yes,
+person:abimelech_41,person:abimelech_42,Judg.9.53;2Sam.11.21,"Joab recalls ""Abimelech son of Jerubbesheth"" killed by a woman with a millstone at Thebez (2Sam.11.21), Gideon's son of Judg.9.53. Owner reviewed, 2026-10-22 (#66).",yes,
+person:gideon_1314,person:jerubbesheth_881,Judg.6.32;2Sam.11.21,"Gideon is called Jerubbaal (Judg.6.32); Jerubbesheth (2Sam.11.21) is the same name with ""besheth"" (shame) for ""baal"". Owner reviewed, 2026-10-22 (#66).",yes,
+person:gershom_1302,person:gershom_1303,Exod.2.22;Judg.18.30,"""Jonathan son of Gershom, the son of Moses"" (Judg.18.30) names Moses's son Gershom (Exod.2.22). Owner reviewed, 2026-10-22 (#66).",yes,
+person:hiram_1533,person:huram_1575,1Kgs.7.13;2Chr.2.13,"The craftsman Hiram from Tyre (1Kgs.7.13) is Huram-abi in 2Chr.2.13, sent to Solomon for the same work. Owner reviewed, 2026-10-22 (#66).",yes,
+person:aholibamah_172,person:aholibamah_1761,Gen.36.2;Gen.36.25,"""Oholibamah daughter of Anah"" (Gen.36.25) is Esau's wife ""Oholibamah daughter of Anah"" (Gen.36.2). Owner reviewed, 2026-10-22 (#66).",yes,
+person:ahiram_158,person:ehi_1038,Gen.46.21;Num.26.38,"Benjamin's son Ehi (Gen.46.21) is Ahiram in the clan list of Num.26.38. Owner reviewed, 2026-10-22 (#66).",yes,
