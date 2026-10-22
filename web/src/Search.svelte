@@ -62,6 +62,13 @@
     border: 1px solid #262a3c;
     border-radius: 8px;
   }
+  /* On a phone, below the Your Path bar, until search opens from a button (#78). */
+  :global(html[data-phone]) .search {
+    top: 70px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
   input {
     width: 100%;
     box-sizing: border-box;

@@ -326,6 +326,16 @@
       transition: none;
     }
   }
+  /* On a phone the panel fills the Details tab of the bottom sheet, which places it. */
+  :global(html[data-phone]) .panel {
+    position: static;
+    width: auto;
+    height: 100%;
+    padding-top: 0;
+    background: none;
+    border: 0;
+    transform: none;
+  }
   .fallback {
     color: #ffd27a;
   }
@@ -358,6 +368,10 @@
   }
   .selected:has(:focus-visible) {
     animation: none;
+  }
+  /* 40% of the sheet on a phone, fixed for the same reason (decision 171). */
+  :global(html[data-phone]) .selected {
+    height: calc(var(--sheet) * 0.4);
   }
   h2 {
     margin: 0;
@@ -428,6 +442,10 @@
   .relationship {
     height: 4.35em;
     overflow: hidden;
+  }
+  /* On a phone the correction link below the words is 44 px tall. */
+  :global(html[data-phone]) .relationship {
+    height: calc(2.9em + 44px);
   }
   .words {
     display: -webkit-box;
