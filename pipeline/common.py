@@ -76,7 +76,7 @@ def over_limit(raw, gzipped, limit=SIZE_RULE["gzip_limit"]):
 
 
 def to_json(data):
-    return json.dumps(data, ensure_ascii=False, sort_keys=True, indent=1) + "\n"
+    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
 
 
 def write_json(path, data):

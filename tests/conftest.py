@@ -1,7 +1,6 @@
 import csv
 import gzip
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -40,42 +39,45 @@ def export(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def trim_curated(tmp_path_factory):
-    """The fixture tables without the rows of links.csv: the curated Gen 36:25 Mention and its
-    note bring the Gen 36 chapter within bytes of its sidecar's Entity entries, which closes the
-    window of `trim_config`."""
-    folder = tmp_path_factory.mktemp("trim") / "curated"
-    shutil.copytree(CURATED, folder)
-    links = folder / "links.csv"
-    links.write_text(links.read_text().splitlines()[0] + "\n")
-    return folder
-
-
-@pytest.fixture(scope="session")
-def genesis_export(tmp_path_factory, trim_curated):
+def genesis_export(tmp_path_factory):
     """The fixture's Genesis chapters alone, for the trimming tests: with Matthew's genealogy in
     range, the search index and some Theme files outgrow the window of `trim_config`."""
-    return run_build(
-        tmp_path_factory.mktemp("genesis") / "out", books=("Gen",), curated=trim_curated
-    )
+    return run_build(tmp_path_factory.mktemp("genesis") / "out", books=("Gen",))
 
 
 @pytest.fixture(scope="session")
-def trim_config(genesis_export, trim_curated):
-    """Build config that makes the Genesis build trim cross-references in some chapter files and
-    Ring 2 sidecars, but stays above every file that cannot be trimmed, so the build still
-    succeeds (story 74). Gzipped, the fixture's entity files are larger than its chapter files, so
-    no limit does both: level 0 stores without compressing, which makes the gzipped size the raw
-    size plus a few bytes. The largest file that cannot be trimmed is then the Gen 36 sidecar's
-    Entity entries, never trimmed (decision 96). Just above them the trimmed Gen 36 chapter keeps
-    a few cross-references, whose Ring 2 lists push the sidecar over again; about 1 KB above, it
-    keeps too few. Derived from the fixture build, so the window moves with the fixture."""
+def trim_config(genesis_export):
+    """Build config that makes the Genesis build trim cross-references in chapter files and a
+    Ring 2 sidecar (story 74). Gzipped, the fixture's entity files are larger than its chapter
+    files, so no limit trims a chapter: level 0 stores without compressing, which makes the
+    gzipped size the raw size plus a few bytes. In compact JSON (decision 168) a sidecar grows
+    more slowly than its chapter file as the chapter keeps cross-references, so no limit both trims
+    a sidecar and lets the build succeed. The limit sits just above the Gen 36 sidecar with every
+    Verse's Ring 2 list emptied (Entity entries are never trimmed, decision 96), its smallest while
+    the Gen 36 chapter keeps every cross-reference, and below that chapter with none (about 1.4 KB
+    above): the chapter is left whole and fails the build, and the sidecar is trimmed. Derived
+    from the fixture build, so the window moves with the fixture."""
     path = genesis_export / "data" / VERSION / "chapter" / "Gen" / "36.ring2.json"
     sidecar = read_json(path)
-    sidecar["ring2"] = {k: v for k, v in sidecar["ring2"].items() if ":" in k}
-    text = json.dumps(sidecar, ensure_ascii=False, sort_keys=True, indent=1) + "\n"
-    limit = len(gzip.compress(text.encode(), 0)) + 200
-    return {"books": ("Gen",), "size_limit": limit, "gzip_level": 0, "curated": trim_curated}
+    sidecar["ring2"] = {k: v if ":" in k else [] for k, v in sidecar["ring2"].items()}
+    limit = len(gzip.compress(compact_json(sidecar).encode(), 0)) + 200
+    return {"books": ("Gen",), "size_limit": limit, "gzip_level": 0}
+
+
+@pytest.fixture(scope="session")
+def trimmed_export(tmp_path_factory, trim_config):
+    """The Genesis build under `trim_config`, which fails on its one file over the limit."""
+    out = tmp_path_factory.mktemp("trimmed") / "out"
+    with pytest.raises(subprocess.CalledProcessError):
+        run_build(out, **trim_config)
+    over = [r["path"] for r in read_tsv(out / "reports" / "files.tsv") if r["over_limit"] == "yes"]
+    assert over == [f"data/{VERSION}/chapter/Gen/36.json"]
+    return out
+
+
+def compact_json(data):
+    """An export file's text (decision 168): compact, sorted keys, UTF-8 text unescaped."""
+    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
 
 
 def read_json(path):

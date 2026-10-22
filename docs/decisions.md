@@ -296,6 +296,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 165. **Long lists show 100 rows at a time.** The panel's Neighbour lists, linked Verses, shared Verses, and Overflow lists add "Show 100 more" with a count. Reason: God has 8,587 linked Verses and 2,512 Neighbours; drawing them at once is slow.
 166. **Every build writes a data quality summary page (owner).** One plain HTML page in the reports folder: each report's row count, counts per book, sample rows, and the change from a previous build when given. Reason: reviewing 14 TSV files at whole-Bible scale is not practical.
 167. **Each OpenStreetMap-only Place gets a GeoNames name match, a curated point, or a recorded "no point" (owner, #16).** A GeoNames match must be unique within the place's region; a curated point carries an Evidence Verse and a note and is never an OpenStreetMap value. Curated link corrections (#44) are part of M6 too.
+168. **The export is compact JSON.** No indentation or spaces after separators; keys stay sorted and text stays UTF-8. Reports (TSV) are unchanged. Reason: Cloudflare documents no total size cap for static assets (only 20,000 files and 25 MiB per file on the free plan, checked 2026-10-22), so a smaller upload lowers an undocumented risk and shortens the one-hour upload window's use; readers see no change because Cloudflare compresses in transit. Whole Bible: 655 MB raw before, 417 MB after.
 
 ## Record: OpenStreetMap coordinates (2026-10-18)
 
