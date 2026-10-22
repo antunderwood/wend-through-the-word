@@ -97,12 +97,11 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
 
 
 def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is_reported(
-    genesis_export, tmp_path, trim_limit
+    genesis_export, tmp_path, trim_config
 ):
-    limit = trim_limit  # Gen 25 is about 118 KB in the Genesis build
-    small = run_build(tmp_path / "out", books=("Gen",), size_limit=limit)
+    small = run_build(tmp_path / "out", **trim_config)  # Gen 25 is about 118 KB raw
     path = f"data/{VERSION}/chapter/Gen/25.json"
-    assert (small / path).stat().st_size < limit
+    assert (small / path).stat().st_size < trim_config["size_limit"]
 
     def neighbours(out):
         verses = read_json(out / path)["verses"]
@@ -118,12 +117,11 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(
-    genesis_export, tmp_path, trim_limit
+    genesis_export, tmp_path, trim_config
 ):
-    limit = trim_limit  # Gen 36 Ring 2 is about 76 KB in the Genesis build, most of it Entities
-    small = run_build(tmp_path / "out", books=("Gen",), size_limit=limit)
+    small = run_build(tmp_path / "out", **trim_config)  # Gen 36 Ring 2 is about 76 KB raw
     path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
-    assert (small / path).stat().st_size < limit
+    assert (small / path).stat().st_size < trim_config["size_limit"]
     # The trimmed chapter file has fewer Ring 1 Verses, so compare only the ones it keeps.
     # Entity entries are never trimmed (decision 96).
     nodes = {k for k in read_json(small / path)["ring2"] if ":" not in k}

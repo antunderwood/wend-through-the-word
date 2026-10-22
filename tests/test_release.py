@@ -75,16 +75,26 @@ def test_refuses_a_dirty_tree_or_a_tag_that_exists_here_or_on_origin(repo):
     assert not (repo / "out" / f"wend-data-{VERSION}.zip").exists()
 
 
-def test_refuses_an_export_whose_reports_show_failures_or_that_breaks_the_file_limit(repo):
-    data = repo / "out" / "data"
-    (repo / "out" / "reports" / "file_count.tsv").write_text("files\tover_limit\n641\t2\n")
-    extra = data / VERSION / "extra"
+def test_refuses_a_file_over_500_kb_gzipped_or_25_mib_raw_but_not_one_over_500_kb_raw(repo):
+    # Decision 163: random bytes barely compress; repeated text compresses to almost nothing.
+    data = repo / "out" / "data" / VERSION
+    (data / "random.json").write_bytes(os.urandom(600 * 1000))
+    (data / "huge.json").write_bytes(b"{}" * (13 * 1024 * 1024))
+    (data / "text.json").write_bytes(b'"Abraham"' * (100 * 1000))
+    run = release(repo, "v1")
+    assert run.returncode == 1
+    assert re.search(rf"out/data/{VERSION}/random\.json: 600000 bytes, \d+ gzipped", run.stderr)
+    assert f"out/data/{VERSION}/huge.json: 27262976 bytes" in run.stderr
+    assert "text.json" not in run.stderr
+
+
+def test_refuses_an_export_that_breaks_the_file_limit(repo):
+    extra = repo / "out" / "data" / VERSION / "extra"
     extra.mkdir()
     for i in range(20_000):
         (extra / f"{i}.json").touch()
     run = release(repo, "v1")
     assert run.returncode == 1
-    assert "reports/file_count.tsv: 2 files over the size limit" in run.stderr
     assert "out/data holds 20641 files, the limit is 20000" in run.stderr
 
 

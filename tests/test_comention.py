@@ -164,10 +164,9 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
 
 
 def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(
-    genesis_export, tmp_path, trim_limit
+    genesis_export, tmp_path, trim_config
 ):
-    # Gen 36 Ring 2 is about 76 KB
-    small = run_build(tmp_path / "out", books=("Gen",), size_limit=trim_limit)
+    small = run_build(tmp_path / "out", **trim_config)  # Gen 36 Ring 2 is about 76 KB
     path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [r["action"] for r in rows if r["path"] == path] == ["trimmed"]
