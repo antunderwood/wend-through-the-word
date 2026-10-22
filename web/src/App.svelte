@@ -41,6 +41,13 @@
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
+  // The bottom sheet's open tab on a phone, kept in this browser (docs/specs/mobile.md).
+  const TAB_STORE = "wend.sheetTab";
+  let sheetTab = $state(stored(TAB_STORE) === "reader" ? "reader" : "details");
+  function chooseTab(t: string) {
+    sheetTab = t;
+    store(TAB_STORE, t);
+  }
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
@@ -152,11 +159,16 @@
   }
 
   // Opens the reader panel at the Selected Verse, or at an Entity's first Verse in Bible order.
+  // On a phone it opens the sheet at its Reader tab.
   async function openReader() {
-    if (typeOf(selected) === "verse") return (reading = selected);
-    const first = (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
-    if (first) reading = first;
-    else model = { ...model, notice: `${label(selected)} has no linked Verses.` };
+    const first =
+      typeOf(selected) === "verse" ? selected : (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
+    if (!first) return (model = { ...model, notice: `${label(selected)} has no linked Verses.` });
+    reading = first;
+    if (screen.phone) {
+      chooseTab("reader");
+      collapsed = false;
+    }
   }
 
   const selected = $derived(model.selected);
@@ -338,7 +350,7 @@
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- The scene takes the space between the open panels. -->
-<div class="stage" data-tour="scene" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<div class="stage" data-tour="scene" class:reading={reading && !screen.phone} class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   {#snippet details()}
@@ -360,9 +372,40 @@
       reading={!!reading}
     />
   {/snippet}
-  <!-- On a phone the panel is a tab of the bottom sheet; elsewhere it is beside the scene. -->
+  <!-- The reader closes only where it is a drawer. -->
+  {#snippet read(onclose?: () => void)}
+    <Reader
+      data={data!}
+      at={reading!}
+      {selected}
+      inScene={(id) => inScene.has(id)}
+      onselect={(id) => apply({ type: "select", id })}
+      onfocus={makeFocus}
+      onmove={(id) => (reading = id)}
+      {onclose}
+    />
+  {/snippet}
+  {#snippet readerTab()}
+    <div class="reader-tab">
+      {#if reading}
+        {@render read()}
+      {:else}
+        <p class="muted">Read, in Details, opens the chapter of the Selected Verse here.</p>
+      {/if}
+    </div>
+  {/snippet}
+  <!-- On a phone the panel and the reader are tabs of the bottom sheet; elsewhere the panel is
+       beside the scene and the reader is a drawer. -->
   {#if screen.phone}
-    <Sheet tabs={[{ id: "details", name: "Details", body: details }]} bind:collapsed bind:shown={sheetShown} />
+    <Sheet
+      tabs={[
+        { id: "details", name: "Details", body: details },
+        { id: "reader", name: "Reader", body: readerTab },
+      ]}
+      bind:tab={() => sheetTab, chooseTab}
+      bind:collapsed
+      bind:shown={sheetShown}
+    />
   {:else}
     <!-- The chevron points the way the panel will move. -->
     <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
@@ -371,19 +414,8 @@
     {@render details()}
   {/if}
   <PathBar {model} {label} {apply} {notes} />
-  {#if reading}
-    <div class="drawer">
-      <Reader
-        {data}
-        at={reading}
-        {selected}
-        inScene={(id) => inScene.has(id)}
-        onselect={(id) => apply({ type: "select", id })}
-        onfocus={makeFocus}
-        onmove={(id) => (reading = id)}
-        onclose={() => (reading = undefined)}
-      />
-    </div>
+  {#if reading && !screen.phone}
+    <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
   <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
   {#if tour}
@@ -505,6 +537,11 @@
     background: rgba(20, 23, 34, 0.92);
     border: 1px solid #262a3c;
     border-radius: 8px;
+  }
+  .reader-tab {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
   }
   .chevron {
     position: fixed;
