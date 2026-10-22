@@ -77,7 +77,7 @@ def test_refuses_a_dirty_tree_or_a_tag_that_exists_here_or_on_origin(repo):
 
 def test_refuses_an_export_whose_reports_show_failures_or_that_breaks_the_file_limit(repo):
     data = repo / "out" / "data"
-    (repo / "out" / "reports" / "file_count.tsv").write_text("files\tover_limit\n433\t2\n")
+    (repo / "out" / "reports" / "file_count.tsv").write_text("files\tover_limit\n641\t2\n")
     extra = data / VERSION / "extra"
     extra.mkdir()
     for i in range(20_000):
@@ -85,7 +85,7 @@ def test_refuses_an_export_whose_reports_show_failures_or_that_breaks_the_file_l
     run = release(repo, "v1")
     assert run.returncode == 1
     assert "reports/file_count.tsv: 2 files over the size limit" in run.stderr
-    assert "out/data holds 20433 files, the limit is 20000" in run.stderr
+    assert "out/data holds 20641 files, the limit is 20000" in run.stderr
 
 
 def test_refuses_an_untrimmed_file_or_a_curated_row_that_no_longer_matches(repo):

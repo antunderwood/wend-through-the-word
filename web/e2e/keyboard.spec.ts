@@ -13,7 +13,7 @@ test("arrows step the Selected Node through Ring 1, Enter makes it the Focus, Ba
   const before = await nodes(page);
 
   // Fixture: Abraham's Ring 1 starts with his People by weight (Isaac, then Sarah) and ends with
-  // the Overflow Node for his 20 further Verses.
+  // the Overflow Node for his 23 further Verses.
   await page.keyboard.press("ArrowRight");
   await expect(heading(page)).toHaveText("Isaac");
   await expect(page.locator(".nl.ring1.selected")).toHaveText("Isaac");
@@ -22,7 +22,7 @@ test("arrows step the Selected Node through Ring 1, Enter makes it the Focus, Ba
   await page.keyboard.press("ArrowLeft");
   await expect(heading(page)).toHaveText("Isaac");
   await page.keyboard.press("ArrowUp");
-  await expect(heading(page)).toHaveText("+20 verses");
+  await expect(heading(page)).toHaveText("+23 verses");
   await page.keyboard.press("ArrowRight");
   await expect(heading(page)).toHaveText("Isaac");
   // Selecting never changes the scene.

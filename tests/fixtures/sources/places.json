@@ -55,11 +55,14 @@
    "placeID": 111,
    "verses": [
     "reczuNzPbgCGGmbku",
+    "recWxJQx5aaDSDDBz",
     "recoo3tOFr04v0MIP",
+    "recy3Sl0knwgMbgLQ",
     "recyUn8Url5r0KHSJ",
     "rec5qlkV7SvD26IGu",
     "rec96PPUJQhUvdCIW",
     "recupnhuoUaAkrn32",
+    "rec0aCLk9wYm27J5Z",
     "recY0U4h6aOwTbfql"
    ],
    "recogitoUri": "http://pleiades.stoa.org/places/874458",
@@ -156,6 +159,76 @@
    ],
    "canonicalPlace": [
     "recpqKANUDcRgN4HU"
+   ]
+  }
+ },
+ {
+  "id": "recpqKANUDcRgN4HU",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "babylon_151",
+   "displayTitle": "Babylon",
+   "featureType": "City",
+   "precision": "Center",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "dictionaryLink": "https://www.biblestudytools.com/dictionaries/eastons-bible-dictionary/babylon.html",
+   "dictionaryText": " the Greek form of BABEL; Semitic form Babilu, meaning \"The Gate of God.\" In the Assyrian tablets it means \"The city of the dispersion of the tribes.\" The monumental list of its kings reaches back to B.C. 2300, and includes Khammurabi, or Amraphel (q.v.), the contemporary of Abraham. It stood on the Euphrates, about 200 miles above its junction with the Tigris, which flowed through its midst and divided it into two almost equal parts. The Elamites invaded Chaldea (i.e., Lower Mesopotamia, or Shinar, and Upper Mesopotamia, or Accad, now combined into one) and held it in subjection. At length Khammu-rabi delivered it from the foreign yoke, and founded the new empire of Chaldea (q.v.), making Babylon the capital of the united kingdom. This city gradually grew in extent and grandeur, but in process of time it became subject to Assyria. On the fall of Nineveh (B.C. 606) it threw off the Assyrian yoke, and became the capital of the growing Babylonian empire. Under Nebuchadnezzar it became one of the most splendid cities of the ancient world.    After passing through various vicissitudes the city was occupied by Cyrus, \"king of Elam,\" B.C. 538, who issued a decree permitting the Jews to return to their own land (Ezra 1). It then ceased to be the capital of an empire. It was again and again visited by hostile armies, till its inhabitants were all driven from their homes, and the city became a complete desolation, its very site being forgotten from among men.    On the west bank of the Euphrates, about 50 miles south of Bagdad, there is found a series of artificial mounds of vast extent. These are the ruins of this once famous proud city. These ruins are principally (1) the great mound called Babil by the Arabs. This was probably the noted Temple of Belus, which was a pyramid about 480 feet high. (2) The Kasr (i.e., \"the palace\"). This was the great palace of Nebuchadnezzar. It is almost a square, each side of which is about 700 feet long. The little town of Hillah, near the site of Babylon, is built almost wholly of bricks taken from this single mound. (3) A lofty mound, on the summit of which stands a modern tomb called Amran ibn-Ali. This is probably the most ancient portion of the remains of the city, and represents the ruins of the famous hanging-gardens, or perhaps of some royal palace. The utter desolation of the city once called \"The glory of kingdoms\" (Isa.13:19) was foretold by the prophets (Isa.13:4-22;  Jeremiah 25:12  ;  Jeremiah 50:2  Jeremiah 50:3  ;  Daniel 2:31-38  ).    The Babylon mentioned in  1 Peter 5:13   was not Rome, as some have thought, but the literal city of Babylon, which was inhabited by many Jews at the time Peter wrote.    In  Revelation 14:8  ;  16:19  ;  17:5  ; and  18:2  , \"Babylon\" is supposed to mean Rome, not considered as pagan, but as the prolongation of the ancient power in the papal form. Rome, pagan and papal, is regarded as one power. \"The literal Babylon was the beginner and supporter of tyranny and idolatry...This city and its whole empire were taken by the Persians under Cyrus; the Persians were subdued by the Macedonians, and the Macedonians by the Romans; so that Rome succeeded to the power of old Babylon. And it was her method to adopt the worship of the false deities she had conquered; so that by her own act she became the heiress and successor of all the Babylonian idolatry, and of all that was introduced into it by the immediate successors of Babylon, and consequently of all the idolatry of the earth.\" Rome, or \"mystical Babylon,\" is \"that great city which reigneth over the kings of the earth\" ( 17:18  ).",
+   "verseCount": 255,
+   "placeID": 151,
+   "peopleDied": [
+    "recO6jj8WG1gFfhIR",
+    "rec5naIzF29A8wJIP"
+   ],
+   "verses": [
+    "rec3rhiVyLBGx6gD0",
+    "recglkod8PbnFhs8V",
+    "recUnsLuProv9DVJl",
+    "recdjml2vo7gAltxk",
+    "receCtndaZVcB7AD5",
+    "rec1lELQJH2AMZ1aL",
+    "reczuOjZPwieSF27O",
+    "recwRKeAjIVCmjQhJ",
+    "recSJvvwEw9pFEYLY",
+    "rechfxUiiZpYmXtJ0",
+    "recvO1LKHlvH6vHw7",
+    "recnPSq3Ki8WiZg1Z",
+    "recq9OR2088PdXZ9W",
+    "recijeEJyUcgK2SNm",
+    "recQGzCj940AWo9DT",
+    "recv1om2pZspbjoTC",
+    "rec5Pk4Dh6xJilUOn",
+    "recWQICM4WWQRqQYC",
+    "recsJP5RzvdCHqBcE",
+    "recePZO34ewRPBk5d",
+    "recHlREGoAXTNrhZB",
+    "recPx7yB6TJvDBZvK",
+    "rec7BZWMWFIZRa2d4"
+   ],
+   "recogitoUri": "http://dare.ht.lu.se/places/22328",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "settlement,urban",
+   "recogitoLabel": "Babylon|Babylon, Babylon",
+   "recogitoUID": "076e0ef4-a410-4562-a804-a6560033650f",
+   "eastons": [
+    "recAsXmbQiqqTmIT4"
+   ],
+   "modified": "2026-10-13T19:35:43.000Z",
+   "kjvName": "Babylon",
+   "esvName": "Babylon",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "B",
+   "slug": "babylon_151",
+   "dictText": [
+    "The Greek form of BABEL; Semitic form Babilu, meaning “The Gate of God.” In the Assyrian tablets it means “The city of the dispersion of the tribes.” The monumental list of its kings reaches back to B.C. 2300, and includes Khammurabi, or Amraphel (q.v.), the contemporary of Abraham. It stood on the Euphrates, about 200 miles above its junction with the Tigris, which flowed through its midst and divided it into two almost equal parts. The Elamites invaded Chaldea (i.e., Lower Mesopotamia, or Shinar, and Upper Mesopotamia, or Accad, now combined into one) and held it in subjection. At length Khammu-rabi delivered it from the foreign yoke, and founded the new empire of Chaldea (q.v.), making Babylon the capital of the united kingdom. This city gradually grew in extent and grandeur, but in process of time it became subject to Assyria. On the fall of Nineveh (B.C. 606) it threw off the Assyrian yoke, and became the capital of the growing Babylonian empire. Under Nebuchadnezzar it became one of the most splendid cities of the ancient world.\n\n After passing through various vicissitudes the city was occupied by Cyrus, “king of Elam,” B.C. 538, who issued a decree permitting the Jews to return to their own land ([Ezra 1](/ezra#Ezra.1)). It then ceased to be the capital of an empire. It was again and again visited by hostile armies, till its inhabitants were all driven from their homes, and the city became a complete desolation, its very site being forgotten from among men.\n\n On the west bank of the Euphrates, about 50 miles south of Bagdad, there is found a series of artificial mounds of vast extent. These are the ruins of this once famous proud city. These ruins are principally (1) the great mound called Babil by the Arabs. This was probably the noted Temple of Belus, which was a pyramid about 480 feet high. (2) The Kasr (i.e., “the palace”). This was the great palace of Nebuchadnezzar. It is almost a square, each side of which is about 700 feet long. The little town of Hillah, near the site of Babylon, is built almost wholly of bricks taken from this single mound. (3) A lofty mound, on the summit of which stands a modern tomb called Amran ibn-Ali. This is probably the most ancient portion of the remains of the city, and represents the ruins of the famous hanging-gardens, or perhaps of some royal palace. The utter desolation of the city once called “The glory of kingdoms” ([Isa. 13:19](/isa#Isa.13.19)) was foretold by the prophets ([Isa. 13:4-22](/isa#Isa.13.4); [Jer. 25:12](/jer#Jer.25.12); [50:2](/jer#Jer.50.2), [3](/jer#Jer.50.3); [Dan. 2:31-38](/dan#Dan.2.31)).\n\n The Babylon mentioned in [1 Pet. 5:13](/1pet#1Pet.5.13) was not Rome, as some have thought, but the literal city of Babylon, which was inhabited by many Jews at the time Peter wrote.\n\n In [Rev. 14:8](/rev#Rev.14.8); [16:19](/rev#Rev.16.19); [17:5](/rev#Rev.17.5); and 18:2, “Babylon” is supposed to mean Rome, not considered as pagan, but as the prolongation of the ancient power in the papal form. Rome, pagan and papal, is regarded as one power. “The literal Babylon was the beginner and supporter of tyranny and idolatry...This city and its whole empire were taken by the Persians under Cyrus; the Persians were subdued by the Macedonians, and the Macedonians by the Romans; so that Rome succeeded to the power of old Babylon. And it was her method to adopt the worship of the false deities she had conquered; so that by her own act she became the heiress and successor of all the Babylonian idolatry, and of all that was introduced into it by the immediate successors of Babylon, and consequently of all the idolatry of the earth.” Rome, or “mystical Babylon,” is “that great city which reigneth over the kings of the earth” (17:18)."
+   ],
+   "otherNames": [
+    "recO7At5WvGRe0Xsu",
+    "rec2006YHGi4zadxa",
+    "reciqLEHEJ42oR4bN"
    ]
   }
  },
@@ -333,7 +406,21 @@
     "recgkFqZovgbr3pAi",
     "recAnjspoNLxphIjV"
    ],
-   "verses": [],
+   "verses": [
+    "recnyAN1knxyLJMup",
+    "recAxh5AWRI1GFVPo",
+    "recKFB5bjH0FZ6iPa",
+    "reckkWzs50GnZa6wO",
+    "recE1nPwLhxWlqxVB",
+    "rec0nLRWBX2S0Y2pw",
+    "rec3bmFSj6sCrwmhp",
+    "rec1fYUOeqe8eLeo8",
+    "recdeOlBKFVl2pQxp",
+    "recNqGE1l48tfnZIF",
+    "recw1UuDF8p03UNSO",
+    "recDpwALngocZBWI4",
+    "recRD53QJl7aUt9YD"
+   ],
    "recogitoUri": "http://dare.ht.lu.se/places/28331",
    "recogitoStatus": "VERIFIED",
    "recogitoType": "settlement",
@@ -619,10 +706,14 @@
    "verses": [
     "reczuNzPbgCGGmbku",
     "recSZhu9gurNV6ASs",
+    "recLxLwskis7torNC",
+    "recu1Cae1HM9V9vL5",
     "recKDjYbCPx3RKuYy",
     "rec8WlLH3ewD8MyXH",
+    "recRKh5kal8ttPRvo",
     "recQd9euu4ewG1iKD",
     "rec7PncKMUP0vBN6G",
+    "recWsfVVV0FssPoNZ",
     "recPJiwEQiWHHZGp0",
     "rece1hrUdXozuaX4W",
     "recwqcGHZZuYBDAW3",
@@ -633,7 +724,10 @@
     "recIfAY7bYbEw9a7d",
     "rec9NkVZc1ECkPals",
     "recpNjzygfwq0UFBh",
+    "rec65ZY2ToVSoThlB",
     "recC5fMibyZ8g6Pbu",
+    "rec6rziSpyiBfxJ91",
+    "rect2OIyJYcAfc9MD",
     "recoo3tOFr04v0MIP",
     "recda9fyQopCOKOyK",
     "recyUn8Url5r0KHSJ",
@@ -642,7 +736,14 @@
     "rec96PPUJQhUvdCIW",
     "rec377JSwkkGn3gg9",
     "recY0U4h6aOwTbfql",
+    "recf45dUKeKOQLOC9",
     "recvg4Yv659Tmf97J",
+    "reczaJol814UlftST",
+    "recB0egKx5Bu3sLTv",
+    "recoYBkbv3CTJfPCK",
+    "recxQ7pVbhUg7TkGB",
+    "recrhXkNbEP462xL8",
+    "rec1BhEIrTwocze5l",
     "recQSCmohvHPPUknN",
     "recetG4u0soqSvnf8"
    ],
@@ -688,6 +789,40 @@
    "otherNames": [
     "recFinINtrGjUmVDi",
     "rec1TOi8sIOGfx3kH"
+   ]
+  }
+ },
+ {
+  "id": "recTsiqfHAu6vwW3H",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "ephrath_403",
+   "displayTitle": "Ephrath",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "verseCount": 3,
+   "placeID": 403,
+   "peopleBorn": [
+    "recBOUtTncbBlfEn9"
+   ],
+   "peopleDied": [
+    "recT2Tm2K5XORGnbx"
+   ],
+   "verses": [],
+   "recogitoStatus": "UNVERIFIED",
+   "recogitoUID": "5562eed1-f7bd-4bf7-8f68-140f1cc56294",
+   "modified": "2026-10-13T19:35:45.000Z",
+   "kjvName": "Ephrath",
+   "esvName": "Ephrath",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "alphaGroup": "E",
+   "slug": "ephrath_403",
+   "eventsHere": [
+    "recueVlIF65sLlqSO"
+   ],
+   "canonicalPlace": [
+    "rec81f3wE4gATsRRE"
    ]
   }
  },
@@ -820,9 +955,17 @@
    "verseCount": 63,
    "placeID": 433,
    "verses": [
+    "rechE7q8RhtgAuEhb",
     "recNT6ykmkNInmgeC",
+    "rec41Lm8n6O1mls6c",
     "recTGZKtCwSHiadYu",
-    "recQHpCAAtB9zKYDg"
+    "recdyqFkZ4IcPeDxM",
+    "recDpwALngocZBWI4",
+    "recf0gcsIwnbbjFdy",
+    "recQHpCAAtB9zKYDg",
+    "recprFy0egtmzgqCV",
+    "recVRddZKCvAjhplT",
+    "recWBULVChqxJkUCs"
    ],
    "recogitoStatus": "NOT_IDENTIFIABLE",
    "recogitoComments": "Sea is the only available reference. This entyr is for the region near the Sea.",
@@ -1085,7 +1228,68 @@
     "recUipM9EEsnFSZI0"
    ],
    "hasBeenHere": "jesus_905, paul_2479, peter_2745, satan_2476, john_1677, barnabas_1722, mary_1938, silas_2740, mark_1679, philip_2347, james_719, philip_2344, andrew_264, thomas_2851, caiaphas_532, matthew_1971, stephen_2802, james_718, lebbaeus_1815, alphaeus_192, annas_269, bartholomew_405, simon_2746, ananias_258, judas_1759, trophimus_2880, agabus_107, ananias_260, gamaliel_1277, matthias_1972, alexander_187, barsabas_1720, john_1678, mnason_2102, nicanor_2203, nicolas_2205, parmenas_2272, prochorus_2371, sapphira_2472, timon_2862",
-   "verses": [],
+   "verses": [
+    "recJuPl8QQeICWdPJ",
+    "recdiybxAWlQHYMXl",
+    "recxcEMfoOFSbm0mQ",
+    "recB1WKDWyi1xjbdz",
+    "recsClpBQqQtm9LTF",
+    "recVDSkNDzkZC5Ttr",
+    "recRgRyHsSpgSwY0v",
+    "recepHxsoa7ubk2P2",
+    "recBVbne9S52ZMHW4",
+    "recdhc7yfkhO7IL1b",
+    "recyjXRpqFPRWuBcs",
+    "rec679TkUTdYfZMzu",
+    "recK1HqhgW5fdTU7w",
+    "recuZJABCFFuTYXDc",
+    "recglkod8PbnFhs8V",
+    "recHX6IZT8oDCF8EI",
+    "recVpGJs9AKvQBUuO",
+    "rec3zyqPxwPBTgYtq",
+    "recaC4poD324qCTQN",
+    "recmz12sImXpP9XCV",
+    "recl3g6FRRvTh45za",
+    "recIafNKSib8cqzBX",
+    "recahBPrpc8jD2cIj",
+    "recL14IbPVupmN2y9",
+    "recoz0KiEDNRADf0Y",
+    "rec1mKoyd5StpWLYB",
+    "recqzsvULD8BeYF6A",
+    "recrScV2TrqPW6E0j",
+    "rec5HwmYqs0oayofj",
+    "rec1lELQJH2AMZ1aL",
+    "recvwjCDlCjHw57Oz",
+    "rec6RY63zXE1vViDN",
+    "recaXouNHA6ykjBnP",
+    "recEQDSyv0HEMPaGP",
+    "recU2ZmenSSPytadJ",
+    "recm5sWV9TdXE26oP",
+    "recNXZWKnqepLlDax",
+    "reclZu7c9j7Z3dJkb",
+    "recjBkONCyyQ5XvWC",
+    "recXKphTItyb3dC3s",
+    "reclyAzI5dfkH1Mf5",
+    "rec2Zkx6lGplOtSGo",
+    "recSJvvwEw9pFEYLY",
+    "recAM09Jauczu7fkl",
+    "recWf7vnc8qSI4ut0",
+    "recltMLCkIkzyxTwa",
+    "rec79qhkF37N3Bi61",
+    "recFx4L7WnLmpeDi0",
+    "rec3bmFSj6sCrwmhp",
+    "recK2giqCooj5669M",
+    "recW8QSo6dkJl598u",
+    "reci0J4rud4RquBX7",
+    "recsLxiy8G5oyDYQ7",
+    "recEGX8UfMC0gdoBX",
+    "recyvcfNdDHebUQ28",
+    "recTPSzgmQ7mEB5A1",
+    "recJjBuPG82lNSg55",
+    "recCNtemZnFcsY97b",
+    "recU737OUv7ZU3UNH",
+    "recd9e0zIvPRZTCWs"
+   ],
    "recogitoUri": "http://dare.ht.lu.se/places/15896",
    "recogitoStatus": "VERIFIED",
    "recogitoType": "church-2,settlement,temple-2",
@@ -1257,6 +1461,64 @@
   }
  },
  {
+  "id": "recAalC2QoLT7cJKN",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "judea_657",
+   "displayTitle": "Judea",
+   "featureType": "Region",
+   "precision": "Related-Surrounding",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "comment": "region",
+   "dictionaryLink": "https://www.biblestudytools.com/dictionaries/eastons-bible-dictionary/judea.html",
+   "dictionaryText": " After the Captivity this name was applied to the whole of the country west of the Jordan ( Haggai 1:1  Haggai 1:14  ;  2:2  ). But under the Romans, in the time of Christ, it denoted the southernmost of the three divisions of Palestine ( Matthew 2:1  Matthew 2:5  ;  3:1  ;  4:25  ), although it was also sometimes used for Palestine generally ( Acts 28:21  ).    The province of Judea, as distinguished from Galilee and Samaria, included the territories of the tribes of Judah, Benjamin, Dan, Simeon, and part of Ephraim. Under the Romans it was a part of the province of Syria, and was governed by a procurator. ",
+   "verseCount": 44,
+   "placeID": 657,
+   "peopleDied": [
+    "rechkAyIwugqcLaaY"
+   ],
+   "hasBeenHere": "paul_2479, peter_2745, james_717, philip_2347, james_719, herod_1506, agabus_107, mary_1941, mnason_2102, rhoda_2439",
+   "verses": [
+    "rec3bmFSj6sCrwmhp",
+    "rec1fYUOeqe8eLeo8",
+    "rechE7q8RhtgAuEhb",
+    "rect4RMLvqaXhSBv9",
+    "recDpwALngocZBWI4",
+    "recjADe4lp6zuRM3s",
+    "recTT8aOA6Y8A1nDd",
+    "rec9Cu9vdujqgsNDg"
+   ],
+   "recogitoStatus": "NOT_IDENTIFIABLE",
+   "recogitoComments": "|Settlement within Judea available, but not the region itself.",
+   "recogitoUID": "b3e7b60b-91ba-417d-bb51-ef28d74a66e5",
+   "eastons": [
+    "rechx1IT1A67fL7t3"
+   ],
+   "modified": "2026-10-13T19:35:50.000Z",
+   "kjvName": "Judea",
+   "esvName": "Judea",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "alphaGroup": "J",
+   "slug": "judea_657",
+   "dictText": [
+    "After the Captivity this name was applied to the whole of the country west of the Jordan ([Hag. 1:1](/hag#Hag.1.1), [14](/hag#Hag.1.14); 2:2). But under the Romans, in the time of Christ, it denoted the southernmost of the three divisions of Palestine ([Matt. 2:1](/matt#Matt.2.1), [5](/matt#Matt.2.5); 3:1; 4:25), although it was also sometimes used for Palestine generally ([Acts 28:21](/acts#Acts.28.21)).\n\n The province of Judea, as distinguished from Galilee and Samaria, included the territories of the tribes of Judah, Benjamin, Dan, Simeon, and part of Ephraim. Under the Romans it was a part of the province of Syria, and was governed by a procurator."
+   ],
+   "eventsHere": [
+    "recCCk6aW2ZbOCRTd",
+    "recDiHn0k1yUMCdjc",
+    "recMhkv38hrlSmT3K",
+    "recxOoLkd6wFyKysC",
+    "recThval8jPdpjMQd",
+    "recm9poq0bKg2RuU5"
+   ],
+   "otherNames": [
+    "recfyDMmdJqC0a3vI"
+   ]
+  }
+ },
+ {
   "id": "recbFkcAeBmrPDZvG",
   "createdTime": "2017-09-19T23:40:41.000Z",
   "fields": {
@@ -1423,6 +1685,7 @@
     "recANmGRGZAfJncX3",
     "recqCS4JGxazj0QlG",
     "recnRD5weFzGQOCWj",
+    "recRKh5kal8ttPRvo",
     "recQd9euu4ewG1iKD",
     "rec3tXOqtIGYztAl0",
     "rec8r1x817XFSHsxT",
@@ -1483,6 +1746,7 @@
     "rec3tXOqtIGYztAl0",
     "reccY8We3V0uOaKXG",
     "rec7KGzavR0Wcnmvw",
+    "recKFB5bjH0FZ6iPa",
     "recWrz3p8Be8mK1co",
     "recHbJiL6VLW7f8ve",
     "recda9fyQopCOKOyK",
@@ -1592,6 +1856,69 @@
     "recWQDkxXj0IjAdkn",
     "recrpaouE7oxrv5jy",
     "recCrwfh0wZHipZnN"
+   ]
+  }
+ },
+ {
+  "id": "recmRfnw4XzPBH9jc",
+  "createdTime": "2017-09-19T23:40:41.000Z",
+  "fields": {
+   "placeLookup": "nazareth_878",
+   "displayTitle": "Nazareth",
+   "featureType": "City",
+   "latitude": "-11.111111",
+   "longitude": "-22.222222",
+   "dictionaryLink": "https://www.biblestudytools.com/dictionaries/eastons-bible-dictionary/nazareth.html",
+   "dictionaryText": " separated, generally supposed to be the Greek form of the Hebrew <i> netser</i> , a \"shoot\" or \"sprout.\" Some, however, think that the name of the city must be connected with the name of the hill behind it, from which one of the finest prospects in Palestine is obtained, and accordingly they derive it from the Hebrew <i> notserah</i> , i.e., one guarding or watching, thus designating the hill which overlooks and thus guards an extensive region.   This city is not mentioned in the Old Testament. It was the home of Joseph and Mary ( Luke 2:39  ), and here the angel announced to the Virgin the birth of the Messiah ( 1:26-28  ). Here Jesus grew up from his infancy to manhood ( 4:16  ); and here he began his public ministry in the synagogue ( Matthew 13:54  ), at which the people were so offended that they sought to cast him down from the precipice whereon their city was built ( Luke 4:29  ). Twice they expelled him from their borders ( 4:16-29  ;  Matthew 13:54-58  ); and he finally retired from the city, where he did not many mighty works because of their unbelief ( Matthew 13:58  ), and took up his residence in Capernaum.    Nazareth is situated among the southern ridges of Lebanon, on the steep slope of a hill, about 14 miles from the Sea of Galilee and about 6 west from Mount Tabor. It is identified with the modern village en-Nazirah, of six or ten thousand inhabitants. It lies \"as in a hollow cup\" lower down upon the hill than the ancient city. The main road for traffic between Egypt and the interior of Asia passed by Nazareth near the foot of Tabor, and thence northward to Damascus.    It is supposed from the words of Nathanael in  John 1:46   that the city of Nazareth was held in great disrepute, either because, it is said, the people of Galilee were a rude and less cultivated class, and were largely influenced by the Gentiles who mingled with them, or because of their lower type of moral and religious character. But there seems to be no sufficient reason for these suppositions. The Jews believed that, according to  Micah 5:2  , the birth of the Messiah would take place at Bethlehem, and nowhere else. Nathanael held the same opinion as his countrymen, and believed that the great \"good\" which they were all expecting could not come from Nazareth. This is probably what Nathanael meant. Moreover, there does not seem to be any evidence that the inhabitants of Galilee were in any respect inferior, or that a Galilean was held in contempt, in the time of our Lord. (See Dr. Merrill's Galilee in the Time of Christ.)    The population of this city (now about 10,000) in the time of Christ probably amounted to 15,000 or 20,000 souls.    \"The so-called 'Holy House' is a cave under the Latin church, which appears to have been originally a tank. The 'brow of the hill', site of the attempted precipitation, is probably the northern cliff: the traditional site has been shown since the middle ages at some distance to the south. None of the traditional sites are traceable very early, and they have no authority. The name Nazareth perhaps means 'a watch tower' (now en-Nasrah), but is connected in the New Testament with Netzer, 'a branch' ( Isaiah 4:2  ;  Jeremiah 23:5  ;  Zechariah 3:8  ;  6:12  ;  Matthew 2:23  ), Nazarene being quite a different word from Nazarite.\"",
+   "verseCount": 28,
+   "placeID": 878,
+   "verses": [
+    "recCewA8ByPj2pq2X",
+    "rec41Lm8n6O1mls6c",
+    "recifUPksoEolrtrC",
+    "rec3Bz6zGmlGYYxA1",
+    "recdyqFkZ4IcPeDxM",
+    "recDpwALngocZBWI4",
+    "recf0gcsIwnbbjFdy",
+    "recKCgXsp4pwmgh8A",
+    "recuVCR8xqWMB5Ovz",
+    "recpTbYex0B3pcVqv",
+    "recpfUzxQg0sq0ygs",
+    "reclRdEfVIq3xKlNs",
+    "recIiexscv3Xwj67Q",
+    "recTHhigB3OUXJZtA",
+    "recnNtMNC1HzFF7Pa",
+    "recgd060b8gwf9TPR"
+   ],
+   "recogitoUri": "http://dare.ht.lu.se/places/22899",
+   "recogitoStatus": "VERIFIED",
+   "recogitoType": "settlement",
+   "recogitoLabel": "Nazareth|Nazareth, Nazareth",
+   "recogitoUID": "1f7f2866-4113-4a79-85aa-9812b95aa99b",
+   "eastons": [
+    "recIblkI6GS90sPa8"
+   ],
+   "modified": "2022-03-15T20:57:00.000Z",
+   "kjvName": "Nazareth",
+   "esvName": "Nazareth",
+   "openBibleLat": "-11.111111",
+   "openBibleLong": "-22.222222",
+   "recogitoLat": "-11.111111",
+   "recogitoLon": "-22.222222",
+   "alphaGroup": "N",
+   "slug": "nazareth_878",
+   "dictText": [
+    "Separated, generally supposed to be the Greek form of the Hebrew netser, a “shoot” or “sprout.” Some, however, think that the name of the city must be connected with the name of the hill behind it, from which one of the finest prospects in Palestine is obtained, and accordingly they derive it from the Hebrew notserah, i.e., one guarding or watching, thus designating the hill which overlooks and thus guards an extensive region.\n\n This city is not mentioned in the Old Testament. It was the home of Joseph and Mary ([Luke 2:39](/luke#Luke.2.39)), and here the angel announced to the Virgin the birth of the Messiah (1:26-28). Here Jesus grew up from his infancy to manhood (4:16); and here he began his public ministry in the synagogue ([Matt. 13:54](/matt#Matt.13.54)), at which the people were so offended that they sought to cast him down from the precipice whereon their city was built ([Luke 4:29](/luke#Luke.4.29)). Twice they expelled him from their borders (4:16-29; [Matt. 13:54-58](/matt#Matt.13.54)); and he finally retired from the city, where he did not many mighty works because of their unbelief ([Matt. 13:58](/matt#Matt.13.58)), and took up his residence in Capernaum.\n\n Nazareth is situated among the southern ridges of Lebanon, on the steep slope of a hill, about 14 miles from the Sea of Galilee and about 6 west from Mount Tabor. It is identified with the modern village en-Nazirah, of six or ten thousand inhabitants. It lies “as in a hollow cup” lower down upon the hill than the ancient city. The main road for traffic between Egypt and the interior of Asia passed by Nazareth near the foot of Tabor, and thence northward to Damascus.\n\n It is supposed from the words of Nathanael in [John 1:46](/john#John.1.46) that the city of Nazareth was held in great disrepute, either because, it is said, the people of Galilee were a rude and less cultivated class, and were largely influenced by the Gentiles who mingled with them, or because of their lower type of moral and religious character. But there seems to be no sufficient reason for these suppositions. The Jews believed that, according to [Micah 5:2](/mic#Mic.5.2), the birth of the Messiah would take place at Bethlehem, and nowhere else. Nathanael held the same opinion as his countrymen, and believed that the great “good” which they were all expecting could not come from Nazareth. This is probably what Nathanael meant. Moreover, there does not seem to be any evidence that the inhabitants of Galilee were in any respect inferior, or that a Galilean was held in contempt, in the time of our Lord.\n\n The population of this city (now about 10,000) in the time of Christ probably amounted to 15,000 or 20,000 souls.\n\n “The so-called ‘Holy House’ is a cave under the Latin church, which appears to have been originally a tank. The ‘brow of the hill’, site of the attempted precipitation, is probably the northern cliff: the traditional site has been shown since the middle ages at some distance to the south. None of the traditional sites are traceable very early, and they have no authority. The name Nazareth perhaps means ‘a watch tower’ (now en-Nasrah), but is connected in the New Testament with Netzer, ’a branch’ ([Isa. 4:2](/isa#Isa.4.2); [Jer. 23:5](/jer#Jer.23.5); [Zech. 3:8](/zech#Zech.3.8); [6:12](/zech#Zech.6.12); [Matt. 2:23](/matt#Matt.2.23)), Nazarene being quite a different word from Nazarite.”"
+   ],
+   "eventsHere": [
+    "recRd6H7B5gBuTYT9",
+    "rec2xII53pVseJCB6",
+    "recchK9PHoqttFTdX",
+    "rec40p7ak4u60WdPB",
+    "recHiT0IbNNmDry0s",
+    "rec8aq3QrGCer9RqY",
+    "recDZ5yPUfsW2mQCB",
+    "recnCLTHvWRdrFwVY"
    ]
   }
  },

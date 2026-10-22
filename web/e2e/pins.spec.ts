@@ -14,12 +14,12 @@ test("a pinned node stays in the scene when the Focus changes, and the panel lis
   await panel(page).getByRole("button", { name: "Pin", exact: true }).click();
   await expect(page.getByRole("status")).toHaveText("Pinned Abraham.");
 
-  await panel(page).getByRole("list", { name: "Person (21)" }).getByRole("button", { name: /^Isaac/ }).click();
+  await panel(page).getByRole("list", { name: "Person (24)" }).getByRole("button", { name: /^Isaac/ }).click();
   await panel(page).getByRole("button", { name: "Make Focus" }).click();
   await focusIs(page, ISAAC);
   expect(await roleOf(page, ABRAHAM)).toBe("pinned");
   // Shared Nodes are labelled and highlighted (fixture values in tests/model.test.ts).
-  await expect(page.locator(".labels .nl.shared")).toHaveText(["Gerar", "Beer-lahai-roi", "Genealogy of Jesus", "Blessing"]);
+  await expect(page.locator(".labels .nl.shared")).toHaveText(["Jacob (Israel)", "Gerar", "Beer-lahai-roi", "Genealogy of Jesus", "Blessing"]);
 
   // Fixture: Gerar shares Gen 26:1, 26:6 and 26:20 with Isaac, and Gen 26:1 with Abraham.
   await panel(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Gerar/ }).click();

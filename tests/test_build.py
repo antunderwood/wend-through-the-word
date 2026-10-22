@@ -19,7 +19,7 @@ def test_index_holds_books_counts_date_version_and_licences(export):
     assert [b["osis"] for b in index["books"]] == ["Gen", "Matt", "3John"]
     gen = index["books"][0]
     assert (gen["name"], gen["chapters"], gen["verses"]) == ("Genesis", 5, 160)
-    assert index["counts"] == {"chapters": 7, "verses": 177}
+    assert index["counts"] == {"chapters": 9, "verses": 225}
 
 
 def test_chapter_file_holds_each_verse_with_key_label_and_text(export):
@@ -44,6 +44,16 @@ def test_verse_with_no_bsb_text_is_kept_and_marked(export):
     v21 = next(v for v in chapter(export, "Matt", 17)["verses"] if v["verse"] == 21)
     assert v21["no_bsb_text"] is True
     assert v21["text_bsb"] is None
+
+
+def test_the_fixture_spans_both_testaments(export):
+    # Fixture row: Gen.16.11 to Matt.1.21 (8 votes); both ends are in the build
+    matt = next(v for v in chapter(export, "Matt", 1)["verses"] if v["verse"] == 21)
+    assert "01016011" in [n["id"] for n in matt["cross_references"]]
+    egypt = read_json(export / "data" / VERSION / "entity" / "place" / "egypt_362.json")
+    assert {v["key"][:2] for v in egypt["verses"]} >= {"01", "40"}  # Genesis and Matthew
+    judah = read_json(export / "data" / VERSION / "entity" / "group" / "tribe_of_judah.json")
+    assert len([n for n in judah["neighbours"] if n["type"] == "person"]) > 100  # a long list
 
 
 def test_bsb_verse_with_no_theographic_key_is_reported(export):

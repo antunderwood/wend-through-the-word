@@ -22,14 +22,14 @@ test("only the Selected Node's edge and a hovered node's carry Relationship word
   const words = page.locator(".labels .el:visible");
   // Abraham is the Focus and the Selected Node: no words.
   await expect(words).toHaveCount(0);
-  // Fixture: Abraham SPOUSE_OF Sarah (Female); Abraham and Genealogy (Theme) only share 6 Verses,
+  // Fixture: Abraham SPOUSE_OF Sarah (Female); Abraham and Genealogy (Theme) only share 8 Verses,
   // and a Theme's words never vary, so only the count shows (decision 141).
   await page.locator(".labels").getByText("Sarah", { exact: true }).click();
   await expect(words).toHaveText(["wife"]);
   const genealogy = (await nodes(page)).find((n) => n.id === "theme:genealogy")!;
   await page.mouse.move(genealogy.x, genealogy.y);
-  await expect(words).toHaveText(["wife", "6 verses"]);
-  await expect(words.getByText("6 verses", { exact: true })).toHaveClass(/derived/);
+  await expect(words).toHaveText(["wife", "8 verses"]);
+  await expect(words.getByText("8 verses", { exact: true })).toHaveClass(/derived/);
   await page.mouse.move(5, 5);
   await expect(words).toHaveText(["wife"]);
 });
@@ -40,12 +40,12 @@ test("the Focus shows the first line of its Dictionary Entry", async ({ page }) 
 });
 
 test("hovering a Ring 2 node shows its name and its path to the Focus, until the pointer leaves", async ({ page }) => {
-  // Fixture: Jacob (Israel) is Isaac's first Ring 2 neighbour.
-  const jacob = (await nodes(page)).find((n) => n.id === "person:israel_682")!;
-  expect(jacob.role).toBe("ring2");
+  // Fixture: Rebekah is Isaac's first Ring 2 neighbour (Jacob, his first, is in Ring 1).
+  const rebekah = (await nodes(page)).find((n) => n.id === "person:rebekah_2401")!;
+  expect(rebekah.role).toBe("ring2");
   const tip = page.getByRole("tooltip");
-  await page.mouse.move(jacob.x, jacob.y);
-  await expect(tip).toHaveText("Jacob (Israel) → Isaac → Abraham");
+  await page.mouse.move(rebekah.x, rebekah.y);
+  await expect(tip).toHaveText("Rebekah → Isaac → Abraham");
   await page.mouse.move(5, 5);
   await expect(tip).toBeHidden();
 });
