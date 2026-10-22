@@ -46,11 +46,11 @@ for (const view of ["A", "B", "C"] as const) {
     const abraham = before.find((n) => n.id === ABRAHAM)!;
     await page.mouse.click(abraham.x, abraham.y);
     await expect(heading(page)).toHaveText("Abraham");
-    // Fixture: Abraham has 36 Themes, 6 in Ring 1 and 30 behind the Overflow Node.
-    const themes = panel(page).getByRole("list", { name: "Theme (36)" });
+    // Fixture: Abraham has 37 Themes, 6 in Ring 1 and 31 behind the Overflow Node.
+    const themes = panel(page).getByRole("list", { name: "Theme (37)" });
     await expect(themes.getByRole("listitem")).toHaveCount(6);
-    await panel(page).getByRole("button", { name: "30 more" }).click();
-    await expect(themes.getByRole("listitem")).toHaveCount(36);
+    await panel(page).getByRole("button", { name: "31 more" }).click();
+    await expect(themes.getByRole("listitem")).toHaveCount(37);
     await panel(page).getByRole("button", { name: "Show top 6" }).click();
     await expect(themes.getByRole("listitem")).toHaveCount(6);
 
@@ -58,8 +58,8 @@ for (const view of ["A", "B", "C"] as const) {
     // no Verse with Abraham in the fixture.
     await themes.getByRole("button", { name: /^Genealogy/ }).click();
     await expect(heading(page)).toHaveText("Genealogy");
-    const verses = panel(page).getByRole("list", { name: "Together in 6 verses" }).getByRole("listitem");
-    await expect(verses).toHaveCount(6);
+    const verses = panel(page).getByRole("list", { name: "Together in 8 verses" }).getByRole("listitem");
+    await expect(verses).toHaveCount(8);
     await expect(verses.first()).toContainText("Gen 11:26");
     await expect(verses.first()).toContainText("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");
     expect(await nodes(page)).toEqual(before);

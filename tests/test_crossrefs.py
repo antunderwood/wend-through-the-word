@@ -1,4 +1,6 @@
-from conftest import VERSION, read_json, read_tsv, run_build
+import gzip
+
+from conftest import VERSION, read_json, read_tsv
 
 
 def verse(export, book, ch, vs):
@@ -97,18 +99,17 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
 
 
 def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is_reported(
-    export, tmp_path, trim_limit
+    untrimmed_export, trimmed_export, trim_limit
 ):
-    limit = trim_limit  # Gen 25 is about 118 KB in the fixture build
-    small = run_build(tmp_path / "out", size_limit=limit)
+    small = trimmed_export
     path = f"data/{VERSION}/chapter/Gen/25.json"
-    assert (small / path).stat().st_size < limit
+    assert len(gzip.compress((small / path).read_bytes(), 9)) < trim_limit
 
     def neighbours(out):
         verses = read_json(out / path)["verses"]
         return {(v["key"], n["id"], n["weight"]) for v in verses for n in v["cross_references"]}
 
-    kept, dropped = neighbours(small), neighbours(export) - neighbours(small)
+    kept, dropped = neighbours(small), neighbours(untrimmed_export) - neighbours(small)
     assert kept and dropped
     assert min(e[2] for e in kept) >= max(e[2] for e in dropped)
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
@@ -118,21 +119,19 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(
-    export, tmp_path, trim_limit
+    untrimmed_export, trimmed_export, trim_limit
 ):
-    limit = trim_limit  # Gen 36 Ring 2 is about 77 KB in the fixture build, most of it Entities
-    small = run_build(tmp_path / "out", size_limit=limit)
-    path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
-    assert (small / path).stat().st_size < limit
-    # The trimmed chapter file has fewer Ring 1 Verses, so compare only the ones it keeps.
-    # Entity entries are never trimmed (decision 96).
+    small = trimmed_export
+    path = f"data/{VERSION}/chapter/Gen/25.ring2.json"
+    assert len(gzip.compress((small / path).read_bytes(), 9)) < trim_limit
+    # Compare only the Verses' entries: Entity entries are never trimmed (decision 96).
     nodes = {k for k in read_json(small / path)["ring2"] if ":" not in k}
 
     def entries(out):
         ring2 = read_json(out / path)["ring2"]
         return {(node, e["id"], e["weight"]) for node in nodes for e in ring2[node]}
 
-    kept, dropped = entries(small), entries(export) - entries(small)
+    kept, dropped = entries(small), entries(untrimmed_export) - entries(small)
     assert dropped
     assert min(e[2] for e in kept) >= max(e[2] for e in dropped)
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")

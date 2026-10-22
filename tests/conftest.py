@@ -1,8 +1,11 @@
 import csv
 import gzip
 import json
+import random
+import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -18,7 +21,8 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 
 def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
-    config keys with integer values, such as `size_limit`."""
+    config keys with TOML values, such as `size_limit` (the gzipped limit) or
+    `previous_reports='"path"'`."""
     config = out.parent / f"{out.name}.toml"
     config.write_text(
         f"books = {json.dumps(list(books))}\n"
@@ -38,17 +42,46 @@ def export(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def trim_limit(export):
-    """A size limit that makes the build trim cross-references in some chapter files and Ring 2
-    sidecars, but stays above every file that cannot be trimmed, so the build still succeeds
-    (story 74). The largest such file is the Gen 36 sidecar's Entity entries, never trimmed
-    (decision 96). Just above them the trimmed Gen 36 chapter keeps a few cross-references,
-    whose Ring 2 lists push the sidecar over again; about 1 KB above, it keeps too few. Derived
-    from the fixture build, so the window moves with the fixture."""
-    sidecar = read_json(export / "data" / VERSION / "chapter" / "Gen" / "36.ring2.json")
-    sidecar["ring2"] = {k: v for k, v in sidecar["ring2"].items() if ":" in k}
-    floor = len((json.dumps(sidecar, ensure_ascii=False, sort_keys=True, indent=1) + "\n").encode())
-    return floor + 200
+def untrimmed_export(tmp_path_factory):
+    """The build from a copy of the fixture sources (in `sources` beside it) with one more
+    cross-reference from a Gen 25 Verse to each fixture Verse outside the built books, with
+    random Votes, for the trimming tests (story 74). Random targets and Votes stay large when
+    gzipped, so the Gen 25 chapter file and Ring 2 sidecar (about 23 and 24 KB gzipped) are the
+    largest files, about twice the next."""
+    tmp = tmp_path_factory.mktemp("untrimmed")
+    sources = shutil.copytree(FIXTURES, tmp / "sources")
+    keys = [r["fields"]["osisRef"] for r in read_json(FIXTURES / "verses.json")]
+    rng = random.Random(0)
+    gen25 = [k for k in keys if k.startswith("Gen.25.")]
+    rows = "".join(
+        f"{rng.choice(gen25)}\t{key}\t{rng.randint(1, 99)}\n"
+        for key in keys
+        if key.split(".")[0] not in ("Gen", "Matt", "3John")
+    )
+    with zipfile.ZipFile(FIXTURES / "cross-references.zip") as z:
+        text = z.read("cross_references.txt").decode()
+    with zipfile.ZipFile(sources / "cross-references.zip", "w") as z:
+        z.writestr("cross_references.txt", text + rows)
+    return run_build(tmp / "out", sources=sources)
+
+
+@pytest.fixture(scope="session")
+def trim_limit(untrimmed_export):
+    """A gzipped limit just above every file of `untrimmed_export` but Gen 25's two."""
+    rows = read_tsv(untrimmed_export / "reports" / "files.tsv")
+    return max(int(r["gzipped_bytes"]) for r in rows if "/Gen/25." not in r["path"]) + 1
+
+
+@pytest.fixture(scope="session")
+def trimmed_export(tmp_path_factory, untrimmed_export, trim_limit):
+    """`untrimmed_export` built again under `trim_limit`."""
+    out = tmp_path_factory.mktemp("trimmed") / "out"
+    return run_build(out, sources=untrimmed_export.parent / "sources", size_limit=trim_limit)
+
+
+def compact_json(data):
+    """An export file's text (decision 168): compact, sorted keys, UTF-8 text unescaped."""
+    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
 
 
 def read_json(path):

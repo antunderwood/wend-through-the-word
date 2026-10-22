@@ -28,10 +28,10 @@ def test_chapter_file_shows_the_entities_each_verse_mentions(export):
 
 def test_each_mention_and_filed_under_is_weighted_by_the_rarity_of_its_entity(export):
     # Decision 121: ln(31,102 / whole-Bible Verse count), rounded to 4 places. Fixture: Keturah is
-    # in 4 Verses across the Bible and Abraham in 65, so in Gen 25:1 Keturah comes first.
+    # in 4 Verses across the Bible and Abraham in 74, so in Gen 25:1 Keturah comes first.
     gen_25_1 = chapter_verse(export, "Gen.25.1")
     assert {m["id"]: m["weight"] for m in gen_25_1["mentions"]} == {
-        "person:abraham_58": 6.1706,
+        "person:abraham_58": 6.041,
         "person:keturah_1782": 8.9587,
     }
     # The heading ABIDAH is rarer than GENEALOGY, so it outweighs it in Gen 25:4.

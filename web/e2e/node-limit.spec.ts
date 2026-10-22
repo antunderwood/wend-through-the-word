@@ -13,8 +13,8 @@ test("the node limit page measures each view and gives the results as text", asy
   for (const [view, choice, nodes] of [
     ["A", "100 nodes", "100"],
     ["B", "1000 nodes", "1000"],
-    // Fixture stand-in: Egypt is in the fixture export with 33 nodes, none hidden at limit 500.
-    ["C", "Egypt", "33"],
+    // Fixture stand-in: Egypt is in the fixture export with 81 nodes, none hidden at limit 500.
+    ["C", "Egypt", "81"],
   ]) {
     await page.getByRole("radio", { name: view, exact: true }).check();
     await page.getByLabel("Scene").selectOption({ label: choice });
@@ -25,7 +25,7 @@ test("the node limit page measures each view and gives the results as text", asy
   }
   await page.getByRole("checkbox", { name: "Glow" }).uncheck();
   await page.getByLabel("Node limit").fill("20");
-  await expect(page.getByTestId("hidden")).toHaveText("13");
+  await expect(page.getByTestId("hidden")).toHaveText("56");
   await expect(page.getByTestId("fps")).toHaveText(/^\d+(\.\d)? fps/, { timeout: 20_000 });
   await record.click();
 
@@ -33,7 +33,7 @@ test("the node limit page measures each view and gives the results as text", asy
   expect(lines.slice(-4).map((l) => l.replace(/ +\S+ fps$/, "").split(/ {2,}/))).toEqual([
     ["A", "100 nodes", "100", "103", "3", "glow on", "no fog", "still"],
     ["B", "1000 nodes", "1000", "1015", "15", "glow on", "no fog", "still"],
-    ["C", "Egypt", "33", "33", "0", "glow on", "fog on", "still"],
-    ["C", "Egypt", "20", "33", "13", "glow off", "fog on", "still"],
+    ["C", "Egypt", "81", "81", "0", "glow on", "fog on", "still"],
+    ["C", "Egypt", "25", "81", "56", "glow off", "fog on", "still"],
   ]);
 });

@@ -119,7 +119,7 @@ The mismatch report still runs over every source.
 |---|---|
 | Verse | key, label, book, chapter, verse, text_bsb |
 | Person | id, name, aliases, gender, dictionary_entry, source, licence |
-| Place | id, name, lat, lon, confidence, coord_source, dictionary_entry, source, licence |
+| Place | id, name, lat, lon, confidence, coord_source, coord_note (a GeoNames name match only, decision 167), dictionary_entry, source, licence |
 | Event | id, title, event_year, dictionary_entry, source, licence |
 | People Group | id, name, dictionary_entry, source, licence |
 | Theme | id, name, source, licence |
@@ -189,7 +189,7 @@ Phase 2 may add a Worker, D1, and KV (section 8.3).
 /data/search-index.json          names, aliases, types, and IDs of entities (themes included), plus the book and chapter list. It is also the label lookup for Ring 2 nodes.
 ```
 
-Each file must be below 500 KB uncompressed. If a file is larger, the build splits it or trims the lowest vote cross-references.
+Each file must be under 500 KB gzipped (level 9) and under 25 MiB raw (decision 163). Cloudflare compresses every file in transit, so the gzipped size is what a reader downloads; brotli at the edge is smaller still. If a file is over the gzipped limit, the build trims the lowest weight cross-references and reports it; a file it cannot bring under fails the build. `files.tsv` reports each file's raw and gzipped sizes. The build, the staged-site checks, and the release command read the rule from one file, `pipeline/size_rule.json`.
 
 Ring 2 entries hold an ID and a weight only. Labels come from `search-index.json`.
 
@@ -246,7 +246,7 @@ These values were checked on the official pages on 2026-10-19 (`docs/licences.md
 ### 8.5 Cloudflare design rules
 
 1. **Static first.** Serve all graph data as static files. They do not count against the daily Worker requests.
-2. **Search in the browser.** The build makes `search-index.json`. It holds names, aliases, types, and IDs for entities and themes. Target size: under 500 KB compressed. Verse reference lookup (for example `Gen 1:1`) runs in the browser. Full text search of verse text is phase 2.
+2. **Search in the browser.** The build makes `search-index.json`. It holds names, aliases, types, and IDs for entities and themes. It is one file, under the size rule of section 8.2: 500 KB gzipped and 25 MiB raw (about 90 KB gzipped for the whole Bible). Verse reference lookup (for example `Gen 1:1`) runs in the browser. Full text search of verse text is phase 2.
 3. **No D1 in version 1.** Use D1 only for phase 2 features that static files cannot do.
 4. **Large D1 loads.** The cross-reference table has about 340,000 rows. The free write limit is 100,000 rows per day. A full load needs at least 4 days of free quota. It is not verified whether a bulk import counts as writes. Test this with Genesis. Either load in batches of 1,000 rows over several days, or use the paid plan for one month.
 5. **NLT cache (phase 2).** The KV write limit is low (1,000 per day, unconfirmed). Cache each passage once. Respect the 30-day refresh rule from API.Bible.
@@ -282,6 +282,7 @@ pipeline/
     possibly_same.csv  POSSIBLY_SAME_AS links (people a tradition reads as one person)
     corrections.csv    fixes to Theographic attributes, for example gender; `was` holds the upstream value the fix replaces
     themes_keep.csv    Nave's headings that stay Themes although they match a Person or Place name or alias
+    links.csv          Mentions and family links (PARENT_OF, SIBLING_OF, SPOUSE_OF) to add or remove
                        every curated table has a `request` column: the URL of the correction request, or empty
   export_static.py     write JSON files
 docs/licences.md

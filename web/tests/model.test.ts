@@ -22,29 +22,30 @@ describe("Abraham as the Focus, K = 6", () => {
     const drawn = draw(initialState(ABRAHAM));
     // Fixture weights (cosine; for Themes decision 111; for Verses the other Entities in them).
     expect(ring1Of(drawn, "person")).toEqual([
-      "person:isaac_616", // 0.5111
-      "person:sarah_2473", // 0.3223
+      "person:isaac_616", // 0.5081
+      "person:sarah_2473", // 0.3107
+      "person:israel_682", // 0.2616, with Abraham in Matt 1:2
       "person:haran_1407",
       "person:nahor_2143",
-      "person:hagar_1348",
-      "person:terah_2841", // 0.1961; God (0.1554) is seventh
+      "person:hagar_1348", // 0.1937; Terah (0.1838) is seventh
     ]);
-    // Only 5 Places: Beer-lahai-roi and Canaan tie at 0.124, Gerar and Haran at 0.0555.
+    // Only 6 Places: Beer-lahai-roi and Canaan tie at 0.1162, Gerar and Haran at 0.052.
     expect(ring1Of(drawn, "place")).toEqual([
       "place:ur_1189",
       "place:beer-lahai-roi_167",
       "place:canaan_272",
       "place:gerar_459",
       "place:haran_527",
+      "place:babylon_151",
     ]);
     // Bastard and Heir tie at 27.7392.
     expect(ring1Of(drawn, "theme")).toEqual([
       "theme:god",
       "theme:genealogy",
+      "theme:blessing",
       "theme:covenant",
       "theme:bastard",
       "theme:heir",
-      "theme:blessing",
     ]);
     // Gen 11:27 and 11:29 both have 8 other Entities.
     expect(ring1Of(drawn, "verse")).toEqual(["01011031", "01011027", "01011029", "01011026", "01016005", "01016003"]);
@@ -52,55 +53,55 @@ describe("Abraham as the Focus, K = 6", () => {
   });
 
   it("breaks a tie at the edge of Ring 1 by ID", () => {
-    // Abraham enters Canaan (event:71) and event:77 tie at 0.0877 for the sixth Event place.
+    // Abraham enters Canaan (event:71) and event:77 tie at 0.0822 for the sixth Event place.
     const events = ring1Of(draw(initialState(ABRAHAM)), "event");
     expect(events).toEqual(["event:65", "event:61", "event:66", "event:88", "event:76", "event:71"]);
   });
 
   it("adds one Overflow Node for each type with more Neighbours, with its count", () => {
     const overflow = draw(initialState(ABRAHAM)).nodes.filter((n) => n.role === "overflow");
-    // Fixture: 21 People, 7 Events, 36 Themes, 26 Verses; 5 Places and 1 People Group fit.
+    // Fixture: 24 People, 7 Events, 37 Themes, 29 Verses; 6 Places and 1 People Group fit.
     expect(Object.fromEntries(overflow.map((n) => [n.id, n.count]))).toEqual({
-      "overflow:person": 15,
+      "overflow:person": 18,
       "overflow:event": 1,
-      "overflow:theme": 30,
-      "overflow:verse": 20,
+      "overflow:theme": 31,
+      "overflow:verse": 23,
     });
   });
 
   it("fills Ring 2 from each Ring 1 node's stored top 10, skipping nodes already on screen", () => {
     const drawn = draw(initialState(ABRAHAM));
     const via = (id: string) => drawn.nodes.filter((n) => n.role === "ring2" && n.via === id).map((n) => n.id);
-    // Isaac's stored list starts with Abraham, the Focus.
-    expect(via("person:isaac_616")).toEqual(["person:israel_682", "person:rebekah_2401", "theme:wells"]);
+    // Isaac's stored list starts with Abraham, the Focus, and Israel (Ring 1).
+    expect(via("person:isaac_616")).toEqual(["person:rebekah_2401", "theme:wells", "person:abimelech_40"]);
     // Sarah's starts with Hagar (Ring 1) and Abraham.
     expect(via("person:sarah_2473")).toEqual(["person:heth_1510", "person:iscah_618", "person:milcah_2082"]);
-    expect(ids(drawn, "ring2")).toHaveLength(64);
-    expect(drawn.count).toBe(99); // 1 Focus, 30 Ring 1, 4 Overflow Nodes, 64 Ring 2
+    expect(ids(drawn, "ring2")).toHaveLength(69);
+    expect(drawn.count).toBe(105); // 1 Focus, 31 Ring 1, 4 Overflow Nodes, 69 Ring 2
   });
 });
 
 describe("the node limit (decision 33)", () => {
   it("trims Ring 2 only, and says how many are hidden", () => {
     const drawn = draw(limit(60));
-    expect([drawn.count, drawn.demand, drawn.hidden]).toEqual([60, 99, 39]);
-    expect(drawn.trimmed).toEqual({ ring2: 39, path: 0, pinring: 0 });
-    expect(ids(drawn, "ring1")).toHaveLength(30);
+    expect([drawn.count, drawn.demand, drawn.hidden]).toEqual([60, 105, 45]);
+    expect(drawn.trimmed).toEqual({ ring2: 45, path: 0, pinring: 0 });
+    expect(ids(drawn, "ring1")).toHaveLength(31);
     expect(ids(drawn, "overflow")).toHaveLength(4);
   });
 
   it("gives a corner note only when nodes are hidden", () => {
-    expect(hiddenNote(draw(limit(60)))).toBe("39 nodes hidden to keep the view fast");
+    expect(hiddenNote(draw(limit(60)))).toBe("45 nodes hidden to keep the view fast");
     expect(hiddenNote(draw(initialState(ABRAHAM)))).toBe("");
   });
 
   it("takes each parent's third Ring 2 node before any parent's second", () => {
-    // Fixture: 27 Ring 1 nodes have Ring 2, with 27 first, 21 second, and 16 third neighbours.
-    // A limit of 70 leaves room for 35 Ring 2 nodes: every first, and 8 seconds.
+    // Fixture: 29 Ring 1 nodes have Ring 2, with 29 first, 22 second, and 18 third neighbours.
+    // A limit of 70 leaves room for 34 Ring 2 nodes: every first, and 5 seconds.
     const full = draw(initialState(ABRAHAM)).nodes.filter((n) => n.role === "ring2");
     const kept = draw(limit(70)).nodes.filter((n) => n.role === "ring2");
     const byRank = (k: number) => kept.filter((n) => n.rank === k);
-    expect([byRank(0).length, byRank(1).length, byRank(2).length]).toEqual([27, 8, 0]);
+    expect([byRank(0).length, byRank(1).length, byRank(2).length]).toEqual([29, 5, 0]);
     expect(new Set(byRank(0).map((n) => n.via))).toEqual(new Set(full.map((n) => n.via)));
   });
 });
@@ -276,7 +277,7 @@ describe("pins and Shared Nodes", () => {
   it("a pinned Focus brings no pin ring until another node is the Focus", () => {
     const s = act(initialState(ABRAHAM), pin(ABRAHAM));
     expect(s.pins).toEqual([ABRAHAM]);
-    expect(draw(s).count).toBe(99); // as unpinned (the Ring 1 test above)
+    expect(draw(s).count).toBe(105); // as unpinned (the Ring 1 test above)
     expect(draw(s).edges.filter((e) => e.kind === "pin")).toEqual([]);
     const drawn = draw(act(s, focus(ISAAC)));
     expect(drawn.nodes.find((n) => n.id === ABRAHAM)?.role).toBe("pinned");
@@ -288,11 +289,11 @@ describe("pins and Shared Nodes", () => {
     const around = drawn.edges.filter((e) => e.kind === "pin" && e.a === ABRAHAM).map((e) => e.b);
     // Fixture: Abraham's top 3 of each type (top 6 in the Ring 1 test above); 1 People Group.
     expect(around).toEqual([
-      ...[ISAAC, SARAH, "person:haran_1407"],
+      ...[ISAAC, SARAH, "person:israel_682"],
       ...["place:ur_1189", "place:beer-lahai-roi_167", "place:canaan_272"],
       ...["event:65", "event:61", "event:66"],
       "group:genealogy_of_jesus",
-      ...["theme:god", "theme:genealogy", "theme:covenant"],
+      ...["theme:god", "theme:genealogy", "theme:blessing"],
       ...["01011031", "01011027", "01011029"],
     ]);
     // Isaac is the Focus and Beer-lahai-roi is in his Ring 1, so they keep those roles.
@@ -318,10 +319,10 @@ describe("pins and Shared Nodes", () => {
       draw(s)
         .nodes.filter((n) => n.shared)
         .map((n) => n.id);
-    // Fixture: 11 nodes on screen are linked to both by any link. Covenant is around Abraham and
-    // linked to Isaac, but seventh of Isaac's Themes; Gerar is fourth of Abraham's Places, outside
-    // his pin ring, and second of Isaac's.
-    expect(shared(isaacWithAbraham())).toEqual(["place:gerar_459", "place:beer-lahai-roi_167", "group:genealogy_of_jesus", "theme:blessing"]);
+    // Fixture: many nodes on screen are linked to both by any link. Covenant is in Abraham's top
+    // K and linked to Isaac, but seventh of Isaac's Themes; Gerar is fourth of Abraham's Places,
+    // outside his pin ring, and first of Isaac's. Israel is around Abraham and second of Isaac's.
+    expect(shared(isaacWithAbraham())).toEqual(["person:israel_682", "place:gerar_459", "place:beer-lahai-roi_167", "group:genealogy_of_jesus", "theme:blessing"]);
     // With K = 7 Covenant is in Isaac's top K too.
     const k7 = act(isaacWithAbraham(), { type: "setFilter", key: "k", value: 7 });
     expect(shared(k7)).toContain("theme:covenant");
@@ -331,30 +332,30 @@ describe("pins and Shared Nodes", () => {
 
   describe("the node limit with pins (decision 33)", () => {
     // Abraham and Sarah pinned, then Terah and Isaac made the Focus: Your Path is Abraham, Terah.
-    // Fixture: 107 nodes wanted, 53 of them Ring 2 and 19 around the pins (9 of them third).
+    // Fixture: 106 nodes wanted, 54 of them Ring 2 and 17 around the pins (7 of them third).
     const s = () => act(initialState(ABRAHAM), pin(ABRAHAM), pin(SARAH), focus(TERAH), focus(ISAAC));
     const at = (n: number) => draw(act(s(), { type: "setFilter", key: "nodeLimit", value: n }));
     const around = (drawn: Scene, rank: number) => drawn.nodes.filter((n) => n.role === "pinring" && n.rank === rank).length;
 
     it("trims Ring 2 first, then the oldest of Your Path, then the pin rings", () => {
-      expect(at(54).trimmed).toEqual({ ring2: 53, path: 0, pinring: 0 });
+      expect(at(52).trimmed).toEqual({ ring2: 54, path: 0, pinring: 0 });
       // Terah goes; Abraham stays, as a pin.
-      const drawn = at(53);
-      expect(drawn.trimmed).toEqual({ ring2: 53, path: 1, pinring: 0 });
+      const drawn = at(51);
+      expect(drawn.trimmed).toEqual({ ring2: 54, path: 1, pinring: 0 });
       expect(drawn.nodes.some((n) => n.id === TERAH)).toBe(false);
-      expect(at(52).trimmed).toEqual({ ring2: 53, path: 1, pinring: 1 });
+      expect(at(50).trimmed).toEqual({ ring2: 54, path: 1, pinring: 1 });
     });
 
     it("takes each pin's third neighbours before any pin's second", () => {
       const drawn = at(44);
-      expect(drawn.trimmed.pinring).toBe(9);
+      expect(drawn.trimmed.pinring).toBe(7);
       expect([around(drawn, 0), around(drawn, 1), around(drawn, 2)]).toEqual([7, 3, 0]);
     });
 
     it("never trims the Focus, the pins, Ring 1, or Overflow Nodes", () => {
       const drawn = at(10);
       // 1 Focus, 28 Ring 1 (Abraham among them), Sarah, 4 Overflow Nodes.
-      expect([drawn.count, drawn.demand, drawn.hidden]).toEqual([34, 107, 73]);
+      expect([drawn.count, drawn.demand, drawn.hidden]).toEqual([34, 106, 72]);
       expect(drawn.nodes.filter((n) => n.roles.includes("pinned")).map((n) => n.id)).toEqual([ABRAHAM, SARAH]);
       expect(ids(drawn, "focus")).toEqual([ISAAC]);
       expect(drawn.nodes.filter((n) => n.roles.includes("ring1"))).toHaveLength(28);
@@ -365,13 +366,15 @@ describe("pins and Shared Nodes", () => {
 
 describe("Relationship words on the Focus edges", () => {
   it("reads each Ring 1 link from the Focus, with the gender of each relative", () => {
+    // K = 7 keeps Terah, seventh of Abraham's People since Israel (Matt 1:2) joined.
+    const k7 = reduce(initialState(ABRAHAM), { type: "setFilter", key: "k", value: 7 }, data.label);
     const words = Object.fromEntries(
-      draw(initialState(ABRAHAM))
+      draw(k7)
         .edges.filter((e) => e.kind === "focus")
         .map((e) => [e.b, e.dashed ? `${e.label} (dashed)` : e.label]),
     );
     // Fixture edges in Abraham's file: Hagar is a curated wife and concubine; Canaan and Genealogy
-    // are only Co-mentions (2 and 6 shared Verses). A People Group and a Theme show no fixed words
+    // are only Co-mentions (2 and 8 shared Verses). A People Group and a Theme show no fixed words
     // (decision 141).
     expect(words).toMatchObject({
       "person:isaac_616": "son",
@@ -383,7 +386,7 @@ describe("Relationship words on the Focus edges", () => {
       "event:65": "took part",
       "group:genealogy_of_jesus": "",
       "place:canaan_272": "together in 2 verses (dashed)",
-      "theme:genealogy": "6 verses (dashed)",
+      "theme:genealogy": "8 verses (dashed)",
     });
   });
 
@@ -552,14 +555,14 @@ describe("type and book filters", () => {
   });
 
   it("a hidden type frees room under the node limit", () => {
-    // Fixture: 99 nodes wanted with Themes, 39 hidden at a limit of 60 (above).
+    // Fixture: 105 nodes wanted with Themes, 45 hidden at a limit of 60 (above).
     const drawn = draw(act(limit(60), hide("theme")));
-    expect([drawn.demand, drawn.hidden]).toEqual([67, 7]);
+    expect([drawn.demand, drawn.hidden]).toEqual([71, 11]);
   });
 
   it("the book filter hides only Verses", () => {
     const shown = draw(initialState(ABRAHAM));
-    const drawn = draw(act(initialState(ABRAHAM), books(["Matt"])));
+    const drawn = draw(act(initialState(ABRAHAM), books(["3John"]))); // Abraham is in Matt 1 too
     expect(roles(drawn, "verse")).toEqual([]);
     for (const t of ["person", "place", "event", "group", "theme"] as const) expect(ring1Of(drawn, t)).toEqual(ring1Of(shown, t));
   });

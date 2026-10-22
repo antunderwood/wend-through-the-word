@@ -71,9 +71,9 @@ describe("data loader", () => {
   it("gives an Entity record its Neighbours and Verses as links, by weight then ID", async () => {
     const data = await createData(readExport, "");
     const abraham = await data.load(ABRAHAM);
-    // Fixture: Isaac is Abraham's heaviest Neighbour (cosine 0.5111, tests/test_comention.py), and
+    // Fixture: Isaac is Abraham's heaviest Neighbour (cosine 0.5081, tests/test_comention.py), and
     // Gen 11:31 his heaviest Verse (11 other Entities in it).
-    expect(abraham.links.find((l) => l.type === "person")).toMatchObject({ id: "person:isaac_616", weight: 0.5111 });
+    expect(abraham.links.find((l) => l.type === "person")).toMatchObject({ id: "person:isaac_616", weight: 0.5081 });
     expect(abraham.links.find((l) => l.type === "verse")).toMatchObject({ id: "01011031", weight: 11 });
     expect(data.label(ABRAHAM)).toBe("Abraham");
   });
@@ -82,7 +82,7 @@ describe("data loader", () => {
     const data = await createData(readExport, "");
     // Genealogy stands in for Faith, which shares no Verse with Abraham in the fixture.
     const shared = await data.shared(ABRAHAM, "theme:genealogy");
-    expect(shared.map((v) => data.label(v.key))).toEqual(["Gen 11:26", "Gen 11:27", "Gen 11:29", "Gen 11:31", "Gen 25:1", "Gen 25:12"]);
+    expect(shared.map((v) => data.label(v.key))).toEqual(["Gen 11:26", "Gen 11:27", "Gen 11:29", "Gen 11:31", "Gen 25:1", "Gen 25:12", "Matt 1:1", "Matt 1:2"]);
     expect(shared[0].text).toBe("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");
     expect(shared[5].text).toBe(
       "This is the account of Abraham’s son Ishmael, whom Hagar the Egyptian, Sarah’s maidservant, bore to Abraham.",
@@ -97,7 +97,7 @@ describe("data loader", () => {
     expect(["person:anah_247", "person:anah_248", "person:anah_249"].map((id) => data.label(id))).toEqual([
       "Anah, son of Zibeon (Gen 36:2)",
       "Anah, son of Seir (Gen 36:20)",
-      "Anah, brother of Ajah (Gen 36:24)",
+      "Anah, father of Dishon (Gen 36:24)", // its children are curated (#44)
     ]);
     // A panel list, whose Relationship words already say it, leaves the relation out.
     expect(data.label("person:anah_248", false)).toBe("Anah (Gen 36:20)");
@@ -148,10 +148,11 @@ describe("data loader", () => {
 
   it("steps to the first Verse of the next or previous chapter in the build, and stops at its ends", async () => {
     const data = await createData(readExport, "");
-    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 17, 3 John 1.
+    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 17, 3 John 1.
     expect(data.nextChapter("01011027", 1)).toBe("01016001");
-    expect(data.nextChapter("01036024", 1)).toBe("40017001");
-    expect(data.nextChapter("40017020", -1)).toBe("01036001");
+    expect(data.nextChapter("01036024", 1)).toBe("40001001");
+    expect(data.nextChapter("40001001", -1)).toBe("01036001");
+    expect(data.nextChapter("40017020", -1)).toBe("40002001");
     expect(data.nextChapter("01011001", -1)).toBeUndefined();
     expect(data.nextChapter("64001001", 1)).toBeUndefined();
   });
@@ -179,6 +180,20 @@ describe("details of an Entity", () => {
     expect((await data.details("person:anah_247")).corrections).toEqual([
       expect.objectContaining({ field: "gender", evidence: [{ verse_key: "01036024", label: "Gen.36.24" }], request: null, source: "Curated", licence: "CC BY-SA 4.0" }),
     ]);
+  });
+
+  it("gives a corrected link once for each note, and the moved links with their note", async () => {
+    const data = await createData(readExport, "");
+    // Fixture: links.csv moves Gen 36:25 and its two children from anah_248 to anah_249 (#44).
+    const [link] = (await data.details("person:anah_248")).corrections;
+    // One line for each note: Gen 36:25's rows, then 1 Chr 1:41's, which repeats it.
+    expect((await data.details("person:anah_248")).corrections).toHaveLength(2);
+    expect(link).toMatchObject({ field: "link", source: "Curated", note: expect.stringMatching(/^The owner's reading/) });
+    const curated = { source: "Curated", evidence: link.evidence, note: link.note };
+    const verse = await data.load("01036025");
+    expect(verse.links.find((l) => l.id === "person:anah_249")!.edges).toEqual([expect.objectContaining(curated)]);
+    const anah = await data.load("person:anah_249");
+    expect(anah.links.find((l) => l.id === "01036025")!.edges).toEqual([expect.objectContaining(curated)]);
   });
 
   it("gives an Event's year as approximate, in the Jones chronology, with BC and AD", async () => {

@@ -3,7 +3,8 @@
 Usage:
     python -m pipeline.build CONFIG.toml
 
-Config keys: books (OSIS names), sources (folder), out (folder), build_date, data_version.
+Config keys: books (OSIS names), sources (folder), out (folder), build_date, data_version, and
+optionally previous_reports (a previous build's reports folder, for the summary page's changes).
 """
 
 import sys

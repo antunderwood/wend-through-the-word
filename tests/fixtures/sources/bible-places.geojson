@@ -611,6 +611,36 @@
    "links": [
     {
      "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/judaea"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/judea_657/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/judean_658/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/a149f13"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/981527"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q1003997"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
      "identifier": "https://www.digitalmanna.org/encyclopedia/places/kadesh-barnea"
     },
     {
@@ -822,6 +852,32 @@
     {
      "type": "seeAlso",
      "identifier": "https://www.openbible.info/geo/ancient/a2735ff"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/nazareth"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/nazareth_878/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/af5884f"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/678299"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q430776"
     }
    ]
   },

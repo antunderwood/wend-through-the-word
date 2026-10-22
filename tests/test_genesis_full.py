@@ -126,10 +126,15 @@ def test_genesis_ships_the_real_curated_tables(genesis):
     ]
     anah = read_json(entity / "anah_247.json")
     assert (anah["gender"], anah["corrections"][0]["was"]) == ("Male", "Female")
+    # The owner reviewed the Gen 36:25 rows of links.csv on 2026-10-22 (#44).
+    assert edges("anah_249", "dishon_1017") == [("PARENT_OF", ["Gen.36.24", "Gen.36.25"])]
+    seir_son = read_json(entity / "anah_248.json")["neighbours"]
+    assert "person:aholibamah_172" not in [n["id"] for n in seir_son]
     for name in ("redundant", "no_longer_matches"):
         assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
     unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
-    # The owner reviewed the last three correction rows on 2026-10-19 (decision 110).
+    # The owner reviewed the last three correction rows on 2026-10-19 (decision 110), and the
+    # places of #16 on 2026-10-22 (decision 167).
     assert not [r for r in unreviewed if r["table"] == "corrections"]
     place = genesis / "data" / VERSION / "entity" / "place"
     nile = read_json(place / "nile_895.json")

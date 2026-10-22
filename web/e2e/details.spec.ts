@@ -40,16 +40,32 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 26:34");
 });
 
+test("a corrected link says so once for each note, and a moved link shows its note and Evidence Verses", async ({ page }) => {
+  // Fixture: links.csv moves Gen 36:25 and Dishon and Aholibamah to the son of Zibeon (#44).
+  await focusOn(page, "Anah", /^Anah, father of Dishon \(Gen 36:24\)/, "person:anah_249");
+  const corrected = panel(page).getByRole("list", { name: "Corrections" }).getByRole("listitem");
+  // One line for each note: Gen 36:25's rows, then 1 Chr 1:41's, which repeats it.
+  await expect(corrected).toHaveCount(2);
+  await expect(corrected.first()).toContainText("Corrected after review: link (Gen 36:24, Gen 36:25). The owner's reading");
+  await expect(corrected.nth(1)).toContainText("1:41). 1Chr.1.41 repeats Gen.36.25");
+  const note = /^Note on the Relationship: The owner's reading, with most commentators: .* Evidence: Gen 36:24, Gen 36:25\.$/;
+  await panel(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Dishon/ }).click();
+  await expect(relationship(page)).toHaveText("Relationship: son of Anah (Gen 36:24) Suggest a correction");
+  await expect(notes(page)).toHaveText([note]);
+  await panel(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: /^Gen 36:25/ }).click();
+  await expect(notes(page)).toHaveText([note]);
+});
+
 test("a curated item with a request links to it", async ({ page }) => {
   // Fixture: Hagar's curated links to Abraham carry request #900 (synthetic).
-  await panel(page).getByRole("list", { name: "Person (21)" }).getByRole("button", { name: /^Hagar/ }).click();
+  await panel(page).getByRole("list", { name: "Person (24)" }).getByRole("button", { name: /^Hagar/ }).click();
   await expect(notes(page)).toHaveCount(2);
   await expect(notes(page).first().getByRole("link", { name: "Request #900" })).toHaveAttribute("href", "https://github.com/antunderwood/wend-through-the-word/issues/900");
 });
 
 test("a shared Verse can be double clicked while the Selected Node shows its details", async ({ page }) => {
   // Sarah has a curated note and facts, which a click on a shared Verse removes from above it.
-  await panel(page).getByRole("list", { name: "Person (21)" }).getByRole("button", { name: /^Sarah/ }).click();
+  await panel(page).getByRole("list", { name: "Person (24)" }).getByRole("button", { name: /^Sarah/ }).click();
   await expect(notes(page)).toHaveCount(1);
   await panel(page).getByRole("list", { name: /^Together in/ }).getByRole("button").first().dblclick();
   await focusIs(page, "01011029");
@@ -59,7 +75,7 @@ test("a shared Verse can be double clicked while the Selected Node shows its det
 test("a list item stays put between the two clicks of a double click", async ({ page }) => {
   const settled = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   // Genealogy: a Co-mention with two sources, and a type line whose source loads after the click.
-  const genealogy = panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ });
+  const genealogy = panel(page).getByRole("list", { name: "Theme (37)" }).getByRole("button", { name: /^Genealogy/ });
   // A click scrolls its target into view first; measure after that.
   const y = async (item: typeof genealogy) => (await item.scrollIntoViewIfNeeded(), (await item.boundingBox())!.y);
   const neighbour = await y(genealogy);
@@ -69,7 +85,7 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   await settled();
   expect(await y(genealogy)).toBe(neighbour);
 
-  const verse = panel(page).getByRole("list", { name: "Together in 6 verses" }).getByRole("button", { name: /^Gen 11:27/ });
+  const verse = panel(page).getByRole("list", { name: "Together in 8 verses" }).getByRole("button", { name: /^Gen 11:27/ });
   const shared = await y(verse);
   await verse.click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
@@ -114,18 +130,18 @@ test("an Event shows its year as approx., Jones chronology; a Place its coordina
 });
 
 test("an Entity's linked Verses are in Bible order, each with its source, and toggle with N more", async ({ page }) => {
-  // Fixture: Abraham is linked to 26 Verses, 6 in Ring 1.
-  const verses = panel(page).getByRole("list", { name: "Verse (26)" });
+  // Fixture: Abraham is linked to 29 Verses, 6 in Ring 1.
+  const verses = panel(page).getByRole("list", { name: "Verse (29)" });
   await expect(verses.getByRole("listitem")).toHaveCount(6);
-  await panel(page).getByRole("button", { name: "20 more" }).click();
-  await expect(verses.getByRole("listitem")).toHaveCount(26);
+  await panel(page).getByRole("button", { name: "23 more" }).click();
+  await expect(verses.getByRole("listitem")).toHaveCount(29);
   const keys = (await verses.getByRole("button", { name: /^Gen/ }).allTextContents()).map((t) => t.match(/Gen (\d+):(\d+)/)!.slice(1).map(Number));
   expect(keys).toEqual([...keys].sort((a, b) => a[0] - b[0] || a[1] - b[1]));
   await expect(verses.getByRole("listitem").first()).toHaveAttribute("title", "Theographic, CC BY-SA 4.0");
   await panel(page).getByRole("button", { name: "Show first 6" }).click();
   await expect(verses.getByRole("listitem")).toHaveCount(6);
   // A Theme's Verses are Filed Under it, from Nave's.
-  await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).dblclick();
+  await panel(page).getByRole("list", { name: "Theme (37)" }).getByRole("button", { name: /^Genealogy/ }).dblclick();
   await focusIs(page, "theme:genealogy");
   await expect(panel(page).getByRole("list", { name: /^Verse/ }).getByRole("listitem").first()).toHaveAttribute("title", "Nave's Topical Bible, CC BY 4.0");
 });
@@ -137,12 +153,12 @@ test("each fact and link keeps its source in a hover title, not in the text", as
   await expect(facts(page).getByRole("listitem").first()).toHaveAttribute("title", "Theographic, CC BY-SA 4.0");
   await expect(panel(page)).not.toContainText("CC BY");
   // A derived Neighbour: both sources, each with its own licence.
-  await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
+  await panel(page).getByRole("list", { name: "Theme (37)" }).getByRole("button", { name: /^Genealogy/ }).click();
   // The Relationship line keeps the full words (decision 142); the lists show only the count.
-  await expect(relationship(page)).toHaveText("Relationship: together in 6 verses Suggest a correction");
-  await expect(relationship(page)).toHaveAttribute("title", "Relationship: together in 6 verses. Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
+  await expect(relationship(page)).toHaveText("Relationship: together in 8 verses Suggest a correction");
+  await expect(relationship(page)).toHaveAttribute("title", "Relationship: together in 8 verses. Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0");
   // Every Neighbour list item too, as the Relationship line says it.
-  await expect(panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveAttribute(
+  await expect(panel(page).getByRole("list", { name: "Theme (37)" }).getByRole("listitem").filter({ hasText: "Genealogy" })).toHaveAttribute(
     "title",
     "Nave's Topical Bible, CC BY 4.0; Theographic, CC BY-SA 4.0",
   );
@@ -162,7 +178,7 @@ test("a Verse's Neighbours, Cross-references included, each keep where they came
 });
 
 test("a list row's correction link shows on hover, on keyboard focus, or for the Selected Node, and never moves the list", async ({ page }) => {
-  const persons = panel(page).getByRole("list", { name: "Person (21)" });
+  const persons = panel(page).getByRole("list", { name: "Person (24)" });
   const isaac = persons.getByRole("listitem").filter({ hasText: /^Isaac/ });
   const next = persons.getByRole("listitem").nth(1);
   const link = isaac.getByRole("button", { name: "Suggest a correction to the link to Isaac" });

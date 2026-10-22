@@ -6,15 +6,15 @@ test("the page opens on Abraham in the tilted plane", async ({ page }) => {
   await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
   const drawn = await nodes(page);
   const size = page.viewportSize()!;
-  // Fixture: Abraham's scene is 99 nodes (tests/model.test.ts), drawn around him at the centre.
-  expect(drawn).toHaveLength(99);
+  // Fixture: Abraham's scene is 105 nodes (tests/model.test.ts), drawn around him at the centre.
+  expect(drawn).toHaveLength(105);
   const focus = drawn.find((n) => n.role === "focus")!;
   expect(focus.id).toBe("person:abraham_58");
   expect(Math.abs(focus.x - size.width / 2)).toBeLessThan(size.width / 4);
   expect(Math.abs(focus.y - size.height / 2)).toBeLessThan(size.height / 4);
   await expect(page.locator(".nl.focus")).toContainText("Abraham");
   // Named, though the name may give way to a Ring 1 name it would overlap (decision 124).
-  await expect(page.getByText("+15 people")).toBeAttached();
+  await expect(page.getByText("+18 people")).toBeAttached();
 });
 
 test("a Verse can be the Focus, with a short BSB quote", async ({ page }) => {

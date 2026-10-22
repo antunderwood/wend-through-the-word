@@ -4,7 +4,8 @@ Themes are in, `verse_neighbours` turns each Entity's Verses into Verse Neighbou
 
 Also sets, for the later steps, every Theographic record in or out of the book range:
 `b.records` (record ID -> (type, source name, fields, Entity ID)) and `b.titles` (record ID ->
-displayTitle, which `facts` uses for a Place's other names).
+displayTitle, which `facts` uses for a Place's other names). `links` reads the links in their
+edge fields, for the edges and curation steps.
 
 Theographic decides identity: one record is one Entity, and no two are merged (decision 7).
 An Entity is in the book range when one of its `verses` is.
@@ -14,6 +15,7 @@ import json
 import re
 import sys
 from collections import Counter
+from typing import NamedTuple
 
 from pipeline.common import report_mismatches
 
@@ -52,6 +54,62 @@ def facts(kind, f, titles):
         # Astronomical numbering, kept as is: 4004 BC is -4003. Some dates are "0030-05-01".
         out["event_year"] = int(re.match(r"-?\d+", f["startDate"])[0])
     return out
+
+
+# Theographic edge field: (edge, True when the record holding the field is the edge's source,
+# None when the edge has no direction). Read by the edges and curation steps.
+FIELDS = {
+    "person": {
+        "father": ("PARENT_OF", False),
+        "mother": ("PARENT_OF", False),
+        "children": ("PARENT_OF", True),
+        "siblings": ("SIBLING_OF", None),
+        # Only from these fields, never from shared parents (decision 36).
+        "halfSiblingsSameFather": ("HALF_SIBLING_OF", None),
+        "halfSiblingsSameMother": ("HALF_SIBLING_OF", None),
+        "partners": ("PARTNER_OF", None),  # or the curated edges of the pair (#7)
+        "birthPlace": ("BORN_AT", True),
+        "deathPlace": ("DIED_AT", True),
+        "memberOf": ("MEMBER_OF", True),
+    },
+    "event": {
+        "participants": ("PARTICIPATED_IN", False),
+        "locations": ("OCCURRED_AT", True),
+    },
+}
+
+
+class Edge(NamedTuple):
+    """An edge between two Entity IDs (a Mention starts at a Verse Key). An edge with no direction
+    has start < end."""
+
+    start: str
+    edge: str
+    end: str | None
+
+
+class Link(NamedTuple):
+    """A link in a Theographic edge field: its edge (`end` None when the link is not a
+    Theographic record), the source name, and the record, field, and link it was read from."""
+
+    key: Edge
+    source: str
+    record: str
+    field: str
+    link: str
+
+
+def links(records):
+    """Every link in an edge field of `records` (`b.records`), as a Link."""
+    for kind, source, f, a in records.values():
+        for field, (edge, out) in FIELDS.get(kind, {}).items():
+            for rec in f.get(field) or []:
+                if rec not in records:
+                    yield Link(Edge(a, edge, None), source, a, field, rec)
+                    continue
+                c = records[rec][3]
+                x, y = (a, c) if out or (out is None and a < c) else (c, a)
+                yield Link(Edge(x, edge, y), source, a, field, c)
 
 
 def load(b):
@@ -99,15 +157,11 @@ def verse_neighbours(b):
     """Turn each Entity's Verses into Verse Neighbours. The weight is the number of other
     Entities in the Verse, Themes included (PRD 10.4 rule 2), so this runs after `themes`."""
     for e in b.entities.values():
-        neighbours = [
-            {
-                "key": v["key"],
-                "edge": "FILED_UNDER" if e["type"] == "theme" else "MENTIONS",
-                "direction": "in",
-                "weight": len(v["mentions"]) + len(v["filed_under"]) - 1,
-                "source": e["source"],
-                "licence": e["licence"],
-            }
-            for v in e["verses"]
-        ]
+        neighbours = []
+        for v in e["verses"]:
+            # The Verse's own link to the Entity: its edge and provenance, curated or not (#44).
+            link = next(m for m in v["mentions"] + v["filed_under"] if m["id"] == e["id"])
+            weight = len(v["mentions"]) + len(v["filed_under"]) - 1
+            neighbour = {k: x for k, x in link.items() if k != "id"}
+            neighbours.append({**neighbour, "key": v["key"], "direction": "in", "weight": weight})
         e["verses"] = sorted(neighbours, key=lambda n: (-n["weight"], n["key"]))

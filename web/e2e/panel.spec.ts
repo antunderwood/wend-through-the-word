@@ -3,7 +3,7 @@ import { focusIs, nodes } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
-// One type's list in the panel, found by its title ("Theme (36)").
+// One type's list in the panel, found by its title ("Theme (37)").
 const typeList = (page: Page, title: string) => panel(page).getByRole("list", { name: title });
 
 test.use({ reducedMotion: "reduce" });
@@ -14,10 +14,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("a type's N more opens and closes its full list", async ({ page }) => {
-  // Fixture: Abraham has 36 Themes, 6 in Ring 1 and 30 behind the Overflow Node.
-  const themes = typeList(page, "Theme (36)");
+  // Fixture: Abraham has 37 Themes, 6 in Ring 1 and 31 behind the Overflow Node.
+  const themes = typeList(page, "Theme (37)");
   await expect(themes.getByRole("listitem")).toHaveCount(6);
-  const more = panel(page).getByRole("button", { name: "30 more" });
+  const more = panel(page).getByRole("button", { name: "31 more" });
   await expect(more).toHaveAttribute("aria-expanded", "false");
   // A quiet panel button, not a default blue underlined link.
   const look = await more.evaluate((b) => getComputedStyle(b));
@@ -25,7 +25,7 @@ test("a type's N more opens and closes its full list", async ({ page }) => {
   expect(look.textDecorationLine).toBe("none");
 
   await more.click();
-  await expect(themes.getByRole("listitem")).toHaveCount(36);
+  await expect(themes.getByRole("listitem")).toHaveCount(37);
   const less = panel(page).getByRole("button", { name: "Show top 6" });
   await expect(less).toHaveAttribute("aria-expanded", "true");
   await less.click();
@@ -36,18 +36,18 @@ test("an Overflow Node opens its type's full list and never changes the scene", 
   const before = await nodes(page);
   const overflow = before.find((n) => n.id === "overflow:theme")!;
   await page.mouse.click(overflow.x, overflow.y);
-  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+30 themes");
-  await expect(typeList(page, "Theme (36)").getByRole("listitem")).toHaveCount(36);
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+31 themes");
+  await expect(typeList(page, "Theme (37)").getByRole("listitem")).toHaveCount(37);
   expect(await nodes(page)).toEqual(before);
   // Nor does a double click: an Overflow Node cannot be the Focus.
   await page.mouse.dblclick(overflow.x, overflow.y);
-  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+30 themes");
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+31 themes");
   expect(await nodes(page)).toEqual(before);
 });
 
 test("a list click selects, a double click makes the Focus", async ({ page }) => {
   const before = await nodes(page);
-  const people = typeList(page, "Person (21)");
+  const people = typeList(page, "Person (24)");
   await people.getByRole("button", { name: /^Isaac/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
   expect(await nodes(page)).toEqual(before);
@@ -58,10 +58,10 @@ test("a list click selects, a double click makes the Focus", async ({ page }) =>
 });
 
 test("the panel lists the Verses a Selected Node shares with the Focus, with BSB text", async ({ page }) => {
-  await typeList(page, "Theme (36)").getByRole("button", { name: /^Genealogy/ }).click();
+  await typeList(page, "Theme (37)").getByRole("button", { name: /^Genealogy/ }).click();
   // Genealogy stands in for Faith, which shares no Verse with Abraham in the fixture.
-  const verses = panel(page).getByRole("list", { name: "Together in 6 verses" });
-  await expect(verses.getByRole("listitem")).toHaveCount(6);
+  const verses = panel(page).getByRole("list", { name: "Together in 8 verses" });
+  await expect(verses.getByRole("listitem")).toHaveCount(8);
   await expect(verses.getByRole("listitem").first()).toContainText("Gen 11:26");
   await expect(verses.getByRole("listitem").first()).toContainText("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");
   // A shared Verse is selected by a click, and the list stays for a double click.
@@ -85,7 +85,7 @@ test("the chevron collapses and expands the panel and points the way it will mov
 });
 
 test("the panel, open or collapsed, leaves the Your Path bar fully usable", async ({ page }) => {
-  await typeList(page, "Person (21)").getByRole("button", { name: /^Sarah/ }).dblclick();
+  await typeList(page, "Person (24)").getByRole("button", { name: /^Sarah/ }).dblclick();
   await focusIs(page, "person:sarah_2473");
   const bar = page.getByRole("navigation", { name: "Your Path" });
   // A click fails if anything lies over its target, so each click checks the bar is uncovered.
