@@ -70,6 +70,9 @@ def test_the_ring_1_people_of_abraham_jesus_and_paul(bible):
         "person:peter_2745",
         "person:holy_spirit_7400",
         "person:paul_2479",
+        # A Co-mention artefact: the letters say "Christ Jesus" in Verses that also name Timothy
+        # (issue #64, formulaic phrases in the letters inflate Co-mentions). Kept as the expected
+        # value until that issue changes the ranking (owner).
         "person:timotheus_2863",
         "person:pilate_2365",
     ]
