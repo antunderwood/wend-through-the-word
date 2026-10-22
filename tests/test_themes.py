@@ -53,6 +53,16 @@ def test_a_heading_that_names_a_person_or_place_is_removed_and_reported(export):
     assert rows["CANAAN"]["entity_ids"] == "person:canaan_914 place:canaan_272"
 
 
+def test_a_heading_spelt_two_ways_or_written_surname_first_is_removed(export):
+    # Synthetic rows: "ABRAHAMUS (ABRAHAM)" names Abraham in its brackets, and "ANTIPAS, HEROD"
+    # is "Herod Antipas" written surname first, as Nave's writes "PILATE, PONTIUS".
+    rows = removed(export)
+    assert rows["ABRAHAMUS (ABRAHAM)"]["action"] == "removed"
+    assert rows["ABRAHAMUS (ABRAHAM)"]["entity_ids"] == "person:abraham_58"
+    assert rows["ANTIPAS, HEROD"]["action"] == "removed"
+    assert not (export / "data" / VERSION / "entity" / "theme" / "antipas_herod.json").exists()
+
+
 def test_a_heading_that_matches_an_alias_is_removed_and_reported(export):
     # Judith is Aholibamah's other name (Gen 26:34, 36:2), so the Theme would duplicate her.
     assert removed(export)["JUDITH"] == {

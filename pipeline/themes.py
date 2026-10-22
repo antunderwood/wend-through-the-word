@@ -99,8 +99,12 @@ def load(b):
         in_range = sorted(whole_bible & verses.keys())
         if not in_range:
             continue
-        # "REBEKAH (REBECCA)" is Rebekah, as "Jacob (Israel)" is Jacob.
-        forms = {norm(heading), norm(re.sub(r"\s*\(.*\)$", "", heading))}
+        # "REBEKAH (REBECCA)" is Rebekah, as "Jacob (Israel)" is Jacob; "SHUSHAN (SUSA)" is Susa by
+        # its bracketed spelling; "PILATE, PONTIUS" is Pontius Pilate written surname first.
+        first, _, bracket = re.sub(r"\)$", "", heading).partition(" (")
+        forms = {norm(heading), norm(first), norm(bracket)} - {""}
+        if first.count(",") == 1:
+            forms.add(norm(" ".join(reversed(first.split(", ")))))
         by_name = set().union(*(names.get(f, set()) for f in forms))
         by_alias = set().union(*(aliases.get(f, set()) for f in forms))
         if by_name or by_alias:

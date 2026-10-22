@@ -158,6 +158,7 @@ def test_genesis_ships_the_real_curated_tables(genesis):
         "DAUGHTER",
         "WIFE",
         "FIRSTBORN",
+        "SCEPTER (SCEPTRE)",
     }
     themes = genesis / "data" / VERSION / "entity" / "theme"
     assert read_json(themes / "god.json")["name"] == "God (topic)"
@@ -271,14 +272,14 @@ def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_pla
     clashes = {t for t in themes if norm(re.sub(r"\s*\(.*\)$", "", t)) in names}
     # Only headings the owner kept (decision 109) may share a name with an Entity.
     kept = {"God (topic)", "Holy Spirit (topic)", "SALT", "LIGHT", "SUN", "MASTER", "DAUGHTER"}
-    assert clashes <= kept | {"WIFE", "FIRSTBORN"}
+    assert clashes <= kept | {"WIFE", "FIRSTBORN", "Sceptre"}
     rows = read_tsv(genesis / "reports" / "removed_theme_headings.tsv")
     # The owner kept nine headings (decision 109); the four peoples are removed.
     assert Counter((r["action"], r["match"], r["keep_row"]) for r in rows) == {
         ("removed", "name", ""): 380,
         ("kept", "name", "yes"): 3,  # GOD, HOLY SPIRIT, SALT
         ("removed", "alias", ""): 25,
-        ("kept", "alias", "yes"): 6,  # LIGHT, SUN, MASTER, DAUGHTER, WIFE, FIRSTBORN
+        ("kept", "alias", "yes"): 7,  # LIGHT, SUN, MASTER, DAUGHTER, WIFE, FIRSTBORN, SCEPTER
         ("kept", "part of the heading", ""): 1,  # JESUS, THE CHRIST
     }
     removed = {r["heading"] for r in rows if r["action"] == "removed"}
