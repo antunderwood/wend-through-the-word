@@ -186,7 +186,8 @@ describe("details of an Entity", () => {
     const data = await createData(readExport, "");
     // Fixture: links.csv moves Gen 36:25 and its two children from anah_248 to anah_249 (#44).
     const [link] = (await data.details("person:anah_248")).corrections;
-    expect((await data.details("person:anah_248")).corrections).toHaveLength(1);
+    // One line for each note: Gen 36:25's rows, then 1 Chr 1:41's, which repeats it.
+    expect((await data.details("person:anah_248")).corrections).toHaveLength(2);
     expect(link).toMatchObject({ field: "link", source: "Curated", note: expect.stringMatching(/^The owner's reading/) });
     const curated = { source: "Curated", evidence: link.evidence, note: link.note };
     const verse = await data.load("01036025");

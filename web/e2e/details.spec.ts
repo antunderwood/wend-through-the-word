@@ -40,12 +40,14 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 26:34");
 });
 
-test("a corrected link says so once, and a moved link shows its note and Evidence Verses", async ({ page }) => {
+test("a corrected link says so once for each note, and a moved link shows its note and Evidence Verses", async ({ page }) => {
   // Fixture: links.csv moves Gen 36:25 and Dishon and Aholibamah to the son of Zibeon (#44).
   await focusOn(page, "Anah", /^Anah, father of Dishon \(Gen 36:24\)/, "person:anah_249");
   const corrected = panel(page).getByRole("list", { name: "Corrections" }).getByRole("listitem");
-  await expect(corrected).toHaveCount(1);
-  await expect(corrected).toContainText("Corrected after review: link (Gen 36:24, Gen 36:25). The owner's reading");
+  // One line for each note: Gen 36:25's rows, then 1 Chr 1:41's, which repeats it.
+  await expect(corrected).toHaveCount(2);
+  await expect(corrected.first()).toContainText("Corrected after review: link (Gen 36:24, Gen 36:25). The owner's reading");
+  await expect(corrected.nth(1)).toContainText("1:41). 1Chr.1.41 repeats Gen.36.25");
   const note = /^Note on the Relationship: The owner's reading, with most commentators: .* Evidence: Gen 36:24, Gen 36:25\.$/;
   await panel(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Dishon/ }).click();
   await expect(relationship(page)).toHaveText("Relationship: son of Anah (Gen 36:24) Suggest a correction");

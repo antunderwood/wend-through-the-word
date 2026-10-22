@@ -199,7 +199,7 @@ def test_rows_that_fix_plain_theographic_errors_are_listed_for_upstream_reportin
         ("corrections", "6"),
         ("corrections", "7"),
         ("corrections", "8"),
-        *[("links", str(line)) for line in range(2, 9)],
+        *[("links", str(line)) for line in (11, 12, *range(2, 9))],  # lines sort as text
         ("partners", "7"),
     ]
 
@@ -258,6 +258,8 @@ def test_each_entity_at_an_end_of_a_corrected_link_is_marked_corrected_after_rev
         ("link", "Gen.36.25 MENTIONS person:anah_248", ""),
         ("link", "person:anah_248 PARENT_OF person:dishon_1017", ""),
         ("link", "person:anah_248 PARENT_OF person:aholibamah_172", ""),
+        # 1 Chr 1:41 is outside the range: only the whole-Bible Verse sets change.
+        ("link", "1Chr.1.41 MENTIONS person:anah_248", ""),
     ]
     assert fixes("person:dishon_1017") == [
         ("link", "person:anah_248 PARENT_OF person:dishon_1017", ""),
