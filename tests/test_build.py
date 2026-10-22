@@ -1,8 +1,9 @@
 import gzip
+import json
 import subprocess
 
 import pytest
-from conftest import VERSION, nodes_and_edges, read_json, read_tsv, run_build
+from conftest import VERSION, compact_json, nodes_and_edges, read_json, read_tsv, run_build
 
 
 def chapter(export, book, ch):
@@ -87,7 +88,7 @@ def test_every_file_is_under_500_kb_gzipped_and_25_mib_raw_and_reported(export):
 
 def test_a_file_over_the_limit_raw_but_under_it_gzipped_is_not_trimmed(export, tmp_path):
     # Decision 163: a limit above every file's gzipped size trims nothing, though the Gen 25
-    # chapter file (about 118 KB raw, 7 KB gzipped) is far over it raw.
+    # chapter file (about 77 KB raw, 6 KB gzipped) is far over it raw.
     rows = {r["path"]: r for r in read_tsv(export / "reports" / "files.tsv")}
     limit = max(int(r["gzipped_bytes"]) for r in rows.values()) + 1
     assert int(rows[f"data/{VERSION}/chapter/Gen/25.json"]["bytes"]) > limit
@@ -106,8 +107,8 @@ def test_the_total_file_count_is_reported(export):
 
 def test_a_file_still_over_the_limit_is_reported_and_fails_the_build(tmp_path, capfd):
     # Story 74 and decision 73: the limit never fails silently. At 4 KB gzipped, Abraham's entity
-    # file (about 8 KB gzipped) and the search index (about 7 KB) are over, and only
-    # cross-references trim: the Gen 25 chapter file (about 7 KB) is trimmed under it.
+    # file (about 8 KB gzipped) and the search index (about 10 KB) are over, and only
+    # cross-references trim: the Gen 25 chapter file (about 6 KB) is trimmed under it.
     with pytest.raises(subprocess.CalledProcessError):
         run_build(tmp_path / "out", size_limit=4000)
     out = tmp_path / "out"
@@ -128,3 +129,10 @@ def test_two_builds_are_byte_identical(export, tmp_path):
     first = {p.relative_to(export): p.read_bytes() for p in export.rglob("*") if p.is_file()}
     second = {p.relative_to(again): p.read_bytes() for p in again.rglob("*") if p.is_file()}
     assert first == second
+
+
+def test_export_files_are_compact_json_with_sorted_keys_and_utf8_text(export):
+    # Decision 168: no indentation or spaces after separators; text such as "Abram’s" unescaped.
+    for path in (export / "data").rglob("*.json"):
+        text = path.read_text()
+        assert text == compact_json(json.loads(text)), path.name

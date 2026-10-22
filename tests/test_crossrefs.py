@@ -1,4 +1,4 @@
-from conftest import VERSION, read_json, read_tsv, run_build
+from conftest import VERSION, read_json, read_tsv
 
 
 def verse(export, book, ch, vs):
@@ -97,9 +97,9 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
 
 
 def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is_reported(
-    genesis_export, tmp_path, trim_config
+    genesis_export, trimmed_export, trim_config
 ):
-    small = run_build(tmp_path / "out", **trim_config)  # Gen 25 is about 118 KB raw
+    small = trimmed_export  # Gen 25 is about 77 KB raw
     path = f"data/{VERSION}/chapter/Gen/25.json"
     assert (small / path).stat().st_size < trim_config["size_limit"]
 
@@ -117,13 +117,12 @@ def test_an_oversized_chapter_file_loses_its_lowest_vote_cross_references_and_is
 
 
 def test_an_oversized_ring2_file_loses_its_lowest_weights_and_is_reported(
-    genesis_export, tmp_path, trim_config
+    genesis_export, trimmed_export, trim_config
 ):
-    small = run_build(tmp_path / "out", **trim_config)  # Gen 36 Ring 2 is about 76 KB raw
+    small = trimmed_export  # Gen 36 Ring 2 is about 50 KB raw
     path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
     assert (small / path).stat().st_size < trim_config["size_limit"]
-    # The trimmed chapter file has fewer Ring 1 Verses, so compare only the ones it keeps.
-    # Entity entries are never trimmed (decision 96).
+    # Compare only the Verses' entries: Entity entries are never trimmed (decision 96).
     nodes = {k for k in read_json(small / path)["ring2"] if ":" not in k}
 
     def entries(out):
