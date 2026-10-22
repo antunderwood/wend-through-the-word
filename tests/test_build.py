@@ -105,6 +105,22 @@ def test_the_total_file_count_is_reported(export):
     ]
 
 
+def test_files_trimmed_under_the_limit_let_the_build_succeed(
+    untrimmed_export, trimmed_export, trim_limit
+):
+    # Story 74: Gen 25's chapter file and sidecar are over the limit before trimming, and
+    # trimmed under it; nothing is left over, so the build (run with check=True) passed.
+    gen25 = [f"data/{VERSION}/chapter/Gen/25.json", f"data/{VERSION}/chapter/Gen/25.ring2.json"]
+    before = {
+        r["path"]: int(r["gzipped_bytes"])
+        for r in read_tsv(untrimmed_export / "reports" / "files.tsv")
+    }
+    assert all(before[path] >= trim_limit for path in gen25)
+    rows = read_tsv(trimmed_export / "reports" / "split_or_trimmed.tsv")
+    assert sorted((r["path"], r["action"]) for r in rows) == [(p, "trimmed") for p in gen25]
+    assert read_tsv(trimmed_export / "reports" / "file_count.tsv")[0]["over_limit"] == "0"
+
+
 def test_a_file_still_over_the_limit_is_reported_and_fails_the_build(tmp_path, capfd):
     # Story 74 and decision 73: the limit never fails silently. At 4 KB gzipped, Abraham's entity
     # file (about 8 KB gzipped) and the search index (about 10 KB) are over, and only
