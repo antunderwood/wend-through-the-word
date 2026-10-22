@@ -147,3 +147,20 @@ def test_mentions_follow_the_bsb_where_theographic_follows_a_kjv_reading(bible):
     rahab = entity(bible, "person:rahab_2388")
     boaz = next(n for n in rahab["neighbours"] if n["id"] == "person:boaz_519")
     assert "PARENT_OF" in [e["edge"] for e in boaz["edges"]]
+
+
+def test_family_links_follow_the_bsb_where_theographic_follows_a_kjv_reading(bible):
+    # #67: Ladan's sons (1 Chr 23:8), Mered's sons (1 Chr 4:18), and Abihail as Mahalath's mother
+    # (2 Chr 11:18) follow the BSB; links.csv and partners.csv replace Theographic's links.
+    def edges(a, b):
+        found = next((n for n in entity(bible, a)["neighbours"] if n["id"] == b), {"edges": []})
+        return {e["edge"] for e in found["edges"]} - {"CO_MENTION"}
+
+    assert edges("person:laadan_1823", "person:zetham_3056") == {"PARENT_OF"}
+    assert edges("person:jehiel_771", "person:joel_1655") == {"SIBLING_OF"}
+    assert edges("person:mered_2005", "person:heber_1471") == {"PARENT_OF"}
+    assert edges("person:ishbah_619", "person:heber_1471") == set()
+    assert edges("person:abihail_31", "person:mahalath_1888") == {"PARENT_OF"}
+    assert edges("person:abihail_31", "person:rehoboam_2412") == set()
+    assert edges("person:solomon_2762", "person:daughter_of_pharaoh_989") == {"SPOUSE_OF"}
+    assert edges("person:abigail_27", "person:eliab_1075") == {"SIBLING_OF"}
