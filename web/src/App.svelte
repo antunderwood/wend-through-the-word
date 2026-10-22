@@ -42,7 +42,7 @@
   // and the column of controls above it.
   let dockHeight = $state(0);
   $effect(() => {
-    document.documentElement.style.setProperty("--sheet", noWebGL && screen.phone ? `calc(100dvh - ${72 + dockHeight + 16}px)` : "");
+    document.documentElement.style.setProperty("--sheet", noWebGL && screen.phone ? `calc(100dvh - var(--keyboard, 0px) - ${72 + dockHeight + 16}px)` : "");
   });
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).

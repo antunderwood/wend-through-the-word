@@ -40,9 +40,10 @@ test("the credits page fits the phone with nothing to scroll sideways", async ({
   await expect(page.getByRole("listitem").first()).toBeVisible();
   expect(await sideways(page)).toBe(0);
   for (const link of await page.getByRole("link").all()) {
-    const b = (await link.boundingBox())!;
-    expect(b.x, await link.textContent()).toBeGreaterThanOrEqual(0);
-    expect(b.x + b.width, await link.textContent()).toBeLessThanOrEqual(390);
+    const b = (await link.boundingBox())!,
+      name = (await link.textContent())!;
+    expect(b.x, name).toBeGreaterThanOrEqual(0);
+    expect(b.x + b.width, name).toBeLessThanOrEqual(390);
   }
   await page.getByRole("link", { name: "Back to the graph" }).tap();
   await focusIs(page, "person:abraham_58");
