@@ -457,8 +457,9 @@
      elsewhere each keeps its own place. -->
 <div class="dock">
   {#if hint}
+    <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
-      A click selects a node. A double click, Make Focus, or search moves the Focus.
+      {#if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}
       <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
     </p>
   {/if}

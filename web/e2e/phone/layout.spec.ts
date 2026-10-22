@@ -18,7 +18,7 @@ async function floating(page: Page) {
   return Promise.all([
     box("Your Path", page.getByRole("navigation", { name: "Your Path" })),
     box("Search", page.getByRole("button", { name: "Search" })),
-    box("hint", page.getByText("A click selects a node.")),
+    box("hint", page.getByText("A tap selects a node.")),
     box("notice", page.getByRole("status")),
     box("Tilted plane", page.getByRole("radio", { name: "Tilted plane" })),
     box("Free orbit", page.getByRole("radio", { name: "Free orbit" })),
@@ -61,4 +61,10 @@ test("on a phone the tour, the credits, and the data version are at the end of t
   await expect(details).toContainText("Data: CC BY-SA 4.0. Data version");
   await details.getByRole("button", { name: "Help: take the tour" }).tap();
   await expect(page.getByRole("dialog", { name: /tour/i })).toBeVisible();
+});
+
+test("on a touch screen the first-use hint says tap and double tap", async ({ page }) => {
+  await page.goto("/");
+  await focusIs(page, ABRAHAM);
+  await expect(page.getByText("A tap selects a node.")).toContainText("A tap selects a node. A double tap, Make Focus, or search moves the Focus.");
 });
