@@ -11,7 +11,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    uv run python -m pipeline.build build.toml
    ```
 
-   Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
+   A data version is digits and hyphens only (the Deploy workflow refuses anything else before it reaches the environment): for a second data version on one day, add `-2`, as in `2026-10-22-2`, never a letter. Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
 
    The whole Bible (data version 2026-10-22) took about 1.5 minutes and under 1 GB of memory on the owner's Mac (up to 5 minutes while other heavy work ran; about 2 minutes of processor time, a third of it measuring gzipped sizes). It writes 9,397 files: 417 MB raw, 53 MB gzipped, the largest 99 KB gzipped (the Psalm 119 Ring 2 file). Before compact JSON (decision 168) the same sources gave 655 MB raw, 57 MB gzipped.
 3. Test the site locally on the new export before releasing. The dev server serves `out/data` (or the folder in `WEND_DATA`) at `/data`:
