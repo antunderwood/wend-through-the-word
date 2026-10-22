@@ -18,7 +18,7 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 
 def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
-    config keys with integer values, such as `size_limit`."""
+    config keys with TOML values, such as `size_limit=40000` or `previous_reports='"path"'`."""
     config = out.parent / f"{out.name}.toml"
     config.write_text(
         f"books = {json.dumps(list(books))}\n"

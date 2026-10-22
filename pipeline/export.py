@@ -7,8 +7,9 @@ silently (story 74)."""
 
 import shutil
 import sys
+from pathlib import Path
 
-from pipeline import credits, ranking, search
+from pipeline import credits, ranking, search, summary
 from pipeline.common import to_json, write_json, write_tsv
 
 NOT_TRIMMED = "not trimmed: over the limit, and only cross-references are trimmed"
@@ -16,6 +17,11 @@ NOT_TRIMMED = "not trimmed: over the limit, and only cross-references are trimme
 
 def write(b):
     data, reports = b.out / "data", b.out / "reports"
+    # Read before the old reports are removed: the previous build may be the one in `out`.
+    if previous := b.cfg.get("previous_reports"):
+        if not Path(previous).is_dir():
+            sys.exit(f"previous_reports is not a folder: {previous}")
+        previous = summary.read(b, Path(previous))
     for d in (data, reports):
         shutil.rmtree(d, ignore_errors=True)
     version = data / b.cfg["data_version"]
@@ -93,6 +99,7 @@ def write(b):
     for name, (header, rows) in b.reports.items():
         rows = sorted(rows, key=lambda r: [str(r[h]) for h in header])
         write_tsv(reports / f"{name}.tsv", header, rows)
+    summary.write(b, reports, previous)
     print(f"{len(files)} files, {len(over)} over {b.size_limit} bytes")
     if over:
         sys.exit(f"{len(over)} files are over the size limit: see reports/split_or_trimmed.tsv")
