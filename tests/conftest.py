@@ -49,14 +49,14 @@ def genesis_export(tmp_path_factory):
 def trim_config(genesis_export):
     """Build config that makes the Genesis build trim cross-references in chapter files and a
     Ring 2 sidecar (story 74). Gzipped, the fixture's entity files are larger than its chapter
-    files, so no limit trims a chapter: level 0 stores without compressing, which makes the
-    gzipped size the raw size plus a few bytes. In compact JSON (decision 168) a sidecar grows
-    more slowly than its chapter file as the chapter keeps cross-references, so no limit both trims
-    a sidecar and lets the build succeed. The limit sits just above the Gen 36 sidecar with every
-    Verse's Ring 2 list emptied (Entity entries are never trimmed, decision 96), its smallest while
-    the Gen 36 chapter keeps every cross-reference, and below that chapter with none (about 1.4 KB
-    above): the chapter is left whole and fails the build, and the sidecar is trimmed. Derived
-    from the fixture build, so the window moves with the fixture."""
+    files, so a limit that trims a chapter leaves them over: level 0 stores without compressing,
+    which makes the gzipped size the raw size plus a few bytes. In compact JSON (decision 168) a
+    sidecar grows more slowly than its chapter file as the chapter keeps cross-references, so here
+    no limit trims a sidecar and lets the build succeed. The limit sits just above the Gen 36
+    sidecar with every Verse's Ring 2 list emptied (Entity entries are never trimmed, decision
+    96), its smallest while the Gen 36 chapter keeps every cross-reference, and below that chapter
+    with none (about 1.4 KB above): the chapter is left whole and fails the build, and the sidecar
+    is trimmed. Derived from the fixture build, so the window moves with the fixture."""
     path = genesis_export / "data" / VERSION / "chapter" / "Gen" / "36.ring2.json"
     sidecar = read_json(path)
     sidecar["ring2"] = {k: v if ":" in k else [] for k, v in sidecar["ring2"].items()}
