@@ -91,3 +91,19 @@ The deploy uses the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_AC
 ## Updating the deploy workflow's actions
 
 The Deploy workflow pins each action to a commit, with its version in a comment (decision 160). To move to a newer version, choose a release at least two weeks old, find its commit with `gh api repos/<owner>/<action>/commits/<version> --jq .sha`, and replace both the SHA and the comment.
+
+## Node limit test on a phone (#74)
+
+The node limit test page is not deployed (decision 156), so a phone opens it from this computer over the home Wi-Fi.
+
+1. Build an export (`out/data`, see Release step 2), then build the page and start the preview on the local network:
+
+   ```
+   cd web && npm run build && npx vite preview --host --port 4173
+   ```
+
+   `--host` makes the preview listen on the network as well as on this computer. Allow the incoming connection if macOS asks.
+2. Find this computer's address on the network: `ipconfig getifaddr en0` (for example `192.168.1.20`).
+3. On the phone, on the same Wi-Fi, open `http://<address>:4173/node-limit.html`.
+4. Run the test as on a desktop (decisions 123 and 150): note the phone, its browser, and the frame rate at each node count. The target is up to 150 nodes at 30 frames per second or more (PRD 11).
+5. Stop the preview with Ctrl+C. Record the result as a decision and set the phone node limit from it.
