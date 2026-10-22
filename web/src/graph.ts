@@ -306,11 +306,18 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       p.textContent = q;
       d.append(p);
     }
-    d.addEventListener("pointerdown", (e) => e.stopPropagation());
+    // A finger on a name works as on the scene: the canvas takes the touch, so a drag or a pinch
+    // that starts on a name moves the camera, and a tap is picked there.
+    d.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      if (e.pointerType !== "touch") return;
+      onName = n.id;
+      el.dispatchEvent(new PointerEvent(e.type, e));
+    });
     // A disc under the pointer wins over the label lying across it.
     d.addEventListener("click", (e) => {
       e.stopPropagation();
-      click(pick(e)?.userData.node.id ?? n.id);
+      if ((e as PointerEvent).pointerType !== "touch") click(pick(e)?.userData.node.id ?? n.id);
     });
     const o = new CSS2DObject(d);
     o.center.set(0.5, 0);
@@ -526,15 +533,31 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     ray.setFromCamera(ndc, camera);
     return (ray.intersectObjects([...sprites.values()], false)[0]?.object as THREE.Sprite) ?? null;
   }
+  // A touch cannot hover, so a tap stands in for it: the tapped node shows what a hovered one does
+  // (decision 124) until the next tap, a camera move, or another Selected Node.
   const el = renderer.domElement;
-  let down: { x: number; y: number } | null = null,
+  const down = new Map<number, { x: number; y: number }>(); // pointers down, by id
+  let pinched = false, // two fingers were down: not a tap
+    onName: Id | null = null, // the node whose name the touch began on
+    tapped = false, // hovered by a tap, not a mouse
     hovered: THREE.Sprite | null = null;
-  const onDown = (e: PointerEvent) => (down = { x: e.clientX, y: e.clientY });
+  const onDown = (e: PointerEvent) => {
+    down.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (down.size > 1) pinched = true;
+  };
   const onUp = (e: PointerEvent) => {
-    if (!down) return;
-    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-    down = null;
-    const hit = moved <= 5 && pick(e);
+    const at = down.get(e.pointerId);
+    down.delete(e.pointerId);
+    const name = onName;
+    if (!down.size) onName = null;
+    if (!at) return;
+    const moved = Math.hypot(e.clientX - at.x, e.clientY - at.y) > 5 || pinched;
+    if (!down.size) pinched = false;
+    const hit = !moved && (pick(e) ?? (name ? sprites.get(name) : null));
+    if (e.pointerType === "touch") {
+      tapped = !!hit;
+      hover(hit || null, e.clientX, e.clientY);
+    }
     if (hit) click(hit.userData.node.id);
   };
   // Hover lights a node and the edges on its way to the Focus (PRD 10.4 rule 4, edge look 2);
@@ -557,10 +580,16 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     el.style.cursor = hit ? "pointer" : "";
     handlers.hover.forEach((f) => f(hit?.userData.node ?? null, x, y));
   }
-  const onMove = (e: PointerEvent) => !down && hover(pick(e), e.clientX, e.clientY);
-  const onLeave = () => hover(null);
+  // A touch's moves and its leaving at the end are not hovers.
+  const onMove = (e: PointerEvent) => {
+    if (e.pointerType === "touch" || down.size) return;
+    tapped = false;
+    hover(pick(e), e.clientX, e.clientY);
+  };
+  const onLeave = (e: PointerEvent) => e.pointerType !== "touch" && hover(null);
   el.addEventListener("pointerdown", onDown);
   el.addEventListener("pointerup", onUp);
+  el.addEventListener("pointercancel", (e) => down.delete(e.pointerId));
   el.addEventListener("pointermove", onMove);
   el.addEventListener("pointerleave", onLeave);
 
@@ -592,6 +621,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     render(scene: Scene, selected: Id) {
       const before = drawn;
       drawn = { scene, selected };
+      if (tapped && hovered?.userData.node.id !== selected) hover(null);
       if (before?.scene === scene) return markSelected(selected);
       const clicked = before && focusOf(before.scene) !== focusOf(scene) && sprites.get(focusOf(scene));
       if (clicked) moveFocus(clicked.userData.to);
