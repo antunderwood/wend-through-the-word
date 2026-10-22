@@ -12,6 +12,8 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    ```
 
    Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
+
+   The whole Bible (data version 2026-10-22) took 3 to 5 minutes and under 1 GB of memory on the owner's Mac while other work ran (about 2.5 minutes of processor time, a third of it measuring gzipped sizes). It writes 9,397 files: 655 MB raw, 57 MB gzipped, the largest 108 KB gzipped (the Psalm 119 Ring 2 file).
 3. Try the release first. The dry run checks everything and makes the zip, but pushes and creates nothing:
 
    ```
@@ -27,6 +29,8 @@ How to release, roll back, and look after the live site at https://wendtheword.f
 
    It zips `out/data` as `out/wend-data-<data version>.zip`, makes and pushes the tag, and creates the GitHub release with the zip attached and notes giving the data version, build date, and commit.
 5. Publishing the release starts the Deploy workflow (`.github/workflows/deploy.yml`). Follow it with `gh run watch` (pick the Deploy run). It downloads the zip, builds and stages the page from the tag, runs the staged site tests on the folder it deploys, deploys with Wrangler, and runs the live check (`node web/live-check.ts`). Any failed step fails the run, and GitHub emails the owner.
+
+   Upload size: the release zip of the whole Bible is 63 MB, and the staged site 9,411 files, 655 MB. Wrangler uploads only files whose content changed, so the first whole-Bible release uploads nearly all of them and a later release only what changed. The staged site tests take 1 to 2 minutes on it. Record the first whole-Bible deploy's upload time here.
 6. If the command stops after pushing the tag (for example, `gh` failed), remove the tag and any draft release, then run it again:
 
    ```
