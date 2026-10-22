@@ -1,15 +1,27 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import "./fixture";
 
 // The staged site (decision 154): the one command stages the fixture export, and the tests read
 // the folder that would be deployed. With WEND_SITE set, they read that staged folder instead
 // (the deploy workflow points it at the folder it deploys).
 const site = process.env.WEND_SITE ?? join(mkdtempSync(join(tmpdir(), "wend-stage-")), "site");
-const files = () => readdirSync(site, { recursive: true, encoding: "utf8" }).filter((f) => statSync(join(site, f)).isFile());
+const filesIn = (dir: string) => readdirSync(dir, { recursive: true, encoding: "utf8" }).filter((f) => statSync(join(dir, f)).isFile());
+const files = () => filesIn(site);
+
+// The size rule (decision 163), from the file the build and the release command read.
+const rule = JSON.parse(readFileSync(join(import.meta.dirname, "..", "..", "pipeline", "size_rule.json"), "utf8"));
+function oversized(dir: string): string[] {
+  return filesIn(dir).filter((f) => {
+    const bytes = readFileSync(join(dir, f));
+    return bytes.length >= rule.raw_limit || gzipSync(bytes, { level: rule.gzip_level }).length >= rule.gzip_limit;
+  });
+}
 
 // The Cache-Control a path gets from _headers, read the way Workers static assets read it: a
 // placeholder matches anything but "/", a splat matches anything, and every matching rule applies,
@@ -57,9 +69,18 @@ describe("staged site", () => {
     for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).not.toMatch(/[\u2013\u2014]/);
   });
 
-  it("stays under Cloudflare's free limits: fewer than 20,000 files, none over 25 MiB", () => {
+  it("stays under Cloudflare's free limits and the size rule: fewer than 20,000 files, each under 500 KB gzipped and 25 MiB raw", () => {
     expect(files().length).toBeLessThan(20_000);
-    expect(files().filter((f) => statSync(join(site, f)).size > 25 * 1024 * 1024)).toEqual([]);
+    expect(oversized(site)).toEqual([]);
+  }, 300_000);
+
+  it("refuses a file over 500 KB gzipped or 25 MiB raw, but not one only over 500 KB raw", () => {
+    // Random bytes barely compress; repeated text compresses to almost nothing.
+    const dir = mkdtempSync(join(tmpdir(), "wend-sizes-"));
+    writeFileSync(join(dir, "random.json"), randomBytes(600_000));
+    writeFileSync(join(dir, "huge.json"), "{}".repeat(13 * 1024 * 1024));
+    writeFileSync(join(dir, "text.json"), '"Abraham"'.repeat(100_000));
+    expect(oversized(dir).sort()).toEqual(["huge.json", "random.json"]);
   });
 
   it("has the export under /data, with index.json naming a version folder in the stage", () => {

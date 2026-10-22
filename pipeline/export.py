@@ -1,15 +1,15 @@
 """Write the static export (PRD 8.2) and the reports. The last step of the build.
 
-Every file must be below the size limit. A chapter file or Ring 2 sidecar over it loses its
-lowest weight cross-references (decision 73). A file still over it is listed in
-`split_or_trimmed.tsv`, and the build fails after writing the reports, so the limit never fails
-silently (story 74)."""
+Every file must be under the size limit: 500 KB gzipped and 25 MiB raw (decision 163). A chapter
+file or Ring 2 sidecar over it loses its lowest weight cross-references (decision 73). A file
+still over it is listed in `split_or_trimmed.tsv`, and the build fails after writing the reports,
+so the limit never fails silently (story 74)."""
 
 import shutil
 import sys
 
 from pipeline import credits, ranking, search
-from pipeline.common import to_json, write_json, write_tsv
+from pipeline.common import file_sizes, over_limit, sizes, to_json, write_json, write_tsv
 
 NOT_TRIMMED = "not trimmed: over the limit, and only cross-references are trimmed"
 
@@ -74,13 +74,16 @@ def write(b):
         },
     )
 
-    b.new_report("files", "path", "bytes", "over_limit")
-    files = sorted(
-        (p.relative_to(b.out).as_posix(), p.stat().st_size) for p in data.rglob("*.json")
-    )
-    over = [path for path, size in files if size >= b.size_limit]
-    for path, size in files:
-        b.report("files", path=path, bytes=size, over_limit="yes" if path in over else "")
+    b.new_report("files", "path", "bytes", "gzipped_bytes", "over_limit")
+    paths = sorted(data.rglob("*.json"))
+    files = [
+        (p.relative_to(b.out).as_posix(), *size)
+        for p, size in zip(paths, file_sizes(paths, b.gzip_level))
+    ]
+    over = [path for path, raw, gz in files if over_limit(raw, gz, b.size_limit)]
+    for path, raw, gz in files:
+        flag = "yes" if path in over else ""
+        b.report("files", path=path, bytes=raw, gzipped_bytes=gz, over_limit=flag)
     reported = {r["path"] for r in b.reports["split_or_trimmed"][1]}
     for path in sorted(set(over) - reported):
         b.report(
@@ -93,15 +96,19 @@ def write(b):
     for name, (header, rows) in b.reports.items():
         rows = sorted(rows, key=lambda r: [str(r[h]) for h in header])
         write_tsv(reports / f"{name}.tsv", header, rows)
-    print(f"{len(files)} files, {len(over)} over {b.size_limit} bytes")
+    print(f"{len(files)} files, {len(over)} over {b.size_limit} bytes gzipped or 25 MiB raw")
     if over:
         sys.exit(f"{len(over)} files are over the size limit: see reports/split_or_trimmed.tsv")
 
 
+def fits(b, data):
+    return not over_limit(*sizes(to_json(data).encode(), b.gzip_level), b.size_limit)
+
+
 def fit(b, path, data, lists):
-    """Drop the lowest weight entries of `lists` (lists inside `data`) until `data` is below the
+    """Drop the lowest weight entries of `lists` (lists inside `data`) until `data` is under the
     size limit (PRD 8.2), and report it. Searches for the fewest entries to drop."""
-    if len(to_json(data).encode()) < b.size_limit:
+    if fits(b, data):
         return
     original = [list(entries) for entries in lists]
     ranked = sorted((e for entries in original for e in entries), key=lambda e: e["weight"])
@@ -110,7 +117,7 @@ def fit(b, path, data, lists):
         gone = {id(e) for e in ranked[:n]}
         for entries, before in zip(lists, original):
             entries[:] = [e for e in before if id(e) not in gone]
-        return len(to_json(data).encode()) < b.size_limit
+        return fits(b, data)
 
     path = path.relative_to(b.out).as_posix()
     if not drop(len(ranked)):  # keep them all; the build fails at the end
