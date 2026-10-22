@@ -3,4 +3,4 @@ books = ["Gen", "Exod", "Lev", "Num", "Deut", "Josh", "Judg", "Ruth", "1Sam", "2
 sources = "sources"
 out = "out"
 build_date = "2026-10-22"
-data_version = "2026-10-22b"
+data_version = "2026-10-22-2"
