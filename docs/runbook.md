@@ -13,7 +13,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
 
    Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
 
-   The whole Bible (data version 2026-10-22) took 3 to 5 minutes and under 1 GB of memory on the owner's Mac while other work ran (about 2.5 minutes of processor time, a third of it measuring gzipped sizes). It writes 9,397 files: 655 MB raw, 57 MB gzipped, the largest 108 KB gzipped (the Psalm 119 Ring 2 file).
+   The whole Bible (data version 2026-10-22) took about 1.5 minutes and under 1 GB of memory on the owner's Mac (up to 5 minutes while other heavy work ran; about 2 minutes of processor time, a third of it measuring gzipped sizes). It writes 9,397 files: 655 MB raw, 57 MB gzipped, the largest 108 KB gzipped (the Psalm 119 Ring 2 file).
 3. Try the release first. The dry run checks everything and makes the zip, but pushes and creates nothing:
 
    ```
