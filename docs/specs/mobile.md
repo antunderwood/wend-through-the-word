@@ -6,7 +6,7 @@ Wend Through the Word is built for a desktop with a mouse and a keyboard. On a p
 
 ## Solution
 
-The site adapts to the screen and the input. On a phone (640 px wide or less) the panel becomes a bottom sheet with Details and Reader tabs, search opens from a button, the filters and Vote Limit live in the sheet, and the scene is centred in the space above the sheet. Touch works everywhere: a tap selects, a double tap makes the Focus, a drag moves the camera, and a pinch zooms; anything that appears on hover on a desktop appears on the Selected Node after a tap. A phone draws at most 150 nodes (a placeholder until the real-phone test confirms or lowers it) and offers views A (the tilted plane, the default) and C (the free orbit). A tablet keeps the desktop layout with touch input. The desktop experience does not change.
+The site adapts to the screen and the input. On a phone (640 px wide or less) the panel becomes a bottom sheet with Details and Reader tabs, search opens from a button, the filters and Vote Limit live in the sheet, and the scene is centred in the space above the sheet. Touch works everywhere: a tap selects, a double tap makes the Focus, a drag moves the camera, and a pinch zooms; anything that appears on hover on a desktop appears on the Selected Node after a tap. A phone draws at most 500 nodes, the same node limit as a desktop (decision 177, measured on a real phone), and offers views A (the tilted plane, the default) and C (the free orbit). A tablet keeps the desktop layout with touch input. The desktop experience does not change.
 
 ## User Stories
 
@@ -38,7 +38,7 @@ The site adapts to the screen and the input. On a phone (640 px wide or less) th
 26. As a student on a phone, I want to choose between the tilted plane and the free orbit, so that I can use the view I prefer.
 27. As a student on a phone, I want the tilted plane by default, so that I see the most names on a small screen (decision 118).
 28. As a student on a phone with the stacked discs saved from a desktop or a shared link, I want the tilted plane instead, so that I never get the most crowded view on a small screen.
-29. As a student on a phone, I want the scene to hold at most the phone node limit, so that it stays smooth.
+29. As a student on a phone, I want the scene to hold at most the node limit, so that it stays smooth (one limit, 500, measured on a phone: decision 177).
 30. As a student on a phone, I want the hidden-nodes note to say how many nodes the limit trimmed, so that I know the scene is not complete (decision 33).
 31. As a student on a phone, I want the Focus label without its dictionary subtitle, so that it does not cover Ring 1.
 32. As a student on a phone, I want the tour to work by touch, with its box placed where it does not cover the sheet or its target, so that I can learn the site on a phone.
@@ -59,7 +59,7 @@ The site adapts to the screen and the input. On a phone (640 px wide or less) th
 47. As a student on a tablet, I want names and words that show on hover on a desktop to show after a tap, so that touch reaches them.
 48. As a student using a mouse on a desktop, I want nothing to change, so that my habits still work.
 49. As a student with a narrow desktop window, I want the phone layout, so that a small window stays usable.
-50. As the owner, I want to measure the phone node limit on a real phone with the node limit test page, so that the limit is a measured value (PRD 11).
+50. As the owner, I want to measure the node limit on a real phone with the node limit test page, so that the limit is a measured value (PRD 11).
 51. As the owner, I want a way to open the local build on my phone over my home network, so that I can run the test without deploying the test page (decision 156).
 52. As the owner, I want the phone limit recorded as a decision with the device and the frame rates, so that it can be checked later.
 53. As the owner, I want browser tests that walk the phone journey by touch, so that a change that breaks the phone fails CI.
@@ -69,7 +69,7 @@ The site adapts to the screen and the input. On a phone (640 px wide or less) th
 
 ## Implementation Decisions
 
-- **Breakpoint.** The phone layout applies at 640 px wide or less (decision 115), whatever the device; a narrow desktop window gets it too. Wider screens keep the desktop layout. The breakpoint is one value shared by the layout (CSS) and the logic (node limit and views).
+- **Breakpoint.** The phone layout applies at 640 px wide or less (decision 115), whatever the device; a narrow desktop window gets it too. Wider screens keep the desktop layout. The breakpoint is one value shared by the layout (CSS) and the logic (the views; the node limit does not change at it, decision 177).
 - **Input.** Touch rules follow the input, not the width: a coarse pointer (no hover) gets tap-to-show for what a desktop shows on hover; a fine pointer keeps hover. A tablet is a wide screen with a coarse pointer.
 - **Bottom sheet.** On a phone the detail panel and the reader become one bottom sheet with a handle and two tabs, Details and Reader. The reader component is already built not to assume where it is mounted (decision 127); it moves into the sheet unchanged. The sheet opens at 46% of the height (prototype finding), can be closed to its handle, and remembers the last tab in browser storage. The scene is offset so its centre sits in the space above the sheet (a camera view offset, prototype rule 6).
 - **Search.** On a phone search is a button that opens the search box over the top of the scene and focuses it; it closes after a choice or on Escape or a tap outside.
@@ -79,23 +79,23 @@ The site adapts to the screen and the input. On a phone (640 px wide or less) th
 - **Tap and double tap on the scene.** The scene's existing pointer handling (two taps within 400 ms on one node are a double tap) covers touch; a tap on empty space does nothing; a drag that moves more than a few pixels is a camera move, not a tap.
 - **Camera.** OrbitControls' touch gestures: one finger rotates or pans as the view's drag does on a desktop, two fingers pinch to zoom. The page itself does not zoom or scroll on the scene (touch-action none on the scene) and the viewport meta prevents a zoom on focusing an input.
 - **Views on a phone.** Views A and C only. The view choice shows two options on a phone. A saved or shared view B opens as A on a phone, without changing the saved value, so the desktop still gets B.
-- **Node limit.** A new phone node limit of 150 (placeholder) applies on a phone; the desktop limit stays 500 (decision 150). The Focus Model reads the limit from the filters as today; the page sets it from the breakpoint and updates it when the width crosses it. The trimming order does not change (decision 33). The first ticket measures it on a real phone; a lower value is a one-line change and a decision.
+- **Node limit.** One node limit, 500, on every screen (decision 177, which amends this spec's placeholder phone limit of 150): the real-phone test drew 500 nodes at 59 frames per second or more in every view, so nothing switches at the breakpoint and a shared link shows the same scene everywhere. The Focus Model reads the limit from the filters as today, and the trimming order does not change (decision 33). A phone limit, if a slower phone ever needs one, is a decision first.
 - **Ring 1 size.** K stays 6 on a phone. K = 4 is held in reserve (prototype finding 3) and is not built unless the real-phone test or the owner asks for it.
 - **Decluttering.** The rules of decision 124 already apply everywhere. On a phone the Focus label drops its dictionary subtitle (prototype rule 7). On a coarse pointer a tapped node's name and its relationship words show as a hovered node's do.
 - **Tour.** The tour works on a phone: its box is placed so it covers neither the sheet nor the step's target, its camera step names drag and pinch on a coarse pointer, and a step whose target is hidden on a phone (the search box) points at the search button. The tour's steps and order do not change.
 - **Hit targets.** Buttons and list rows on a phone are at least 44 px tall.
-- **Real-phone test.** The node limit test page stays local (decision 156). For the test, the preview server is started on the local network so a phone on the same Wi-Fi can open it; the runbook gains the steps. The result is recorded as a decision, like decisions 123 and 150.
+- **Real-phone test.** The node limit test page stays local (decision 156). For the test, the preview server is started on the local network so a phone on the same Wi-Fi can open it; the runbook gains the steps. The result is recorded as a decision, like decisions 123 and 150; it is decision 177.
 - **No data change.** M7 changes only the front end; the export and its data version are unchanged.
 
 ## Testing Decisions
 
 - A good test drives the page as a reader does (taps, double taps, pinches, typing) and asserts on what the reader sees: the Focus and the Selected Node, the open tab, the names on screen, the address. It does not assert on component internals or CSS values except where a rule is about layout (the sheet's height, the scene's offset, hit target size).
 - **Browser tests (Playwright), the main seam.** Two new projects beside the existing desktop one, all on the fixture export with software WebGL as in CI:
-  - **Phone:** a phone device profile, 390 x 844, touch enabled. New specs: the phone journey by touch (search from the button, tap selects, double tap and Make Focus, sheet tabs, the reader in the sheet, pins, Your Path, notes), views A and C only with B opening as A, the phone node limit, decluttering on tap, the tour by touch, a shared link opened on a phone.
+  - **Phone:** a phone device profile, 390 x 844, touch enabled. New specs: the phone journey by touch (search from the button, tap selects, double tap and Make Focus, sheet tabs, the reader in the sheet, pins, Your Path, notes), views A and C only with B opening as A, the hidden-nodes note under a low node limit, decluttering on tap, the tour by touch, a shared link opened on a phone.
   - **Tablet:** a tablet profile, 820 x 1180, touch enabled, desktop layout: tap shows hover names and words, double tap, pinch, and the desktop panels.
   - The existing desktop specs keep running unchanged in the desktop project; the phone and tablet projects run only their own specs.
   - Prior art: the existing specs (journey, select, declutter, tour, views, address) and their scene helpers, which read the drawn scene through the e2e test hook.
-- **Focus Model unit tests (Vitest).** The phone node limit and its trimming with pins and Your Path, through the existing scene and reduce seams. Prior art: the node limit tests in the model tests.
+- **Focus Model unit tests (Vitest).** The node limit's trimming with pins and Your Path, through the existing scene and reduce seams, as before: with one limit (decision 177) there is no phone limit to test.
 - **Staged site and live check.** Unchanged; they must still pass on the M7 release.
 - **Manual.** The real-phone frame rate test, run by the owner, as for the desktop limit.
 
@@ -111,6 +111,6 @@ The site adapts to the screen and the input. On a phone (640 px wide or less) th
 
 ## Further Notes
 
-- Decisions carried in: 115 (phone layout from the prototype), 118 (view A default), 124 (decluttering everywhere), 127 (the reader as a component for the sheet), 148 (fixed-height section for the double click rule), 150 (desktop limit 500), 156 (the test page stays local).
-- Owner decisions for this spec (2026-10-22): spec first with 150 as a placeholder phone limit, the real-phone test as the first ticket; views A and C only on a phone; a tablet test project with the desktop layout and touch.
+- Decisions carried in: 115 (phone layout from the prototype), 118 (view A default), 124 (decluttering everywhere), 127 (the reader as a component for the sheet), 148 (fixed-height section for the double click rule), 150 (desktop limit 500), 156 (the test page stays local). Decided during M7: 177 (one node limit, 500, no phone limit) and 178 to 182 (the phone layout after review).
+- Owner decisions for this spec (2026-10-22): spec first with 150 as a placeholder phone limit, the real-phone test as the first ticket (it set one limit of 500, decision 177); views A and C only on a phone; a tablet test project with the desktop layout and touch.
 - The prototype on branch `prototype/navigation` has the bottom sheet, search button, and phone decluttering as a working reference.

@@ -105,5 +105,5 @@ The node limit test page is not deployed (decision 156), so a phone opens it fro
    `--host` makes the preview listen on the network as well as on this computer. Allow the incoming connection if macOS asks.
 2. Find this computer's address on the network: `ipconfig getifaddr en0` (for example `192.168.1.20`).
 3. On the phone, on the same Wi-Fi, open `http://<address>:4173/node-limit.html`.
-4. Run the test as on a desktop (decisions 123 and 150): note the phone, its browser, and the frame rate at each node count. The target is up to 150 nodes at 30 frames per second or more (PRD 11).
-5. Stop the preview with Ctrl+C. Record the result as a decision and set the phone node limit from it.
+4. Run the test as on a desktop (decisions 123 and 150): note the phone, its browser, and the frame rate at each node count. The PRD's target is up to 150 nodes at 30 frames per second or more (PRD 11); the node limit is 500 on every screen (decision 177).
+5. Stop the preview with Ctrl+C. Record the result as a decision. There is one node limit and no phone limit (decision 177): a phone that cannot draw 500 nodes smoothly is a decision about that limit, not a separate phone value.

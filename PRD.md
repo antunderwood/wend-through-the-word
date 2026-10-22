@@ -331,7 +331,7 @@ Release order: desktop first, then mobile. The desktop release uses a mouse and 
 
 Rules:
 
-1. Write the graph code as its own module. The module does not import Svelte. It draws a scene from the Focus Model; its interface is `render`, `setView`, `onNodeClick`, `onNodeDoubleClick`, and `onHover` (`docs/specs/navigation.md`).
+1. Write the graph code as its own module. The module does not import Svelte. It draws a scene from the Focus Model; its interface is `render`, `setView`, `setOffset`, `onNodeClick`, `onNodeDoubleClick`, and `onHover` (`docs/specs/navigation.md`).
 2. Svelte 5 uses a reactivity model called runes. Many older examples show the old model. Check every example against the Svelte 5 documentation.
 3. Keep the graph data object stable. Do not create a new data object when only the view state changes. A new data object can restart the force simulation.
 4. The M3 node limit test page may use plain TypeScript. Svelte runs the M3 panels, search, and Your Path bar (decision 117).
