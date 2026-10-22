@@ -119,7 +119,7 @@ The mismatch report still runs over every source.
 |---|---|
 | Verse | key, label, book, chapter, verse, text_bsb |
 | Person | id, name, aliases, gender, dictionary_entry, source, licence |
-| Place | id, name, lat, lon, confidence, coord_source, dictionary_entry, source, licence |
+| Place | id, name, lat, lon, confidence, coord_source, coord_note (a GeoNames name match only, decision 167), dictionary_entry, source, licence |
 | Event | id, title, event_year, dictionary_entry, source, licence |
 | People Group | id, name, dictionary_entry, source, licence |
 | Theme | id, name, source, licence |
