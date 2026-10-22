@@ -1,6 +1,7 @@
 import csv
 import gzip
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -39,14 +40,28 @@ def export(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def genesis_export(tmp_path_factory):
-    """The fixture's Genesis chapters alone, for the trimming tests: with Matthew's genealogy in
-    range, the search index and some Theme files outgrow the window of `trim_config`."""
-    return run_build(tmp_path_factory.mktemp("genesis") / "out", books=("Gen",))
+def trim_curated(tmp_path_factory):
+    """The fixture tables without the rows of links.csv: the curated Gen 36:25 Mention and its
+    note bring the Gen 36 chapter within bytes of its sidecar's Entity entries, which closes the
+    window of `trim_config`."""
+    folder = tmp_path_factory.mktemp("trim") / "curated"
+    shutil.copytree(CURATED, folder)
+    links = folder / "links.csv"
+    links.write_text(links.read_text().splitlines()[0] + "\n")
+    return folder
 
 
 @pytest.fixture(scope="session")
-def trim_config(genesis_export):
+def genesis_export(tmp_path_factory, trim_curated):
+    """The fixture's Genesis chapters alone, for the trimming tests: with Matthew's genealogy in
+    range, the search index and some Theme files outgrow the window of `trim_config`."""
+    return run_build(
+        tmp_path_factory.mktemp("genesis") / "out", books=("Gen",), curated=trim_curated
+    )
+
+
+@pytest.fixture(scope="session")
+def trim_config(genesis_export, trim_curated):
     """Build config that makes the Genesis build trim cross-references in some chapter files and
     Ring 2 sidecars, but stays above every file that cannot be trimmed, so the build still
     succeeds (story 74). Gzipped, the fixture's entity files are larger than its chapter files, so
@@ -60,7 +75,7 @@ def trim_config(genesis_export):
     sidecar["ring2"] = {k: v for k, v in sidecar["ring2"].items() if ":" in k}
     text = json.dumps(sidecar, ensure_ascii=False, sort_keys=True, indent=1) + "\n"
     limit = len(gzip.compress(text.encode(), 0)) + 200
-    return {"books": ("Gen",), "size_limit": limit, "gzip_level": 0}
+    return {"books": ("Gen",), "size_limit": limit, "gzip_level": 0, "curated": trim_curated}
 
 
 def read_json(path):

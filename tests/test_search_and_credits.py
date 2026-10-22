@@ -71,10 +71,11 @@ def test_same_name_people_get_the_first_relation_no_namesake_shares(export):
     # Decision 125: parents, then children, spouses, and siblings, worded by the person's gender.
     relations = {e["id"]: e.get("relation") for e in search_index(export)["entities"]}
     assert relations["person:anah_248"] == "son of Seir"
-    # Its first relation, "son of Zibeon", is anah_247's too (another Zibeon, same name).
-    assert relations["person:anah_249"] == "brother of Ajah"
+    # Its first relation, "son of Zibeon", is anah_247's too (another Zibeon, same name), and so
+    # is "father of Aholibamah" (another Aholibamah); its children are curated (#44).
+    assert relations["person:anah_249"] == "father of Dishon"
     assert relations["person:anah_9250"] == "daughter of Zibeon"
-    # "son of Zibeon" is anah_249's, "father of Aholibamah" anah_248's: none is its own, so it
+    # "son of Zibeon" and "father of Aholibamah" are anah_249's too: none is its own, so it
     # falls back to its first relation, a parent before a child (decision 126).
     assert relations["person:anah_247"] == "son of Zibeon"
     # A Place, or a Person with no namesake, gets none.

@@ -282,6 +282,7 @@ pipeline/
     possibly_same.csv  POSSIBLY_SAME_AS links (people a tradition reads as one person)
     corrections.csv    fixes to Theographic attributes, for example gender; `was` holds the upstream value the fix replaces
     themes_keep.csv    Nave's headings that stay Themes although they match a Person or Place name or alias
+    links.csv          Mentions and family links (PARENT_OF, SIBLING_OF, SPOUSE_OF) to add or remove
                        every curated table has a `request` column: the URL of the correction request, or empty
   export_static.py     write JSON files
 docs/licences.md
