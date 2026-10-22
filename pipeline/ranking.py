@@ -15,6 +15,14 @@ from pipeline.common import ring2_entries
 
 RING1_PER_TYPE = 6  # default number of Neighbours of each type in Ring 1, K (PRD 10.4 rule 1)
 BIBLE_VERSES = 31102  # Verse Keys in the Bible (PRD 7.1), for the rarity of a Nave's heading
+# In a letter's greeting God and Jesus Christ are titles in a formula ("Paul and Timothy, servants
+# of Christ Jesus"), so it links nothing to them (decision 176).
+TITLES = {"person:god_1324", "person:jesus_905"}
+
+
+def greeting(key):
+    """A letter's greeting, roughly: chapter 1, verses 1 to 3, of Romans to Jude."""
+    return 45 <= int(key[:2]) <= 65 and key[2:5] == "001" and int(key[5:]) <= 3
 
 
 def joined(pairs):
@@ -49,13 +57,18 @@ def load(b):
         for v in verses:  # Mentions, and Filed Under for a Theme
             links = {m["id"]: (m["source"], m["licence"]) for m in v["mentions"] + v["filed_under"]}
             for pair in combinations(sorted(links), 2):
+                if greeting(v["key"]) and TITLES & set(pair):
+                    continue
                 shared[pair] += 1
                 provenance[pair] |= {links[i] for i in pair}
 
     neighbours = {e["id"]: {n["id"]: n for n in e["neighbours"]} for e in b.entities.values()}
     for (x, y), n in sorted(shared.items()):
         a, c = b.verse_sets[x], b.verse_sets[y]
-        cosine = round(len(a & c) / math.sqrt(len(a) * len(c)), 4)
+        both = a & c
+        if TITLES & {x, y}:
+            both = {k for k in both if not greeting(k)}
+        cosine = round(len(both) / math.sqrt(len(a) * len(c)), 4)
         item = {
             "edge": "CO_MENTION",
             "direction": "both",
@@ -68,7 +81,7 @@ def load(b):
             # Theme neighbour is weighted by how many Verses it shares, damped by how broad the
             # heading is. Ring 1 never compares types, so the scales may differ (decision 93).
             theme = there.startswith("theme:")
-            weight = round(len(a & c) * rarity(b, there), 4) if theme else cosine
+            weight = round(len(both) * rarity(b, there), 4) if theme else cosine
             found = neighbours[here].get(there)
             if not found:
                 found = {"id": there, "type": b.entities[there]["type"], "edges": []}

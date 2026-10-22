@@ -35,12 +35,21 @@ def ring1(e):
 def test_every_pair_of_entities_sharing_a_verse_in_range_has_one_co_mention(export):
     files = entity_files(export)
     verses = {e["id"]: {v["key"] for v in e["verses"]} for e in files}
+    # Except a letter's greeting (chapter 1, verses 1 to 3, of Romans to Jude) with God or Jesus
+    # Christ (decision 176).
+    titles = {"person:god_1324", "person:jesus_905"}
+    greeting = {k for keys in verses.values() for k in keys if "64001001" <= k <= "64001003"}
+
+    def shared(x, y):
+        both = verses[x] & verses[y]
+        return both - greeting if titles & {x, y} else both
+
     for e in files:
         found = {n["id"]: co_mention(n) for n in e["neighbours"] if co_mention(n)}
         expected = {
-            other: len(verses[e["id"]] & keys)
-            for other, keys in verses.items()
-            if other != e["id"] and verses[e["id"]] & keys
+            other: len(shared(e["id"], other))
+            for other in verses
+            if other != e["id"] and shared(e["id"], other)
         }
         assert {other: c["shared_verses"] for other, c in found.items()} == expected
 
@@ -189,3 +198,13 @@ def test_a_theme_neighbour_is_weighted_by_shared_verses_times_the_rarity_of_the_
     assert themes.index("theme:genealogy") < themes.index("theme:bastard")
     # A Person in a Theme's list keeps the cosine score.
     assert neighbour(export, "theme:genealogy", "person:abraham_58")["weight"] == 0.1488
+
+
+def test_a_letter_greeting_links_nothing_to_god_or_jesus_christ(export):
+    # Decision 176. Fixture (synthetic): Jesus Christ is mentioned in 3 John 1:1, a letter's
+    # greeting, beside Gaius, whose only fixture Verse it is. The Mention stays; the Co-mention
+    # does not, so neither is the other's Neighbour.
+    verse = read_json(export / "data" / VERSION / "chapter" / "3John" / "1.json")["verses"][0]
+    assert {m["id"] for m in verse["mentions"]} == {"person:gaius_1272", "person:jesus_905"}
+    gaius = entity(export, "person:gaius_1272")
+    assert "person:jesus_905" not in [n["id"] for n in gaius["neighbours"]]

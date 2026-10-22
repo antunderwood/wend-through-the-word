@@ -97,6 +97,8 @@ SYNTHETIC = {  # (file, ID field, ID) -> change, each one listed in README.md
         f["siblings"].append("recFixtureNoRecord"),  # an edge to a record that does not exist
     ),
     ("people.json", "personLookup", "demetrius_1007"): lambda f: f.pop("dictText"),
+    # A letter greeting that names Jesus Christ beside Gaius (decision 176)
+    ("people.json", "personLookup", "jesus_905"): lambda f: f["verses"].append(kept["3John.1.1"]),
     ("peopleGroups.json", "groupName", "Tribe of Judah"): lambda f: f.update(
         verses=[kept["Gen.36.1"]]  # no group has a real verse in the kept chapters
     ),

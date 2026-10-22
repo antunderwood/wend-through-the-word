@@ -39,6 +39,8 @@ const JESUS = "person:jesus_905",
 const one = (s: string) => document.querySelector(s);
 const tour = (name: string) => one(`[data-tour="${name}"]`);
 const label = (id: Id) => one(`[data-tour="scene"] [data-node="${id}"]`);
+// A label the scene hides as crowded (decision 124) cannot be pointed at.
+const shown = (el: Element | null) => (el?.checkVisibility() ? el : null);
 const onPath = (s: State) => [...s.path, s.focus];
 // Waits a few frames for the panel to draw what an action asked for.
 async function drawn(find: () => Element | null | undefined) {
@@ -103,8 +105,8 @@ export const STEPS: Step[] = [
   },
   {
     title: "Make Simon Peter the Focus",
-    text: () => "Double click Simon Peter in the scene, or select him and press Make Focus. The scene moves to him.",
-    target: (p) => (p.model.selected === PETER && tour("make-focus")) || label(PETER),
+    text: () => "Double click Simon Peter in the scene, or select him and press Make Focus, or search for him. The scene moves to him.",
+    target: (p) => (p.model.selected === PETER && tour("make-focus")) || shown(label(PETER)) || tour("search"),
     check: (p) => p.model.focus === PETER,
     act: (p) => p.makeFocus(PETER),
   },

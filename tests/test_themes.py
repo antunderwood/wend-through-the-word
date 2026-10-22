@@ -77,6 +77,20 @@ def test_a_heading_spelt_two_ways_or_written_surname_first_is_removed(export):
     assert not (export / "data" / VERSION / "entity" / "theme" / "antipas_herod.json").exists()
 
 
+def test_a_heading_that_spells_a_person_or_place_of_its_verses_another_way_is_removed(export):
+    # Decision 175: SHEBAH is Shibah, named in its one fixture Verse (Gen 26:33); PETER is one word
+    # of Simon Peter, named in most of its fixture Verses.
+    rows = removed(export)
+    assert rows["SHEBAH"] == {
+        "action": "removed",
+        "match": "alike",
+        "entity_ids": "place:shibah_1075",
+        "keep_row": "",
+    }
+    assert rows["PETER"]["entity_ids"] == "person:peter_2745"
+    assert not (export / "data" / VERSION / "entity" / "theme" / "shebah.json").exists()
+
+
 def test_a_heading_that_matches_an_alias_is_removed_and_reported(export):
     # Judith is Aholibamah's other name (Gen 26:34, 36:2), so the Theme would duplicate her.
     assert removed(export)["JUDITH"] == {

@@ -65,16 +65,15 @@ def test_the_ring_1_people_of_abraham_jesus_and_paul(bible):
         "person:nahor_2143",
         "person:lot_1830",
     ]
+    # A letter's greeting links nothing to Jesus Christ (decision 176), so Timothy and Paul, who
+    # share mostly greetings with him, give way to People of the Gospel scenes.
     assert top_people(entity(bible, "person:jesus_905")) == [
         "person:god_1324",
         "person:peter_2745",
         "person:holy_spirit_7400",
-        "person:paul_2479",
-        # A Co-mention artefact: the letters say "Christ Jesus" in Verses that also name Timothy
-        # (issue #64, formulaic phrases in the letters inflate Co-mentions). Kept as the expected
-        # value until that issue changes the ranking (owner).
-        "person:timotheus_2863",
         "person:pilate_2365",
+        "person:philip_2344",
+        "person:martha_1937",
     ]
     assert top_people(entity(bible, "person:paul_2479")) == [
         "person:barnabas_1722",
@@ -115,3 +114,15 @@ def test_names_take_the_bsb_spelling_unless_it_is_unsafe(bible):
     # Curated aliases remove the Themes that duplicated People by their short names (decision 173).
     themes = bible / "data" / VERSION / "entity" / "theme"
     assert not [h for h in ("mark", "peter", "festus", "lysias") if (themes / f"{h}.json").exists()]
+
+
+def test_headings_that_spell_a_place_another_way_are_removed_but_not_ordinary_words(bible):
+    # Decision 175 on the real sources. Removed: AJALON (Aijalon), KIRJATHAIM (Kiriathaim; the BSB
+    # writes "Shaveh-kiriathaim", which is not an ordinary word), GERIZIM (Mount Gerizim). Kept:
+    # HOSTAGE (an ordinary word, not Host) and SHECHEMITES (a people, not Shechem).
+    themes = bible / "data" / VERSION / "entity" / "theme"
+    assert not [h for h in ("ajalon", "kirjathaim", "gerizim") if (themes / f"{h}.json").exists()]
+    assert (themes / "hostage.json").exists() and (themes / "shechemites.json").exists()
+    # The owner's rows: SIMONY and HUSHAH are kept (themes_keep.csv); NOPH is Memphis's alias.
+    assert (themes / "simony.json").exists() and (themes / "hushah.json").exists()
+    assert not (themes / "noph.json").exists()

@@ -12,9 +12,10 @@ import re
 import sys
 from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
+from difflib import SequenceMatcher
 
 from pipeline.common import norm, report_mismatches
-from pipeline.entities import bsb_name
+from pipeline.entities import GENTILIC, bsb_name
 
 # Nave's book codes, in Bible order, and the OSIS names Theographic uses, in the same order.
 CODES = (
@@ -37,10 +38,10 @@ REF = re.compile(rf"\b({BOOKS}) ({SEG}(?:; (?:with )?{SEG})*)")
 
 
 def theographic_names(b):
-    """Normalised name -> IDs of the People and Places with that name, and the same for aliases.
-    All of Theographic, with the BSB's spellings and the curated names and aliases, so a
-    heading's fate does not depend on the book range."""
-    names, aliases = defaultdict(set), defaultdict(set)
+    """Normalised name -> IDs of the People and Places with that name, and the same for aliases;
+    and ID -> every name and alias as written. All of Theographic, with the BSB's spellings and
+    the curated names and aliases, so a heading's fate does not depend on the book range."""
+    names, aliases, spelled = defaultdict(set), defaultdict(set), defaultdict(set)
     for kind, _, f, entity_id in b.records.values():
         if kind not in ("person", "place"):
             continue
@@ -54,13 +55,39 @@ def theographic_names(b):
             names[norm(n or "")].add(entity_id)
         for n in (other or "").split(","):
             aliases[norm(n)].add(entity_id)
+        spelled[entity_id].update(n.strip() for n in [*own, *(other or "").split(",")] if n)
     for entity_id, rows in b.corrections.items():  # a curated name or alias, "Mark" for John Mark
         for row in rows:
             if row["field"] in ("name", "aliases"):
                 (names if row["field"] == "name" else aliases)[norm(row["value"])].add(entity_id)
+                spelled[entity_id].add(row["value"])
     names.pop("", None)
     aliases.pop("", None)
-    return names, aliases
+    return names, aliases, spelled
+
+
+def alike(heading, filed, mentioned, spelled, common):
+    """IDs of the People and Places named in at least half of a heading's Verses whose name the
+    heading spells another way (decision 175): "AJALON" is Aijalon, "KIRJATHAIM" is Kiriathaim,
+    "GERIZIM" is Mount Gerizim. At least 0.8 alike, or one word of a longer name. Never an
+    ordinary word ("HOSTAGE" is not Host), and a people ("SHECHEMITES") is never a Person or
+    Place that is not one (Shechem)."""
+    base = re.sub(r"\s*\(.*\)$", "", heading)
+    h = norm(base)
+    if not h or base.lower() in common:
+        return set()
+    seen = Counter(i for k in filed for i in mentioned.get(k, ()))
+    found = set()
+    for entity_id, count in seen.items():
+        for name in spelled[entity_id] if 2 * count >= len(filed) else ():
+            if not name[:1].isupper() or name.lower() in common:
+                continue
+            if bool(GENTILIC.search(h)) != bool(GENTILIC.search(norm(name))):
+                continue
+            words = {norm(w) for w in re.split(r"[\s-]+", name) if len(w) > 3}
+            if h in words or SequenceMatcher(None, h, norm(name)).ratio() >= 0.8:
+                found.add(entity_id)
+    return found
 
 
 def filed_verses(b, entry, keys, chapters, missing):
@@ -97,7 +124,12 @@ def load(b):
     path = b.source("naves")
     with open(path, encoding="utf-8-sig", newline="") as f:
         headings = list(csv.DictReader(f))
-    names, aliases = theographic_names(b)
+    names, aliases, spelled = theographic_names(b)
+    mentioned = defaultdict(list)  # Verse Key -> the People and Places it names, whole Bible
+    for entity_id, verse_keys in b.verse_sets.items():
+        if entity_id.startswith(("person:", "place:")):
+            for k in verse_keys:
+                mentioned[k].append(entity_id)
     keys = sorted(set(b.verse_keys.values()))
     verses = {v["key"]: v for vs in b.chapters.values() for v in vs}
     for v in verses.values():
@@ -121,8 +153,14 @@ def load(b):
             forms.add(norm(" ".join(reversed(first.split(", ")))))
         by_name = set().union(*(names.get(f, set()) for f in forms))
         by_alias = set().union(*(aliases.get(f, set()) for f in forms))
-        if by_name or by_alias:
-            match, ids = ("name", by_name) if by_name else ("alias", by_alias)
+        by_alike = set()
+        if not (by_name or by_alias):  # "AJALON" is Aijalon (decision 175)
+            by_alike = alike(first, whole_bible, mentioned, spelled, b.bsb_common)
+        found = [
+            (m, x) for m, x in (("name", by_name), ("alias", by_alias), ("alike", by_alike)) if x
+        ]
+        if found:
+            match, ids = found[0]
             keep = heading in b.themes_keep  # a reviewed themes_keep.csv row
             action = "kept" if keep else "removed"
         else:  # "ISRAEL, PROPHECIES CONCERNING" is a topic, so a part never removes a heading

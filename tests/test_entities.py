@@ -34,9 +34,9 @@ def test_each_mention_and_filed_under_is_weighted_by_the_rarity_of_its_entity(ex
         "person:abraham_58": 6.041,
         "person:keturah_1782": 8.9587,
     }
-    # The heading ABIDAH is rarer than GENEALOGY, so it outweighs it in Gen 25:4.
-    filed = {m["id"]: m["weight"] for m in chapter_verse(export, "Gen.25.4")["filed_under"]}
-    assert filed["theme:abidah"] > filed["theme:genealogy"]
+    # The heading LENTILES is rarer than BIRTHRIGHT, so it outweighs it in Gen 25:34.
+    filed = {m["id"]: m["weight"] for m in chapter_verse(export, "Gen.25.34")["filed_under"]}
+    assert filed["theme:lentiles"] > filed["theme:birthright"]
 
     weights = {}  # an Entity has one weight in every Verse
     for path in (export / "data" / VERSION / "chapter").rglob("*.json"):

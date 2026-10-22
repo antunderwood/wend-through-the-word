@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { doubleClickLabel, focusIs } from "./scene";
+import { focusIs } from "./scene";
 import { STEPS } from "../src/tour";
 
 const ABRAHAM = "person:abraham_58",
@@ -95,9 +95,13 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   },
   (page) => scene(page).locator(`[data-node="${GOD}"]`).click(),
   (page) => scene(page).locator(`[data-node="${JESUS}"]`).click(),
-  (page) => panel(page).getByRole("button", { name: "28 more" }).click(),
+  (page) => panel(page).getByRole("button", { name: "27 more" }).click(),
   (page) => panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ }).click(),
-  (page) => doubleClickLabel(page, "Simon Peter", PETER),
+  // Simon Peter's scene label can be crowded out (decision 124), so by search.
+  async (page) => {
+    await page.getByRole("searchbox", { name: "Search" }).fill("Simon Peter");
+    await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
+  },
   async (page) => {
     await bar(page).getByRole("button", { name: "Jesus Christ" }).click();
     await panel(page).getByRole("button", { name: "Pin", exact: true }).click();
@@ -145,7 +149,7 @@ test("the whole tour with the keyboard only", async ({ page }) => {
       await page.keyboard.press("ArrowRight");
     },
     () => enter(bar(page).getByRole("button", { name: "Jesus Christ" })),
-    () => enter(panel(page).getByRole("button", { name: "28 more" })),
+    () => enter(panel(page).getByRole("button", { name: "27 more" })),
     () => enter(panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ })),
     () => search("Simon Peter"),
     async () => {
