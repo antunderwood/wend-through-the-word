@@ -181,6 +181,29 @@ test("the camera step names drag and pinch, the search step points at the search
   await uncovered(page);
 });
 
+test.describe("a short phone", () => {
+  // 375 x 560: above the open sheet no spot clear of the Focus's name has room for the box.
+  test.use({ viewport: { width: 375, height: 560 } });
+
+  test("where no spot fits, the box covers as little of the target as it can, and stays above the sheet", async ({ page }) => {
+    await reader(page, "A");
+    await help(page).tap();
+    await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+    await expect(ring(page)).toBeVisible();
+    // On a phone the box is the screen's width, so only its height on the screen matters: of the
+    // places between the top of the screen and the sheet (8 px margins), the top one and the bottom
+    // one cover least of the target, and here neither is clear of it.
+    await expect
+      .poll(async () => {
+        const [box, target, under] = [(await tour(page).boundingBox())!, (await ring(page).boundingBox())!, (await sheet(page).boundingBox())!];
+        const across = (top: number) => Math.max(0, Math.min(top + box.height, target.y + target.height) - Math.max(top, target.y));
+        const least = Math.min(across(8), across(under.y - 8 - box.height));
+        return { above: box.y >= 8 && box.y + box.height <= under.y - 8, cover: across(box.y) <= least + 1, unavoidable: least > 0 };
+      })
+      .toEqual({ above: true, cover: true, unavoidable: true });
+  });
+});
+
 test("a tour taken from the offer on the Reader tab gives the Reader tab back when it ends", async ({ page }) => {
   // A browser not yet offered the tour, whose sheet was left on its Reader tab.
   await page.addInitScript(() => {

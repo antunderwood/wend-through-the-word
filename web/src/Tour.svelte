@@ -47,7 +47,8 @@
     const sheet = document.querySelector('[aria-label="Sheet"]'),
       floor = sheet ? sheet.getBoundingClientRect().top : innerHeight;
     // Below, above, left of, or right of the target, whichever fits; on a phone also just above the
-    // sheet or at the top of the screen, if clear of the target; else the bottom left corner.
+    // sheet or at the top of the screen, if clear of the target. Where none fits (a short screen), the
+    // spot moved onto the screen that covers least of the target. With no target, the bottom left corner.
     let [x, y] = [Math.min(16, innerWidth - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
     if (seen) {
       Object.assign(ring.style, { left: `${r.left - 5}px`, top: `${r.top - 5}px`, width: `${r.width + 10}px`, height: `${r.height + 10}px` });
@@ -56,7 +57,12 @@
       const spots = [[cx, r.bottom + m], [cx, r.top - m - h], [r.left - m - w, cy], [r.right + m, cy]];
       if (sheet) spots.push([cx, floor - h - 8], [cx, 8]);
       const clear = ([a, b]: number[]) => a + w + m <= r.left || r.right + m <= a || b + h + m <= r.top || r.bottom + m <= b;
-      [x, y] = spots.find(([a, b]) => a >= 8 && b >= 8 && a + w <= innerWidth - 8 && b + h <= floor - 8 && clear([a, b])) ?? [x, y];
+      const fits = ([a, b]: number[]) => a >= 8 && b >= 8 && a + w <= innerWidth - 8 && b + h <= floor - 8;
+      const onto = ([a, b]: number[]) => [Math.max(8, Math.min(innerWidth - w - 8, a)), Math.max(8, Math.min(floor - h - 8, b))];
+      const covered = ([a, b]: number[]) =>
+        Math.max(0, Math.min(a + w, r.right) - Math.max(a, r.left)) * Math.max(0, Math.min(b + h, r.bottom) - Math.max(b, r.top));
+      const fallback = [...spots, [x, y]].map(onto).reduce((best, s) => (covered(s) < covered(best) ? s : best));
+      [x, y] = spots.find((s) => fits(s) && clear(s)) ?? fallback;
     }
     box.style.left = `${x}px`;
     box.style.top = `${y}px`;
