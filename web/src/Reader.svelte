@@ -4,6 +4,7 @@
   import { tick } from "svelte";
   import type { Data } from "./data";
   import type { Id } from "./model";
+  import { screen } from "./screen.svelte";
 
   let {
     data,
@@ -63,18 +64,28 @@
     {#await chapter then c}
       {@render head(c!.title)}
       <div class="text" bind:this={text}>
-        <!-- A click selects and a double click makes the Focus, as in the scene and the lists. -->
+        <!-- A click selects and a double click makes the Focus, as in the scene and the lists. The
+             verse number is the target; on a phone the whole verse is, its words too. -->
         {#each c!.verses as v (v.key)}
-          <span class="verse" class:sel={v.key === selected} data-key={v.key}>
-            <button
-              aria-label={data.label(v.key)}
-              aria-current={v.key === selected}
-              title={inScene(v.key) ? "In the scene" : undefined}
-              class:linked={inScene(v.key)}
-              onclick={() => onselect(v.key)}
-              ondblclick={() => onfocus(v.key)}>{+v.key.slice(5)}</button>
-            {v.text}
-          </span>
+          {@const n = +v.key.slice(5)}
+          {@const target = {
+            "aria-label": data.label(v.key),
+            "aria-current": v.key === selected,
+            title: inScene(v.key) ? "In the scene" : undefined,
+            onclick: () => onselect(v.key),
+            ondblclick: () => onfocus(v.key),
+          }}
+          {#if screen.phone}
+            <button class="verse whole" class:sel={v.key === selected} class:linked={inScene(v.key)} data-key={v.key} {...target}>
+              <span class="number">{n}</span>
+              {v.text}
+            </button>
+          {:else}
+            <span class="verse" class:sel={v.key === selected} data-key={v.key}>
+              <button class:linked={inScene(v.key)} {...target}>{n}</button>
+              {v.text}
+            </span>
+          {/if}
         {/each}
       </div>
     {:catch e}
@@ -150,6 +161,29 @@
     text-decoration: underline dotted;
   }
   .verse button[aria-current="true"] {
+    color: #ffd27a;
+  }
+  /* On a phone a verse is a button the width of the text: its number, then its words. */
+  .verse.whole {
+    display: block;
+    width: 100%;
+    margin: 0 0 4px;
+    padding: 4px 6px;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+  }
+  .verse.whole .number {
+    color: #9aa0b4;
+    font: 600 12px/1 system-ui, sans-serif;
+    vertical-align: super;
+  }
+  .verse.whole.linked .number {
+    color: #d4d8e8;
+    text-decoration: underline dotted;
+  }
+  .verse.whole[aria-current="true"] .number {
     color: #ffd27a;
   }
   .muted {
