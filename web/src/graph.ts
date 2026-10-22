@@ -297,7 +297,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     const q = n.role === "focus" || n.type === "verse" ? quote(n.id) : "";
     if (q) {
       const p = document.createElement("div");
-      p.className = "quote";
+      // An Entity's line is its Dictionary Entry's, which a phone leaves to the panel.
+      p.className = n.type === "verse" ? "quote" : "quote dictionary";
       p.textContent = q;
       d.append(p);
     }

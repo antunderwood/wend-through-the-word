@@ -38,6 +38,11 @@
   line-clamp: 3;
   overflow: hidden;
 }
+/* On a phone the Focus label drops its dictionary subtitle, so it does not cover Ring 1
+   (docs/specs/mobile.md). A Verse keeps its quote. */
+html[data-phone] .nl .dictionary {
+  display: none;
+}
 .nl.overflow {
   color: #9aa0b4;
   font-style: italic;
