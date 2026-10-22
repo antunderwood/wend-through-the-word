@@ -16,6 +16,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from pipeline.common import file_sizes, over_limit
+
 FILE_LIMIT = 20_000  # Workers static assets, Free plan (PRD 8.4); the stage adds a few pages
 
 
@@ -37,10 +39,12 @@ def problems(tag, out):
         found.append(f"tag {tag} already exists here")
     if git("ls-remote", "--tags", "origin", f"refs/tags/{tag}"):
         found.append(f"tag {tag} already exists on origin")
-    # The build writes the reports even when it fails on the size limit (pipeline/export.py).
-    over = rows(out / "reports" / "file_count.tsv")[0]["over_limit"]
-    if over != "0":
-        found.append(f"reports/file_count.tsv: {over} files over the size limit")
+    # The size rule is measured again on the files, so an export changed after its build is
+    # judged too (decision 163).
+    files = sorted(f for f in (out / "data").rglob("*") if f.is_file())
+    for f, (raw, gz) in zip(files, file_sizes(files)):
+        if over_limit(raw, gz):
+            found.append(f"{f}: {raw} bytes, {gz} gzipped, over the size limit")
     for row in rows(out / "reports" / "split_or_trimmed.tsv"):
         if row["action"].startswith("not trimmed"):
             found.append(f"reports/split_or_trimmed.tsv: {row['path']} {row['action']}")
@@ -48,9 +52,8 @@ def problems(tag, out):
         found.append(
             f"reports/curated_no_longer_matches.tsv: {len(stale)} curated rows no longer match"
         )
-    count = sum(1 for f in (out / "data").rglob("*") if f.is_file())
-    if count >= FILE_LIMIT:
-        found.append(f"{out / 'data'} holds {count} files, the limit is {FILE_LIMIT}")
+    if len(files) >= FILE_LIMIT:
+        found.append(f"{out / 'data'} holds {len(files)} files, the limit is {FILE_LIMIT}")
     return found
 
 

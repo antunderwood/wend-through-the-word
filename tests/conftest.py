@@ -18,7 +18,7 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 
 def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
-    config keys with integer values, such as `size_limit`."""
+    config keys with integer values, such as `size_limit` (the gzipped limit) and `gzip_level`."""
     config = out.parent / f"{out.name}.toml"
     config.write_text(
         f"books = {json.dumps(list(books))}\n"
@@ -38,17 +38,19 @@ def export(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def trim_limit(export):
-    """A size limit that makes the build trim cross-references in some chapter files and Ring 2
+def trim_config(export):
+    """Build config that makes the build trim cross-references in some chapter files and Ring 2
     sidecars, but stays above every file that cannot be trimmed, so the build still succeeds
-    (story 74). The largest such file is the Gen 36 sidecar's Entity entries, never trimmed
-    (decision 96). Just above them the trimmed Gen 36 chapter keeps a few cross-references,
-    whose Ring 2 lists push the sidecar over again; about 1 KB above, it keeps too few. Derived
-    from the fixture build, so the window moves with the fixture."""
+    (story 74). Gzipped, the fixture's entity files are larger than its chapter files, so no
+    limit does both: level 0 stores without compressing, which makes the gzipped size the raw
+    size plus a few bytes. The largest file that cannot be trimmed is then the Gen 36 sidecar's
+    Entity entries, never trimmed (decision 96). Just above them the trimmed Gen 36 chapter keeps
+    a few cross-references, whose Ring 2 lists push the sidecar over again; about 1 KB above, it
+    keeps too few. Derived from the fixture build, so the window moves with the fixture."""
     sidecar = read_json(export / "data" / VERSION / "chapter" / "Gen" / "36.ring2.json")
     sidecar["ring2"] = {k: v for k, v in sidecar["ring2"].items() if ":" in k}
-    floor = len((json.dumps(sidecar, ensure_ascii=False, sort_keys=True, indent=1) + "\n").encode())
-    return floor + 200
+    text = json.dumps(sidecar, ensure_ascii=False, sort_keys=True, indent=1) + "\n"
+    return {"size_limit": len(gzip.compress(text.encode(), 0)) + 200, "gzip_level": 0}
 
 
 def read_json(path):
