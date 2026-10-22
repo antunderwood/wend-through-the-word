@@ -86,15 +86,15 @@ def test_only_people_and_people_groups_ship_as_stubs(export):
 
 
 def test_place_or_event_edge_to_an_end_outside_the_range_is_dropped_and_reported(export):
-    # Jesus is in range (Matt 17); Bethlehem, his birthplace, has no verse in the fixture.
-    jesus = [n["id"] for n in entity(export, "person:jesus_905")["neighbours"]]
-    assert "place:bethlehem_218" not in jesus
-    assert not (export / "data" / VERSION / "entity" / "place" / "bethlehem_218.json").exists()
+    # Rachel is in range (Matt 2:18); Ephrath, where she died, has no verse in the fixture.
+    rachel = [n["id"] for n in entity(export, "person:rachel_2386")["neighbours"]]
+    assert "place:ephrath_403" not in rachel
+    assert not (export / "data" / VERSION / "entity" / "place" / "ephrath_403.json").exists()
     rows = read_tsv(export / "reports" / "dropped_edges.tsv")
     assert {
-        "record": "person:jesus_905",
-        "field": "birthPlace",
-        "link": "place:bethlehem_218",
+        "record": "person:rachel_2386",
+        "field": "deathPlace",
+        "link": "place:ephrath_403",
         "cause": "other end is outside the book range, and only People and People Groups "
         "ship as stubs (decision 51, until M6)",
     } in rows

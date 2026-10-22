@@ -16,8 +16,8 @@ import sys
 import zipfile
 from pathlib import Path
 
-CHAPTERS = {"Gen": {11, 16, 25, 26, 36}, "Matt": {17}, "3John": {1}}
-MATT_VERSES = {20, 21, 22}  # Matt 17:21 has no BSB text
+CHAPTERS = {"Gen": {11, 16, 25, 26, 36}, "Matt": {1, 2, 17}, "3John": {1}}
+MATT_17_VERSES = {20, 21, 22}  # Matt 17:21 has no BSB text
 BSB_NAMES = {"Genesis": "Gen", "Matthew": "Matt", "3 John": "3John"}
 KJV_FIELDS = {"verseText", "mdText", "richText"}
 
@@ -25,7 +25,7 @@ src, dest = Path(sys.argv[1]), Path(__file__).parent / "sources"
 
 
 def keep(book, ch, vs):
-    return ch in CHAPTERS.get(book, ()) and (book != "Matt" or vs in MATT_VERSES)
+    return ch in CHAPTERS.get(book, ()) and ((book, ch) != ("Matt", 17) or vs in MATT_17_VERSES)
 
 
 def dump(name, rows):

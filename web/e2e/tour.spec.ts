@@ -94,7 +94,7 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   },
   (page) => scene(page).locator(`[data-node="${SARAH}"]`).click(),
   (page) => scene(page).locator(`[data-node="${ABRAHAM}"]`).click(),
-  (page) => panel(page).getByRole("button", { name: "30 more" }).click(),
+  (page) => panel(page).getByRole("button", { name: "31 more" }).click(),
   (page) => panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Genealogy/ }).click(),
   (page) => doubleClickLabel(page, "Isaac", ISAAC),
   async (page) => {
@@ -145,7 +145,7 @@ test("the whole tour with the keyboard only", async ({ page }) => {
       await page.keyboard.press("ArrowDown");
     },
     () => enter(bar(page).getByRole("button", { name: "Abraham" })),
-    () => enter(panel(page).getByRole("button", { name: "30 more" })),
+    () => enter(panel(page).getByRole("button", { name: "31 more" })),
     () => enter(panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Genealogy/ })),
     () => search("Isaac"),
     async () => {

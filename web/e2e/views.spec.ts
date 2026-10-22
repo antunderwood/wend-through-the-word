@@ -24,7 +24,7 @@ test("the picker switches A to B to C with the keyboard, keeping the Focus and e
     const radio = picker(page).getByRole("radio", { name });
     await expect(radio).toBeChecked();
     await expect(radio).toBeFocused();
-    // The view moved the nodes, but the Scene is the same: Abraham the Focus, 99 nodes.
+    // The view moved the nodes, but the Scene is the same: Abraham the Focus, 105 nodes.
     await expect.poll(isaacAt).not.toEqual(last);
     last = await isaacAt();
     const now = await nodes(page);

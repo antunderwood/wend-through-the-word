@@ -19,7 +19,7 @@ describe("search", () => {
     expect(data.search("promised")[0]).toEqual({ id: "place:canaan_272", hint: "also called Promised Land" });
   });
 
-  // Stand-ins for "Gen 22:2" and "Genesis 22": the fixture builds Gen 11, 16, 25, 26, 36, Matt 17, and 3 John 1.
+  // Stand-ins for "Gen 22:2" and "Genesis 22": the fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 17, and 3 John 1.
   it("finds a Verse by reference", () => {
     expect(data.search("Gen 25:1")).toEqual([{ id: "01025001", hint: "" }]);
     expect(ids("gen 25.1")).toEqual(["01025001"]);

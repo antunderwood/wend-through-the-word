@@ -22,7 +22,7 @@ test.describe("with reduced motion", () => {
     await expect(filters(page)).toContainText("Votes: how many OpenBible.info readers found this link helpful. It shows popularity, not scholarly strength.");
     await expect(filters(page)).toContainText("only changes Ring 2");
     // Fixture: Abraham has 36 Themes.
-    await expect(panel(page).getByRole("list", { name: "Theme (36)" })).toBeVisible();
+    await expect(panel(page).getByRole("list", { name: "Theme (37)" })).toBeVisible();
     expect(await themesOnScreen(page)).toBeGreaterThan(0);
 
     await filters(page).getByRole("checkbox", { name: "Themes" }).uncheck();
@@ -49,8 +49,8 @@ test("the book filter leaves the Verses two nodes share, as they are the evidenc
   // Decision 136: Genealogy is together with Abraham in 6 Genesis verses, with only Matthew chosen.
   await open(page, "/?focus=person:abraham_58&books=Matt");
   await page.keyboard.press("Escape");
-  await panel(page).getByRole("list", { name: "Theme (36)" }).getByRole("button", { name: /^Genealogy/ }).click();
-  await expect(panel(page).getByRole("list", { name: "Together in 6 verses" }).getByRole("listitem")).toHaveCount(6);
+  await panel(page).getByRole("list", { name: "Theme (37)" }).getByRole("button", { name: /^Genealogy/ }).click();
+  await expect(panel(page).getByRole("list", { name: "Together in 8 verses" }).getByRole("listitem")).toHaveCount(8);
 });
 
 test("the animation switch stops the camera flight and the growth", async ({ page }) => {

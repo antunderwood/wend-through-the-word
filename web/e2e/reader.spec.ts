@@ -61,9 +61,9 @@ test("previous and next chapter stay within the build", async ({ page }) => {
   await readFromList(page, "Gen 11:31");
   const previous = reader(page).getByRole("button", { name: "Previous chapter" });
   const next = reader(page).getByRole("button", { name: "Next chapter" });
-  // The fixture builds Gen 11, 16, 25, 26, 36, Matt 17, 3 John 1.
+  // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 17, 3 John 1.
   await expect(previous).toBeDisabled();
-  for (const title of ["Genesis 16", "Genesis 25", "Genesis 26", "Genesis 36", "Matthew 17", "3 John 1"]) {
+  for (const title of ["Genesis 16", "Genesis 25", "Genesis 26", "Genesis 36", "Matthew 1", "Matthew 2", "Matthew 17", "3 John 1"]) {
     await next.click();
     await expect(reader(page).getByRole("heading", { name: title })).toBeVisible();
   }

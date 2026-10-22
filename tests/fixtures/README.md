@@ -14,7 +14,7 @@ Small slices of the real sources, cut by `cut.py` from a full download. Each sli
 | `sources/NavesTopicalDictionary.csv` | Nave's Topical Bible, BibleData, github.com/BradyStephenson/bible-data (commit `720a8da`) | CC BY 4.0 |
 | `sources/TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt` | Synthetic, written by hand in the TIPNR format (github.com/STEPBible/STEPBible-Data). Holds no real TIPNR rows | Our own test data, MIT |
 
-Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 17:20 to 22; 3 John 1.
+Chapters: Genesis 11, 16, 25, 26, and 36; Matthew 1, 2, and 17:20 to 22; 3 John 1. Matthew 1 and 2 are cut by the same rules from the same files, so they keep the licences above (BSB CC0 1.0, Theographic CC BY-SA 4.0, OpenBible.info CC BY 4.0, Nave's CC BY 4.0). They give Cross-references between books (Gen 16:11 and Matt 1:21), People and Places in both Testaments (Abraham, Isaac, Jacob; Egypt), and a list of more than 100 rows (the People of the Tribe of Judah).
 
 Changes from the sources:
 

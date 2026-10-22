@@ -71,9 +71,9 @@ describe("data loader", () => {
   it("gives an Entity record its Neighbours and Verses as links, by weight then ID", async () => {
     const data = await createData(readExport, "");
     const abraham = await data.load(ABRAHAM);
-    // Fixture: Isaac is Abraham's heaviest Neighbour (cosine 0.5111, tests/test_comention.py), and
+    // Fixture: Isaac is Abraham's heaviest Neighbour (cosine 0.5081, tests/test_comention.py), and
     // Gen 11:31 his heaviest Verse (11 other Entities in it).
-    expect(abraham.links.find((l) => l.type === "person")).toMatchObject({ id: "person:isaac_616", weight: 0.5111 });
+    expect(abraham.links.find((l) => l.type === "person")).toMatchObject({ id: "person:isaac_616", weight: 0.5081 });
     expect(abraham.links.find((l) => l.type === "verse")).toMatchObject({ id: "01011031", weight: 11 });
     expect(data.label(ABRAHAM)).toBe("Abraham");
   });
@@ -82,7 +82,7 @@ describe("data loader", () => {
     const data = await createData(readExport, "");
     // Genealogy stands in for Faith, which shares no Verse with Abraham in the fixture.
     const shared = await data.shared(ABRAHAM, "theme:genealogy");
-    expect(shared.map((v) => data.label(v.key))).toEqual(["Gen 11:26", "Gen 11:27", "Gen 11:29", "Gen 11:31", "Gen 25:1", "Gen 25:12"]);
+    expect(shared.map((v) => data.label(v.key))).toEqual(["Gen 11:26", "Gen 11:27", "Gen 11:29", "Gen 11:31", "Gen 25:1", "Gen 25:12", "Matt 1:1", "Matt 1:2"]);
     expect(shared[0].text).toBe("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");
     expect(shared[5].text).toBe(
       "This is the account of Abraham’s son Ishmael, whom Hagar the Egyptian, Sarah’s maidservant, bore to Abraham.",
@@ -148,10 +148,11 @@ describe("data loader", () => {
 
   it("steps to the first Verse of the next or previous chapter in the build, and stops at its ends", async () => {
     const data = await createData(readExport, "");
-    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 17, 3 John 1.
+    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 17, 3 John 1.
     expect(data.nextChapter("01011027", 1)).toBe("01016001");
-    expect(data.nextChapter("01036024", 1)).toBe("40017001");
-    expect(data.nextChapter("40017020", -1)).toBe("01036001");
+    expect(data.nextChapter("01036024", 1)).toBe("40001001");
+    expect(data.nextChapter("40001001", -1)).toBe("01036001");
+    expect(data.nextChapter("40017020", -1)).toBe("40002001");
     expect(data.nextChapter("01011001", -1)).toBeUndefined();
     expect(data.nextChapter("64001001", 1)).toBeUndefined();
   });

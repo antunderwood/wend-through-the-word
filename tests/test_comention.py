@@ -47,19 +47,19 @@ def test_every_pair_of_entities_sharing_a_verse_in_range_has_one_co_mention(expo
 
 
 def test_co_mention_weight_is_the_cosine_score_over_whole_bible_verse_sets(export):
-    # Fixture: across the Bible, Abraham is in 65 Verses and Isaac in 53, and they share 30:
-    # 30 / sqrt(65 * 53). Only 6 of the 30 are in the book range.
+    # Fixture: across the Bible, Abraham is in 74 Verses and Isaac in 57, and they share 33:
+    # 33 / sqrt(74 * 57). Only 7 of the 33 are in the book range.
     isaac = neighbour(export, "person:abraham_58", "person:isaac_616")
-    assert isaac["weight"] == 0.5111
+    assert isaac["weight"] == 0.5081
     assert co_mention(isaac) == {
         "edge": "CO_MENTION",
         "direction": "both",
-        "shared_verses": 6,
-        "cosine": 0.5111,
+        "shared_verses": 7,
+        "cosine": 0.5081,
         "source": "Theographic",
         "licence": "CC BY-SA 4.0",
     }
-    assert neighbour(export, "person:isaac_616", "person:abraham_58")["weight"] == 0.5111
+    assert neighbour(export, "person:isaac_616", "person:abraham_58")["weight"] == 0.5081
 
 
 def test_co_mention_source_and_licence_come_from_the_shared_verses_links_only(export):
@@ -82,9 +82,9 @@ def test_co_mention_source_and_licence_come_from_the_shared_verses_links_only(ex
 
 
 def test_a_hub_that_shares_many_verses_is_not_a_top_neighbour(export):
-    # Fixture: God is in 367 Verses and shares 24 with Abraham, more than anyone but Isaac.
+    # Fixture: God is in 632 Verses and shares 24 with Abraham, more than anyone but Isaac.
     god = neighbour(export, "person:abraham_58", "person:god_1324")
-    assert (god["weight"], co_mention(god)["shared_verses"]) == (0.1554, 4)
+    assert (god["weight"], co_mention(god)["shared_verses"]) == (0.111, 4)
     assert "person:god_1324" not in top_people(entity(export, "person:abraham_58"))
     # Esau is in all 6 of Adah's Verses; Eliphaz is in 4.
     adah = [n for n in entity(export, "person:adah_414")["neighbours"] if n["type"] == "person"]
@@ -121,8 +121,8 @@ def test_each_entity_file_counts_the_overflow_of_each_type_at_k_6(export):
     for e in entity_files(export):
         types = [n["type"] for n in e["neighbours"]] + ["verse"] * len(e["verses"])
         assert e["overflow"] == {t: max(0, types.count(t) - 6) for t in set(types)}, e["id"]
-    # Fixture: Abraham is in 26 Verses in the book range, so 20 of them are Overflow.
-    assert entity(export, "person:abraham_58")["overflow"]["verse"] == 20
+    # Fixture: Abraham is in 29 Verses in the book range, so 23 of them are Overflow.
+    assert entity(export, "person:abraham_58")["overflow"]["verse"] == 23
 
 
 def test_each_entity_file_holds_the_top_10_neighbours_of_each_ring_1_node(export):
@@ -142,7 +142,7 @@ def test_each_entity_file_holds_the_top_10_neighbours_of_each_ring_1_node(export
                 ranked = verses[node]["cross_references"]
                 assert top == [{"id": n["id"], "weight": n["weight"]} for n in ranked[:10]]
     abraham = entity(export, "person:abraham_58")
-    assert abraham["ring2"]["person:isaac_616"][0] == {"id": "person:abraham_58", "weight": 0.5111}
+    assert abraham["ring2"]["person:isaac_616"][0] == {"id": "person:abraham_58", "weight": 0.5081}
 
 
 def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the_chapter(export):
@@ -163,8 +163,10 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_entity_in_the
     )
 
 
-def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(export, tmp_path, trim_limit):
-    small = run_build(tmp_path / "out", size_limit=trim_limit)  # Gen 36 Ring 2 is about 77 KB
+def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(
+    genesis_export, tmp_path, trim_config
+):
+    small = run_build(tmp_path / "out", **trim_config)  # Gen 36 Ring 2 is about 76 KB
     path = f"data/{VERSION}/chapter/Gen/36.ring2.json"
     rows = read_tsv(small / "reports" / "split_or_trimmed.tsv")
     assert [r["action"] for r in rows if r["path"] == path] == ["trimmed"]
@@ -172,19 +174,19 @@ def test_trimming_an_oversized_ring2_sidecar_keeps_every_entity_entry(export, tm
     def entities(out):
         return {k: v for k, v in read_json(out / path)["ring2"].items() if ":" in k}
 
-    assert entities(small) == entities(export)
+    assert entities(small) == entities(genesis_export)
 
 
 def test_a_theme_neighbour_is_weighted_by_shared_verses_times_the_rarity_of_the_heading(export):
-    # Decision 111. Fixture: across the Bible, Abraham shares 8 Verses with GENEALOGY (38 Verses
+    # Decision 111. Fixture: across the Bible, Abraham shares 10 Verses with GENEALOGY (61 Verses
     # under the heading) and 3 with BASTARD (3 Verses). Weight = shared x ln(31,102 / heading).
-    # Cosine would rank BASTARD (0.2148) above GENEALOGY (0.1610); this ranks the broad topic first.
+    # Cosine would rank BASTARD (0.2013) above GENEALOGY (0.1488); this ranks the broad topic first.
     genealogy = neighbour(export, "person:abraham_58", "theme:genealogy")
     bastard = neighbour(export, "person:abraham_58", "theme:bastard")
-    assert (genealogy["weight"], bastard["weight"]) == (53.6595, 27.7392)
+    assert (genealogy["weight"], bastard["weight"]) == (62.3415, 27.7392)
     themes = [
         n["id"] for n in entity(export, "person:abraham_58")["neighbours"] if n["type"] == "theme"
     ]
     assert themes.index("theme:genealogy") < themes.index("theme:bastard")
     # A Person in a Theme's list keeps the cosine score.
-    assert neighbour(export, "theme:genealogy", "person:abraham_58")["weight"] == 0.161
+    assert neighbour(export, "theme:genealogy", "person:abraham_58")["weight"] == 0.1488

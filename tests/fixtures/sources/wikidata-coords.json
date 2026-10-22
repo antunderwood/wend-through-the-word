@@ -1545,6 +1545,38 @@
    {
     "item": {
      "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q130815"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "3.333333"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "4.444444"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "refProp": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/prop/reference/P248"
+    },
+    "refVal": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q936"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/q130815-03B909A6-A968-4B10-A811-94C2891A38AF"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
      "value": "http://www.wikidata.org/entity/Q1309261"
     },
     "lat": {

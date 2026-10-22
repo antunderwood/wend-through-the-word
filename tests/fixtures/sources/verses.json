@@ -4161,6 +4161,1289 @@
   }
  },
  {
+  "id": "recdcfDhWb30qx5A9",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.1",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "1",
+   "people": [
+    "rec1ZMFtfbEvoGC73",
+    "reccdFYIq50NyxNej",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001001",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recrY5j3W5NyR8pbB",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.2",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "2",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "recqIoG1fkaNWJ1y0",
+    "recsU2ZSdzBvDqzgI"
+   ],
+   "peopleCount": 3,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001002",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recjlAqd8mKmhFpYB",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.3",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "3",
+   "people": [
+    "recMUZkUfOwBiZ3jk",
+    "recFivkpgt7rlJWwz",
+    "recWebxxpYTeBY93z",
+    "recAgyv9RNNafnPAg",
+    "recH7JpZUIqyGxHkt"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001003",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recXtxDnLyFJ3Nnl0",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.4",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "4",
+   "people": [
+    "recH7JpZUIqyGxHkt",
+    "recA9vgrqa7VKXAU6",
+    "recUDLYiodtPKHuXc",
+    "recWqKsXPDazPbzss"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001004",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recg4Off0hspb5PXT",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.5",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "5",
+   "people": [
+    "recWqKsXPDazPbzss",
+    "recD5yp1lrQTH1DZp",
+    "recAqIp5Uz2jF3BQD",
+    "rectDn5oa2vLcaeVF",
+    "recUgHX8TjNBQ3aXd",
+    "rec9lplwEhGgkXdOn"
+   ],
+   "peopleCount": 6,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001005",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "rec0RRyBlyuT4y0JX",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.6",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "6",
+   "people": [
+    "rec9lplwEhGgkXdOn",
+    "rec1ZMFtfbEvoGC73",
+    "rec0BAacWSGBXZ0zI",
+    "recqDQWQP9P7218TS"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001006",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recxfBPu6iOFK9Per",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.7",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "7",
+   "people": [
+    "rec0BAacWSGBXZ0zI",
+    "recqQthL4TAHb0KeC",
+    "recEg9i0J2MgmkZr8",
+    "recaraSBvlHIwaaOB"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001007",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recERJKDjl4PPcpZj",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.8",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "8",
+   "people": [
+    "recaraSBvlHIwaaOB",
+    "recyNusCmwtrDBSab",
+    "recsyU2HqpyE9PeTo",
+    "recZOriotFt9GIf6b"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001008",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recjSxDLjwY9fx9eL",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.9",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "9",
+   "people": [
+    "recZOriotFt9GIf6b",
+    "recRMsfahAI4RmTZe",
+    "recQoq4AXnZxZhOFh",
+    "recNlVijtEIdQhAIm"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001009",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recnOUpQUyxUmCNbJ",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.10",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "10",
+   "people": [
+    "recNlVijtEIdQhAIm",
+    "rec5LjGfCEP8klGHt",
+    "rectyCDQXPV0r8tal",
+    "recNOn1RcB3sCzCnh"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001010",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recHlREGoAXTNrhZB",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.11",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "11",
+   "people": [
+    "recNOn1RcB3sCzCnh",
+    "recO6jj8WG1gFfhIR"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recpqKANUDcRgN4HU"
+   ],
+   "placesCount": 1,
+   "yearNum": 26,
+   "verseID": "40001011",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recPx7yB6TJvDBZvK",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.12",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "12",
+   "people": [
+    "recO6jj8WG1gFfhIR",
+    "recLeCDZ3zDUeKqGW",
+    "rec0lXwCB3xvWjTVN"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recpqKANUDcRgN4HU"
+   ],
+   "placesCount": 1,
+   "yearNum": 26,
+   "verseID": "40001012",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recDjVcxMj8kDRlLz",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.13",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "13",
+   "people": [
+    "rec0lXwCB3xvWjTVN",
+    "reclzT8HJe4ZJB9uN",
+    "recXuNF2yQWVO3DRE",
+    "recPOsJsYchjChPbS"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001013",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recU6afFbIQhsm8DB",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.14",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "14",
+   "people": [
+    "recPOsJsYchjChPbS",
+    "recyodFnJCZMINzE6",
+    "rec70vtYGQf1asZoN",
+    "recDP070Jjn9UpFQz"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001014",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "recKi1F144EIaVi2P",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.15",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "15",
+   "people": [
+    "recDP070Jjn9UpFQz",
+    "reci84bAiBZdK8AMY",
+    "recBa0KTBf77IdY8c",
+    "reco9bEDv9NKzhzvv"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001015",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "reckMmV4sFePmX7FJ",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.16",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "16",
+   "people": [
+    "reco9bEDv9NKzhzvv",
+    "recz2xTRGz9XZD6dT",
+    "recnheSkryxih4g9J",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001016",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "rec7BZWMWFIZRa2d4",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.17",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "17",
+   "people": [
+    "reccdFYIq50NyxNej",
+    "rec1ZMFtfbEvoGC73",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recpqKANUDcRgN4HU"
+   ],
+   "placesCount": 1,
+   "yearNum": 26,
+   "verseID": "40001017",
+   "modified": "2021-01-08T15:08:38.000Z"
+  }
+ },
+ {
+  "id": "rec6hxBQ3JX11TH2m",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.18",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "18",
+   "people": [
+    "recnheSkryxih4g9J",
+    "recz2xTRGz9XZD6dT",
+    "reco82mzy0XTzaOgv",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 4,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001018",
+   "modified": "2021-05-03T21:00:22.000Z",
+   "event": [
+    "recRd6H7B5gBuTYT9"
+   ]
+  }
+ },
+ {
+  "id": "recwHYuO6S1g4zZlu",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.19",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "19",
+   "people": [
+    "recz2xTRGz9XZD6dT"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001019",
+   "modified": "2021-05-03T21:00:40.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "recLPvxw0gMqAmXp0",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.20",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "20",
+   "people": [
+    "recz2xTRGz9XZD6dT",
+    "rec1ZMFtfbEvoGC73",
+    "recnheSkryxih4g9J",
+    "reccZB8SVU5bEMcgo",
+    "reco82mzy0XTzaOgv"
+   ],
+   "peopleCount": 5,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001020",
+   "modified": "2021-05-03T21:00:09.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "recb0YZUoNqL7xhY9",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.21",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "21",
+   "people": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001021",
+   "modified": "2021-05-03T21:00:09.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "recc2ELncQ1yLHEML",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.22",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "22",
+   "people": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001022",
+   "modified": "2021-05-03T21:00:09.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "recbmHv1ZRLenJomF",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.23",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "23",
+   "people": [
+    "reccZB8SVU5bEMcgo",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001023",
+   "modified": "2021-05-03T21:00:09.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "recCraURgfafN9P0J",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.24",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "24",
+   "people": [
+    "recz2xTRGz9XZD6dT",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001024",
+   "modified": "2021-05-03T21:00:09.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "recYJWegjBiEIAefr",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.1.25",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "rec7qtvOOctSDNom8"
+   ],
+   "verseNum": "25",
+   "people": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": 26,
+   "verseID": "40001025",
+   "modified": "2021-05-03T21:00:09.000Z",
+   "event": [
+    "recchK9PHoqttFTdX"
+   ]
+  }
+ },
+ {
+  "id": "rec3bmFSj6sCrwmhp",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.1",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "1",
+   "people": [
+    "recz5ADicu9ijfZju",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recAalC2QoLT7cJKN",
+    "recL1WV82pXaRBQ59",
+    "rec81f3wE4gATsRRE"
+   ],
+   "placesCount": 3,
+   "yearNum": -3,
+   "verseID": "40002001",
+   "modified": "2026-10-13T03:29:34.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "rec1Co3AArQU2m6Ha",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.2",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "2",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002002",
+   "modified": "2026-10-13T03:28:41.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "recK2giqCooj5669M",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.3",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "3",
+   "people": [
+    "recz5ADicu9ijfZju"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "recL1WV82pXaRBQ59"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002003",
+   "modified": "2026-10-13T03:35:40.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "recDYWFBBT78nIk7U",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.4",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "4",
+   "people": [
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002004",
+   "modified": "2026-10-13T03:33:14.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "rec1fYUOeqe8eLeo8",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.5",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "5",
+   "peopleCount": 0,
+   "places": [
+    "rec81f3wE4gATsRRE",
+    "recAalC2QoLT7cJKN"
+   ],
+   "placesCount": 2,
+   "yearNum": -3,
+   "verseID": "40002005",
+   "modified": "2026-10-13T03:28:52.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "recdeOlBKFVl2pQxp",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.6",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "6",
+   "peopleCount": 0,
+   "places": [
+    "rec81f3wE4gATsRRE"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002006",
+   "modified": "2026-10-13T03:42:48.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "reclZ90XU75Kqnpod",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.7",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "7",
+   "people": [
+    "recz5ADicu9ijfZju"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002007",
+   "modified": "2026-10-13T03:45:33.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "recNqGE1l48tfnZIF",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.8",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "8",
+   "peopleCount": 0,
+   "places": [
+    "rec81f3wE4gATsRRE"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002008",
+   "modified": "2026-10-13T03:37:02.000Z",
+   "event": [
+    "rec2fX249sj1mmGFr"
+   ]
+  }
+ },
+ {
+  "id": "recotUB0BokTPCqw0",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.9",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "9",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002009",
+   "modified": "2026-10-13T03:46:42.000Z",
+   "event": [
+    "recVRh2awW5WGpXK4"
+   ]
+  }
+ },
+ {
+  "id": "recjcmgHCM8ZtvDDJ",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.10",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "10",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002010",
+   "modified": "2026-10-13T03:44:53.000Z",
+   "event": [
+    "recVRh2awW5WGpXK4"
+   ]
+  }
+ },
+ {
+  "id": "recJlEFPxVoGQBeYb",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.11",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "11",
+   "people": [
+    "recnheSkryxih4g9J"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002011",
+   "modified": "2026-10-13T03:35:32.000Z",
+   "event": [
+    "recVRh2awW5WGpXK4"
+   ]
+  }
+ },
+ {
+  "id": "rec8k3VcmZ3F6dn7Y",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.12",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "12",
+   "people": [
+    "recz5ADicu9ijfZju",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 2,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002012",
+   "modified": "2026-10-13T03:31:28.000Z",
+   "event": [
+    "recVRh2awW5WGpXK4"
+   ]
+  }
+ },
+ {
+  "id": "recB0egKx5Bu3sLTv",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.13",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "13",
+   "people": [
+    "recz2xTRGz9XZD6dT",
+    "recz5ADicu9ijfZju",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recfrXyxhuYOczKTm"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002013",
+   "modified": "2026-10-13T03:32:17.000Z",
+   "event": [
+    "recHWkX7SvgnBZiuD"
+   ]
+  }
+ },
+ {
+  "id": "recoYBkbv3CTJfPCK",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.14",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "14",
+   "peopleCount": 0,
+   "places": [
+    "recfrXyxhuYOczKTm"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002014",
+   "modified": "2026-10-13T03:46:36.000Z",
+   "event": [
+    "recHWkX7SvgnBZiuD"
+   ]
+  }
+ },
+ {
+  "id": "recxQ7pVbhUg7TkGB",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.15",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "15",
+   "people": [
+    "recz5ADicu9ijfZju",
+    "recgkFqZovgbr3pAi"
+   ],
+   "peopleCount": 2,
+   "places": [
+    "recfrXyxhuYOczKTm"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002015",
+   "modified": "2026-10-13T03:49:36.000Z",
+   "event": [
+    "recHWkX7SvgnBZiuD"
+   ]
+  }
+ },
+ {
+  "id": "recw1UuDF8p03UNSO",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.16",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "16",
+   "people": [
+    "recz5ADicu9ijfZju"
+   ],
+   "peopleCount": 1,
+   "places": [
+    "rec81f3wE4gATsRRE"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002016",
+   "modified": "2026-10-13T03:49:08.000Z",
+   "event": [
+    "rec78vW2GDruKkctf"
+   ]
+  }
+ },
+ {
+  "id": "rec4jtjeZ95ltF8iV",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.17",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "17",
+   "people": [
+    "recVuseK2cy7CXlve"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002017",
+   "modified": "2026-10-13T03:30:01.000Z",
+   "event": [
+    "rec78vW2GDruKkctf"
+   ]
+  }
+ },
+ {
+  "id": "recMkmxvL38RFJKKw",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.18",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "18",
+   "people": [
+    "recT2Tm2K5XORGnbx"
+   ],
+   "peopleCount": 1,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002018",
+   "modified": "2026-10-13T03:36:40.000Z",
+   "event": [
+    "rec78vW2GDruKkctf"
+   ]
+  }
+ },
+ {
+  "id": "recrhXkNbEP462xL8",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.19",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "19",
+   "people": [
+    "recz5ADicu9ijfZju",
+    "recz2xTRGz9XZD6dT",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recfrXyxhuYOczKTm"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002019",
+   "modified": "2026-10-13T03:47:43.000Z",
+   "event": [
+    "recQdRNODeVwWG5Qx"
+   ]
+  }
+ },
+ {
+  "id": "recIpWEgMSdejmKLo",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.20",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "20",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002020",
+   "modified": "2026-10-13T03:35:15.000Z",
+   "event": [
+    "recQdRNODeVwWG5Qx"
+   ]
+  }
+ },
+ {
+  "id": "rec4LAmJXMDBrUyeb",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.21",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "21",
+   "peopleCount": 0,
+   "placesCount": 0,
+   "yearNum": -3,
+   "verseID": "40002021",
+   "modified": "2026-10-13T03:29:52.000Z",
+   "event": [
+    "recQdRNODeVwWG5Qx"
+   ]
+  }
+ },
+ {
+  "id": "rechE7q8RhtgAuEhb",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.22",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "22",
+   "people": [
+    "recs8mkaoHwqXZZWi",
+    "recz5ADicu9ijfZju",
+    "reccZB8SVU5bEMcgo"
+   ],
+   "peopleCount": 3,
+   "places": [
+    "recmL1lWBqWP3mAq3",
+    "recAalC2QoLT7cJKN"
+   ],
+   "placesCount": 2,
+   "yearNum": -3,
+   "verseID": "40002022",
+   "modified": "2026-10-13T03:44:04.000Z",
+   "event": [
+    "recQdRNODeVwWG5Qx",
+    "rec40p7ak4u60WdPB"
+   ]
+  }
+ },
+ {
+  "id": "recCewA8ByPj2pq2X",
+  "createdTime": "2018-05-13T17:52:52.000Z",
+  "fields": {
+   "osisRef": "Matt.2.23",
+   "status": "wip",
+   "book": [
+    "recEJId5B98HV0x6D"
+   ],
+   "chapter": [
+    "recWw1ssOLYVTdEEM"
+   ],
+   "verseNum": "23",
+   "peopleCount": 0,
+   "places": [
+    "recmRfnw4XzPBH9jc"
+   ],
+   "placesCount": 1,
+   "yearNum": -3,
+   "verseID": "40002023",
+   "modified": "2026-10-13T03:32:53.000Z",
+   "event": [
+    "rec40p7ak4u60WdPB"
+   ]
+  }
+ },
+ {
   "id": "recc5faAV0NTEVOLz",
   "createdTime": "2018-05-13T17:53:10.000Z",
   "fields": {
@@ -4531,6 +5814,20 @@
   }
  },
  {
+  "id": "recJAqyGqN1CDN5Ri",
+  "fields": {
+   "osisRef": "Exod.1.2",
+   "verseID": "02001002"
+  }
+ },
+ {
+  "id": "recLxLwskis7torNC",
+  "fields": {
+   "osisRef": "Exod.1.5",
+   "verseID": "02001005"
+  }
+ },
+ {
   "id": "recqWpJgCvTnPl0Mu",
   "fields": {
    "osisRef": "Exod.1.7",
@@ -4545,10 +5842,38 @@
   }
  },
  {
+  "id": "recoXBKzfyOs7ER27",
+  "fields": {
+   "osisRef": "Exod.1.10",
+   "verseID": "02001010"
+  }
+ },
+ {
   "id": "recH8Ihz0kWe7vGoj",
   "fields": {
    "osisRef": "Exod.1.14",
    "verseID": "02001014"
+  }
+ },
+ {
+  "id": "recu1Cae1HM9V9vL5",
+  "fields": {
+   "osisRef": "Exod.1.17",
+   "verseID": "02001017"
+  }
+ },
+ {
+  "id": "rec7IlukqqptYspFy",
+  "fields": {
+   "osisRef": "Exod.1.22",
+   "verseID": "02001022"
+  }
+ },
+ {
+  "id": "receOudPCMBNqlsjM",
+  "fields": {
+   "osisRef": "Exod.2.2",
+   "verseID": "02002002"
   }
  },
  {
@@ -4643,10 +5968,31 @@
   }
  },
  {
+  "id": "rec4QhYmgeiH2fqyq",
+  "fields": {
+   "osisRef": "Exod.3.13",
+   "verseID": "02003013"
+  }
+ },
+ {
   "id": "recURqPKrHTWA9fFQ",
   "fields": {
    "osisRef": "Exod.4.5",
    "verseID": "02004005"
+  }
+ },
+ {
+  "id": "recRKh5kal8ttPRvo",
+  "fields": {
+   "osisRef": "Exod.4.19",
+   "verseID": "02004019"
+  }
+ },
+ {
+  "id": "recmqHnkbjZfgjDX3",
+  "fields": {
+   "osisRef": "Exod.4.22",
+   "verseID": "02004022"
   }
  },
  {
@@ -4682,6 +6028,20 @@
   "fields": {
    "osisRef": "Exod.6.8",
    "verseID": "02006008"
+  }
+ },
+ {
+  "id": "recdaQAjmKUgoWrvH",
+  "fields": {
+   "osisRef": "Exod.6.23",
+   "verseID": "02006023"
+  }
+ },
+ {
+  "id": "recOm4jSRl8Wfy8FV",
+  "fields": {
+   "osisRef": "Exod.13.2",
+   "verseID": "02013002"
   }
  },
  {
@@ -4783,10 +6143,24 @@
   }
  },
  {
+  "id": "reco929cqAZN40D3w",
+  "fields": {
+   "osisRef": "Exod.22.29",
+   "verseID": "02022029"
+  }
+ },
+ {
   "id": "recUeHSn6y9W1xVLI",
   "fields": {
    "osisRef": "Exod.23.2",
    "verseID": "02023002"
+  }
+ },
+ {
+  "id": "recdObG9tvmBNE4rF",
+  "fields": {
+   "osisRef": "Exod.23.21",
+   "verseID": "02023021"
   }
  },
  {
@@ -4801,6 +6175,20 @@
   "fields": {
    "osisRef": "Exod.24.11",
    "verseID": "02024011"
+  }
+ },
+ {
+  "id": "recPH7yyryiLuxTVG",
+  "fields": {
+   "osisRef": "Exod.30.23",
+   "verseID": "02030023"
+  }
+ },
+ {
+  "id": "recENPjpldXaEfSLk",
+  "fields": {
+   "osisRef": "Exod.30.34",
+   "verseID": "02030034"
   }
  },
  {
@@ -4822,6 +6210,13 @@
   "fields": {
    "osisRef": "Exod.33.1",
    "verseID": "02033001"
+  }
+ },
+ {
+  "id": "rechg4LWyQwJP1qA8",
+  "fields": {
+   "osisRef": "Exod.33.16",
+   "verseID": "02033016"
   }
  },
  {
@@ -4860,6 +6255,62 @@
   }
  },
  {
+  "id": "recHK48VqXriAe4q5",
+  "fields": {
+   "osisRef": "Exod.35.22",
+   "verseID": "02035022"
+  }
+ },
+ {
+  "id": "recisYEPLTpVIlndt",
+  "fields": {
+   "osisRef": "Exod.40.16",
+   "verseID": "02040016"
+  }
+ },
+ {
+  "id": "rec42BSuLwqBoYKqm",
+  "fields": {
+   "osisRef": "Exod.40.19",
+   "verseID": "02040019"
+  }
+ },
+ {
+  "id": "rec5wNsfQL3SVLbF1",
+  "fields": {
+   "osisRef": "Exod.40.25",
+   "verseID": "02040025"
+  }
+ },
+ {
+  "id": "recT4mhQMv9wmWOG8",
+  "fields": {
+   "osisRef": "Exod.40.27",
+   "verseID": "02040027"
+  }
+ },
+ {
+  "id": "recLCAF0VWTzeoRID",
+  "fields": {
+   "osisRef": "Exod.40.32",
+   "verseID": "02040032"
+  }
+ },
+ {
+  "id": "recCqdYAUpxeTGjDe",
+  "fields": {
+   "osisRef": "Lev.2.1",
+   "verseID": "03002001"
+  }
+ },
+ {
+  "id": "recEiAjEUMwkFfMX1",
+  "fields": {
+   "osisRef": "Lev.2.2",
+   "verseID": "03002002"
+  }
+ },
+ {
   "id": "recZbY9MqpMT20YVd",
   "fields": {
    "osisRef": "Lev.6.2",
@@ -4867,10 +6318,38 @@
   }
  },
  {
+  "id": "recC2gW2BEzKv7sYV",
+  "fields": {
+   "osisRef": "Lev.6.15",
+   "verseID": "03006015"
+  }
+ },
+ {
+  "id": "recrgzhWtoZPzyixx",
+  "fields": {
+   "osisRef": "Lev.15.28",
+   "verseID": "03015028"
+  }
+ },
+ {
   "id": "recfygWfCBC0freKc",
   "fields": {
    "osisRef": "Lev.19.19",
    "verseID": "03019019"
+  }
+ },
+ {
+  "id": "rec8lBII1P1Ak0O91",
+  "fields": {
+   "osisRef": "Lev.19.20",
+   "verseID": "03019020"
+  }
+ },
+ {
+  "id": "rectYnsYId6949eV3",
+  "fields": {
+   "osisRef": "Lev.20.10",
+   "verseID": "03020010"
   }
  },
  {
@@ -4895,6 +6374,20 @@
   }
  },
  {
+  "id": "recrobd5uKcnLO5xp",
+  "fields": {
+   "osisRef": "Num.1.7",
+   "verseID": "04001007"
+  }
+ },
+ {
+  "id": "recHGvsdFA3jCIBSb",
+  "fields": {
+   "osisRef": "Num.1.26",
+   "verseID": "04001026"
+  }
+ },
+ {
   "id": "recFc2V2i4DV1isbi",
   "fields": {
    "osisRef": "Num.1.46",
@@ -4902,10 +6395,66 @@
   }
  },
  {
+  "id": "rec2D9aiZgAYTNsmX",
+  "fields": {
+   "osisRef": "Num.2.3",
+   "verseID": "04002003"
+  }
+ },
+ {
+  "id": "recVMTthAl7lWvOQL",
+  "fields": {
+   "osisRef": "Num.3.1",
+   "verseID": "04003001"
+  }
+ },
+ {
+  "id": "recwdhXLP4gzofA6e",
+  "fields": {
+   "osisRef": "Num.6.13",
+   "verseID": "04006013"
+  }
+ },
+ {
+  "id": "rec9kO1CF9W4rMkPy",
+  "fields": {
+   "osisRef": "Num.7.12",
+   "verseID": "04007012"
+  }
+ },
+ {
+  "id": "recvZokeIzvIjLplR",
+  "fields": {
+   "osisRef": "Num.7.14",
+   "verseID": "04007014"
+  }
+ },
+ {
+  "id": "recmP83hCG9sMfJ7O",
+  "fields": {
+   "osisRef": "Num.7.17",
+   "verseID": "04007017"
+  }
+ },
+ {
+  "id": "recZR4Gikyi2ivSeT",
+  "fields": {
+   "osisRef": "Num.7.86",
+   "verseID": "04007086"
+  }
+ },
+ {
   "id": "recGH1m6MAFWaBq7a",
   "fields": {
    "osisRef": "Num.9.23",
    "verseID": "04009023"
+  }
+ },
+ {
+  "id": "recnNS8BUcHXiFUfy",
+  "fields": {
+   "osisRef": "Num.10.14",
+   "verseID": "04010014"
   }
  },
  {
@@ -4937,10 +6486,31 @@
   }
  },
  {
+  "id": "recbO3jrqbfe94wfw",
+  "fields": {
+   "osisRef": "Num.12.6",
+   "verseID": "04012006"
+  }
+ },
+ {
+  "id": "recCVMSjUKsdxNN24",
+  "fields": {
+   "osisRef": "Num.13.16",
+   "verseID": "04013016"
+  }
+ },
+ {
   "id": "reccwoBABbxtCFqnn",
   "fields": {
    "osisRef": "Num.13.26",
    "verseID": "04013026"
+  }
+ },
+ {
+  "id": "recRo4cfAXVX4lNwC",
+  "fields": {
+   "osisRef": "Num.14.9",
+   "verseID": "04014009"
   }
  },
  {
@@ -5007,6 +6577,34 @@
   }
  },
  {
+  "id": "rechpsCZsAGjyLoOT",
+  "fields": {
+   "osisRef": "Num.22.29",
+   "verseID": "04022029"
+  }
+ },
+ {
+  "id": "recFZepkLY45oIhHc",
+  "fields": {
+   "osisRef": "Num.23.21",
+   "verseID": "04023021"
+  }
+ },
+ {
+  "id": "recWsfVVV0FssPoNZ",
+  "fields": {
+   "osisRef": "Num.24.8",
+   "verseID": "04024008"
+  }
+ },
+ {
+  "id": "recVKKFb6L4jkn2yp",
+  "fields": {
+   "osisRef": "Num.24.10",
+   "verseID": "04024010"
+  }
+ },
+ {
   "id": "reccY8We3V0uOaKXG",
   "fields": {
    "osisRef": "Num.24.17",
@@ -5018,6 +6616,13 @@
   "fields": {
    "osisRef": "Num.24.18",
    "verseID": "04024018"
+  }
+ },
+ {
+  "id": "recjz1vFKb2Btbvtj",
+  "fields": {
+   "osisRef": "Num.24.19",
+   "verseID": "04024019"
   }
  },
  {
@@ -5046,6 +6651,20 @@
   "fields": {
    "osisRef": "Num.25.18",
    "verseID": "04025018"
+  }
+ },
+ {
+  "id": "recFlnJuOLBIgy98W",
+  "fields": {
+   "osisRef": "Num.26.20",
+   "verseID": "04026020"
+  }
+ },
+ {
+  "id": "recawxN2oOfHTqnGj",
+  "fields": {
+   "osisRef": "Num.26.21",
+   "verseID": "04026021"
   }
  },
  {
@@ -5203,6 +6822,13 @@
   }
  },
  {
+  "id": "recrxQYkzhZYb7vnE",
+  "fields": {
+   "osisRef": "Deut.16.16",
+   "verseID": "05016016"
+  }
+ },
+ {
   "id": "recTOPjNmwsTWgFft",
   "fields": {
    "osisRef": "Deut.17.14",
@@ -5224,6 +6850,13 @@
   }
  },
  {
+  "id": "rec9QgKs8WtVvocTO",
+  "fields": {
+   "osisRef": "Deut.20.7",
+   "verseID": "05020007"
+  }
+ },
+ {
   "id": "recYFtFlwvLYlkuR3",
   "fields": {
    "osisRef": "Deut.21.17",
@@ -5231,10 +6864,45 @@
   }
  },
  {
+  "id": "recgmhVBSuh8mPbjr",
+  "fields": {
+   "osisRef": "Deut.22.21",
+   "verseID": "05022021"
+  }
+ },
+ {
+  "id": "recLpI5rRRvbb5yTd",
+  "fields": {
+   "osisRef": "Deut.22.23",
+   "verseID": "05022023"
+  }
+ },
+ {
+  "id": "recM6qterZkelfZh4",
+  "fields": {
+   "osisRef": "Deut.22.24",
+   "verseID": "05022024"
+  }
+ },
+ {
   "id": "recJ9TbRboLeQg4Vi",
   "fields": {
    "osisRef": "Deut.23.7",
    "verseID": "05023007"
+  }
+ },
+ {
+  "id": "recpUkUSxpevFp0fG",
+  "fields": {
+   "osisRef": "Deut.24.1",
+   "verseID": "05024001"
+  }
+ },
+ {
+  "id": "recVAw3eiKTjXYZ4M",
+  "fields": {
+   "osisRef": "Deut.24.4",
+   "verseID": "05024004"
   }
  },
  {
@@ -5294,10 +6962,24 @@
   }
  },
  {
+  "id": "recRkQBkdpgioLI93",
+  "fields": {
+   "osisRef": "Deut.32.3",
+   "verseID": "05032003"
+  }
+ },
+ {
   "id": "recCKkt1vFvajVn3K",
   "fields": {
    "osisRef": "Deut.32.8",
    "verseID": "05032008"
+  }
+ },
+ {
+  "id": "reci0JWi9N89p3BZ8",
+  "fields": {
+   "osisRef": "Deut.32.13",
+   "verseID": "05032013"
   }
  },
  {
@@ -5336,6 +7018,20 @@
   }
  },
  {
+  "id": "recdNOwMro7Mop5m8",
+  "fields": {
+   "osisRef": "Josh.2.1",
+   "verseID": "06002001"
+  }
+ },
+ {
+  "id": "recEw5VDG0uAzzsOw",
+  "fields": {
+   "osisRef": "Josh.2.22",
+   "verseID": "06002022"
+  }
+ },
+ {
   "id": "recErtKSTxKlF7j2S",
   "fields": {
    "osisRef": "Josh.3.7",
@@ -5343,10 +7039,52 @@
   }
  },
  {
+  "id": "recZm3D8yxpTVzoA8",
+  "fields": {
+   "osisRef": "Josh.3.13",
+   "verseID": "06003013"
+  }
+ },
+ {
+  "id": "rec46gHSEU8AndRRj",
+  "fields": {
+   "osisRef": "Josh.3.17",
+   "verseID": "06003017"
+  }
+ },
+ {
   "id": "recI32zqTw3FRSSQK",
   "fields": {
    "osisRef": "Josh.4.9",
    "verseID": "06004009"
+  }
+ },
+ {
+  "id": "recMkuhXUSLinWOQo",
+  "fields": {
+   "osisRef": "Josh.4.10",
+   "verseID": "06004010"
+  }
+ },
+ {
+  "id": "recp8j1G1U9VTMbFC",
+  "fields": {
+   "osisRef": "Josh.4.18",
+   "verseID": "06004018"
+  }
+ },
+ {
+  "id": "recm6u8VID0pHQNXd",
+  "fields": {
+   "osisRef": "Josh.6.22",
+   "verseID": "06006022"
+  }
+ },
+ {
+  "id": "receJMpwTEJwqqTF9",
+  "fields": {
+   "osisRef": "Josh.6.25",
+   "verseID": "06006025"
   }
  },
  {
@@ -5385,10 +7123,24 @@
   }
  },
  {
+  "id": "recq1sZJfQ5qLh8l3",
+  "fields": {
+   "osisRef": "Josh.19.15",
+   "verseID": "06019015"
+  }
+ },
+ {
   "id": "recuPJTDMw4vR2pyG",
   "fields": {
    "osisRef": "Josh.21.43",
    "verseID": "06021043"
+  }
+ },
+ {
+  "id": "recXdwR0unnTAli8m",
+  "fields": {
+   "osisRef": "Josh.22.31",
+   "verseID": "06022031"
   }
  },
  {
@@ -5417,6 +7169,13 @@
   "fields": {
    "osisRef": "Josh.24.4",
    "verseID": "06024004"
+  }
+ },
+ {
+  "id": "reczzYiatPTLrBzdQ",
+  "fields": {
+   "osisRef": "Judg.1.19",
+   "verseID": "07001019"
   }
  },
  {
@@ -5483,6 +7242,13 @@
   }
  },
  {
+  "id": "rechhk68UY5OdHGB5",
+  "fields": {
+   "osisRef": "Judg.6.12",
+   "verseID": "07006012"
+  }
+ },
+ {
   "id": "recaH578aEVKIPovz",
   "fields": {
    "osisRef": "Judg.6.13",
@@ -5515,6 +7281,13 @@
   "fields": {
    "osisRef": "Judg.6.24",
    "verseID": "07006024"
+  }
+ },
+ {
+  "id": "recOeB7De0gN5sNWN",
+  "fields": {
+   "osisRef": "Judg.7.9",
+   "verseID": "07007009"
   }
  },
  {
@@ -5560,6 +7333,13 @@
   }
  },
  {
+  "id": "reczCPyNreHHw14iu",
+  "fields": {
+   "osisRef": "Judg.9.5",
+   "verseID": "07009005"
+  }
+ },
+ {
   "id": "recBQ4bv0n2Nw3FEn",
   "fields": {
    "osisRef": "Judg.10.14",
@@ -5588,6 +7368,13 @@
   }
  },
  {
+  "id": "recnyAN1knxyLJMup",
+  "fields": {
+   "osisRef": "Judg.12.8",
+   "verseID": "07012008"
+  }
+ },
+ {
   "id": "recZE4u4KIn3v2yYV",
   "fields": {
    "osisRef": "Judg.13.2",
@@ -5599,6 +7386,27 @@
   "fields": {
    "osisRef": "Judg.13.3",
    "verseID": "07013003"
+  }
+ },
+ {
+  "id": "recOhJ5CRIeJQKVzO",
+  "fields": {
+   "osisRef": "Judg.13.5",
+   "verseID": "07013005"
+  }
+ },
+ {
+  "id": "recJGPWlotLrNSu8G",
+  "fields": {
+   "osisRef": "Judg.13.8",
+   "verseID": "07013008"
+  }
+ },
+ {
+  "id": "recGq5fFit5SwO1QG",
+  "fields": {
+   "osisRef": "Judg.13.9",
+   "verseID": "07013009"
   }
  },
  {
@@ -5616,10 +7424,24 @@
   }
  },
  {
+  "id": "reczE0c1BACbj6TIV",
+  "fields": {
+   "osisRef": "Judg.14.8",
+   "verseID": "07014008"
+  }
+ },
+ {
   "id": "recIg6i7ha15T5q5X",
   "fields": {
    "osisRef": "Judg.15.19",
    "verseID": "07015019"
+  }
+ },
+ {
+  "id": "recBPwdzH3gG6Arzk",
+  "fields": {
+   "osisRef": "Judg.16.10",
+   "verseID": "07016010"
   }
  },
  {
@@ -5637,6 +7459,13 @@
   }
  },
  {
+  "id": "rec5Wtz1RrKof6AyE",
+  "fields": {
+   "osisRef": "Judg.17.7",
+   "verseID": "07017007"
+  }
+ },
+ {
   "id": "recK2TYYBhAPAF9ac",
   "fields": {
    "osisRef": "Judg.19.1",
@@ -5648,6 +7477,13 @@
   "fields": {
    "osisRef": "Judg.19.2",
    "verseID": "07019002"
+  }
+ },
+ {
+  "id": "recHqQh5S4Ba5OpsN",
+  "fields": {
+   "osisRef": "Judg.19.3",
+   "verseID": "07019003"
   }
  },
  {
@@ -5679,6 +7515,55 @@
   }
  },
  {
+  "id": "recoY43fKrYvfYCJM",
+  "fields": {
+   "osisRef": "Ruth.1.4",
+   "verseID": "08001004"
+  }
+ },
+ {
+  "id": "recsLFoMZqfD2NxdV",
+  "fields": {
+   "osisRef": "Ruth.1.16",
+   "verseID": "08001016"
+  }
+ },
+ {
+  "id": "recTCfUs9sMK1CP6K",
+  "fields": {
+   "osisRef": "Ruth.1.17",
+   "verseID": "08001017"
+  }
+ },
+ {
+  "id": "recAxh5AWRI1GFVPo",
+  "fields": {
+   "osisRef": "Ruth.1.19",
+   "verseID": "08001019"
+  }
+ },
+ {
+  "id": "recKFB5bjH0FZ6iPa",
+  "fields": {
+   "osisRef": "Ruth.1.22",
+   "verseID": "08001022"
+  }
+ },
+ {
+  "id": "recncYL0FGjWQyhlJ",
+  "fields": {
+   "osisRef": "Ruth.2.1",
+   "verseID": "08002001"
+  }
+ },
+ {
+  "id": "reckkWzs50GnZa6wO",
+  "fields": {
+   "osisRef": "Ruth.2.4",
+   "verseID": "08002004"
+  }
+ },
+ {
   "id": "recE1nPwLhxWlqxVB",
   "fields": {
    "osisRef": "Ruth.4.11",
@@ -5686,10 +7571,59 @@
   }
  },
  {
+  "id": "rec9HKGCGhdlZ8rpE",
+  "fields": {
+   "osisRef": "Ruth.4.12",
+   "verseID": "08004012"
+  }
+ },
+ {
   "id": "recWBLcu9ibJJWG5y",
   "fields": {
    "osisRef": "Ruth.4.13",
    "verseID": "08004013"
+  }
+ },
+ {
+  "id": "recbm4Brp69fzTEsm",
+  "fields": {
+   "osisRef": "Ruth.4.14",
+   "verseID": "08004014"
+  }
+ },
+ {
+  "id": "recXUbCj5OuR5g409",
+  "fields": {
+   "osisRef": "Ruth.4.18",
+   "verseID": "08004018"
+  }
+ },
+ {
+  "id": "recJeZNmz043S0jbM",
+  "fields": {
+   "osisRef": "Ruth.4.19",
+   "verseID": "08004019"
+  }
+ },
+ {
+  "id": "recqNYGUQS47Bvy3q",
+  "fields": {
+   "osisRef": "Ruth.4.20",
+   "verseID": "08004020"
+  }
+ },
+ {
+  "id": "recj75aOBq2Cedr8f",
+  "fields": {
+   "osisRef": "Ruth.4.21",
+   "verseID": "08004021"
+  }
+ },
+ {
+  "id": "recRa6etEOt4KHCdg",
+  "fields": {
+   "osisRef": "Ruth.4.22",
+   "verseID": "08004022"
   }
  },
  {
@@ -5749,6 +7683,27 @@
   }
  },
  {
+  "id": "recX0moAZhZ4mz4lR",
+  "fields": {
+   "osisRef": "1Sam.2.33",
+   "verseID": "09002033"
+  }
+ },
+ {
+  "id": "recZvmOp97bGUDyl1",
+  "fields": {
+   "osisRef": "1Sam.3.19",
+   "verseID": "09003019"
+  }
+ },
+ {
+  "id": "recneE8zpZCINt2GX",
+  "fields": {
+   "osisRef": "1Sam.6.2",
+   "verseID": "09006002"
+  }
+ },
+ {
   "id": "recAeQ9dKsSqW9cwb",
   "fields": {
    "osisRef": "1Sam.9.9",
@@ -5756,10 +7711,24 @@
   }
  },
  {
+  "id": "rechuSoSL41kJaLHZ",
+  "fields": {
+   "osisRef": "1Sam.10.7",
+   "verseID": "09010007"
+  }
+ },
+ {
   "id": "recu5JPsAvtINNYsl",
   "fields": {
    "osisRef": "1Sam.10.22",
    "verseID": "09010022"
+  }
+ },
+ {
+  "id": "recWWywHKFZDiAN6a",
+  "fields": {
+   "osisRef": "1Sam.10.27",
+   "verseID": "09010027"
   }
  },
  {
@@ -5819,6 +7788,55 @@
   }
  },
  {
+  "id": "recInStpUCfWkoGup",
+  "fields": {
+   "osisRef": "1Sam.15.15",
+   "verseID": "09015015"
+  }
+ },
+ {
+  "id": "recRw3Rxp4FWPvypD",
+  "fields": {
+   "osisRef": "1Sam.16.1",
+   "verseID": "09016001"
+  }
+ },
+ {
+  "id": "rec5pz6kuUTiBbt9O",
+  "fields": {
+   "osisRef": "1Sam.16.2",
+   "verseID": "09016002"
+  }
+ },
+ {
+  "id": "reco1PFrql9hmptoZ",
+  "fields": {
+   "osisRef": "1Sam.16.11",
+   "verseID": "09016011"
+  }
+ },
+ {
+  "id": "recGvVgivKZzsM9mn",
+  "fields": {
+   "osisRef": "1Sam.16.13",
+   "verseID": "09016013"
+  }
+ },
+ {
+  "id": "recwY3dHDc7y6zwQr",
+  "fields": {
+   "osisRef": "1Sam.16.18",
+   "verseID": "09016018"
+  }
+ },
+ {
+  "id": "recrjriu7SRy0TWlM",
+  "fields": {
+   "osisRef": "1Sam.17.12",
+   "verseID": "09017012"
+  }
+ },
+ {
   "id": "recKwjTq3NvzsBI8f",
   "fields": {
    "osisRef": "1Sam.17.14",
@@ -5826,10 +7844,38 @@
   }
  },
  {
+  "id": "rec2TPIsvCymIbXhi",
+  "fields": {
+   "osisRef": "1Sam.17.58",
+   "verseID": "09017058"
+  }
+ },
+ {
   "id": "rectfyDpMbaNZONNh",
   "fields": {
    "osisRef": "1Sam.18.9",
    "verseID": "09018009"
+  }
+ },
+ {
+  "id": "recnU60w8P0YE0dZM",
+  "fields": {
+   "osisRef": "1Sam.18.14",
+   "verseID": "09018014"
+  }
+ },
+ {
+  "id": "rec3DAGVM3L09pr3e",
+  "fields": {
+   "osisRef": "1Sam.18.21",
+   "verseID": "09018021"
+  }
+ },
+ {
+  "id": "recbja1HEQnxihWv5",
+  "fields": {
+   "osisRef": "1Sam.19.17",
+   "verseID": "09019017"
   }
  },
  {
@@ -5861,6 +7907,20 @@
   }
  },
  {
+  "id": "recVLemGBi0AszoFf",
+  "fields": {
+   "osisRef": "1Sam.20.30",
+   "verseID": "09020030"
+  }
+ },
+ {
+  "id": "recPldqaWxR1JIOMc",
+  "fields": {
+   "osisRef": "1Sam.20.31",
+   "verseID": "09020031"
+  }
+ },
+ {
   "id": "rec4RFl6NxZ1ryFBE",
   "fields": {
    "osisRef": "1Sam.21.7",
@@ -5875,10 +7935,38 @@
   }
  },
  {
+  "id": "rec1P1qmwRtdjP0Pl",
+  "fields": {
+   "osisRef": "1Sam.22.8",
+   "verseID": "09022008"
+  }
+ },
+ {
   "id": "recvOCgSmejtXg0XE",
   "fields": {
    "osisRef": "1Sam.22.15",
    "verseID": "09022015"
+  }
+ },
+ {
+  "id": "rec5MFE1BHbCviyo9",
+  "fields": {
+   "osisRef": "1Sam.22.16",
+   "verseID": "09022016"
+  }
+ },
+ {
+  "id": "recECVCHC69cQIjk6",
+  "fields": {
+   "osisRef": "1Sam.23.22",
+   "verseID": "09023022"
+  }
+ },
+ {
+  "id": "recyTqoQzSfuUztfg",
+  "fields": {
+   "osisRef": "1Sam.23.23",
+   "verseID": "09023023"
   }
  },
  {
@@ -5893,6 +7981,13 @@
   "fields": {
    "osisRef": "1Sam.24.15",
    "verseID": "09024015"
+  }
+ },
+ {
+  "id": "rec8UG4bsmQIPy3PI",
+  "fields": {
+   "osisRef": "1Sam.24.20",
+   "verseID": "09024020"
   }
  },
  {
@@ -5959,6 +8054,27 @@
   }
  },
  {
+  "id": "recaXoQG7v4LGm2Ve",
+  "fields": {
+   "osisRef": "2Sam.4.1",
+   "verseID": "10004001"
+  }
+ },
+ {
+  "id": "recqTvxZVKNgKZ8el",
+  "fields": {
+   "osisRef": "2Sam.4.8",
+   "verseID": "10004008"
+  }
+ },
+ {
+  "id": "recwGiPhu6beAjXjv",
+  "fields": {
+   "osisRef": "2Sam.5.2",
+   "verseID": "10005002"
+  }
+ },
+ {
   "id": "recJuPl8QQeICWdPJ",
   "fields": {
    "osisRef": "2Sam.5.13",
@@ -5966,10 +8082,45 @@
   }
  },
  {
+  "id": "recdiybxAWlQHYMXl",
+  "fields": {
+   "osisRef": "2Sam.5.14",
+   "verseID": "10005014"
+  }
+ },
+ {
   "id": "recZgZ2NeJtMQ68ZQ",
   "fields": {
    "osisRef": "2Sam.6.16",
    "verseID": "10006016"
+  }
+ },
+ {
+  "id": "rec2DQCB7kBzVJ9kd",
+  "fields": {
+   "osisRef": "2Sam.6.23",
+   "verseID": "10006023"
+  }
+ },
+ {
+  "id": "recy120EnBjFfSIvx",
+  "fields": {
+   "osisRef": "2Sam.7.7",
+   "verseID": "10007007"
+  }
+ },
+ {
+  "id": "recnHNWgMNfa1DDjm",
+  "fields": {
+   "osisRef": "2Sam.7.12",
+   "verseID": "10007012"
+  }
+ },
+ {
+  "id": "rec1sKVI0BYhEENFO",
+  "fields": {
+   "osisRef": "2Sam.7.16",
+   "verseID": "10007016"
   }
  },
  {
@@ -5987,6 +8138,41 @@
   }
  },
  {
+  "id": "recjoWLtGbUrIJCnT",
+  "fields": {
+   "osisRef": "2Sam.11.3",
+   "verseID": "10011003"
+  }
+ },
+ {
+  "id": "recdGrxYFxVXrmd3T",
+  "fields": {
+   "osisRef": "2Sam.11.26",
+   "verseID": "10011026"
+  }
+ },
+ {
+  "id": "recTPOA4Mv98EDSpj",
+  "fields": {
+   "osisRef": "2Sam.11.27",
+   "verseID": "10011027"
+  }
+ },
+ {
+  "id": "recQsHRiHEqsOI0am",
+  "fields": {
+   "osisRef": "2Sam.12.24",
+   "verseID": "10012024"
+  }
+ },
+ {
+  "id": "reclZgpqNgIxQ3rm2",
+  "fields": {
+   "osisRef": "2Sam.12.25",
+   "verseID": "10012025"
+  }
+ },
+ {
   "id": "recxcEMfoOFSbm0mQ",
   "fields": {
    "osisRef": "2Sam.12.31",
@@ -5998,6 +8184,34 @@
   "fields": {
    "osisRef": "2Sam.13.29",
    "verseID": "10013029"
+  }
+ },
+ {
+  "id": "rec8e7g2YK3axigtj",
+  "fields": {
+   "osisRef": "2Sam.15.7",
+   "verseID": "10015007"
+  }
+ },
+ {
+  "id": "receDmfyXYoJT1f2L",
+  "fields": {
+   "osisRef": "2Sam.15.12",
+   "verseID": "10015012"
+  }
+ },
+ {
+  "id": "recU35UhGbsWKMUNE",
+  "fields": {
+   "osisRef": "2Sam.15.26",
+   "verseID": "10015026"
+  }
+ },
+ {
+  "id": "recKrGiyc70NFWNbZ",
+  "fields": {
+   "osisRef": "2Sam.17.14",
+   "verseID": "10017014"
   }
  },
  {
@@ -6036,10 +8250,66 @@
   }
  },
  {
+  "id": "recuyZPgbmARrila6",
+  "fields": {
+   "osisRef": "2Sam.23.1",
+   "verseID": "10023001"
+  }
+ },
+ {
+  "id": "recrEO5eYsZodKO0h",
+  "fields": {
+   "osisRef": "2Sam.23.39",
+   "verseID": "10023039"
+  }
+ },
+ {
   "id": "reckdZkNk43koX9gT",
   "fields": {
    "osisRef": "1Kgs.1.2",
    "verseID": "11001002"
+  }
+ },
+ {
+  "id": "recHtUeoXvTQ9Lm4h",
+  "fields": {
+   "osisRef": "1Kgs.1.4",
+   "verseID": "11001004"
+  }
+ },
+ {
+  "id": "rec9gIAS6AglCHbV7",
+  "fields": {
+   "osisRef": "1Kgs.1.11",
+   "verseID": "11001011"
+  }
+ },
+ {
+  "id": "recl83v9patOLGoXL",
+  "fields": {
+   "osisRef": "1Kgs.1.17",
+   "verseID": "11001017"
+  }
+ },
+ {
+  "id": "rechXDsdzWokjhC4O",
+  "fields": {
+   "osisRef": "1Kgs.1.28",
+   "verseID": "11001028"
+  }
+ },
+ {
+  "id": "recVi7MgcA1I1bd2V",
+  "fields": {
+   "osisRef": "1Kgs.1.31",
+   "verseID": "11001031"
+  }
+ },
+ {
+  "id": "recyBuDuI4L2IMHvW",
+  "fields": {
+   "osisRef": "1Kgs.1.37",
+   "verseID": "11001037"
   }
  },
  {
@@ -6064,6 +8334,13 @@
   }
  },
  {
+  "id": "recbeAHp0w65gk6dT",
+  "fields": {
+   "osisRef": "1Kgs.3.5",
+   "verseID": "11003005"
+  }
+ },
+ {
   "id": "rectPGSTowy9ujttZ",
   "fields": {
    "osisRef": "1Kgs.3.6",
@@ -6085,10 +8362,52 @@
   }
  },
  {
+  "id": "recaZGsohi2zy9Xm3",
+  "fields": {
+   "osisRef": "1Kgs.8.15",
+   "verseID": "11008015"
+  }
+ },
+ {
+  "id": "recbHggRafwbNYgyp",
+  "fields": {
+   "osisRef": "1Kgs.8.24",
+   "verseID": "11008024"
+  }
+ },
+ {
+  "id": "recCn5qr5T4ig5md1",
+  "fields": {
+   "osisRef": "1Kgs.8.41",
+   "verseID": "11008041"
+  }
+ },
+ {
+  "id": "recB33DcUPylXnN8v",
+  "fields": {
+   "osisRef": "1Kgs.8.57",
+   "verseID": "11008057"
+  }
+ },
+ {
   "id": "reczybW3tJqpci9pG",
   "fields": {
    "osisRef": "1Kgs.10.1",
    "verseID": "11010001"
+  }
+ },
+ {
+  "id": "recB1WKDWyi1xjbdz",
+  "fields": {
+   "osisRef": "1Kgs.10.2",
+   "verseID": "11010002"
+  }
+ },
+ {
+  "id": "recnQJFeuwKCEroxL",
+  "fields": {
+   "osisRef": "1Kgs.10.10",
+   "verseID": "11010010"
   }
  },
  {
@@ -6113,10 +8432,52 @@
   }
  },
  {
+  "id": "rec65ZY2ToVSoThlB",
+  "fields": {
+   "osisRef": "1Kgs.11.17",
+   "verseID": "11011017"
+  }
+ },
+ {
   "id": "recC5fMibyZ8g6Pbu",
   "fields": {
    "osisRef": "1Kgs.11.18",
    "verseID": "11011018"
+  }
+ },
+ {
+  "id": "rec6rziSpyiBfxJ91",
+  "fields": {
+   "osisRef": "1Kgs.11.21",
+   "verseID": "11011021"
+  }
+ },
+ {
+  "id": "rect2OIyJYcAfc9MD",
+  "fields": {
+   "osisRef": "1Kgs.11.40",
+   "verseID": "11011040"
+  }
+ },
+ {
+  "id": "recm2IwDATJHeWpOA",
+  "fields": {
+   "osisRef": "1Kgs.11.43",
+   "verseID": "11011043"
+  }
+ },
+ {
+  "id": "rec4lTzv9E6ZcYjP6",
+  "fields": {
+   "osisRef": "1Kgs.12.1",
+   "verseID": "11012001"
+  }
+ },
+ {
+  "id": "recuhwsiq2qlDUmBk",
+  "fields": {
+   "osisRef": "1Kgs.12.3",
+   "verseID": "11012003"
   }
  },
  {
@@ -6127,6 +8488,13 @@
   }
  },
  {
+  "id": "recqdicJC30qOIVxk",
+  "fields": {
+   "osisRef": "1Kgs.12.24",
+   "verseID": "11012024"
+  }
+ },
+ {
   "id": "recsClpBQqQtm9LTF",
   "fields": {
    "osisRef": "1Kgs.12.27",
@@ -6134,10 +8502,80 @@
   }
  },
  {
+  "id": "recrmdqI741fqWOh1",
+  "fields": {
+   "osisRef": "1Kgs.13.2",
+   "verseID": "11013002"
+  }
+ },
+ {
+  "id": "recbzef35plH0beMI",
+  "fields": {
+   "osisRef": "1Kgs.14.31",
+   "verseID": "11014031"
+  }
+ },
+ {
   "id": "recVDSkNDzkZC5Ttr",
   "fields": {
    "osisRef": "1Kgs.15.4",
    "verseID": "11015004"
+  }
+ },
+ {
+  "id": "rec3iyMLVRFH8pm5V",
+  "fields": {
+   "osisRef": "1Kgs.15.5",
+   "verseID": "11015005"
+  }
+ },
+ {
+  "id": "reclFC6Casjm2Tz0F",
+  "fields": {
+   "osisRef": "1Kgs.15.8",
+   "verseID": "11015008"
+  }
+ },
+ {
+  "id": "recjgGZe9yQnsidWC",
+  "fields": {
+   "osisRef": "1Kgs.15.23",
+   "verseID": "11015023"
+  }
+ },
+ {
+  "id": "recrweOPB1wxNwDZR",
+  "fields": {
+   "osisRef": "1Kgs.15.24",
+   "verseID": "11015024"
+  }
+ },
+ {
+  "id": "recXSVMnx6cCAQgeF",
+  "fields": {
+   "osisRef": "1Kgs.17.13",
+   "verseID": "11017013"
+  }
+ },
+ {
+  "id": "rec8aQYxFSzEjxsfo",
+  "fields": {
+   "osisRef": "1Kgs.18.12",
+   "verseID": "11018012"
+  }
+ },
+ {
+  "id": "recizSkA0wGaykya0",
+  "fields": {
+   "osisRef": "1Kgs.18.17",
+   "verseID": "11018017"
+  }
+ },
+ {
+  "id": "recztCPsFqmyPtCtL",
+  "fields": {
+   "osisRef": "1Kgs.18.18",
+   "verseID": "11018018"
   }
  },
  {
@@ -6152,6 +8590,13 @@
   "fields": {
    "osisRef": "1Kgs.18.36",
    "verseID": "11018036"
+  }
+ },
+ {
+  "id": "recJx17a7E4aX9h0e",
+  "fields": {
+   "osisRef": "1Kgs.19.2",
+   "verseID": "11019002"
   }
  },
  {
@@ -6176,10 +8621,52 @@
   }
  },
  {
+  "id": "recQlYTdWFgAZNxlq",
+  "fields": {
+   "osisRef": "1Kgs.21.9",
+   "verseID": "11021009"
+  }
+ },
+ {
+  "id": "recc6Wel2BMuD7i5D",
+  "fields": {
+   "osisRef": "1Kgs.21.11",
+   "verseID": "11021011"
+  }
+ },
+ {
+  "id": "recUyjXkAiLBQqA5H",
+  "fields": {
+   "osisRef": "1Kgs.22.2",
+   "verseID": "11022002"
+  }
+ },
+ {
   "id": "recRojD1tClUsUHwf",
   "fields": {
    "osisRef": "1Kgs.22.47",
    "verseID": "11022047"
+  }
+ },
+ {
+  "id": "recBwju2xHQoRQz36",
+  "fields": {
+   "osisRef": "1Kgs.22.50",
+   "verseID": "11022050"
+  }
+ },
+ {
+  "id": "reckXXOure0QIKB80",
+  "fields": {
+   "osisRef": "2Kgs.1.11",
+   "verseID": "12001011"
+  }
+ },
+ {
+  "id": "rechojCqifQwluNv5",
+  "fields": {
+   "osisRef": "2Kgs.3.1",
+   "verseID": "12003001"
   }
  },
  {
@@ -6204,10 +8691,38 @@
   }
  },
  {
+  "id": "recKQXdrfOvg4ySwx",
+  "fields": {
+   "osisRef": "2Kgs.4.16",
+   "verseID": "12004016"
+  }
+ },
+ {
+  "id": "reciPuY4WJTpNbtUs",
+  "fields": {
+   "osisRef": "2Kgs.4.17",
+   "verseID": "12004017"
+  }
+ },
+ {
   "id": "rec23BqjAWxDbugsC",
   "fields": {
    "osisRef": "2Kgs.5.5",
    "verseID": "12005005"
+  }
+ },
+ {
+  "id": "recpwYvg1fgoGANgD",
+  "fields": {
+   "osisRef": "2Kgs.5.11",
+   "verseID": "12005011"
+  }
+ },
+ {
+  "id": "recegU2m7aDzT2Bv3",
+  "fields": {
+   "osisRef": "2Kgs.5.14",
+   "verseID": "12005014"
   }
  },
  {
@@ -6246,6 +8761,27 @@
   }
  },
  {
+  "id": "recU8pooVqkZZjzy3",
+  "fields": {
+   "osisRef": "2Kgs.6.10",
+   "verseID": "12006010"
+  }
+ },
+ {
+  "id": "recE2bqyIaKZ6Haie",
+  "fields": {
+   "osisRef": "2Kgs.6.11",
+   "verseID": "12006011"
+  }
+ },
+ {
+  "id": "recLoehlH7CGrd9YQ",
+  "fields": {
+   "osisRef": "2Kgs.6.13",
+   "verseID": "12006013"
+  }
+ },
+ {
   "id": "recfViBx7nhrftAhW",
   "fields": {
    "osisRef": "2Kgs.8.1",
@@ -6253,10 +8789,59 @@
   }
  },
  {
+  "id": "rec91u4VRENOUQYQo",
+  "fields": {
+   "osisRef": "2Kgs.8.4",
+   "verseID": "12008004"
+  }
+ },
+ {
+  "id": "rece1yTHccaPeFsje",
+  "fields": {
+   "osisRef": "2Kgs.8.12",
+   "verseID": "12008012"
+  }
+ },
+ {
+  "id": "recNFF5vGpEJfcT21",
+  "fields": {
+   "osisRef": "2Kgs.8.16",
+   "verseID": "12008016"
+  }
+ },
+ {
   "id": "recccwg5zpYT3NjCU",
   "fields": {
    "osisRef": "2Kgs.8.20",
    "verseID": "12008020"
+  }
+ },
+ {
+  "id": "recGBohJkVO04oeNc",
+  "fields": {
+   "osisRef": "2Kgs.9.3",
+   "verseID": "12009003"
+  }
+ },
+ {
+  "id": "recUyJD5kaaONvP3r",
+  "fields": {
+   "osisRef": "2Kgs.10.18",
+   "verseID": "12010018"
+  }
+ },
+ {
+  "id": "recPW3Tso0eblTIaR",
+  "fields": {
+   "osisRef": "2Kgs.10.19",
+   "verseID": "12010019"
+  }
+ },
+ {
+  "id": "rec91z1Gb07U1sXzl",
+  "fields": {
+   "osisRef": "2Kgs.11.1",
+   "verseID": "12011001"
   }
  },
  {
@@ -6271,6 +8856,83 @@
   "fields": {
    "osisRef": "2Kgs.12.15",
    "verseID": "12012015"
+  }
+ },
+ {
+  "id": "recMOhtevH19OFFRd",
+  "fields": {
+   "osisRef": "2Kgs.14.21",
+   "verseID": "12014021"
+  }
+ },
+ {
+  "id": "recgw8qkMulCopTmz",
+  "fields": {
+   "osisRef": "2Kgs.15.1",
+   "verseID": "12015001"
+  }
+ },
+ {
+  "id": "recjQ580ve16JIjlQ",
+  "fields": {
+   "osisRef": "2Kgs.15.6",
+   "verseID": "12015006"
+  }
+ },
+ {
+  "id": "recVKPGdRooFXrSpj",
+  "fields": {
+   "osisRef": "2Kgs.15.7",
+   "verseID": "12015007"
+  }
+ },
+ {
+  "id": "recOFYXcHUkyMS5N8",
+  "fields": {
+   "osisRef": "2Kgs.15.13",
+   "verseID": "12015013"
+  }
+ },
+ {
+  "id": "recVXvk6gezzwwu8H",
+  "fields": {
+   "osisRef": "2Kgs.15.32",
+   "verseID": "12015032"
+  }
+ },
+ {
+  "id": "rec4VIHYVi5l0tsGd",
+  "fields": {
+   "osisRef": "2Kgs.15.38",
+   "verseID": "12015038"
+  }
+ },
+ {
+  "id": "recFXvrhNZ8D14lvc",
+  "fields": {
+   "osisRef": "2Kgs.16.20",
+   "verseID": "12016020"
+  }
+ },
+ {
+  "id": "recR6nEBRWHojgDIE",
+  "fields": {
+   "osisRef": "2Kgs.18.1",
+   "verseID": "12018001"
+  }
+ },
+ {
+  "id": "recWxJQx5aaDSDDBz",
+  "fields": {
+   "osisRef": "2Kgs.18.7",
+   "verseID": "12018007"
+  }
+ },
+ {
+  "id": "recJl4xVhIrwmpirA",
+  "fields": {
+   "osisRef": "2Kgs.18.20",
+   "verseID": "12018020"
   }
  },
  {
@@ -6292,6 +8954,41 @@
   "fields": {
    "osisRef": "2Kgs.20.12",
    "verseID": "12020012"
+  }
+ },
+ {
+  "id": "recMuSs9XkT3PhuxG",
+  "fields": {
+   "osisRef": "2Kgs.20.21",
+   "verseID": "12020021"
+  }
+ },
+ {
+  "id": "recRgRyHsSpgSwY0v",
+  "fields": {
+   "osisRef": "2Kgs.21.1",
+   "verseID": "12021001"
+  }
+ },
+ {
+  "id": "recepHxsoa7ubk2P2",
+  "fields": {
+   "osisRef": "2Kgs.21.19",
+   "verseID": "12021019"
+  }
+ },
+ {
+  "id": "recdvqrvAFt7p1rvU",
+  "fields": {
+   "osisRef": "2Kgs.21.26",
+   "verseID": "12021026"
+  }
+ },
+ {
+  "id": "recBVbne9S52ZMHW4",
+  "fields": {
+   "osisRef": "2Kgs.22.1",
+   "verseID": "12022001"
   }
  },
  {
@@ -6320,6 +9017,69 @@
   "fields": {
    "osisRef": "2Kgs.23.29",
    "verseID": "12023029"
+  }
+ },
+ {
+  "id": "recdhc7yfkhO7IL1b",
+  "fields": {
+   "osisRef": "2Kgs.23.30",
+   "verseID": "12023030"
+  }
+ },
+ {
+  "id": "recyjXRpqFPRWuBcs",
+  "fields": {
+   "osisRef": "2Kgs.23.31",
+   "verseID": "12023031"
+  }
+ },
+ {
+  "id": "recw8NyUmrTLGDDa1",
+  "fields": {
+   "osisRef": "2Kgs.24.3",
+   "verseID": "12024003"
+  }
+ },
+ {
+  "id": "rec679TkUTdYfZMzu",
+  "fields": {
+   "osisRef": "2Kgs.24.4",
+   "verseID": "12024004"
+  }
+ },
+ {
+  "id": "recK1HqhgW5fdTU7w",
+  "fields": {
+   "osisRef": "2Kgs.24.8",
+   "verseID": "12024008"
+  }
+ },
+ {
+  "id": "recuZJABCFFuTYXDc",
+  "fields": {
+   "osisRef": "2Kgs.24.14",
+   "verseID": "12024014"
+  }
+ },
+ {
+  "id": "recglkod8PbnFhs8V",
+  "fields": {
+   "osisRef": "2Kgs.24.20",
+   "verseID": "12024020"
+  }
+ },
+ {
+  "id": "recUnsLuProv9DVJl",
+  "fields": {
+   "osisRef": "2Kgs.25.11",
+   "verseID": "12025011"
+  }
+ },
+ {
+  "id": "recdjml2vo7gAltxk",
+  "fields": {
+   "osisRef": "2Kgs.25.27",
+   "verseID": "12025027"
   }
  },
  {
@@ -6526,10 +9286,164 @@
   }
  },
  {
+  "id": "rec4yNyGjHNVNoypv",
+  "fields": {
+   "osisRef": "1Chr.2.1",
+   "verseID": "13002001"
+  }
+ },
+ {
+  "id": "recz5qBpLQXvG5pOx",
+  "fields": {
+   "osisRef": "1Chr.2.4",
+   "verseID": "13002004"
+  }
+ },
+ {
+  "id": "recRE0xvxTXIJmqfL",
+  "fields": {
+   "osisRef": "1Chr.2.5",
+   "verseID": "13002005"
+  }
+ },
+ {
+  "id": "recazLsb0bkSOKFio",
+  "fields": {
+   "osisRef": "1Chr.2.8",
+   "verseID": "13002008"
+  }
+ },
+ {
+  "id": "rec6qNCseyIXRnpEb",
+  "fields": {
+   "osisRef": "1Chr.2.9",
+   "verseID": "13002009"
+  }
+ },
+ {
+  "id": "recF8ENdgAQIPJjFi",
+  "fields": {
+   "osisRef": "1Chr.2.10",
+   "verseID": "13002010"
+  }
+ },
+ {
+  "id": "recNV3rTLpqmXEHQL",
+  "fields": {
+   "osisRef": "1Chr.2.11",
+   "verseID": "13002011"
+  }
+ },
+ {
+  "id": "recsJJghWRXN2oErO",
+  "fields": {
+   "osisRef": "1Chr.2.12",
+   "verseID": "13002012"
+  }
+ },
+ {
+  "id": "recuzsXUT4jF22cuW",
+  "fields": {
+   "osisRef": "1Chr.2.15",
+   "verseID": "13002015"
+  }
+ },
+ {
   "id": "recjVVwokJQAj2bLZ",
   "fields": {
    "osisRef": "1Chr.2.48",
    "verseID": "13002048"
+  }
+ },
+ {
+  "id": "recC4tNKG4DpNyHvy",
+  "fields": {
+   "osisRef": "1Chr.2.51",
+   "verseID": "13002051"
+  }
+ },
+ {
+  "id": "recHX6IZT8oDCF8EI",
+  "fields": {
+   "osisRef": "1Chr.3.5",
+   "verseID": "13003005"
+  }
+ },
+ {
+  "id": "recNzOgKUWcmZrlwe",
+  "fields": {
+   "osisRef": "1Chr.3.10",
+   "verseID": "13003010"
+  }
+ },
+ {
+  "id": "recsBoMrGgzFxX16W",
+  "fields": {
+   "osisRef": "1Chr.3.11",
+   "verseID": "13003011"
+  }
+ },
+ {
+  "id": "recTnmTI72DbFuXs8",
+  "fields": {
+   "osisRef": "1Chr.3.12",
+   "verseID": "13003012"
+  }
+ },
+ {
+  "id": "recStk4yL0omfdUnN",
+  "fields": {
+   "osisRef": "1Chr.3.13",
+   "verseID": "13003013"
+  }
+ },
+ {
+  "id": "recV3EtjfgK9bPltE",
+  "fields": {
+   "osisRef": "1Chr.3.14",
+   "verseID": "13003014"
+  }
+ },
+ {
+  "id": "recwGQBtAFiTegPpq",
+  "fields": {
+   "osisRef": "1Chr.3.15",
+   "verseID": "13003015"
+  }
+ },
+ {
+  "id": "recEjVcBsjGUVrsXb",
+  "fields": {
+   "osisRef": "1Chr.3.16",
+   "verseID": "13003016"
+  }
+ },
+ {
+  "id": "recTTeh4hsV4x5KX7",
+  "fields": {
+   "osisRef": "1Chr.3.17",
+   "verseID": "13003017"
+  }
+ },
+ {
+  "id": "recAChIQ9BTDQAU1g",
+  "fields": {
+   "osisRef": "1Chr.3.19",
+   "verseID": "13003019"
+  }
+ },
+ {
+  "id": "recucNZmocZPP2bbt",
+  "fields": {
+   "osisRef": "1Chr.3.24",
+   "verseID": "13003024"
+  }
+ },
+ {
+  "id": "recnkYZnph4HuadS6",
+  "fields": {
+   "osisRef": "1Chr.4.1",
+   "verseID": "13004001"
   }
  },
  {
@@ -6551,6 +9465,13 @@
   "fields": {
    "osisRef": "1Chr.5.1",
    "verseID": "13005001"
+  }
+ },
+ {
+  "id": "recEd9bQxnnbYeTh3",
+  "fields": {
+   "osisRef": "1Chr.5.2",
+   "verseID": "13005002"
   }
  },
  {
@@ -6589,10 +9510,45 @@
   }
  },
  {
+  "id": "receCtndaZVcB7AD5",
+  "fields": {
+   "osisRef": "1Chr.9.1",
+   "verseID": "13009001"
+  }
+ },
+ {
+  "id": "rec03cB0untL5vKif",
+  "fields": {
+   "osisRef": "1Chr.9.6",
+   "verseID": "13009006"
+  }
+ },
+ {
+  "id": "recx56Bsu0fFJwomV",
+  "fields": {
+   "osisRef": "1Chr.11.2",
+   "verseID": "13011002"
+  }
+ },
+ {
+  "id": "recEnVkvY2OTCioZW",
+  "fields": {
+   "osisRef": "1Chr.11.41",
+   "verseID": "13011041"
+  }
+ },
+ {
   "id": "recglEWmS9f051E4J",
   "fields": {
    "osisRef": "1Chr.12.39",
    "verseID": "13012039"
+  }
+ },
+ {
+  "id": "recVpGJs9AKvQBUuO",
+  "fields": {
+   "osisRef": "1Chr.14.4",
+   "verseID": "13014004"
   }
  },
  {
@@ -6603,10 +9559,31 @@
   }
  },
  {
+  "id": "recnd60IPTDByx5IC",
+  "fields": {
+   "osisRef": "1Chr.17.6",
+   "verseID": "13017006"
+  }
+ },
+ {
+  "id": "recYkgNeVNFH2F9ls",
+  "fields": {
+   "osisRef": "1Chr.17.7",
+   "verseID": "13017007"
+  }
+ },
+ {
   "id": "recGhKFfl1na7Hb1k",
   "fields": {
    "osisRef": "1Chr.18.13",
    "verseID": "13018013"
+  }
+ },
+ {
+  "id": "recrb8PvHw6bBfKI5",
+  "fields": {
+   "osisRef": "1Chr.22.11",
+   "verseID": "13022011"
   }
  },
  {
@@ -6624,6 +9601,27 @@
   }
  },
  {
+  "id": "recYyUkGd9AaCZ10L",
+  "fields": {
+   "osisRef": "1Chr.24.4",
+   "verseID": "13024004"
+  }
+ },
+ {
+  "id": "rec4GFHiYEtO7TI9u",
+  "fields": {
+   "osisRef": "1Chr.24.19",
+   "verseID": "13024019"
+  }
+ },
+ {
+  "id": "recU9uP1fRhz8sRfF",
+  "fields": {
+   "osisRef": "1Chr.28.5",
+   "verseID": "13028005"
+  }
+ },
+ {
   "id": "recdH1dpqFZvMNqTF",
   "fields": {
    "osisRef": "1Chr.29.28",
@@ -6638,10 +9636,45 @@
   }
  },
  {
+  "id": "recBt5zXGqcu6WfAB",
+  "fields": {
+   "osisRef": "2Chr.6.32",
+   "verseID": "14006032"
+  }
+ },
+ {
   "id": "rec3zyqPxwPBTgYtq",
   "fields": {
    "osisRef": "2Chr.9.1",
    "verseID": "14009001"
+  }
+ },
+ {
+  "id": "recJ6gaqPWAMSh4Jf",
+  "fields": {
+   "osisRef": "2Chr.9.31",
+   "verseID": "14009031"
+  }
+ },
+ {
+  "id": "recqG4LMl50GTkwrw",
+  "fields": {
+   "osisRef": "2Chr.10.1",
+   "verseID": "14010001"
+  }
+ },
+ {
+  "id": "rec0nLRWBX2S0Y2pw",
+  "fields": {
+   "osisRef": "2Chr.11.6",
+   "verseID": "14011006"
+  }
+ },
+ {
+  "id": "rectqg1MuX7EhfDno",
+  "fields": {
+   "osisRef": "2Chr.11.20",
+   "verseID": "14011020"
   }
  },
  {
@@ -6652,10 +9685,38 @@
   }
  },
  {
+  "id": "recGQI5k7fU6XuYNA",
+  "fields": {
+   "osisRef": "2Chr.12.1",
+   "verseID": "14012001"
+  }
+ },
+ {
+  "id": "recOLQAOm5xYgepJo",
+  "fields": {
+   "osisRef": "2Chr.12.16",
+   "verseID": "14012016"
+  }
+ },
+ {
+  "id": "recDtQ5Hvye55b7FY",
+  "fields": {
+   "osisRef": "2Chr.13.7",
+   "verseID": "14013007"
+  }
+ },
+ {
   "id": "rech6nu8aiFlBpGEW",
   "fields": {
    "osisRef": "2Chr.13.11",
    "verseID": "14013011"
+  }
+ },
+ {
+  "id": "recOUwQvufaIcojwM",
+  "fields": {
+   "osisRef": "2Chr.14.1",
+   "verseID": "14014001"
   }
  },
  {
@@ -6666,10 +9727,45 @@
   }
  },
  {
+  "id": "recaC4poD324qCTQN",
+  "fields": {
+   "osisRef": "2Chr.14.15",
+   "verseID": "14014015"
+  }
+ },
+ {
+  "id": "recRx1O6FfBNEJpkO",
+  "fields": {
+   "osisRef": "2Chr.15.3",
+   "verseID": "14015003"
+  }
+ },
+ {
+  "id": "recKuyPrvXBjl9z9v",
+  "fields": {
+   "osisRef": "2Chr.17.1",
+   "verseID": "14017001"
+  }
+ },
+ {
+  "id": "recrrmNAzHrZmIKJi",
+  "fields": {
+   "osisRef": "2Chr.17.3",
+   "verseID": "14017003"
+  }
+ },
+ {
   "id": "recGsZpY2lph8rfo7",
   "fields": {
    "osisRef": "2Chr.17.5",
    "verseID": "14017005"
+  }
+ },
+ {
+  "id": "reccbsBgMBGEQgjN2",
+  "fields": {
+   "osisRef": "2Chr.17.19",
+   "verseID": "14017019"
   }
  },
  {
@@ -6680,10 +9776,24 @@
   }
  },
  {
+  "id": "recmz12sImXpP9XCV",
+  "fields": {
+   "osisRef": "2Chr.20.17",
+   "verseID": "14020017"
+  }
+ },
+ {
   "id": "recL68xrlP1S4PybE",
   "fields": {
    "osisRef": "2Chr.20.23",
    "verseID": "14020023"
+  }
+ },
+ {
+  "id": "rec7dOphwYP5R3qkk",
+  "fields": {
+   "osisRef": "2Chr.21.1",
+   "verseID": "14021001"
   }
  },
  {
@@ -6722,6 +9832,13 @@
   }
  },
  {
+  "id": "recn4Fn4IFoIcCjvH",
+  "fields": {
+   "osisRef": "2Chr.26.1",
+   "verseID": "14026001"
+  }
+ },
+ {
   "id": "rec3DY6ZshRoXydU7",
   "fields": {
    "osisRef": "2Chr.26.10",
@@ -6729,10 +9846,52 @@
   }
  },
  {
+  "id": "recfX180jnjLhjiY6",
+  "fields": {
+   "osisRef": "2Chr.26.21",
+   "verseID": "14026021"
+  }
+ },
+ {
+  "id": "recN1Hh2YXcSii44e",
+  "fields": {
+   "osisRef": "2Chr.26.23",
+   "verseID": "14026023"
+  }
+ },
+ {
+  "id": "recl3g6FRRvTh45za",
+  "fields": {
+   "osisRef": "2Chr.27.1",
+   "verseID": "14027001"
+  }
+ },
+ {
+  "id": "recIafNKSib8cqzBX",
+  "fields": {
+   "osisRef": "2Chr.28.1",
+   "verseID": "14028001"
+  }
+ },
+ {
   "id": "recBL5ADIr0rrpq82",
   "fields": {
    "osisRef": "2Chr.28.9",
    "verseID": "14028009"
+  }
+ },
+ {
+  "id": "recahBPrpc8jD2cIj",
+  "fields": {
+   "osisRef": "2Chr.29.1",
+   "verseID": "14029001"
+  }
+ },
+ {
+  "id": "recPQC9ovtWmZbehO",
+  "fields": {
+   "osisRef": "2Chr.29.32",
+   "verseID": "14029032"
   }
  },
  {
@@ -6750,10 +9909,108 @@
   }
  },
  {
+  "id": "recL14IbPVupmN2y9",
+  "fields": {
+   "osisRef": "2Chr.32.23",
+   "verseID": "14032023"
+  }
+ },
+ {
+  "id": "recoz0KiEDNRADf0Y",
+  "fields": {
+   "osisRef": "2Chr.32.33",
+   "verseID": "14032033"
+  }
+ },
+ {
+  "id": "rec1mKoyd5StpWLYB",
+  "fields": {
+   "osisRef": "2Chr.33.1",
+   "verseID": "14033001"
+  }
+ },
+ {
   "id": "recqzsvULD8BeYF6A",
   "fields": {
    "osisRef": "2Chr.33.13",
    "verseID": "14033013"
+  }
+ },
+ {
+  "id": "recMdeFBsgmm9fv1h",
+  "fields": {
+   "osisRef": "2Chr.33.20",
+   "verseID": "14033020"
+  }
+ },
+ {
+  "id": "recrScV2TrqPW6E0j",
+  "fields": {
+   "osisRef": "2Chr.34.1",
+   "verseID": "14034001"
+  }
+ },
+ {
+  "id": "rec5O0GpwcjtRvNWt",
+  "fields": {
+   "osisRef": "2Chr.34.13",
+   "verseID": "14034013"
+  }
+ },
+ {
+  "id": "rec95so112kzDxFbr",
+  "fields": {
+   "osisRef": "2Chr.34.15",
+   "verseID": "14034015"
+  }
+ },
+ {
+  "id": "recrMfgH2yNX1IxNI",
+  "fields": {
+   "osisRef": "2Chr.35.27",
+   "verseID": "14035027"
+  }
+ },
+ {
+  "id": "rec5HwmYqs0oayofj",
+  "fields": {
+   "osisRef": "2Chr.36.1",
+   "verseID": "14036001"
+  }
+ },
+ {
+  "id": "recHYwuhbVuo07Fye",
+  "fields": {
+   "osisRef": "2Chr.36.8",
+   "verseID": "14036008"
+  }
+ },
+ {
+  "id": "rec1lELQJH2AMZ1aL",
+  "fields": {
+   "osisRef": "2Chr.36.10",
+   "verseID": "14036010"
+  }
+ },
+ {
+  "id": "recvwjCDlCjHw57Oz",
+  "fields": {
+   "osisRef": "2Chr.36.14",
+   "verseID": "14036014"
+  }
+ },
+ {
+  "id": "reczuOjZPwieSF27O",
+  "fields": {
+   "osisRef": "2Chr.36.20",
+   "verseID": "14036020"
+  }
+ },
+ {
+  "id": "recwGyFev3S5m2Cvp",
+  "fields": {
+   "osisRef": "Ezra.1.1",
+   "verseID": "15001001"
   }
  },
  {
@@ -6771,6 +10028,41 @@
   }
  },
  {
+  "id": "recEQDSyv0HEMPaGP",
+  "fields": {
+   "osisRef": "Ezra.1.11",
+   "verseID": "15001011"
+  }
+ },
+ {
+  "id": "rectjukq3LLQt9leA",
+  "fields": {
+   "osisRef": "Ezra.2.2",
+   "verseID": "15002002"
+  }
+ },
+ {
+  "id": "rectCetzSgmEKo0GC",
+  "fields": {
+   "osisRef": "Ezra.3.2",
+   "verseID": "15003002"
+  }
+ },
+ {
+  "id": "recLuu57RO7RFbir1",
+  "fields": {
+   "osisRef": "Ezra.4.1",
+   "verseID": "15004001"
+  }
+ },
+ {
+  "id": "recy3Sl0knwgMbgLQ",
+  "fields": {
+   "osisRef": "Ezra.4.2",
+   "verseID": "15004002"
+  }
+ },
+ {
   "id": "recyXYxSkRZFQBsXN",
   "fields": {
    "osisRef": "Ezra.4.3",
@@ -6785,10 +10077,59 @@
   }
  },
  {
+  "id": "recm5sWV9TdXE26oP",
+  "fields": {
+   "osisRef": "Ezra.5.2",
+   "verseID": "15005002"
+  }
+ },
+ {
+  "id": "recnmg4iaa2QLGcW6",
+  "fields": {
+   "osisRef": "Ezra.7.6",
+   "verseID": "15007006"
+  }
+ },
+ {
+  "id": "recKPl8kJhpypJ2IF",
+  "fields": {
+   "osisRef": "Ezra.7.11",
+   "verseID": "15007011"
+  }
+ },
+ {
+  "id": "rec6t3JUK8bZerOe7",
+  "fields": {
+   "osisRef": "Ezra.7.12",
+   "verseID": "15007012"
+  }
+ },
+ {
   "id": "recfUtQrvsPLFXiHs",
   "fields": {
    "osisRef": "Ezra.8.23",
    "verseID": "15008023"
+  }
+ },
+ {
+  "id": "recr4oyOgpwEPinnP",
+  "fields": {
+   "osisRef": "Ezra.10.5",
+   "verseID": "15010005"
+  }
+ },
+ {
+  "id": "recNXZWKnqepLlDax",
+  "fields": {
+   "osisRef": "Neh.2.12",
+   "verseID": "16002012"
+  }
+ },
+ {
+  "id": "recooZrcVI1nXiqhe",
+  "fields": {
+   "osisRef": "Neh.7.7",
+   "verseID": "16007007"
   }
  },
  {
@@ -6806,10 +10147,59 @@
   }
  },
  {
+  "id": "reclZu7c9j7Z3dJkb",
+  "fields": {
+   "osisRef": "Neh.11.4",
+   "verseID": "16011004"
+  }
+ },
+ {
+  "id": "recRRlz3XK4eeQTTA",
+  "fields": {
+   "osisRef": "Neh.11.24",
+   "verseID": "16011024"
+  }
+ },
+ {
   "id": "recgfxFvyvq2RKWiI",
   "fields": {
    "osisRef": "Neh.11.27",
    "verseID": "16011027"
+  }
+ },
+ {
+  "id": "recC1jXxaMgLVBf9w",
+  "fields": {
+   "osisRef": "Neh.11.33",
+   "verseID": "16011033"
+  }
+ },
+ {
+  "id": "recNnOLpVTwjL3q34",
+  "fields": {
+   "osisRef": "Neh.12.1",
+   "verseID": "16012001"
+  }
+ },
+ {
+  "id": "reccclZ72cmspCieF",
+  "fields": {
+   "osisRef": "Neh.12.7",
+   "verseID": "16012007"
+  }
+ },
+ {
+  "id": "recjlCSvFDyHoTP1b",
+  "fields": {
+   "osisRef": "Esth.1.13",
+   "verseID": "17001013"
+  }
+ },
+ {
+  "id": "reciXSKfrLNE6eYVk",
+  "fields": {
+   "osisRef": "Esth.5.9",
+   "verseID": "17005009"
   }
  },
  {
@@ -6904,6 +10294,20 @@
   }
  },
  {
+  "id": "reccn9zGoEWDNfw9d",
+  "fields": {
+   "osisRef": "Job.4.13",
+   "verseID": "18004013"
+  }
+ },
+ {
+  "id": "recONhuYNOboh5Kma",
+  "fields": {
+   "osisRef": "Job.4.16",
+   "verseID": "18004016"
+  }
+ },
+ {
   "id": "recYRHvsM1kQ7qkNN",
   "fields": {
    "osisRef": "Job.5.2",
@@ -6953,10 +10357,45 @@
   }
  },
  {
+  "id": "recJnWeQI1j0w7RR0",
+  "fields": {
+   "osisRef": "Job.12.4",
+   "verseID": "18012004"
+  }
+ },
+ {
   "id": "recqokQLwMQllZi5l",
   "fields": {
    "osisRef": "Job.12.20",
    "verseID": "18012020"
+  }
+ },
+ {
+  "id": "recyb5XAnOW8aNOQ0",
+  "fields": {
+   "osisRef": "Job.12.21",
+   "verseID": "18012021"
+  }
+ },
+ {
+  "id": "recXT0uXhYdBUICMd",
+  "fields": {
+   "osisRef": "Job.14.4",
+   "verseID": "18014004"
+  }
+ },
+ {
+  "id": "rec2WY2OKlHChiXbg",
+  "fields": {
+   "osisRef": "Job.14.10",
+   "verseID": "18014010"
+  }
+ },
+ {
+  "id": "recn5Y8Y9CEMMY60g",
+  "fields": {
+   "osisRef": "Job.15.14",
+   "verseID": "18015014"
   }
  },
  {
@@ -7016,6 +10455,20 @@
   }
  },
  {
+  "id": "recxMEyvbs1gu46T8",
+  "fields": {
+   "osisRef": "Job.33.15",
+   "verseID": "18033015"
+  }
+ },
+ {
+  "id": "recisBqeDS7UdQIqM",
+  "fields": {
+   "osisRef": "Job.33.17",
+   "verseID": "18033017"
+  }
+ },
+ {
   "id": "rec0CjEVeNdu8gkpI",
   "fields": {
    "osisRef": "Job.33.27",
@@ -7034,6 +10487,13 @@
   "fields": {
    "osisRef": "Job.34.21",
    "verseID": "18034021"
+  }
+ },
+ {
+  "id": "reci2E12Pe9EwBxu2",
+  "fields": {
+   "osisRef": "Job.36.3",
+   "verseID": "18036003"
   }
  },
  {
@@ -7093,10 +10553,31 @@
   }
  },
  {
+  "id": "recy9GxKkIFzLSYbR",
+  "fields": {
+   "osisRef": "Ps.2.2",
+   "verseID": "19002002"
+  }
+ },
+ {
   "id": "reckTrUK0DqPX0Y6Y",
   "fields": {
    "osisRef": "Ps.2.4",
    "verseID": "19002004"
+  }
+ },
+ {
+  "id": "rech4EylEDVBBWZlv",
+  "fields": {
+   "osisRef": "Ps.2.6",
+   "verseID": "19002006"
+  }
+ },
+ {
+  "id": "recwxUK1BM4AYOxNl",
+  "fields": {
+   "osisRef": "Ps.2.12",
+   "verseID": "19002012"
   }
  },
  {
@@ -7114,6 +10595,20 @@
   }
  },
  {
+  "id": "rec25lefXLsJ908Ar",
+  "fields": {
+   "osisRef": "Ps.10.9",
+   "verseID": "19010009"
+  }
+ },
+ {
+  "id": "recKN7hTsS3jt3wlm",
+  "fields": {
+   "osisRef": "Ps.10.10",
+   "verseID": "19010010"
+  }
+ },
+ {
   "id": "recwKtXkFPOFckPXj",
   "fields": {
    "osisRef": "Ps.11.4",
@@ -7121,10 +10616,31 @@
   }
  },
  {
+  "id": "recs4ZfK555jwWcWn",
+  "fields": {
+   "osisRef": "Ps.12.2",
+   "verseID": "19012002"
+  }
+ },
+ {
+  "id": "rec6cAfHkn2IyIMLS",
+  "fields": {
+   "osisRef": "Ps.12.3",
+   "verseID": "19012003"
+  }
+ },
+ {
   "id": "recAj6NYeahVQnFGl",
   "fields": {
    "osisRef": "Ps.14.2",
    "verseID": "19014002"
+  }
+ },
+ {
+  "id": "recQOVY2iPWYyuP7V",
+  "fields": {
+   "osisRef": "Ps.14.5",
+   "verseID": "19014005"
   }
  },
  {
@@ -7184,10 +10700,59 @@
   }
  },
  {
+  "id": "recO7akClNmGsR0cK",
+  "fields": {
+   "osisRef": "Ps.21.1",
+   "verseID": "19021001"
+  }
+ },
+ {
+  "id": "recEXLWDOXZZepP6b",
+  "fields": {
+   "osisRef": "Ps.21.11",
+   "verseID": "19021011"
+  }
+ },
+ {
+  "id": "recbiF2E9i3hhjd8e",
+  "fields": {
+   "osisRef": "Ps.22.9",
+   "verseID": "19022009"
+  }
+ },
+ {
   "id": "recv57c8z2j88U2Gc",
   "fields": {
    "osisRef": "Ps.22.24",
    "verseID": "19022024"
+  }
+ },
+ {
+  "id": "recHZ3H36jA84Chl9",
+  "fields": {
+   "osisRef": "Ps.23.4",
+   "verseID": "19023004"
+  }
+ },
+ {
+  "id": "recI0cWQLzL5FuxkB",
+  "fields": {
+   "osisRef": "Ps.25.8",
+   "verseID": "19025008"
+  }
+ },
+ {
+  "id": "recyPlVNgIIy7uOIq",
+  "fields": {
+   "osisRef": "Ps.25.9",
+   "verseID": "19025009"
+  }
+ },
+ {
+  "id": "rectOxdtqkjyLVF1g",
+  "fields": {
+   "osisRef": "Ps.25.12",
+   "verseID": "19025012"
   }
  },
  {
@@ -7219,6 +10784,13 @@
   }
  },
  {
+  "id": "recQX6zBaudRSvcfO",
+  "fields": {
+   "osisRef": "Ps.28.9",
+   "verseID": "19028009"
+  }
+ },
+ {
   "id": "rec6XPxKoyASmoFmf",
   "fields": {
    "osisRef": "Ps.32.8",
@@ -7230,6 +10802,13 @@
   "fields": {
    "osisRef": "Ps.33.10",
    "verseID": "19033010"
+  }
+ },
+ {
+  "id": "reccZfFCeEervyKDl",
+  "fields": {
+   "osisRef": "Ps.33.11",
+   "verseID": "19033011"
   }
  },
  {
@@ -7310,6 +10889,13 @@
   }
  },
  {
+  "id": "recDi7CExxLOIjVKI",
+  "fields": {
+   "osisRef": "Ps.39.8",
+   "verseID": "19039008"
+  }
+ },
+ {
   "id": "rec0Ae1DSGJ1W9MX4",
   "fields": {
    "osisRef": "Ps.39.12",
@@ -7317,10 +10903,38 @@
   }
  },
  {
+  "id": "recDbZhm5GXbWVW2M",
+  "fields": {
+   "osisRef": "Ps.42.5",
+   "verseID": "19042005"
+  }
+ },
+ {
   "id": "reccLCD0GIj957JpB",
   "fields": {
    "osisRef": "Ps.43.1",
    "verseID": "19043001"
+  }
+ },
+ {
+  "id": "recwlk1oq2Gs3U3T6",
+  "fields": {
+   "osisRef": "Ps.45.8",
+   "verseID": "19045008"
+  }
+ },
+ {
+  "id": "recOlzyRBPKQ53Ipf",
+  "fields": {
+   "osisRef": "Ps.45.11",
+   "verseID": "19045011"
+  }
+ },
+ {
+  "id": "recFneUtkEVScMmtK",
+  "fields": {
+   "osisRef": "Ps.45.12",
+   "verseID": "19045012"
   }
  },
  {
@@ -7335,6 +10949,27 @@
   "fields": {
    "osisRef": "Ps.46.2",
    "verseID": "19046002"
+  }
+ },
+ {
+  "id": "recSwpXSUQMYRl1yH",
+  "fields": {
+   "osisRef": "Ps.46.7",
+   "verseID": "19046007"
+  }
+ },
+ {
+  "id": "recBXtoBur9iDW03W",
+  "fields": {
+   "osisRef": "Ps.46.11",
+   "verseID": "19046011"
+  }
+ },
+ {
+  "id": "rec5I6HKVVe5PAtOe",
+  "fields": {
+   "osisRef": "Ps.48.14",
+   "verseID": "19048014"
   }
  },
  {
@@ -7366,10 +11001,38 @@
   }
  },
  {
+  "id": "recmBbt23htKCKRUP",
+  "fields": {
+   "osisRef": "Ps.54.1",
+   "verseID": "19054001"
+  }
+ },
+ {
   "id": "recWNTyRmI2MWpagP",
   "fields": {
    "osisRef": "Ps.55.9",
    "verseID": "19055009"
+  }
+ },
+ {
+  "id": "recTHQxARNv21SuB5",
+  "fields": {
+   "osisRef": "Ps.55.11",
+   "verseID": "19055011"
+  }
+ },
+ {
+  "id": "recSrkueZ9b3Wpcmm",
+  "fields": {
+   "osisRef": "Ps.55.15",
+   "verseID": "19055015"
+  }
+ },
+ {
+  "id": "recPSWAeQlzCNtOyc",
+  "fields": {
+   "osisRef": "Ps.55.21",
+   "verseID": "19055021"
   }
  },
  {
@@ -7387,10 +11050,31 @@
   }
  },
  {
+  "id": "recRcxK7B6wvgsZQf",
+  "fields": {
+   "osisRef": "Ps.62.4",
+   "verseID": "19062004"
+  }
+ },
+ {
+  "id": "recYQTUyLmuhmC95q",
+  "fields": {
+   "osisRef": "Ps.64.4",
+   "verseID": "19064004"
+  }
+ },
+ {
   "id": "rec6MDfy46KIct6Cx",
   "fields": {
    "osisRef": "Ps.64.5",
    "verseID": "19064005"
+  }
+ },
+ {
+  "id": "recXkjZpJ1nXMKCq6",
+  "fields": {
+   "osisRef": "Ps.64.6",
+   "verseID": "19064006"
   }
  },
  {
@@ -7408,6 +11092,13 @@
   }
  },
  {
+  "id": "recwlwMihbTPPrueo",
+  "fields": {
+   "osisRef": "Ps.67.4",
+   "verseID": "19067004"
+  }
+ },
+ {
   "id": "rec7xqT7y5xTprl1w",
   "fields": {
    "osisRef": "Ps.67.6",
@@ -7422,10 +11113,45 @@
   }
  },
  {
+  "id": "recQbqMq8nSAq2EZj",
+  "fields": {
+   "osisRef": "Ps.69.9",
+   "verseID": "19069009"
+  }
+ },
+ {
+  "id": "recpBLqDyaguvpBxw",
+  "fields": {
+   "osisRef": "Ps.69.10",
+   "verseID": "19069010"
+  }
+ },
+ {
+  "id": "recDIBWxz1o2A3Me6",
+  "fields": {
+   "osisRef": "Ps.72.9",
+   "verseID": "19072009"
+  }
+ },
+ {
   "id": "recNXc0lGi0ot60MV",
   "fields": {
    "osisRef": "Ps.72.10",
    "verseID": "19072010"
+  }
+ },
+ {
+  "id": "recDdKtGYFNXUuu15",
+  "fields": {
+   "osisRef": "Ps.72.12",
+   "verseID": "19072012"
+  }
+ },
+ {
+  "id": "reconGUG8T7jw4cPo",
+  "fields": {
+   "osisRef": "Ps.72.15",
+   "verseID": "19072015"
   }
  },
  {
@@ -7443,10 +11169,66 @@
   }
  },
  {
+  "id": "recoZhLRTkEY2K6St",
+  "fields": {
+   "osisRef": "Ps.72.20",
+   "verseID": "19072020"
+  }
+ },
+ {
+  "id": "reciK7X2EBGwu7kBg",
+  "fields": {
+   "osisRef": "Ps.73.23",
+   "verseID": "19073023"
+  }
+ },
+ {
+  "id": "recJvbmGyhTsbAAG4",
+  "fields": {
+   "osisRef": "Ps.73.24",
+   "verseID": "19073024"
+  }
+ },
+ {
+  "id": "rec2pqXhTiSsQj8Iy",
+  "fields": {
+   "osisRef": "Ps.76.10",
+   "verseID": "19076010"
+  }
+ },
+ {
   "id": "recO4lwPRLP73M6rU",
   "fields": {
    "osisRef": "Ps.78.64",
    "verseID": "19078064"
+  }
+ },
+ {
+  "id": "recXedMqntfaoSqwf",
+  "fields": {
+   "osisRef": "Ps.78.71",
+   "verseID": "19078071"
+  }
+ },
+ {
+  "id": "recENzxzsoT5zVz4O",
+  "fields": {
+   "osisRef": "Ps.78.72",
+   "verseID": "19078072"
+  }
+ },
+ {
+  "id": "rec9hW3eqsfLbF6nb",
+  "fields": {
+   "osisRef": "Ps.83.3",
+   "verseID": "19083003"
+  }
+ },
+ {
+  "id": "recDzyvTxz1LYUhiT",
+  "fields": {
+   "osisRef": "Ps.83.4",
+   "verseID": "19083004"
   }
  },
  {
@@ -7492,6 +11274,13 @@
   }
  },
  {
+  "id": "receHpxvprcPvg4A9",
+  "fields": {
+   "osisRef": "Ps.89.36",
+   "verseID": "19089036"
+  }
+ },
+ {
   "id": "recu4VDqN6o2ixPCB",
   "fields": {
    "osisRef": "Ps.91.15",
@@ -7517,6 +11306,27 @@
   "fields": {
    "osisRef": "Ps.94.16",
    "verseID": "19094016"
+  }
+ },
+ {
+  "id": "recySLO3Q5p7ZoVNx",
+  "fields": {
+   "osisRef": "Ps.94.19",
+   "verseID": "19094019"
+  }
+ },
+ {
+  "id": "recO5Jniapb4DHeNg",
+  "fields": {
+   "osisRef": "Ps.95.6",
+   "verseID": "19095006"
+  }
+ },
+ {
+  "id": "recfTQFPIeb2Vquaa",
+  "fields": {
+   "osisRef": "Ps.105.3",
+   "verseID": "19105003"
   }
  },
  {
@@ -7569,10 +11379,31 @@
   }
  },
  {
+  "id": "recCQhBTptfeFlEdG",
+  "fields": {
+   "osisRef": "Ps.107.6",
+   "verseID": "19107006"
+  }
+ },
+ {
+  "id": "recZWuMD4ShY9ZUF0",
+  "fields": {
+   "osisRef": "Ps.107.7",
+   "verseID": "19107007"
+  }
+ },
+ {
   "id": "recOCdXerhwNer7hJ",
   "fields": {
    "osisRef": "Ps.107.37",
    "verseID": "19107037"
+  }
+ },
+ {
+  "id": "recZb0OuEk6CngIXN",
+  "fields": {
+   "osisRef": "Ps.111.9",
+   "verseID": "19111009"
   }
  },
  {
@@ -7594,6 +11425,20 @@
   "fields": {
    "osisRef": "Ps.112.3",
    "verseID": "19112003"
+  }
+ },
+ {
+  "id": "rec1EbFk0qAzmjLgJ",
+  "fields": {
+   "osisRef": "Ps.112.4",
+   "verseID": "19112004"
+  }
+ },
+ {
+  "id": "reccmht6gWCcZ0ZX0",
+  "fields": {
+   "osisRef": "Ps.112.5",
+   "verseID": "19112005"
   }
  },
  {
@@ -7632,6 +11477,13 @@
   }
  },
  {
+  "id": "reckHmSVzHqz3Yk1o",
+  "fields": {
+   "osisRef": "Ps.118.14",
+   "verseID": "19118014"
+  }
+ },
+ {
   "id": "recbyTJxwiHn1UN9S",
   "fields": {
    "osisRef": "Ps.119.11",
@@ -7646,10 +11498,45 @@
   }
  },
  {
+  "id": "recBKsQ50ilHcrIy5",
+  "fields": {
+   "osisRef": "Ps.119.125",
+   "verseID": "19119125"
+  }
+ },
+ {
+  "id": "recHGdjcMdZ8w8I9D",
+  "fields": {
+   "osisRef": "Ps.119.146",
+   "verseID": "19119146"
+  }
+ },
+ {
+  "id": "recQtXjgx7mQLyDwa",
+  "fields": {
+   "osisRef": "Ps.119.151",
+   "verseID": "19119151"
+  }
+ },
+ {
   "id": "recOq1hWCVTcyGL8Y",
   "fields": {
    "osisRef": "Ps.120.5",
    "verseID": "19120005"
+  }
+ },
+ {
+  "id": "recgISPpGRwAkJ8KG",
+  "fields": {
+   "osisRef": "Ps.121.8",
+   "verseID": "19121008"
+  }
+ },
+ {
+  "id": "rec4y9jViCTlGytRC",
+  "fields": {
+   "osisRef": "Ps.124.3",
+   "verseID": "19124003"
   }
  },
  {
@@ -7695,6 +11582,27 @@
   }
  },
  {
+  "id": "recNPyiS97FnBgd4k",
+  "fields": {
+   "osisRef": "Ps.130.7",
+   "verseID": "19130007"
+  }
+ },
+ {
+  "id": "rec080YfZeM122uiq",
+  "fields": {
+   "osisRef": "Ps.130.8",
+   "verseID": "19130008"
+  }
+ },
+ {
+  "id": "reci2F60joJyKUibg",
+  "fields": {
+   "osisRef": "Ps.132.11",
+   "verseID": "19132011"
+  }
+ },
+ {
   "id": "recVuz6VzmiRBxBwJ",
   "fields": {
    "osisRef": "Ps.139.1",
@@ -7709,10 +11617,24 @@
   }
  },
  {
+  "id": "recIr8B58t634Zj6G",
+  "fields": {
+   "osisRef": "Ps.139.7",
+   "verseID": "19139007"
+  }
+ },
+ {
   "id": "recRMbOC5SrLFHmqQ",
   "fields": {
    "osisRef": "Ps.139.12",
    "verseID": "19139012"
+  }
+ },
+ {
+  "id": "recLNCLZiEMc9IT91",
+  "fields": {
+   "osisRef": "Ps.143.8",
+   "verseID": "19143008"
   }
  },
  {
@@ -7751,6 +11673,13 @@
   }
  },
  {
+  "id": "recq32wwa83bn0OJz",
+  "fields": {
+   "osisRef": "Prov.2.1",
+   "verseID": "20002001"
+  }
+ },
+ {
   "id": "reckRiVk7acWd9V1D",
   "fields": {
    "osisRef": "Prov.2.4",
@@ -7765,10 +11694,31 @@
   }
  },
  {
+  "id": "rec6Yp84BIm00yn34",
+  "fields": {
+   "osisRef": "Prov.2.6",
+   "verseID": "20002006"
+  }
+ },
+ {
   "id": "rec8G7PzyJmLE3XnH",
   "fields": {
    "osisRef": "Prov.2.20",
    "verseID": "20002020"
+  }
+ },
+ {
+  "id": "reclvpNlHnjav2IFg",
+  "fields": {
+   "osisRef": "Prov.3.5",
+   "verseID": "20003005"
+  }
+ },
+ {
+  "id": "recqSDgxxBLQO1dfW",
+  "fields": {
+   "osisRef": "Prov.3.6",
+   "verseID": "20003006"
   }
  },
  {
@@ -7807,10 +11757,24 @@
   }
  },
  {
+  "id": "recNR5ezSjU8rmouR",
+  "fields": {
+   "osisRef": "Prov.6.33",
+   "verseID": "20006033"
+  }
+ },
+ {
   "id": "rec7jLX1Z75NvO9NC",
   "fields": {
    "osisRef": "Prov.7.6",
    "verseID": "20007006"
+  }
+ },
+ {
+  "id": "recvOqxQc9wyM0URh",
+  "fields": {
+   "osisRef": "Prov.8.17",
+   "verseID": "20008017"
   }
  },
  {
@@ -7853,6 +11817,13 @@
   "fields": {
    "osisRef": "Prov.10.24",
    "verseID": "20010024"
+  }
+ },
+ {
+  "id": "recNIeXfIrCxqvYtC",
+  "fields": {
+   "osisRef": "Prov.12.5",
+   "verseID": "20012005"
   }
  },
  {
@@ -7926,10 +11897,31 @@
   }
  },
  {
+  "id": "reczcCMl65BboGwOJ",
+  "fields": {
+   "osisRef": "Prov.17.12",
+   "verseID": "20017012"
+  }
+ },
+ {
   "id": "recoAPzmCNOl1At05",
   "fields": {
    "osisRef": "Prov.17.21",
    "verseID": "20017021"
+  }
+ },
+ {
+  "id": "recq71ujpiVz93BsG",
+  "fields": {
+   "osisRef": "Prov.18.10",
+   "verseID": "20018010"
+  }
+ },
+ {
+  "id": "recTZJnuPFhJbZ4Zl",
+  "fields": {
+   "osisRef": "Prov.19.6",
+   "verseID": "20019006"
   }
  },
  {
@@ -7947,6 +11939,20 @@
   }
  },
  {
+  "id": "reckSQbTugkTjbqQt",
+  "fields": {
+   "osisRef": "Prov.21.24",
+   "verseID": "20021024"
+  }
+ },
+ {
+  "id": "rec7BSyYdTim2tLDx",
+  "fields": {
+   "osisRef": "Prov.21.30",
+   "verseID": "20021030"
+  }
+ },
+ {
   "id": "recjF5VWph4yYGo1y",
   "fields": {
    "osisRef": "Prov.23.15",
@@ -7958,6 +11964,27 @@
   "fields": {
    "osisRef": "Prov.23.24",
    "verseID": "20023024"
+  }
+ },
+ {
+  "id": "rechvlzD8802mGahC",
+  "fields": {
+   "osisRef": "Prov.26.24",
+   "verseID": "20026024"
+  }
+ },
+ {
+  "id": "recrKX3aySdrvounR",
+  "fields": {
+   "osisRef": "Prov.26.25",
+   "verseID": "20026025"
+  }
+ },
+ {
+  "id": "recmHKuReMSQVAwIT",
+  "fields": {
+   "osisRef": "Prov.27.3",
+   "verseID": "20027003"
   }
  },
  {
@@ -7975,6 +12002,27 @@
   }
  },
  {
+  "id": "recd4t6FP7L2d2JGe",
+  "fields": {
+   "osisRef": "Prov.28.15",
+   "verseID": "20028015"
+  }
+ },
+ {
+  "id": "recC9ylqNTpMGnyR3",
+  "fields": {
+   "osisRef": "Prov.28.17",
+   "verseID": "20028017"
+  }
+ },
+ {
+  "id": "rechyFulA9iNXz5Bz",
+  "fields": {
+   "osisRef": "Prov.29.2",
+   "verseID": "20029002"
+  }
+ },
+ {
   "id": "recjaupfnED36Oj7H",
   "fields": {
    "osisRef": "Prov.29.19",
@@ -7986,6 +12034,13 @@
   "fields": {
    "osisRef": "Prov.29.25",
    "verseID": "20029025"
+  }
+ },
+ {
+  "id": "rec1sYDDWgJIcSce0",
+  "fields": {
+   "osisRef": "Prov.30.4",
+   "verseID": "20030004"
   }
  },
  {
@@ -8059,6 +12114,13 @@
   }
  },
  {
+  "id": "recRy6LUwbx7m9vl7",
+  "fields": {
+   "osisRef": "Eccl.9.6",
+   "verseID": "21009006"
+  }
+ },
+ {
   "id": "recWIX6hzY0Xq1seN",
   "fields": {
    "osisRef": "Eccl.9.9",
@@ -8070,6 +12132,13 @@
   "fields": {
    "osisRef": "Eccl.10.4",
    "verseID": "21010004"
+  }
+ },
+ {
+  "id": "recYPiWmELiQoIOai",
+  "fields": {
+   "osisRef": "Eccl.10.13",
+   "verseID": "21010013"
   }
  },
  {
@@ -8087,6 +12156,13 @@
   }
  },
  {
+  "id": "recL7qAcpfLtskIVF",
+  "fields": {
+   "osisRef": "Song.1.3",
+   "verseID": "22001003"
+  }
+ },
+ {
   "id": "recjBkONCyyQ5XvWC",
   "fields": {
    "osisRef": "Song.1.5",
@@ -8098,6 +12174,13 @@
   "fields": {
    "osisRef": "Song.2.9",
    "verseID": "22002009"
+  }
+ },
+ {
+  "id": "rec8eYUwzR5XSH7j5",
+  "fields": {
+   "osisRef": "Song.3.6",
+   "verseID": "22003006"
   }
  },
  {
@@ -8136,10 +12219,59 @@
   }
  },
  {
+  "id": "recXKphTItyb3dC3s",
+  "fields": {
+   "osisRef": "Isa.7.1",
+   "verseID": "23007001"
+  }
+ },
+ {
+  "id": "recAq1q792dkZHvDo",
+  "fields": {
+   "osisRef": "Isa.7.2",
+   "verseID": "23007002"
+  }
+ },
+ {
+  "id": "recknZzX2qwTpHT8c",
+  "fields": {
+   "osisRef": "Isa.7.5",
+   "verseID": "23007005"
+  }
+ },
+ {
+  "id": "recbdacnCE0cLEcBV",
+  "fields": {
+   "osisRef": "Isa.7.7",
+   "verseID": "23007007"
+  }
+ },
+ {
+  "id": "recX90yVlXHcN49QK",
+  "fields": {
+   "osisRef": "Isa.7.13",
+   "verseID": "23007013"
+  }
+ },
+ {
   "id": "recKwZJrvEQck0T9p",
   "fields": {
    "osisRef": "Isa.7.14",
    "verseID": "23007014"
+  }
+ },
+ {
+  "id": "reczEOBpsAizMfflY",
+  "fields": {
+   "osisRef": "Isa.8.8",
+   "verseID": "23008008"
+  }
+ },
+ {
+  "id": "reccR4VHReNZeMLA1",
+  "fields": {
+   "osisRef": "Isa.8.10",
+   "verseID": "23008010"
   }
  },
  {
@@ -8150,6 +12282,20 @@
   }
  },
  {
+  "id": "rec5b41aM6T6rz6cK",
+  "fields": {
+   "osisRef": "Isa.9.6",
+   "verseID": "23009006"
+  }
+ },
+ {
+  "id": "rec6grfWkVuKJzkSt",
+  "fields": {
+   "osisRef": "Isa.9.7",
+   "verseID": "23009007"
+  }
+ },
+ {
   "id": "reca3MBxgxc6HiWnx",
   "fields": {
    "osisRef": "Isa.9.10",
@@ -8157,10 +12303,31 @@
   }
  },
  {
+  "id": "rec4hMphautyrMF8B",
+  "fields": {
+   "osisRef": "Isa.11.1",
+   "verseID": "23011001"
+  }
+ },
+ {
+  "id": "recHMS3h7faOI0WZM",
+  "fields": {
+   "osisRef": "Isa.11.10",
+   "verseID": "23011010"
+  }
+ },
+ {
   "id": "recyUn8Url5r0KHSJ",
   "fields": {
    "osisRef": "Isa.11.11",
    "verseID": "23011011"
+  }
+ },
+ {
+  "id": "rec29cXsrb0jfeer4",
+  "fields": {
+   "osisRef": "Isa.12.1",
+   "verseID": "23012001"
   }
  },
  {
@@ -8182,6 +12349,13 @@
   "fields": {
    "osisRef": "Isa.13.14",
    "verseID": "23013014"
+  }
+ },
+ {
+  "id": "reciwXtBtnJzzDEvL",
+  "fields": {
+   "osisRef": "Isa.18.7",
+   "verseID": "23018007"
   }
  },
  {
@@ -8241,6 +12415,13 @@
   }
  },
  {
+  "id": "recfuCgZc8fUj5FZl",
+  "fields": {
+   "osisRef": "Isa.22.4",
+   "verseID": "23022004"
+  }
+ },
+ {
   "id": "recXyzYGXQdwimLv5",
   "fields": {
    "osisRef": "Isa.22.13",
@@ -8269,6 +12450,55 @@
   }
  },
  {
+  "id": "recmzwRTXwitDcbak",
+  "fields": {
+   "osisRef": "Isa.26.3",
+   "verseID": "23026003"
+  }
+ },
+ {
+  "id": "recxWom6fOYXbb6Y1",
+  "fields": {
+   "osisRef": "Isa.26.14",
+   "verseID": "23026014"
+  }
+ },
+ {
+  "id": "recsBlKzHfv9NmtjE",
+  "fields": {
+   "osisRef": "Isa.26.21",
+   "verseID": "23026021"
+  }
+ },
+ {
+  "id": "recCF8W2pxCzh4HaF",
+  "fields": {
+   "osisRef": "Isa.30.21",
+   "verseID": "23030021"
+  }
+ },
+ {
+  "id": "recdZxmizg1O2kKFF",
+  "fields": {
+   "osisRef": "Isa.32.1",
+   "verseID": "23032001"
+  }
+ },
+ {
+  "id": "recvGg1KyRIpV0bR4",
+  "fields": {
+   "osisRef": "Isa.32.2",
+   "verseID": "23032002"
+  }
+ },
+ {
+  "id": "recNq6DZ5eWPluZff",
+  "fields": {
+   "osisRef": "Isa.33.22",
+   "verseID": "23033022"
+  }
+ },
+ {
   "id": "recynzefHn03uxHr2",
   "fields": {
    "osisRef": "Isa.34.1",
@@ -8290,6 +12520,34 @@
   }
  },
  {
+  "id": "recyFJrpJKUc2CPyD",
+  "fields": {
+   "osisRef": "Isa.35.4",
+   "verseID": "23035004"
+  }
+ },
+ {
+  "id": "reccMtuJPqfbIT5Kw",
+  "fields": {
+   "osisRef": "Isa.35.8",
+   "verseID": "23035008"
+  }
+ },
+ {
+  "id": "rec0aCLk9wYm27J5Z",
+  "fields": {
+   "osisRef": "Isa.36.1",
+   "verseID": "23036001"
+  }
+ },
+ {
+  "id": "recy1nvxii43Bb4F8",
+  "fields": {
+   "osisRef": "Isa.36.22",
+   "verseID": "23036022"
+  }
+ },
+ {
   "id": "reckizLm7mFl5vkVo",
   "fields": {
    "osisRef": "Isa.37.12",
@@ -8301,6 +12559,13 @@
   "fields": {
    "osisRef": "Isa.38.3",
    "verseID": "23038003"
+  }
+ },
+ {
+  "id": "recCdiraCeOmZ191l",
+  "fields": {
+   "osisRef": "Isa.40.11",
+   "verseID": "23040011"
   }
  },
  {
@@ -8325,6 +12590,13 @@
   }
  },
  {
+  "id": "recBNoavAufjTOcEL",
+  "fields": {
+   "osisRef": "Isa.41.4",
+   "verseID": "23041004"
+  }
+ },
+ {
   "id": "recrUVmicu5H2HQuZ",
   "fields": {
    "osisRef": "Isa.41.6",
@@ -8336,6 +12608,13 @@
   "fields": {
    "osisRef": "Isa.41.7",
    "verseID": "23041007"
+  }
+ },
+ {
+  "id": "recgWa5yOaVPhwoqv",
+  "fields": {
+   "osisRef": "Isa.41.8",
+   "verseID": "23041008"
   }
  },
  {
@@ -8409,6 +12688,55 @@
   }
  },
  {
+  "id": "recHS6SIDyQxsqlL4",
+  "fields": {
+   "osisRef": "Isa.45.15",
+   "verseID": "23045015"
+  }
+ },
+ {
+  "id": "recyTrcGPdzXX0Hyb",
+  "fields": {
+   "osisRef": "Isa.45.21",
+   "verseID": "23045021"
+  }
+ },
+ {
+  "id": "recTMyBIOryFbmyYP",
+  "fields": {
+   "osisRef": "Isa.45.22",
+   "verseID": "23045022"
+  }
+ },
+ {
+  "id": "recEBHLAs3EnKkMTZ",
+  "fields": {
+   "osisRef": "Isa.48.17",
+   "verseID": "23048017"
+  }
+ },
+ {
+  "id": "rechcZCI178uCMlv1",
+  "fields": {
+   "osisRef": "Isa.48.18",
+   "verseID": "23048018"
+  }
+ },
+ {
+  "id": "recVJoLuxtPVpqNN9",
+  "fields": {
+   "osisRef": "Isa.49.1",
+   "verseID": "23049001"
+  }
+ },
+ {
+  "id": "recSsVYloryzcuOvl",
+  "fields": {
+   "osisRef": "Isa.51.2",
+   "verseID": "23051002"
+  }
+ },
+ {
   "id": "recc1pYabUgNxVBfn",
   "fields": {
    "osisRef": "Isa.51.7",
@@ -8423,10 +12751,66 @@
   }
  },
  {
+  "id": "rec74Ok9yGIX7OJGH",
+  "fields": {
+   "osisRef": "Isa.51.13",
+   "verseID": "23051013"
+  }
+ },
+ {
+  "id": "recMeC8NWJBwzbQxs",
+  "fields": {
+   "osisRef": "Isa.53.1",
+   "verseID": "23053001"
+  }
+ },
+ {
+  "id": "rectGhBYh5q5KKhMb",
+  "fields": {
+   "osisRef": "Isa.53.2",
+   "verseID": "23053002"
+  }
+ },
+ {
+  "id": "recsHYIsIZ1O3v2vA",
+  "fields": {
+   "osisRef": "Isa.53.8",
+   "verseID": "23053008"
+  }
+ },
+ {
+  "id": "recVYymfFp1zunPZu",
+  "fields": {
+   "osisRef": "Isa.55.4",
+   "verseID": "23055004"
+  }
+ },
+ {
   "id": "recW6C9G9hf5HDsqw",
   "fields": {
    "osisRef": "Isa.58.9",
    "verseID": "23058009"
+  }
+ },
+ {
+  "id": "recdiFdGAU6v5j1Ll",
+  "fields": {
+   "osisRef": "Isa.59.7",
+   "verseID": "23059007"
+  }
+ },
+ {
+  "id": "reclnomGby97mWKJD",
+  "fields": {
+   "osisRef": "Isa.60.1",
+   "verseID": "23060001"
+  }
+ },
+ {
+  "id": "rec1dCHy6Y6EB6sCo",
+  "fields": {
+   "osisRef": "Isa.60.3",
+   "verseID": "23060003"
   }
  },
  {
@@ -8448,6 +12832,13 @@
   "fields": {
    "osisRef": "Isa.60.14",
    "verseID": "23060014"
+  }
+ },
+ {
+  "id": "rec7zmyRiiy4e9vgH",
+  "fields": {
+   "osisRef": "Isa.60.22",
+   "verseID": "23060022"
   }
  },
  {
@@ -8514,6 +12905,20 @@
   }
  },
  {
+  "id": "rec3r38uhOCtVL5pZ",
+  "fields": {
+   "osisRef": "Jer.1.2",
+   "verseID": "24001002"
+  }
+ },
+ {
+  "id": "reclyAzI5dfkH1Mf5",
+  "fields": {
+   "osisRef": "Jer.1.3",
+   "verseID": "24001003"
+  }
+ },
+ {
   "id": "recVwdz6BitdEunLh",
   "fields": {
    "osisRef": "Jer.2.10",
@@ -8542,6 +12947,27 @@
   }
  },
  {
+  "id": "reckvPYANYZodkC6j",
+  "fields": {
+   "osisRef": "Jer.2.28",
+   "verseID": "24002028"
+  }
+ },
+ {
+  "id": "rec3aSkrhOJIGyAZw",
+  "fields": {
+   "osisRef": "Jer.3.16",
+   "verseID": "24003016"
+  }
+ },
+ {
+  "id": "recFtQK3YRRM2tdTd",
+  "fields": {
+   "osisRef": "Jer.4.31",
+   "verseID": "24004031"
+  }
+ },
+ {
   "id": "rec1JC5g6tKIP1bNi",
   "fields": {
    "osisRef": "Jer.5.15",
@@ -8553,6 +12979,27 @@
   "fields": {
    "osisRef": "Jer.6.11",
    "verseID": "24006011"
+  }
+ },
+ {
+  "id": "recGItZdhElY3Ysgb",
+  "fields": {
+   "osisRef": "Jer.8.8",
+   "verseID": "24008008"
+  }
+ },
+ {
+  "id": "recKMVOrclFaYgMLa",
+  "fields": {
+   "osisRef": "Jer.9.17",
+   "verseID": "24009017"
+  }
+ },
+ {
+  "id": "receU6geUVkJ8oF2J",
+  "fields": {
+   "osisRef": "Jer.9.21",
+   "verseID": "24009021"
   }
  },
  {
@@ -8570,6 +13017,48 @@
   }
  },
  {
+  "id": "recKBWtu7gXGCN0c6",
+  "fields": {
+   "osisRef": "Jer.22.24",
+   "verseID": "24022024"
+  }
+ },
+ {
+  "id": "recP8Z4uIaFkL5a4d",
+  "fields": {
+   "osisRef": "Jer.22.28",
+   "verseID": "24022028"
+  }
+ },
+ {
+  "id": "rec8tnfsQEp4yKO87",
+  "fields": {
+   "osisRef": "Jer.22.30",
+   "verseID": "24022030"
+  }
+ },
+ {
+  "id": "recw5gn3qhCc8nsPa",
+  "fields": {
+   "osisRef": "Jer.23.4",
+   "verseID": "24023004"
+  }
+ },
+ {
+  "id": "recwanEWtLHSzY0cq",
+  "fields": {
+   "osisRef": "Jer.23.5",
+   "verseID": "24023005"
+  }
+ },
+ {
+  "id": "recOj3s4ZGa5wrvoR",
+  "fields": {
+   "osisRef": "Jer.23.6",
+   "verseID": "24023006"
+  }
+ },
+ {
   "id": "recSGLzIPP9tGbfAU",
   "fields": {
    "osisRef": "Jer.23.23",
@@ -8581,6 +13070,13 @@
   "fields": {
    "osisRef": "Jer.23.24",
    "verseID": "24023024"
+  }
+ },
+ {
+  "id": "recXHEgrkjGJjldnj",
+  "fields": {
+   "osisRef": "Jer.23.25",
+   "verseID": "24023025"
   }
  },
  {
@@ -8612,6 +13108,83 @@
   }
  },
  {
+  "id": "recSJvvwEw9pFEYLY",
+  "fields": {
+   "osisRef": "Jer.27.20",
+   "verseID": "24027020"
+  }
+ },
+ {
+  "id": "reccbTtRXbBy40D9l",
+  "fields": {
+   "osisRef": "Jer.30.9",
+   "verseID": "24030009"
+  }
+ },
+ {
+  "id": "recrCGOKVnLf5n5EL",
+  "fields": {
+   "osisRef": "Jer.30.10",
+   "verseID": "24030010"
+  }
+ },
+ {
+  "id": "recDA0KVxBqsAudDr",
+  "fields": {
+   "osisRef": "Jer.30.11",
+   "verseID": "24030011"
+  }
+ },
+ {
+  "id": "rec61m1FeC59VtBEv",
+  "fields": {
+   "osisRef": "Jer.30.21",
+   "verseID": "24030021"
+  }
+ },
+ {
+  "id": "recTg8oVXFEABo2Fs",
+  "fields": {
+   "osisRef": "Jer.31.15",
+   "verseID": "24031015"
+  }
+ },
+ {
+  "id": "recTuK4gIJ0yxYtiK",
+  "fields": {
+   "osisRef": "Jer.31.22",
+   "verseID": "24031022"
+  }
+ },
+ {
+  "id": "reco1C6ffVaxZsDMM",
+  "fields": {
+   "osisRef": "Jer.33.15",
+   "verseID": "24033015"
+  }
+ },
+ {
+  "id": "recAM09Jauczu7fkl",
+  "fields": {
+   "osisRef": "Jer.33.16",
+   "verseID": "24033016"
+  }
+ },
+ {
+  "id": "rec4GnKyjm3wXofZt",
+  "fields": {
+   "osisRef": "Jer.33.17",
+   "verseID": "24033017"
+  }
+ },
+ {
+  "id": "reca3bckeyXem8DKs",
+  "fields": {
+   "osisRef": "Jer.33.26",
+   "verseID": "24033026"
+  }
+ },
+ {
   "id": "recormDbn3uusLWaz",
   "fields": {
    "osisRef": "Jer.35.6",
@@ -8633,6 +13206,20 @@
   }
  },
  {
+  "id": "rechfxUiiZpYmXtJ0",
+  "fields": {
+   "osisRef": "Jer.39.9",
+   "verseID": "24039009"
+  }
+ },
+ {
+  "id": "recvO1LKHlvH6vHw7",
+  "fields": {
+   "osisRef": "Jer.40.9",
+   "verseID": "24040009"
+  }
+ },
+ {
   "id": "recnPSq3Ki8WiZg1Z",
   "fields": {
    "osisRef": "Jer.40.11",
@@ -8640,10 +13227,31 @@
   }
  },
  {
+  "id": "recbYTd4ZlfAheO8f",
+  "fields": {
+   "osisRef": "Jer.41.5",
+   "verseID": "24041005"
+  }
+ },
+ {
+  "id": "recG8VuFRllht0y5u",
+  "fields": {
+   "osisRef": "Jer.41.7",
+   "verseID": "24041007"
+  }
+ },
+ {
   "id": "rec81ML8Gdu9SbgTV",
   "fields": {
    "osisRef": "Jer.42.10",
    "verseID": "24042010"
+  }
+ },
+ {
+  "id": "recHWrL9mr3cMNOoz",
+  "fields": {
+   "osisRef": "Jer.46.28",
+   "verseID": "24046028"
   }
  },
  {
@@ -8717,6 +13325,41 @@
   }
  },
  {
+  "id": "rec5Pk4Dh6xJilUOn",
+  "fields": {
+   "osisRef": "Jer.52.11",
+   "verseID": "24052011"
+  }
+ },
+ {
+  "id": "recWQICM4WWQRqQYC",
+  "fields": {
+   "osisRef": "Jer.52.15",
+   "verseID": "24052015"
+  }
+ },
+ {
+  "id": "recuUuELmQWcMWk0n",
+  "fields": {
+   "osisRef": "Jer.52.28",
+   "verseID": "24052028"
+  }
+ },
+ {
+  "id": "recDrHpauSFW37fed",
+  "fields": {
+   "osisRef": "Jer.52.30",
+   "verseID": "24052030"
+  }
+ },
+ {
+  "id": "recnIkqlG48PiH8Ui",
+  "fields": {
+   "osisRef": "Lam.3.37",
+   "verseID": "25003037"
+  }
+ },
+ {
   "id": "reciIjPYVC8mQ4mJK",
   "fields": {
    "osisRef": "Lam.4.21",
@@ -8724,10 +13367,31 @@
   }
  },
  {
+  "id": "reccvOk9s0XL6XzpA",
+  "fields": {
+   "osisRef": "Ezek.2.10",
+   "verseID": "26002010"
+  }
+ },
+ {
+  "id": "recKYleOQlTefbl65",
+  "fields": {
+   "osisRef": "Ezek.11.16",
+   "verseID": "26011016"
+  }
+ },
+ {
   "id": "recWf7vnc8qSI4ut0",
   "fields": {
    "osisRef": "Ezek.16.3",
    "verseID": "26016003"
+  }
+ },
+ {
+  "id": "recv5Aj8DHmuVff0D",
+  "fields": {
+   "osisRef": "Ezek.16.38",
+   "verseID": "26016038"
   }
  },
  {
@@ -8843,6 +13507,27 @@
   }
  },
  {
+  "id": "recfEstdGeWu8Vp42",
+  "fields": {
+   "osisRef": "Ezek.34.23",
+   "verseID": "26034023"
+  }
+ },
+ {
+  "id": "recZw2Z7WKtjHwIdT",
+  "fields": {
+   "osisRef": "Ezek.34.25",
+   "verseID": "26034025"
+  }
+ },
+ {
+  "id": "rec6hvjt8CJmaxmSz",
+  "fields": {
+   "osisRef": "Ezek.34.30",
+   "verseID": "26034030"
+  }
+ },
+ {
   "id": "recpdtyoEwzzaAQms",
   "fields": {
    "osisRef": "Ezek.35.1",
@@ -8871,10 +13556,52 @@
   }
  },
  {
+  "id": "recZFL6W0Zsl6b6C5",
+  "fields": {
+   "osisRef": "Ezek.36.25",
+   "verseID": "26036025"
+  }
+ },
+ {
+  "id": "recrRVzoDGdR7U1Pl",
+  "fields": {
+   "osisRef": "Ezek.36.29",
+   "verseID": "26036029"
+  }
+ },
+ {
   "id": "rechcgduADigPRjJg",
   "fields": {
    "osisRef": "Ezek.36.37",
    "verseID": "26036037"
+  }
+ },
+ {
+  "id": "recDJoD4YJ5WeAhFs",
+  "fields": {
+   "osisRef": "Ezek.37.24",
+   "verseID": "26037024"
+  }
+ },
+ {
+  "id": "rec2UbutEvJcvguov",
+  "fields": {
+   "osisRef": "Ezek.37.26",
+   "verseID": "26037026"
+  }
+ },
+ {
+  "id": "reclXcToq39mhnBUs",
+  "fields": {
+   "osisRef": "Ezek.38.10",
+   "verseID": "26038010"
+  }
+ },
+ {
+  "id": "recbOTdI6b8UY8d3q",
+  "fields": {
+   "osisRef": "Ezek.38.11",
+   "verseID": "26038011"
   }
  },
  {
@@ -8896,6 +13623,55 @@
   "fields": {
    "osisRef": "Dan.1.2",
    "verseID": "27001002"
+  }
+ },
+ {
+  "id": "recsJP5RzvdCHqBcE",
+  "fields": {
+   "osisRef": "Dan.2.12",
+   "verseID": "27002012"
+  }
+ },
+ {
+  "id": "reciUtZoKmCXzy4xa",
+  "fields": {
+   "osisRef": "Dan.2.19",
+   "verseID": "27002019"
+  }
+ },
+ {
+  "id": "recKuk43N0VKULyuO",
+  "fields": {
+   "osisRef": "Dan.3.13",
+   "verseID": "27003013"
+  }
+ },
+ {
+  "id": "recrXxcZ0536Wj2N2",
+  "fields": {
+   "osisRef": "Dan.3.19",
+   "verseID": "27003019"
+  }
+ },
+ {
+  "id": "recwbeJICjW40hZ9U",
+  "fields": {
+   "osisRef": "Dan.3.20",
+   "verseID": "27003020"
+  }
+ },
+ {
+  "id": "reckE70jFN04OcbYQ",
+  "fields": {
+   "osisRef": "Dan.3.25",
+   "verseID": "27003025"
+  }
+ },
+ {
+  "id": "recqVg6zFtKOX0sbc",
+  "fields": {
+   "osisRef": "Dan.3.26",
+   "verseID": "27003026"
   }
  },
  {
@@ -8934,6 +13710,13 @@
   }
  },
  {
+  "id": "recl9tNF0VBFTFlWL",
+  "fields": {
+   "osisRef": "Dan.5.9",
+   "verseID": "27005009"
+  }
+ },
+ {
   "id": "recPH5QvPhDaRb3jJ",
   "fields": {
    "osisRef": "Dan.7.17",
@@ -8948,10 +13731,73 @@
   }
  },
  {
+  "id": "recbGMWUQzq40pL3d",
+  "fields": {
+   "osisRef": "Dan.8.25",
+   "verseID": "27008025"
+  }
+ },
+ {
+  "id": "recdg32mW5q88NlmS",
+  "fields": {
+   "osisRef": "Dan.9.24",
+   "verseID": "27009024"
+  }
+ },
+ {
+  "id": "recltMLCkIkzyxTwa",
+  "fields": {
+   "osisRef": "Dan.9.25",
+   "verseID": "27009025"
+  }
+ },
+ {
+  "id": "recaDqBrM4Y0HICb9",
+  "fields": {
+   "osisRef": "Dan.11.45",
+   "verseID": "27011045"
+  }
+ },
+ {
+  "id": "recVwcdjad7NMVjNe",
+  "fields": {
+   "osisRef": "Hos.1.4",
+   "verseID": "28001004"
+  }
+ },
+ {
+  "id": "recXW1sHZ7Ar73wtq",
+  "fields": {
+   "osisRef": "Hos.1.7",
+   "verseID": "28001007"
+  }
+ },
+ {
   "id": "recUnjQf9eDkZ2jZm",
   "fields": {
    "osisRef": "Hos.2.17",
    "verseID": "28002017"
+  }
+ },
+ {
+  "id": "recOnqTqCuD5XrH6z",
+  "fields": {
+   "osisRef": "Hos.4.6",
+   "verseID": "28004006"
+  }
+ },
+ {
+  "id": "recvda30gMpm6Djvw",
+  "fields": {
+   "osisRef": "Hos.10.14",
+   "verseID": "28010014"
+  }
+ },
+ {
+  "id": "recf45dUKeKOQLOC9",
+  "fields": {
+   "osisRef": "Hos.11.1",
+   "verseID": "28011001"
   }
  },
  {
@@ -8976,6 +13822,20 @@
   }
  },
  {
+  "id": "receTwdw12FdXzq7x",
+  "fields": {
+   "osisRef": "Joel.2.28",
+   "verseID": "29002028"
+  }
+ },
+ {
+  "id": "recgGgXNbDGkuPtKM",
+  "fields": {
+   "osisRef": "Amos.1.1",
+   "verseID": "30001001"
+  }
+ },
+ {
   "id": "reczEnMKFRXohFDSQ",
   "fields": {
    "osisRef": "Amos.1.11",
@@ -8990,6 +13850,27 @@
   }
  },
  {
+  "id": "reczaJol814UlftST",
+  "fields": {
+   "osisRef": "Amos.2.10",
+   "verseID": "30002010"
+  }
+ },
+ {
+  "id": "recYofrnmXBbh5NSj",
+  "fields": {
+   "osisRef": "Amos.2.12",
+   "verseID": "30002012"
+  }
+ },
+ {
+  "id": "rec2aqVLlxxCxLbEm",
+  "fields": {
+   "osisRef": "Amos.5.14",
+   "verseID": "30005014"
+  }
+ },
+ {
   "id": "recNJciEtLlcUNx6w",
   "fields": {
    "osisRef": "Amos.5.15",
@@ -9001,6 +13882,13 @@
   "fields": {
    "osisRef": "Amos.7.9",
    "verseID": "30007009"
+  }
+ },
+ {
+  "id": "recibkaY1oRorbHOB",
+  "fields": {
+   "osisRef": "Amos.9.11",
+   "verseID": "30009011"
   }
  },
  {
@@ -9036,6 +13924,34 @@
   "fields": {
    "osisRef": "Mic.2.12",
    "verseID": "33002012"
+  }
+ },
+ {
+  "id": "recZClD9J5vrS2hyt",
+  "fields": {
+   "osisRef": "Mic.5.2",
+   "verseID": "33005002"
+  }
+ },
+ {
+  "id": "recq25usYHVNYpaQf",
+  "fields": {
+   "osisRef": "Mic.5.3",
+   "verseID": "33005003"
+  }
+ },
+ {
+  "id": "recYqUuMRYjOnklwE",
+  "fields": {
+   "osisRef": "Mic.5.4",
+   "verseID": "33005004"
+  }
+ },
+ {
+  "id": "recORlpGbguAIJv32",
+  "fields": {
+   "osisRef": "Mic.7.14",
+   "verseID": "33007014"
   }
  },
  {
@@ -9088,10 +14004,66 @@
   }
  },
  {
+  "id": "recxUzIDzcDbaIESA",
+  "fields": {
+   "osisRef": "Hag.1.1",
+   "verseID": "37001001"
+  }
+ },
+ {
+  "id": "recSAA9qUxzAMHPtf",
+  "fields": {
+   "osisRef": "Hag.1.12",
+   "verseID": "37001012"
+  }
+ },
+ {
+  "id": "recMwKFRl0LOcL921",
+  "fields": {
+   "osisRef": "Hag.1.13",
+   "verseID": "37001013"
+  }
+ },
+ {
+  "id": "recR5Rh1MM9lpQjwg",
+  "fields": {
+   "osisRef": "Hag.1.14",
+   "verseID": "37001014"
+  }
+ },
+ {
+  "id": "recQW5TmbloGzoSJW",
+  "fields": {
+   "osisRef": "Hag.2.2",
+   "verseID": "37002002"
+  }
+ },
+ {
+  "id": "recymkoYgXAQUzYic",
+  "fields": {
+   "osisRef": "Hag.2.6",
+   "verseID": "37002006"
+  }
+ },
+ {
+  "id": "recNbWdcHUun9HLaT",
+  "fields": {
+   "osisRef": "Hag.2.9",
+   "verseID": "37002009"
+  }
+ },
+ {
   "id": "rec65Gvje1ALLAuOr",
   "fields": {
    "osisRef": "Hag.2.19",
    "verseID": "37002019"
+  }
+ },
+ {
+  "id": "recFHXgS4QUOqC9Mj",
+  "fields": {
+   "osisRef": "Hag.2.23",
+   "verseID": "37002023"
   }
  },
  {
@@ -9137,6 +14109,13 @@
   }
  },
  {
+  "id": "rec79qhkF37N3Bi61",
+  "fields": {
+   "osisRef": "Zech.9.9",
+   "verseID": "38009009"
+  }
+ },
+ {
   "id": "recOV6VVAPs1IcURH",
   "fields": {
    "osisRef": "Zech.11.13",
@@ -9144,10 +14123,31 @@
   }
  },
  {
+  "id": "recFx4L7WnLmpeDi0",
+  "fields": {
+   "osisRef": "Zech.12.8",
+   "verseID": "38012008"
+  }
+ },
+ {
   "id": "recDmmsB1XpPX164s",
   "fields": {
    "osisRef": "Zech.13.2",
    "verseID": "38013002"
+  }
+ },
+ {
+  "id": "recfbIvjsyC8q5ahw",
+  "fields": {
+   "osisRef": "Zech.13.7",
+   "verseID": "38013007"
+  }
+ },
+ {
+  "id": "recqNmWpEUxtBMqVH",
+  "fields": {
+   "osisRef": "Zech.14.9",
+   "verseID": "38014009"
   }
  },
  {
@@ -9179,6 +14179,20 @@
   }
  },
  {
+  "id": "rechtaQblYNlok85u",
+  "fields": {
+   "osisRef": "Mal.1.11",
+   "verseID": "39001011"
+  }
+ },
+ {
+  "id": "recdIK5yatZtLLrp3",
+  "fields": {
+   "osisRef": "Mal.2.7",
+   "verseID": "39002007"
+  }
+ },
+ {
   "id": "rec2ZN2DYy2tFEelB",
   "fields": {
    "osisRef": "Mal.2.15",
@@ -9197,6 +14211,27 @@
   "fields": {
    "osisRef": "Mal.3.14",
    "verseID": "39003014"
+  }
+ },
+ {
+  "id": "recOngjVfCUywgHAO",
+  "fields": {
+   "osisRef": "Mark.1.2",
+   "verseID": "41001002"
+  }
+ },
+ {
+  "id": "rec41Lm8n6O1mls6c",
+  "fields": {
+   "osisRef": "Mark.1.9",
+   "verseID": "41001009"
+  }
+ },
+ {
+  "id": "recifUPksoEolrtrC",
+  "fields": {
+   "osisRef": "Mark.1.24",
+   "verseID": "41001024"
   }
  },
  {
@@ -9228,10 +14263,38 @@
   }
  },
  {
+  "id": "reck52KGeD4fQ6dg8",
+  "fields": {
+   "osisRef": "Mark.5.22",
+   "verseID": "41005022"
+  }
+ },
+ {
   "id": "reczKP5M0lrEl9kL9",
   "fields": {
    "osisRef": "Mark.5.36",
    "verseID": "41005036"
+  }
+ },
+ {
+  "id": "recA8emnxlJsd0UKg",
+  "fields": {
+   "osisRef": "Mark.6.1",
+   "verseID": "41006001"
+  }
+ },
+ {
+  "id": "recCD5j4fkY28DYYS",
+  "fields": {
+   "osisRef": "Mark.6.3",
+   "verseID": "41006003"
+  }
+ },
+ {
+  "id": "recH1xxzDGBz38R8y",
+  "fields": {
+   "osisRef": "Mark.6.20",
+   "verseID": "41006020"
   }
  },
  {
@@ -9291,6 +14354,13 @@
   }
  },
  {
+  "id": "recaTZGTUb3dlQPLH",
+  "fields": {
+   "osisRef": "Mark.10.4",
+   "verseID": "41010004"
+  }
+ },
+ {
   "id": "recW8QSo6dkJl598u",
   "fields": {
    "osisRef": "Mark.10.33",
@@ -9319,10 +14389,31 @@
   }
  },
  {
+  "id": "rec3Bz6zGmlGYYxA1",
+  "fields": {
+   "osisRef": "Mark.10.47",
+   "verseID": "41010047"
+  }
+ },
+ {
   "id": "recNp0oBF4A2oQDBn",
   "fields": {
    "osisRef": "Mark.11.23",
    "verseID": "41011023"
+  }
+ },
+ {
+  "id": "recxEJi2iZh8pv3RV",
+  "fields": {
+   "osisRef": "Mark.12.6",
+   "verseID": "41012006"
+  }
+ },
+ {
+  "id": "recNEMBJClLsjB7Nv",
+  "fields": {
+   "osisRef": "Mark.12.7",
+   "verseID": "41012007"
   }
  },
  {
@@ -9333,10 +14424,59 @@
   }
  },
  {
+  "id": "recvjeGiFttotwE4u",
+  "fields": {
+   "osisRef": "Mark.12.37",
+   "verseID": "41012037"
+  }
+ },
+ {
   "id": "recCEgak1gHBBbPaL",
   "fields": {
    "osisRef": "Mark.12.38",
    "verseID": "41012038"
+  }
+ },
+ {
+  "id": "rec6h3xpsXYxh5YJE",
+  "fields": {
+   "osisRef": "Mark.14.49",
+   "verseID": "41014049"
+  }
+ },
+ {
+  "id": "recBnGrfekopTD7N8",
+  "fields": {
+   "osisRef": "Mark.14.67",
+   "verseID": "41014067"
+  }
+ },
+ {
+  "id": "recTdsazhkYX01KFr",
+  "fields": {
+   "osisRef": "Mark.15.2",
+   "verseID": "41015002"
+  }
+ },
+ {
+  "id": "rec7J07etK5f2Xw5N",
+  "fields": {
+   "osisRef": "Mark.15.12",
+   "verseID": "41015012"
+  }
+ },
+ {
+  "id": "rec1NxmrKx0XbYUza",
+  "fields": {
+   "osisRef": "Mark.15.26",
+   "verseID": "41015026"
+  }
+ },
+ {
+  "id": "rec27h6uob2OVeGVC",
+  "fields": {
+   "osisRef": "Mark.15.32",
+   "verseID": "41015032"
   }
  },
  {
@@ -9347,10 +14487,24 @@
   }
  },
  {
+  "id": "rect4RMLvqaXhSBv9",
+  "fields": {
+   "osisRef": "Luke.1.5",
+   "verseID": "42001005"
+  }
+ },
+ {
   "id": "recl6M9tUrC9hEylo",
   "fields": {
    "osisRef": "Luke.1.7",
    "verseID": "42001007"
+  }
+ },
+ {
+  "id": "recpCaK16UBJifKiS",
+  "fields": {
+   "osisRef": "Luke.1.10",
+   "verseID": "42001010"
   }
  },
  {
@@ -9361,6 +14515,13 @@
   }
  },
  {
+  "id": "recX6eVw4nH23p4NC",
+  "fields": {
+   "osisRef": "Luke.1.19",
+   "verseID": "42001019"
+  }
+ },
+ {
   "id": "recCgvQIIIMZrTMzo",
   "fields": {
    "osisRef": "Luke.1.25",
@@ -9368,10 +14529,45 @@
   }
  },
  {
+  "id": "recdyqFkZ4IcPeDxM",
+  "fields": {
+   "osisRef": "Luke.1.26",
+   "verseID": "42001026"
+  }
+ },
+ {
+  "id": "recmz7UwTbd9Ggu0l",
+  "fields": {
+   "osisRef": "Luke.1.27",
+   "verseID": "42001027"
+  }
+ },
+ {
   "id": "recHLvl3QfQBgpoYp",
   "fields": {
    "osisRef": "Luke.1.31",
    "verseID": "42001031"
+  }
+ },
+ {
+  "id": "recfmYwZNG03h7eoQ",
+  "fields": {
+   "osisRef": "Luke.1.32",
+   "verseID": "42001032"
+  }
+ },
+ {
+  "id": "recuajo5FWH9J6Aoz",
+  "fields": {
+   "osisRef": "Luke.1.33",
+   "verseID": "42001033"
+  }
+ },
+ {
+  "id": "recUqVDb7BOdfVQAX",
+  "fields": {
+   "osisRef": "Luke.1.35",
+   "verseID": "42001035"
   }
  },
  {
@@ -9386,6 +14582,13 @@
   "fields": {
    "osisRef": "Luke.1.37",
    "verseID": "42001037"
+  }
+ },
+ {
+  "id": "rec2fdkMzBXcEZ8ji",
+  "fields": {
+   "osisRef": "Luke.1.38",
+   "verseID": "42001038"
   }
  },
  {
@@ -9410,10 +14613,31 @@
   }
  },
  {
+  "id": "rec3U9ErwTqqS8Hc6",
+  "fields": {
+   "osisRef": "Luke.1.60",
+   "verseID": "42001060"
+  }
+ },
+ {
   "id": "recFgYtnT4OT1m5wM",
   "fields": {
    "osisRef": "Luke.1.63",
    "verseID": "42001063"
+  }
+ },
+ {
+  "id": "rece7x51G8fCmtGej",
+  "fields": {
+   "osisRef": "Luke.1.69",
+   "verseID": "42001069"
+  }
+ },
+ {
+  "id": "recZ1qrW7WAa0a737",
+  "fields": {
+   "osisRef": "Luke.1.70",
+   "verseID": "42001070"
   }
  },
  {
@@ -9428,6 +14652,181 @@
   "fields": {
    "osisRef": "Luke.1.73",
    "verseID": "42001073"
+  }
+ },
+ {
+  "id": "rec2nk2WdrWiY1yzE",
+  "fields": {
+   "osisRef": "Luke.1.75",
+   "verseID": "42001075"
+  }
+ },
+ {
+  "id": "recIc0KQb9aNScutk",
+  "fields": {
+   "osisRef": "Luke.1.78",
+   "verseID": "42001078"
+  }
+ },
+ {
+  "id": "recaPUTTmbG9zHso0",
+  "fields": {
+   "osisRef": "Luke.1.79",
+   "verseID": "42001079"
+  }
+ },
+ {
+  "id": "recDpwALngocZBWI4",
+  "fields": {
+   "osisRef": "Luke.2.4",
+   "verseID": "42002004"
+  }
+ },
+ {
+  "id": "recn0VJhhh63qj70H",
+  "fields": {
+   "osisRef": "Luke.2.5",
+   "verseID": "42002005"
+  }
+ },
+ {
+  "id": "recMV7X9yUWb4gA0c",
+  "fields": {
+   "osisRef": "Luke.2.7",
+   "verseID": "42002007"
+  }
+ },
+ {
+  "id": "recEB3yuwy0xxMAZw",
+  "fields": {
+   "osisRef": "Luke.2.8",
+   "verseID": "42002008"
+  }
+ },
+ {
+  "id": "recP7COzAOZiWjYvC",
+  "fields": {
+   "osisRef": "Luke.2.9",
+   "verseID": "42002009"
+  }
+ },
+ {
+  "id": "recVu67FQZTtTlR2L",
+  "fields": {
+   "osisRef": "Luke.2.10",
+   "verseID": "42002010"
+  }
+ },
+ {
+  "id": "recB7LYanqL6o63QS",
+  "fields": {
+   "osisRef": "Luke.2.11",
+   "verseID": "42002011"
+  }
+ },
+ {
+  "id": "recG2oqZTMGASbeRt",
+  "fields": {
+   "osisRef": "Luke.2.14",
+   "verseID": "42002014"
+  }
+ },
+ {
+  "id": "recRD53QJl7aUt9YD",
+  "fields": {
+   "osisRef": "Luke.2.15",
+   "verseID": "42002015"
+  }
+ },
+ {
+  "id": "recyseM0ul9KprIQi",
+  "fields": {
+   "osisRef": "Luke.2.16",
+   "verseID": "42002016"
+  }
+ },
+ {
+  "id": "recZ58ztvXXwzapuG",
+  "fields": {
+   "osisRef": "Luke.2.20",
+   "verseID": "42002020"
+  }
+ },
+ {
+  "id": "recShMLACog6sQljU",
+  "fields": {
+   "osisRef": "Luke.2.21",
+   "verseID": "42002021"
+  }
+ },
+ {
+  "id": "reci0J4rud4RquBX7",
+  "fields": {
+   "osisRef": "Luke.2.25",
+   "verseID": "42002025"
+  }
+ },
+ {
+  "id": "recbNFZ5jZmM2sxc2",
+  "fields": {
+   "osisRef": "Luke.2.26",
+   "verseID": "42002026"
+  }
+ },
+ {
+  "id": "recpXdpoifM6juyFj",
+  "fields": {
+   "osisRef": "Luke.2.32",
+   "verseID": "42002032"
+  }
+ },
+ {
+  "id": "recsLxiy8G5oyDYQ7",
+  "fields": {
+   "osisRef": "Luke.2.38",
+   "verseID": "42002038"
+  }
+ },
+ {
+  "id": "recf0gcsIwnbbjFdy",
+  "fields": {
+   "osisRef": "Luke.2.39",
+   "verseID": "42002039"
+  }
+ },
+ {
+  "id": "recOXn1MAfrqJr59D",
+  "fields": {
+   "osisRef": "Luke.2.48",
+   "verseID": "42002048"
+  }
+ },
+ {
+  "id": "recESFAAUHXF0JYhA",
+  "fields": {
+   "osisRef": "Luke.3.23",
+   "verseID": "42003023"
+  }
+ },
+ {
+  "id": "recSCxJ4N4bXK8ooE",
+  "fields": {
+   "osisRef": "Luke.3.27",
+   "verseID": "42003027"
+  }
+ },
+ {
+  "id": "recDWwjpONMOfOJ88",
+  "fields": {
+   "osisRef": "Luke.3.32",
+   "verseID": "42003032"
+  }
+ },
+ {
+  "id": "recGaxNHJFybqo9KT",
+  "fields": {
+   "osisRef": "Luke.3.33",
+   "verseID": "42003033"
   }
  },
  {
@@ -9452,10 +14851,45 @@
   }
  },
  {
+  "id": "recXM8isrf5EHdmWb",
+  "fields": {
+   "osisRef": "Luke.3.38",
+   "verseID": "42003038"
+  }
+ },
+ {
+  "id": "recHVs33frR5mTeL1",
+  "fields": {
+   "osisRef": "Luke.4.7",
+   "verseID": "42004007"
+  }
+ },
+ {
+  "id": "recKCgXsp4pwmgh8A",
+  "fields": {
+   "osisRef": "Luke.4.16",
+   "verseID": "42004016"
+  }
+ },
+ {
+  "id": "rec2PE75wbxKSTPUJ",
+  "fields": {
+   "osisRef": "Luke.4.22",
+   "verseID": "42004022"
+  }
+ },
+ {
   "id": "recTjZkIT4rRTCDy4",
   "fields": {
    "osisRef": "Luke.4.27",
    "verseID": "42004027"
+  }
+ },
+ {
+  "id": "recfeZxBYQOYM1OYo",
+  "fields": {
+   "osisRef": "Luke.5.8",
+   "verseID": "42005008"
   }
  },
  {
@@ -9470,6 +14904,13 @@
   "fields": {
    "osisRef": "Luke.6.27",
    "verseID": "42006027"
+  }
+ },
+ {
+  "id": "recXQKJ7IT3XPdzVa",
+  "fields": {
+   "osisRef": "Luke.8.3",
+   "verseID": "42008003"
   }
  },
  {
@@ -9697,6 +15138,13 @@
   }
  },
  {
+  "id": "reciuZLedBPQXxw6i",
+  "fields": {
+   "osisRef": "Luke.17.16",
+   "verseID": "42017016"
+  }
+ },
+ {
   "id": "recyvtGl0DIEFYv7g",
   "fields": {
    "osisRef": "Luke.18.27",
@@ -9718,10 +15166,80 @@
   }
  },
  {
+  "id": "recuVCR8xqWMB5Ovz",
+  "fields": {
+   "osisRef": "Luke.18.37",
+   "verseID": "42018037"
+  }
+ },
+ {
+  "id": "recgXxQKYkhdUuEbJ",
+  "fields": {
+   "osisRef": "Luke.19.10",
+   "verseID": "42019010"
+  }
+ },
+ {
+  "id": "recaLJZzix2P48uQw",
+  "fields": {
+   "osisRef": "Luke.19.38",
+   "verseID": "42019038"
+  }
+ },
+ {
+  "id": "recDSIc6O4VvQBqj9",
+  "fields": {
+   "osisRef": "Luke.20.14",
+   "verseID": "42020014"
+  }
+ },
+ {
+  "id": "rec6FCyNX5EmnHYun",
+  "fields": {
+   "osisRef": "Luke.20.19",
+   "verseID": "42020019"
+  }
+ },
+ {
+  "id": "reczempUbpZROT9ol",
+  "fields": {
+   "osisRef": "Luke.20.20",
+   "verseID": "42020020"
+  }
+ },
+ {
+  "id": "recwOg6WUK23fxk94",
+  "fields": {
+   "osisRef": "Luke.20.21",
+   "verseID": "42020021"
+  }
+ },
+ {
+  "id": "recYOj6Od6OBaTxLd",
+  "fields": {
+   "osisRef": "Luke.20.41",
+   "verseID": "42020041"
+  }
+ },
+ {
+  "id": "reckNj5gzr6xoN0fm",
+  "fields": {
+   "osisRef": "Luke.20.44",
+   "verseID": "42020044"
+  }
+ },
+ {
   "id": "rec8Be5fnP43vxRhm",
   "fields": {
    "osisRef": "Luke.20.46",
    "verseID": "42020046"
+  }
+ },
+ {
+  "id": "recwLG8vszbjfrQ9W",
+  "fields": {
+   "osisRef": "Luke.21.22",
+   "verseID": "42021022"
   }
  },
  {
@@ -9743,6 +15261,27 @@
   "fields": {
    "osisRef": "Luke.22.27",
    "verseID": "42022027"
+  }
+ },
+ {
+  "id": "recldthNTvkxhs1b3",
+  "fields": {
+   "osisRef": "Luke.23.3",
+   "verseID": "42023003"
+  }
+ },
+ {
+  "id": "rec73FlUsagW50bmX",
+  "fields": {
+   "osisRef": "Luke.23.10",
+   "verseID": "42023010"
+  }
+ },
+ {
+  "id": "recaDRzEFqWOxsocu",
+  "fields": {
+   "osisRef": "Luke.23.38",
+   "verseID": "42023038"
   }
  },
  {
@@ -9774,10 +15313,24 @@
   }
  },
  {
+  "id": "rec1EcdZTodTWaHXI",
+  "fields": {
+   "osisRef": "Luke.24.44",
+   "verseID": "42024044"
+  }
+ },
+ {
   "id": "recw1H1yEyEAirQVy",
   "fields": {
    "osisRef": "Luke.24.46",
    "verseID": "42024046"
+  }
+ },
+ {
+  "id": "recWG76RF8wxD5zJB",
+  "fields": {
+   "osisRef": "John.1.1",
+   "verseID": "43001001"
   }
  },
  {
@@ -9795,6 +15348,13 @@
   }
  },
  {
+  "id": "rec7hL9GZVqSqX6kN",
+  "fields": {
+   "osisRef": "John.1.14",
+   "verseID": "43001014"
+  }
+ },
+ {
   "id": "recaN5P3p8A1JUSYs",
   "fields": {
    "osisRef": "John.1.18",
@@ -9802,10 +15362,73 @@
   }
  },
  {
+  "id": "recPCXtR5En147St0",
+  "fields": {
+   "osisRef": "John.1.29",
+   "verseID": "43001029"
+  }
+ },
+ {
+  "id": "reclLMQpurcOkBQ4n",
+  "fields": {
+   "osisRef": "John.1.41",
+   "verseID": "43001041"
+  }
+ },
+ {
+  "id": "recpTbYex0B3pcVqv",
+  "fields": {
+   "osisRef": "John.1.45",
+   "verseID": "43001045"
+  }
+ },
+ {
+  "id": "recpfUzxQg0sq0ygs",
+  "fields": {
+   "osisRef": "John.1.46",
+   "verseID": "43001046"
+  }
+ },
+ {
+  "id": "recNYWWl3ytTLv8or",
+  "fields": {
+   "osisRef": "John.1.49",
+   "verseID": "43001049"
+  }
+ },
+ {
+  "id": "recJtExptDEHhhdEZ",
+  "fields": {
+   "osisRef": "John.2.5",
+   "verseID": "43002005"
+  }
+ },
+ {
+  "id": "recOnoQfZvrOED6Sk",
+  "fields": {
+   "osisRef": "John.2.8",
+   "verseID": "43002008"
+  }
+ },
+ {
+  "id": "rec2elM66Xbn7Aj2G",
+  "fields": {
+   "osisRef": "John.3.10",
+   "verseID": "43003010"
+  }
+ },
+ {
   "id": "recoBMVtmXrvzhXzb",
   "fields": {
    "osisRef": "John.3.13",
    "verseID": "43003013"
+  }
+ },
+ {
+  "id": "recx0Lu3xRHxc9hLg",
+  "fields": {
+   "osisRef": "John.3.17",
+   "verseID": "43003017"
   }
  },
  {
@@ -9844,6 +15467,41 @@
   }
  },
  {
+  "id": "recD5GKSUO3UkOFe5",
+  "fields": {
+   "osisRef": "John.4.25",
+   "verseID": "43004025"
+  }
+ },
+ {
+  "id": "recUNtXqLpIkCXPzC",
+  "fields": {
+   "osisRef": "John.4.30",
+   "verseID": "43004030"
+  }
+ },
+ {
+  "id": "recw8exrXK8qaWUPO",
+  "fields": {
+   "osisRef": "John.4.42",
+   "verseID": "43004042"
+  }
+ },
+ {
+  "id": "recdtAEcxGEumxrkM",
+  "fields": {
+   "osisRef": "John.5.22",
+   "verseID": "43005022"
+  }
+ },
+ {
+  "id": "rec37vpiuPe7z9fLS",
+  "fields": {
+   "osisRef": "John.5.23",
+   "verseID": "43005023"
+  }
+ },
+ {
   "id": "recL8zCgBBteUCmgt",
   "fields": {
    "osisRef": "John.5.44",
@@ -9851,10 +15509,73 @@
   }
  },
  {
+  "id": "recUNqFdTz7KxEkIO",
+  "fields": {
+   "osisRef": "John.7.27",
+   "verseID": "43007027"
+  }
+ },
+ {
+  "id": "rec9aUGfvkiYxaT6q",
+  "fields": {
+   "osisRef": "John.7.28",
+   "verseID": "43007028"
+  }
+ },
+ {
+  "id": "recSzQ2j0OipmiyfG",
+  "fields": {
+   "osisRef": "John.7.32",
+   "verseID": "43007032"
+  }
+ },
+ {
   "id": "reces2kzqaWmtl1N2",
   "fields": {
    "osisRef": "John.7.38",
    "verseID": "43007038"
+  }
+ },
+ {
+  "id": "recprFy0egtmzgqCV",
+  "fields": {
+   "osisRef": "John.7.41",
+   "verseID": "43007041"
+  }
+ },
+ {
+  "id": "recrZ3Logptrzcets",
+  "fields": {
+   "osisRef": "John.7.42",
+   "verseID": "43007042"
+  }
+ },
+ {
+  "id": "recVRddZKCvAjhplT",
+  "fields": {
+   "osisRef": "John.7.52",
+   "verseID": "43007052"
+  }
+ },
+ {
+  "id": "rec3KttPBJ5trZerf",
+  "fields": {
+   "osisRef": "John.8.3",
+   "verseID": "43008003"
+  }
+ },
+ {
+  "id": "reciqq7yHXvVC4AAk",
+  "fields": {
+   "osisRef": "John.8.4",
+   "verseID": "43008004"
+  }
+ },
+ {
+  "id": "rechlzf2qZHoiU3AT",
+  "fields": {
+   "osisRef": "John.8.5",
+   "verseID": "43008005"
   }
  },
  {
@@ -9886,6 +15607,13 @@
   }
  },
  {
+  "id": "recSKnnLiJYihcKHA",
+  "fields": {
+   "osisRef": "John.9.38",
+   "verseID": "43009038"
+  }
+ },
+ {
   "id": "recCxMrMtNd02IBqC",
   "fields": {
    "osisRef": "John.10.3",
@@ -9900,6 +15628,13 @@
   }
  },
  {
+  "id": "rec5L8xPhplJTrOX7",
+  "fields": {
+   "osisRef": "John.10.35",
+   "verseID": "43010035"
+  }
+ },
+ {
   "id": "recfiBRQFjtZjX5Bb",
   "fields": {
    "osisRef": "John.11.15",
@@ -9911,6 +15646,48 @@
   "fields": {
    "osisRef": "John.11.40",
    "verseID": "43011040"
+  }
+ },
+ {
+  "id": "reciRZJFWCuopuxE4",
+  "fields": {
+   "osisRef": "John.11.47",
+   "verseID": "43011047"
+  }
+ },
+ {
+  "id": "recSc3g8qeRcWTcQd",
+  "fields": {
+   "osisRef": "John.11.48",
+   "verseID": "43011048"
+  }
+ },
+ {
+  "id": "recLFbsGLTiVOnRbX",
+  "fields": {
+   "osisRef": "John.12.10",
+   "verseID": "43012010"
+  }
+ },
+ {
+  "id": "recjqFUVituSsRdGb",
+  "fields": {
+   "osisRef": "John.12.13",
+   "verseID": "43012013"
+  }
+ },
+ {
+  "id": "recGQseyJEumqCrOz",
+  "fields": {
+   "osisRef": "John.12.15",
+   "verseID": "43012015"
+  }
+ },
+ {
+  "id": "recWBULVChqxJkUCs",
+  "fields": {
+   "osisRef": "John.12.21",
+   "verseID": "43012021"
   }
  },
  {
@@ -9935,6 +15712,20 @@
   }
  },
  {
+  "id": "recBdd821K2AD58he",
+  "fields": {
+   "osisRef": "John.12.38",
+   "verseID": "43012038"
+  }
+ },
+ {
+  "id": "recCwbg3gurGgf3sE",
+  "fields": {
+   "osisRef": "John.12.40",
+   "verseID": "43012040"
+  }
+ },
+ {
   "id": "recNHwutKxEiliI39",
   "fields": {
    "osisRef": "John.14.9",
@@ -9956,6 +15747,27 @@
   }
  },
  {
+  "id": "recRmFEuFVPP8ebAU",
+  "fields": {
+   "osisRef": "John.14.26",
+   "verseID": "43014026"
+  }
+ },
+ {
+  "id": "recHjmhiiFccZlDJL",
+  "fields": {
+   "osisRef": "John.15.14",
+   "verseID": "43015014"
+  }
+ },
+ {
+  "id": "recMFCzP4l3KMCaCx",
+  "fields": {
+   "osisRef": "John.15.25",
+   "verseID": "43015025"
+  }
+ },
+ {
   "id": "recmRjspVOfdxeYrN",
   "fields": {
    "osisRef": "John.17.2",
@@ -9963,10 +15775,108 @@
   }
  },
  {
+  "id": "reck1aVyByCZyK3Je",
+  "fields": {
+   "osisRef": "John.17.12",
+   "verseID": "43017012"
+  }
+ },
+ {
+  "id": "recgGQxp67tJqg3MN",
+  "fields": {
+   "osisRef": "John.18.3",
+   "verseID": "43018003"
+  }
+ },
+ {
+  "id": "reclRdEfVIq3xKlNs",
+  "fields": {
+   "osisRef": "John.18.5",
+   "verseID": "43018005"
+  }
+ },
+ {
+  "id": "recIiexscv3Xwj67Q",
+  "fields": {
+   "osisRef": "John.18.7",
+   "verseID": "43018007"
+  }
+ },
+ {
+  "id": "rec0fVEhWtJebWVLC",
+  "fields": {
+   "osisRef": "John.18.9",
+   "verseID": "43018009"
+  }
+ },
+ {
+  "id": "recEJPj6HsYQmPWAW",
+  "fields": {
+   "osisRef": "John.18.37",
+   "verseID": "43018037"
+  }
+ },
+ {
+  "id": "recD0kpFBtKyeru9p",
+  "fields": {
+   "osisRef": "John.19.12",
+   "verseID": "43019012"
+  }
+ },
+ {
+  "id": "rec4H63IHcd5jXQEs",
+  "fields": {
+   "osisRef": "John.19.15",
+   "verseID": "43019015"
+  }
+ },
+ {
+  "id": "recTHhigB3OUXJZtA",
+  "fields": {
+   "osisRef": "John.19.19",
+   "verseID": "43019019"
+  }
+ },
+ {
+  "id": "rec3OiLeJnsdh7tHV",
+  "fields": {
+   "osisRef": "John.19.28",
+   "verseID": "43019028"
+  }
+ },
+ {
   "id": "recmTOsnlCcA4u1E6",
   "fields": {
    "osisRef": "John.19.35",
    "verseID": "43019035"
+  }
+ },
+ {
+  "id": "recaXfIHmfjwBWfdV",
+  "fields": {
+   "osisRef": "John.19.36",
+   "verseID": "43019036"
+  }
+ },
+ {
+  "id": "recM3NeQGwhWJFX7Z",
+  "fields": {
+   "osisRef": "John.19.37",
+   "verseID": "43019037"
+  }
+ },
+ {
+  "id": "rec4X2TzEEx614VIZ",
+  "fields": {
+   "osisRef": "John.20.28",
+   "verseID": "43020028"
+  }
+ },
+ {
+  "id": "rec7nvIVLUArNdNSG",
+  "fields": {
+   "osisRef": "John.21.16",
+   "verseID": "43021016"
   }
  },
  {
@@ -9991,6 +15901,13 @@
   }
  },
  {
+  "id": "recF4eHcGv4jhB0lU",
+  "fields": {
+   "osisRef": "Acts.1.16",
+   "verseID": "44001016"
+  }
+ },
+ {
   "id": "recZD1WyQs7lRLwCB",
   "fields": {
    "osisRef": "Acts.2.3",
@@ -10012,6 +15929,13 @@
   }
  },
  {
+  "id": "rec1BhEIrTwocze5l",
+  "fields": {
+   "osisRef": "Acts.2.10",
+   "verseID": "44002010"
+  }
+ },
+ {
   "id": "recznJE6P3kf8O162",
   "fields": {
    "osisRef": "Acts.2.11",
@@ -10019,10 +15943,80 @@
   }
  },
  {
+  "id": "recnNtMNC1HzFF7Pa",
+  "fields": {
+   "osisRef": "Acts.2.22",
+   "verseID": "44002022"
+  }
+ },
+ {
+  "id": "recM8NPJfg1kVeqja",
+  "fields": {
+   "osisRef": "Acts.2.30",
+   "verseID": "44002030"
+  }
+ },
+ {
+  "id": "recKUIP6ID8Ihc4Eg",
+  "fields": {
+   "osisRef": "Acts.3.18",
+   "verseID": "44003018"
+  }
+ },
+ {
   "id": "recS4rwrJzmAEHxAa",
   "fields": {
    "osisRef": "Acts.3.25",
    "verseID": "44003025"
+  }
+ },
+ {
+  "id": "recYOeitq1QxiF2N5",
+  "fields": {
+   "osisRef": "Acts.3.26",
+   "verseID": "44003026"
+  }
+ },
+ {
+  "id": "reckhmp4WWKShAz1r",
+  "fields": {
+   "osisRef": "Acts.4.2",
+   "verseID": "44004002"
+  }
+ },
+ {
+  "id": "recCcAro16hPB33jU",
+  "fields": {
+   "osisRef": "Acts.4.5",
+   "verseID": "44004005"
+  }
+ },
+ {
+  "id": "recWtvXNuEF4SvrrL",
+  "fields": {
+   "osisRef": "Acts.4.12",
+   "verseID": "44004012"
+  }
+ },
+ {
+  "id": "recET7TdPT09GsZ0F",
+  "fields": {
+   "osisRef": "Acts.4.19",
+   "verseID": "44004019"
+  }
+ },
+ {
+  "id": "rec6l4WxwYPG2KRDo",
+  "fields": {
+   "osisRef": "Acts.4.24",
+   "verseID": "44004024"
+  }
+ },
+ {
+  "id": "recZVMGXdv30fwYCP",
+  "fields": {
+   "osisRef": "Acts.4.27",
+   "verseID": "44004027"
   }
  },
  {
@@ -10040,6 +16034,41 @@
   }
  },
  {
+  "id": "recNdANeIVIa7jYNb",
+  "fields": {
+   "osisRef": "Acts.5.19",
+   "verseID": "44005019"
+  }
+ },
+ {
+  "id": "rec0Ibljtc7BVo5rK",
+  "fields": {
+   "osisRef": "Acts.5.24",
+   "verseID": "44005024"
+  }
+ },
+ {
+  "id": "recyvcfNdDHebUQ28",
+  "fields": {
+   "osisRef": "Acts.5.28",
+   "verseID": "44005028"
+  }
+ },
+ {
+  "id": "recF4CBTcO1y9J78l",
+  "fields": {
+   "osisRef": "Acts.5.29",
+   "verseID": "44005029"
+  }
+ },
+ {
+  "id": "rec6sXc9vgrg0MLF4",
+  "fields": {
+   "osisRef": "Acts.5.31",
+   "verseID": "44005031"
+  }
+ },
+ {
   "id": "rec3AyVAky9fv0big",
   "fields": {
    "osisRef": "Acts.5.41",
@@ -10051,6 +16080,13 @@
   "fields": {
    "osisRef": "Acts.6.3",
    "verseID": "44006003"
+  }
+ },
+ {
+  "id": "rec9995GFi4VLClkm",
+  "fields": {
+   "osisRef": "Acts.6.12",
+   "verseID": "44006012"
   }
  },
  {
@@ -10093,6 +16129,13 @@
   "fields": {
    "osisRef": "Acts.7.14",
    "verseID": "44007014"
+  }
+ },
+ {
+  "id": "recdmO8CTdZxeOCGv",
+  "fields": {
+   "osisRef": "Acts.7.19",
+   "verseID": "44007019"
   }
  },
  {
@@ -10159,10 +16202,31 @@
   }
  },
  {
+  "id": "recbfee9FH7XAZSHv",
+  "fields": {
+   "osisRef": "Acts.8.34",
+   "verseID": "44008034"
+  }
+ },
+ {
   "id": "rec3HjvH9Jurqrus9",
   "fields": {
    "osisRef": "Acts.9.4",
    "verseID": "44009004"
+  }
+ },
+ {
+  "id": "recTPSzgmQ7mEB5A1",
+  "fields": {
+   "osisRef": "Acts.9.13",
+   "verseID": "44009013"
+  }
+ },
+ {
+  "id": "rechXmUq8xK56D0sy",
+  "fields": {
+   "osisRef": "Acts.9.14",
+   "verseID": "44009014"
   }
  },
  {
@@ -10173,10 +16237,38 @@
   }
  },
  {
+  "id": "rec7BBWiFEGpXYqlW",
+  "fields": {
+   "osisRef": "Acts.10.7",
+   "verseID": "44010007"
+  }
+ },
+ {
   "id": "reccP4PQZxVMXpLw9",
   "fields": {
    "osisRef": "Acts.10.22",
    "verseID": "44010022"
+  }
+ },
+ {
+  "id": "reczNZ5gaofHuC4K9",
+  "fields": {
+   "osisRef": "Acts.10.25",
+   "verseID": "44010025"
+  }
+ },
+ {
+  "id": "recQR4kKuwsc5Bs44",
+  "fields": {
+   "osisRef": "Acts.10.26",
+   "verseID": "44010026"
+  }
+ },
+ {
+  "id": "reczkKZLtZwWNjNgS",
+  "fields": {
+   "osisRef": "Acts.11.12",
+   "verseID": "44011012"
   }
  },
  {
@@ -10194,10 +16286,31 @@
   }
  },
  {
+  "id": "recQckDzs30QuLmyN",
+  "fields": {
+   "osisRef": "Acts.12.1",
+   "verseID": "44012001"
+  }
+ },
+ {
+  "id": "reckEOH49ztYiv5HQ",
+  "fields": {
+   "osisRef": "Acts.12.4",
+   "verseID": "44012004"
+  }
+ },
+ {
   "id": "recdqvXkPjbT1iv6a",
   "fields": {
    "osisRef": "Acts.12.11",
    "verseID": "44012011"
+  }
+ },
+ {
+  "id": "recjADe4lp6zuRM3s",
+  "fields": {
+   "osisRef": "Acts.12.19",
+   "verseID": "44012019"
   }
  },
  {
@@ -10208,10 +16321,45 @@
   }
  },
  {
+  "id": "recNNf2phwgPszaw0",
+  "fields": {
+   "osisRef": "Acts.12.24",
+   "verseID": "44012024"
+  }
+ },
+ {
   "id": "recY88IFipSDXRPHt",
   "fields": {
    "osisRef": "Acts.13.3",
    "verseID": "44013003"
+  }
+ },
+ {
+  "id": "rec6IZPxihuaMAemw",
+  "fields": {
+   "osisRef": "Acts.13.22",
+   "verseID": "44013022"
+  }
+ },
+ {
+  "id": "recW6DxroWlav26K5",
+  "fields": {
+   "osisRef": "Acts.13.23",
+   "verseID": "44013023"
+  }
+ },
+ {
+  "id": "recJjBuPG82lNSg55",
+  "fields": {
+   "osisRef": "Acts.13.27",
+   "verseID": "44013027"
+  }
+ },
+ {
+  "id": "recTwpyX0gy2V4Tj7",
+  "fields": {
+   "osisRef": "Acts.13.29",
+   "verseID": "44013029"
   }
  },
  {
@@ -10229,10 +16377,38 @@
   }
  },
  {
+  "id": "rec3IyffKGvkbT97m",
+  "fields": {
+   "osisRef": "Acts.13.38",
+   "verseID": "44013038"
+  }
+ },
+ {
+  "id": "recJew7BPni1TtZkj",
+  "fields": {
+   "osisRef": "Acts.13.39",
+   "verseID": "44013039"
+  }
+ },
+ {
   "id": "recdw4SrB3vqK5Kxs",
   "fields": {
    "osisRef": "Acts.13.41",
    "verseID": "44013041"
+  }
+ },
+ {
+  "id": "recnaZPNTEF0XN3NQ",
+  "fields": {
+   "osisRef": "Acts.13.46",
+   "verseID": "44013046"
+  }
+ },
+ {
+  "id": "rec82teEiKmrJNC4t",
+  "fields": {
+   "osisRef": "Acts.13.48",
+   "verseID": "44013048"
   }
  },
  {
@@ -10278,6 +16454,13 @@
   }
  },
  {
+  "id": "recFObi2SLqqXy9BL",
+  "fields": {
+   "osisRef": "Acts.15.16",
+   "verseID": "44015016"
+  }
+ },
+ {
   "id": "recHrzupgtl2X95LB",
   "fields": {
    "osisRef": "Acts.15.23",
@@ -10313,10 +16496,66 @@
   }
  },
  {
+  "id": "recgpV0OcmDAaevK6",
+  "fields": {
+   "osisRef": "Acts.16.20",
+   "verseID": "44016020"
+  }
+ },
+ {
+  "id": "recsqpgBlQhKmHOBz",
+  "fields": {
+   "osisRef": "Acts.16.21",
+   "verseID": "44016021"
+  }
+ },
+ {
+  "id": "recFoyRMLywUKRiwi",
+  "fields": {
+   "osisRef": "Acts.16.36",
+   "verseID": "44016036"
+  }
+ },
+ {
+  "id": "recqxqxSPU6OS9mV5",
+  "fields": {
+   "osisRef": "Acts.17.6",
+   "verseID": "44017006"
+  }
+ },
+ {
+  "id": "recbMjBmCLGnxTQly",
+  "fields": {
+   "osisRef": "Acts.17.7",
+   "verseID": "44017007"
+  }
+ },
+ {
+  "id": "recPnP34BWcAdUFpj",
+  "fields": {
+   "osisRef": "Acts.17.8",
+   "verseID": "44017008"
+  }
+ },
+ {
   "id": "recfMlArUgHd0wAoc",
   "fields": {
    "osisRef": "Acts.17.26",
    "verseID": "44017026"
+  }
+ },
+ {
+  "id": "rec3AW5rS8Hg9hXoy",
+  "fields": {
+   "osisRef": "Acts.18.9",
+   "verseID": "44018009"
+  }
+ },
+ {
+  "id": "recgYAQlEY4kIEnHb",
+  "fields": {
+   "osisRef": "Acts.18.10",
+   "verseID": "44018010"
   }
  },
  {
@@ -10348,6 +16587,13 @@
   }
  },
  {
+  "id": "rec17u1eEqA6QiVWC",
+  "fields": {
+   "osisRef": "Acts.20.28",
+   "verseID": "44020028"
+  }
+ },
+ {
   "id": "reclrccv1UaW5rHlg",
   "fields": {
    "osisRef": "Acts.21.5",
@@ -10362,10 +16608,24 @@
   }
  },
  {
+  "id": "recryMWmZa2XHuxQd",
+  "fields": {
+   "osisRef": "Acts.21.30",
+   "verseID": "44021030"
+  }
+ },
+ {
   "id": "recLpSM8eWegqHZ0s",
   "fields": {
    "osisRef": "Acts.22.7",
    "verseID": "44022007"
+  }
+ },
+ {
+  "id": "recgd060b8gwf9TPR",
+  "fields": {
+   "osisRef": "Acts.22.8",
+   "verseID": "44022008"
   }
  },
  {
@@ -10376,10 +16636,31 @@
   }
  },
  {
+  "id": "recMNs0IVC0wJ7O5S",
+  "fields": {
+   "osisRef": "Acts.23.9",
+   "verseID": "44023009"
+  }
+ },
+ {
   "id": "recYBPjUSU53w1n67",
   "fields": {
    "osisRef": "Acts.23.26",
    "verseID": "44023026"
+  }
+ },
+ {
+  "id": "recCWAJs1k9yWl43Y",
+  "fields": {
+   "osisRef": "Acts.23.35",
+   "verseID": "44023035"
+  }
+ },
+ {
+  "id": "recnmaZ3SqIG0bgFa",
+  "fields": {
+   "osisRef": "Acts.24.5",
+   "verseID": "44024005"
   }
  },
  {
@@ -10390,10 +16671,31 @@
   }
  },
  {
+  "id": "reca3lGmbhFVxnFLT",
+  "fields": {
+   "osisRef": "Acts.26.21",
+   "verseID": "44026021"
+  }
+ },
+ {
   "id": "recDH86OBRdHcZj4a",
   "fields": {
    "osisRef": "Acts.28.15",
    "verseID": "44028015"
+  }
+ },
+ {
+  "id": "recBQUlfOU7Ol9pKn",
+  "fields": {
+   "osisRef": "Rom.1.3",
+   "verseID": "45001003"
+  }
+ },
+ {
+  "id": "receazbrdO5ruMvu1",
+  "fields": {
+   "osisRef": "Rom.1.4",
+   "verseID": "45001004"
   }
  },
  {
@@ -10432,10 +16734,24 @@
   }
  },
  {
+  "id": "recCn0031JgzdtjZ7",
+  "fields": {
+   "osisRef": "Rom.4.13",
+   "verseID": "45004013"
+  }
+ },
+ {
   "id": "recMhcvs4HKMMBC7T",
   "fields": {
    "osisRef": "Rom.4.17",
    "verseID": "45004017"
+  }
+ },
+ {
+  "id": "recEQ6cK5lwku6w2D",
+  "fields": {
+   "osisRef": "Rom.6.14",
+   "verseID": "45006014"
   }
  },
  {
@@ -10446,10 +16762,31 @@
   }
  },
  {
+  "id": "rectEBOpI8WyK7wsN",
+  "fields": {
+   "osisRef": "Rom.7.25",
+   "verseID": "45007025"
+  }
+ },
+ {
+  "id": "rec58IxFAkZFpSoUI",
+  "fields": {
+   "osisRef": "Rom.8.3",
+   "verseID": "45008003"
+  }
+ },
+ {
   "id": "recgduNeqghmItdQH",
   "fields": {
    "osisRef": "Rom.8.17",
    "verseID": "45008017"
+  }
+ },
+ {
+  "id": "receivWtCueJrd6re",
+  "fields": {
+   "osisRef": "Rom.8.29",
+   "verseID": "45008029"
   }
  },
  {
@@ -10464,6 +16801,13 @@
   "fields": {
    "osisRef": "Rom.8.32",
    "verseID": "45008032"
+  }
+ },
+ {
+  "id": "recHh35znIAYU5a7M",
+  "fields": {
+   "osisRef": "Rom.9.5",
+   "verseID": "45009005"
   }
  },
  {
@@ -10499,6 +16843,13 @@
   "fields": {
    "osisRef": "Rom.9.13",
    "verseID": "45009013"
+  }
+ },
+ {
+  "id": "recBjAlRfESLc989k",
+  "fields": {
+   "osisRef": "Rom.11.26",
+   "verseID": "45011026"
   }
  },
  {
@@ -10544,10 +16895,31 @@
   }
  },
  {
+  "id": "recRMQqBDlVPcPE8t",
+  "fields": {
+   "osisRef": "Rom.15.9",
+   "verseID": "45015009"
+  }
+ },
+ {
+  "id": "rec6pHzA2NQ1Q0bkj",
+  "fields": {
+   "osisRef": "Rom.15.13",
+   "verseID": "45015013"
+  }
+ },
+ {
   "id": "recw0XZ7GYiEqjLyK",
   "fields": {
    "osisRef": "Rom.15.24",
    "verseID": "45015024"
+  }
+ },
+ {
+  "id": "rec21NuYn1vXJIVBJ",
+  "fields": {
+   "osisRef": "Rom.15.33",
+   "verseID": "45015033"
   }
  },
  {
@@ -10593,6 +16965,13 @@
   }
  },
  {
+  "id": "rec7AupL0DmvUba7U",
+  "fields": {
+   "osisRef": "1Cor.1.30",
+   "verseID": "46001030"
+  }
+ },
+ {
   "id": "recvFsESmBmYk9Wms",
   "fields": {
    "osisRef": "1Cor.3.5",
@@ -10611,6 +16990,20 @@
   "fields": {
    "osisRef": "1Cor.3.9",
    "verseID": "46003009"
+  }
+ },
+ {
+  "id": "rectZI9SgIW2Pyc6f",
+  "fields": {
+   "osisRef": "1Cor.3.19",
+   "verseID": "46003019"
+  }
+ },
+ {
+  "id": "recoN2lxkPmWRMhI8",
+  "fields": {
+   "osisRef": "1Cor.3.20",
+   "verseID": "46003020"
   }
  },
  {
@@ -10789,6 +17182,13 @@
   }
  },
  {
+  "id": "rec9Zxr8OUdf4R6Wx",
+  "fields": {
+   "osisRef": "1Cor.15.47",
+   "verseID": "46015047"
+  }
+ },
+ {
   "id": "recIC8h9p8nW1huBj",
   "fields": {
    "osisRef": "1Cor.15.58",
@@ -10863,6 +17263,13 @@
   "fields": {
    "osisRef": "2Cor.4.5",
    "verseID": "47004005"
+  }
+ },
+ {
+  "id": "recOgx4B3NOwM1Iax",
+  "fields": {
+   "osisRef": "2Cor.5.19",
+   "verseID": "47005019"
   }
  },
  {
@@ -10985,6 +17392,13 @@
   }
  },
  {
+  "id": "recpwNfogJrzYGGWw",
+  "fields": {
+   "osisRef": "2Cor.13.11",
+   "verseID": "47013011"
+  }
+ },
+ {
   "id": "recDuwzQQYD0Gi3UQ",
   "fields": {
    "osisRef": "2Cor.13.13",
@@ -11006,6 +17420,13 @@
   }
  },
  {
+  "id": "rec1tsojsH4CRwsTC",
+  "fields": {
+   "osisRef": "Gal.2.17",
+   "verseID": "48002017"
+  }
+ },
+ {
   "id": "rec9FUosaKAyShfiO",
   "fields": {
    "osisRef": "Gal.3.8",
@@ -11024,6 +17445,20 @@
   "fields": {
    "osisRef": "Gal.3.29",
    "verseID": "48003029"
+  }
+ },
+ {
+  "id": "rec26w9lgmS6J5Kiv",
+  "fields": {
+   "osisRef": "Gal.4.4",
+   "verseID": "48004004"
+  }
+ },
+ {
+  "id": "reciH30TI6bRXpNt2",
+  "fields": {
+   "osisRef": "Gal.4.5",
+   "verseID": "48004005"
   }
  },
  {
@@ -11104,6 +17539,13 @@
   }
  },
  {
+  "id": "recFBqfTGo4kwkPLO",
+  "fields": {
+   "osisRef": "Eph.1.5",
+   "verseID": "49001005"
+  }
+ },
+ {
   "id": "recUZ2kfvhFGHBhIA",
   "fields": {
    "osisRef": "Eph.1.15",
@@ -11115,6 +17557,13 @@
   "fields": {
    "osisRef": "Eph.1.16",
    "verseID": "49001016"
+  }
+ },
+ {
+  "id": "recRXvwJG3vUzt4vj",
+  "fields": {
+   "osisRef": "Eph.1.22",
+   "verseID": "49001022"
   }
  },
  {
@@ -11150,6 +17599,13 @@
   "fields": {
    "osisRef": "Eph.5.25",
    "verseID": "49005025"
+  }
+ },
+ {
+  "id": "recQhzs8D8lwu9qSC",
+  "fields": {
+   "osisRef": "Eph.5.27",
+   "verseID": "49005027"
   }
  },
  {
@@ -11220,6 +17676,13 @@
   "fields": {
    "osisRef": "Phil.2.5",
    "verseID": "50002005"
+  }
+ },
+ {
+  "id": "recjSHyZGWM2GNNjQ",
+  "fields": {
+   "osisRef": "Phil.2.6",
+   "verseID": "50002006"
   }
  },
  {
@@ -11335,6 +17798,13 @@
   }
  },
  {
+  "id": "recpvbIUmf8bb0c23",
+  "fields": {
+   "osisRef": "Col.1.18",
+   "verseID": "51001018"
+  }
+ },
+ {
   "id": "recEAXPoluvXLlPWI",
   "fields": {
    "osisRef": "Col.1.19",
@@ -11342,10 +17812,31 @@
   }
  },
  {
+  "id": "reclt5ghffKXM9iLG",
+  "fields": {
+   "osisRef": "Col.1.20",
+   "verseID": "51001020"
+  }
+ },
+ {
+  "id": "recwiCNG5TKdBZ1uf",
+  "fields": {
+   "osisRef": "Col.1.23",
+   "verseID": "51001023"
+  }
+ },
+ {
   "id": "recwxuYY0r0j1lqHn",
   "fields": {
    "osisRef": "Col.1.24",
    "verseID": "51001024"
+  }
+ },
+ {
+  "id": "recq5WU51EHt89Bbx",
+  "fields": {
+   "osisRef": "Col.2.9",
+   "verseID": "51002009"
   }
  },
  {
@@ -11496,10 +17987,38 @@
   }
  },
  {
+  "id": "recSFcQKxWF0XyIth",
+  "fields": {
+   "osisRef": "2Thess.3.16",
+   "verseID": "53003016"
+  }
+ },
+ {
   "id": "rec1XHrikq2uuLDq4",
   "fields": {
    "osisRef": "1Tim.1.2",
    "verseID": "54001002"
+  }
+ },
+ {
+  "id": "recTYQQ7k2UjzSoiJ",
+  "fields": {
+   "osisRef": "1Tim.1.15",
+   "verseID": "54001015"
+  }
+ },
+ {
+  "id": "recZRYyNMewA1zLIE",
+  "fields": {
+   "osisRef": "1Tim.2.5",
+   "verseID": "54002005"
+  }
+ },
+ {
+  "id": "recytfL98sjIoVtPr",
+  "fields": {
+   "osisRef": "1Tim.2.15",
+   "verseID": "54002015"
   }
  },
  {
@@ -11514,6 +18033,13 @@
   "fields": {
    "osisRef": "1Tim.3.14",
    "verseID": "54003014"
+  }
+ },
+ {
+  "id": "recp4IRrny6pCeMtE",
+  "fields": {
+   "osisRef": "1Tim.3.16",
+   "verseID": "54003016"
   }
  },
  {
@@ -11573,6 +18099,20 @@
   }
  },
  {
+  "id": "recTyy0iTWdkYO2ez",
+  "fields": {
+   "osisRef": "2Tim.1.9",
+   "verseID": "55001009"
+  }
+ },
+ {
+  "id": "rec9ispYbuxJUBqrA",
+  "fields": {
+   "osisRef": "2Tim.2.8",
+   "verseID": "55002008"
+  }
+ },
+ {
   "id": "recgRV95UghvfaNV7",
   "fields": {
    "osisRef": "2Tim.2.22",
@@ -11587,10 +18127,24 @@
   }
  },
  {
+  "id": "rec0bncMmajouCZqi",
+  "fields": {
+   "osisRef": "2Tim.4.17",
+   "verseID": "55004017"
+  }
+ },
+ {
   "id": "recdOaJKBeUwLMq2M",
   "fields": {
    "osisRef": "2Tim.4.21",
    "verseID": "55004021"
+  }
+ },
+ {
+  "id": "rec53fDlWTdpbSu68",
+  "fields": {
+   "osisRef": "2Tim.4.22",
+   "verseID": "55004022"
   }
  },
  {
@@ -11619,6 +18173,13 @@
   "fields": {
    "osisRef": "Titus.2.9",
    "verseID": "56002009"
+  }
+ },
+ {
+  "id": "recTOKkzjLpbmbzAU",
+  "fields": {
+   "osisRef": "Titus.2.14",
+   "verseID": "56002014"
   }
  },
  {
@@ -11699,6 +18260,41 @@
   }
  },
  {
+  "id": "recjLTukEcm3pjRTT",
+  "fields": {
+   "osisRef": "Heb.1.6",
+   "verseID": "58001006"
+  }
+ },
+ {
+  "id": "rec1VG4su3mxEFAfZ",
+  "fields": {
+   "osisRef": "Heb.1.8",
+   "verseID": "58001008"
+  }
+ },
+ {
+  "id": "recXG86TgqbaqAW7B",
+  "fields": {
+   "osisRef": "Heb.1.13",
+   "verseID": "58001013"
+  }
+ },
+ {
+  "id": "recQ7X7qncclCEVPf",
+  "fields": {
+   "osisRef": "Heb.1.14",
+   "verseID": "58001014"
+  }
+ },
+ {
+  "id": "recZB9Yg5HJYnczkO",
+  "fields": {
+   "osisRef": "Heb.2.16",
+   "verseID": "58002016"
+  }
+ },
+ {
   "id": "recmLMx42kPtjyvOQ",
   "fields": {
    "osisRef": "Heb.3.13",
@@ -11710,6 +18306,13 @@
   "fields": {
    "osisRef": "Heb.3.19",
    "verseID": "58003019"
+  }
+ },
+ {
+  "id": "recjNIkQf2roltwC8",
+  "fields": {
+   "osisRef": "Heb.4.9",
+   "verseID": "58004009"
   }
  },
  {
@@ -11748,6 +18351,41 @@
   }
  },
  {
+  "id": "recIKfJSI19CFefsP",
+  "fields": {
+   "osisRef": "Heb.7.14",
+   "verseID": "58007014"
+  }
+ },
+ {
+  "id": "rec1UhyiZq3qQZL2P",
+  "fields": {
+   "osisRef": "Heb.7.25",
+   "verseID": "58007025"
+  }
+ },
+ {
+  "id": "recoiJUSwoAzrVtEc",
+  "fields": {
+   "osisRef": "Heb.7.26",
+   "verseID": "58007026"
+  }
+ },
+ {
+  "id": "recAFowrRT7e9vXyZ",
+  "fields": {
+   "osisRef": "Heb.9.11",
+   "verseID": "58009011"
+  }
+ },
+ {
+  "id": "recj4s6DVy3JraAVq",
+  "fields": {
+   "osisRef": "Heb.10.5",
+   "verseID": "58010005"
+  }
+ },
+ {
   "id": "rechQNnUhqcclPO1E",
   "fields": {
    "osisRef": "Heb.10.24",
@@ -11762,6 +18400,13 @@
   }
  },
  {
+  "id": "recSOFbS3XfOm0s7s",
+  "fields": {
+   "osisRef": "Heb.11.7",
+   "verseID": "58011007"
+  }
+ },
+ {
   "id": "recmkXk4YsOuXCWct",
   "fields": {
    "osisRef": "Heb.11.8",
@@ -11773,6 +18418,13 @@
   "fields": {
    "osisRef": "Heb.11.9",
    "verseID": "58011009"
+  }
+ },
+ {
+  "id": "recQTLZeN11RBiGBr",
+  "fields": {
+   "osisRef": "Heb.11.11",
+   "verseID": "58011011"
   }
  },
  {
@@ -11801,6 +18453,34 @@
   "fields": {
    "osisRef": "Heb.11.16",
    "verseID": "58011016"
+  }
+ },
+ {
+  "id": "recFZk2LyA12n5Xut",
+  "fields": {
+   "osisRef": "Heb.11.17",
+   "verseID": "58011017"
+  }
+ },
+ {
+  "id": "recapVliNROFwR6IQ",
+  "fields": {
+   "osisRef": "Heb.11.18",
+   "verseID": "58011018"
+  }
+ },
+ {
+  "id": "recZIMRSHh46AhaqC",
+  "fields": {
+   "osisRef": "Heb.11.24",
+   "verseID": "58011024"
+  }
+ },
+ {
+  "id": "recGlT8dF63hq7Bzp",
+  "fields": {
+   "osisRef": "Heb.11.31",
+   "verseID": "58011031"
   }
  },
  {
@@ -11860,10 +18540,31 @@
   }
  },
  {
+  "id": "recjLQhpWcGLFoIMw",
+  "fields": {
+   "osisRef": "Jas.2.7",
+   "verseID": "59002007"
+  }
+ },
+ {
   "id": "recLBrNWb30JxW1z5",
   "fields": {
    "osisRef": "Jas.2.21",
    "verseID": "59002021"
+  }
+ },
+ {
+  "id": "recj8g8VuCxRBuJFs",
+  "fields": {
+   "osisRef": "Jas.2.25",
+   "verseID": "59002025"
+  }
+ },
+ {
+  "id": "recsUvvNA6XoIh7LA",
+  "fields": {
+   "osisRef": "Jas.2.26",
+   "verseID": "59002026"
   }
  },
  {
@@ -12077,6 +18778,20 @@
   }
  },
  {
+  "id": "recPk2BnqOFOvheGB",
+  "fields": {
+   "osisRef": "1John.2.1",
+   "verseID": "62002001"
+  }
+ },
+ {
+  "id": "recedUnhaY4ixeIa7",
+  "fields": {
+   "osisRef": "1John.2.2",
+   "verseID": "62002002"
+  }
+ },
+ {
   "id": "rec0pbfBY8TEdluUf",
   "fields": {
    "osisRef": "1John.2.14",
@@ -12095,6 +18810,13 @@
   "fields": {
    "osisRef": "1John.2.29",
    "verseID": "62002029"
+  }
+ },
+ {
+  "id": "recJJwPnH7uqgHZC5",
+  "fields": {
+   "osisRef": "1John.3.5",
+   "verseID": "62003005"
   }
  },
  {
@@ -12175,6 +18897,20 @@
   }
  },
  {
+  "id": "reclRi57z0f7zibyc",
+  "fields": {
+   "osisRef": "Rev.1.5",
+   "verseID": "66001005"
+  }
+ },
+ {
+  "id": "recLefEVUfJfMjJ0L",
+  "fields": {
+   "osisRef": "Rev.1.6",
+   "verseID": "66001006"
+  }
+ },
+ {
   "id": "recVO75xWeZWgADoI",
   "fields": {
    "osisRef": "Rev.1.17",
@@ -12196,10 +18932,38 @@
   }
  },
  {
+  "id": "rec9DNPdKrk4fIrbq",
+  "fields": {
+   "osisRef": "Rev.2.27",
+   "verseID": "66002027"
+  }
+ },
+ {
   "id": "recmi2nBf9zfHfMYe",
   "fields": {
    "osisRef": "Rev.3.9",
    "verseID": "66003009"
+  }
+ },
+ {
+  "id": "recqoNmPdBfJVJC1N",
+  "fields": {
+   "osisRef": "Rev.4.10",
+   "verseID": "66004010"
+  }
+ },
+ {
+  "id": "reclfMizd0TOtU7Ct",
+  "fields": {
+   "osisRef": "Rev.5.8",
+   "verseID": "66005008"
+  }
+ },
+ {
+  "id": "recvMt9wOkcuSZM25",
+  "fields": {
+   "osisRef": "Rev.7.5",
+   "verseID": "66007005"
   }
  },
  {
@@ -12210,10 +18974,122 @@
   }
  },
  {
+  "id": "recmH0FNfj14p00oP",
+  "fields": {
+   "osisRef": "Rev.7.14",
+   "verseID": "66007014"
+  }
+ },
+ {
+  "id": "rec0g6eJHGcwOgK2m",
+  "fields": {
+   "osisRef": "Rev.7.17",
+   "verseID": "66007017"
+  }
+ },
+ {
+  "id": "recuyffr0wjCIGDkT",
+  "fields": {
+   "osisRef": "Rev.8.13",
+   "verseID": "66008013"
+  }
+ },
+ {
+  "id": "rec4f0vyLVWYdtefx",
+  "fields": {
+   "osisRef": "Rev.11.15",
+   "verseID": "66011015"
+  }
+ },
+ {
+  "id": "rectsEMqmYmJeHvFE",
+  "fields": {
+   "osisRef": "Rev.12.1",
+   "verseID": "66012001"
+  }
+ },
+ {
+  "id": "recPTedWMZmsSC0Ws",
+  "fields": {
+   "osisRef": "Rev.12.4",
+   "verseID": "66012004"
+  }
+ },
+ {
+  "id": "recJvrdejMcusRrSC",
+  "fields": {
+   "osisRef": "Rev.12.5",
+   "verseID": "66012005"
+  }
+ },
+ {
+  "id": "reckd1HYZFRtowFuc",
+  "fields": {
+   "osisRef": "Rev.12.6",
+   "verseID": "66012006"
+  }
+ },
+ {
+  "id": "recAjM0qbyS5xw7hm",
+  "fields": {
+   "osisRef": "Rev.12.14",
+   "verseID": "66012014"
+  }
+ },
+ {
+  "id": "recprDJX0Gwx6nAS5",
+  "fields": {
+   "osisRef": "Rev.12.15",
+   "verseID": "66012015"
+  }
+ },
+ {
+  "id": "recn1FpCfFziI2Soi",
+  "fields": {
+   "osisRef": "Rev.17.6",
+   "verseID": "66017006"
+  }
+ },
+ {
+  "id": "rec3BvZhdjdfX0lch",
+  "fields": {
+   "osisRef": "Rev.17.17",
+   "verseID": "66017017"
+  }
+ },
+ {
   "id": "recErMOpboppgXZqN",
   "fields": {
    "osisRef": "Rev.18.13",
    "verseID": "66018013"
+  }
+ },
+ {
+  "id": "reclxUZLGbFCzzKEh",
+  "fields": {
+   "osisRef": "Rev.19.10",
+   "verseID": "66019010"
+  }
+ },
+ {
+  "id": "recVBOw2xbXM2YeQz",
+  "fields": {
+   "osisRef": "Rev.22.8",
+   "verseID": "66022008"
+  }
+ },
+ {
+  "id": "recIU1mBAKVMOD668",
+  "fields": {
+   "osisRef": "Rev.22.10",
+   "verseID": "66022010"
+  }
+ },
+ {
+  "id": "recPodtVRWMLVbTSr",
+  "fields": {
+   "osisRef": "Rev.22.16",
+   "verseID": "66022016"
   }
  }
 ]
