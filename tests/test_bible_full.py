@@ -124,3 +124,6 @@ def test_headings_that_spell_a_place_another_way_are_removed_but_not_ordinary_wo
     themes = bible / "data" / VERSION / "entity" / "theme"
     assert not [h for h in ("ajalon", "kirjathaim", "gerizim") if (themes / f"{h}.json").exists()]
     assert (themes / "hostage.json").exists() and (themes / "shechemites.json").exists()
+    # The owner's rows: SIMONY and HUSHAH are kept (themes_keep.csv); NOPH is Memphis's alias.
+    assert (themes / "simony.json").exists() and (themes / "hushah.json").exists()
+    assert not (themes / "noph.json").exists()
