@@ -34,7 +34,7 @@ type EntityFile = Sourced & {
   dictionary_entry?: Sourced & { text: string };
   corrections?: Correction[];
   neighbours: Link[];
-  verses: (Sourced & { key: string; edge: string; direction: Edge["direction"]; weight: number })[];
+  verses: (Edge & { key: string; weight: number })[];
   ring2: Rec["ring2"];
 };
 // credits.json, for the detail panel and the credits page.
@@ -56,7 +56,7 @@ const POINT_SOURCE: Record<string, string> = { OpenBible: "OpenBible.info Bible 
 // Theographic's years are astronomical: 0 is 1 BC.
 const year = (y: number) => (y > 0 ? `AD ${y}` : `${1 - y} BC`);
 const degrees = (x: number, plus: string, minus: string) => `${+Math.abs(x).toFixed(4)}° ${x < 0 ? minus : plus}`;
-type Mention = Sourced & { id: Id; edge: string; weight: number };
+type Mention = Sourced & Partial<Curated> & { id: Id; edge: string; weight: number };
 type ChapterFile = {
   verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[] }[];
 };
@@ -137,12 +137,8 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
     const links = [
       ...d.neighbours,
       // Entity to Verse: the weight is the number of other Entities in the Verse.
-      ...d.verses.map((v) => ({
-        id: v.key,
-        type: "verse" as const,
-        weight: v.weight,
-        edges: [{ edge: v.edge, direction: v.direction, source: v.source, licence: v.licence }],
-      })),
+      // A curated Mention keeps its note and Evidence Verses (#44).
+      ...d.verses.map(({ key, weight, ...edge }) => ({ id: key, type: "verse" as const, weight, edges: [edge] })),
     ];
     return { id, type, links: links.sort(byWeight), ring2: d.ring2, gender: d.gender, text: d.dictionary_entry?.text };
   }
@@ -155,11 +151,11 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
     const [c, side] = await Promise.all([chapterFile(id), get<{ ring2: Rec["ring2"] }>(`${chapter}.ring2.json`)]);
     const v = c.verses.find((x) => x.key === id);
     if (!v) throw new Error(`No verse ${id} in ${chapter}.json`);
-    const named = [...v.mentions, ...v.filed_under].map((mention) => ({
-      id: mention.id,
-      type: typeOf(mention.id) as NodeType,
-      weight: mention.weight,
-      edges: [{ edge: mention.edge, direction: "out" as const, source: mention.source, licence: mention.licence }],
+    const named = [...v.mentions, ...v.filed_under].map(({ id, weight, ...edge }) => ({
+      id,
+      type: typeOf(id) as NodeType,
+      weight,
+      edges: [{ ...edge, direction: "out" as const }],
     }));
     return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb };
   }
@@ -255,7 +251,9 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
         const licence = c.sources.find((s) => s.name === source)?.licence ?? c.licence;
         facts.push({ name: "Coordinates", value: `${degrees(d.lat, "N", "S")}, ${degrees(d.lon, "E", "W")}`, source, licence });
       }
-      return { ...own, facts, entry: d.dictionary_entry, corrections: d.corrections ?? [] };
+      // A link correction marks each Entity at its ends, so rows with one note show once (#44).
+      const corrections = (d.corrections ?? []).filter((c, i, all) => all.findIndex((o) => o.field === c.field && o.note === c.note) === i);
+      return { ...own, facts, entry: d.dictionary_entry, corrections };
     },
     outside,
     // A Verse's OSIS book, and whether its chapter is built (the book filter).
@@ -297,7 +295,7 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
         typeOf(id) === "theme" && name === name.toUpperCase()
           ? name.toLowerCase().replace(/(^|[\s(,])\S/g, (c) => c.toUpperCase())
           : name;
-      // Same-name Entities of one type (decisions 122, 125): "Anah, brother of Ajah (Gen 36:24)".
+      // Same-name Entities of one type (decisions 122, 125): "Anah, son of Seir (Gen 36:20)".
       const named = relation && e?.relation ? `${shown}, ${e.relation}` : shown;
       return e?.hint ? `${named} (${e.hint})` : named;
     },
