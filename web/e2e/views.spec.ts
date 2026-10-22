@@ -60,3 +60,30 @@ test("blocked storage falls back to the tilted plane without an error", async ({
   await expect(picker(page).getByRole("radio", { name: "Stacked discs" })).toBeChecked();
   expect(errors).toEqual([]);
 });
+
+test("a window narrowed to 640 px shows the stacked discs as the tilted plane, until widened", async ({ page }) => {
+  const isaacAt = async () => (await nodes(page)).find((n) => n.id === "person:isaac_616");
+  // Where the tilted plane puts Isaac in a narrow window.
+  await page.setViewportSize({ width: 640, height: 720 });
+  await page.goto("/");
+  await sceneReady(page);
+  const tilted = await isaacAt();
+
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/?view=B");
+  await sceneReady(page);
+  const radios = picker(page).getByRole("radio");
+  await expect(radios).toHaveText(["Tilted plane", "Stacked discs", "Free orbit"]);
+  const discs = await isaacAt();
+
+  // The phone views (docs/specs/mobile.md): the address keeps the stacked discs.
+  await page.setViewportSize({ width: 640, height: 720 });
+  await expect(radios).toHaveText(["Tilted plane", "Free orbit"]);
+  await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
+  await expect.poll(isaacAt).toEqual(tilted);
+  expect(new URL(page.url()).searchParams.get("view")).toBe("B");
+
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Stacked discs");
+  await expect.poll(isaacAt).toEqual(discs);
+});
