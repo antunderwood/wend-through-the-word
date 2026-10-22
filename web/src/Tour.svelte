@@ -28,6 +28,10 @@
   });
 
   function place(el: Element | null | undefined) {
+    // A target in a hidden tab of the bottom sheet opens that tab, as a tap on the tab would; the
+    // target is placed once the tab shows. A tab the reader opens later is left open.
+    const tab = el !== target && el?.closest("[role=tabpanel][hidden]");
+    if (tab) return document.getElementById(tab.getAttribute("aria-labelledby")!)?.click();
     // A target in the panel is scrolled into its view once; scene names are never scrolled. Any other
     // target brings the panel back to its top, where the Selected Node is.
     if (el !== target && el?.closest("#panel")) el.scrollIntoView({ block: "nearest" });
@@ -39,14 +43,20 @@
     const w = box.offsetWidth,
       h = box.offsetHeight,
       m = 14;
-    // Below, above, left of, or right of the target, whichever fits; else the bottom left corner.
-    let [x, y] = [16, innerHeight - h - 92];
+    // On a phone the box stays above the bottom sheet, open or closed.
+    const sheet = document.querySelector('[aria-label="Sheet"]'),
+      floor = sheet ? sheet.getBoundingClientRect().top : innerHeight;
+    // Below, above, left of, or right of the target, whichever fits; on a phone also just above the
+    // sheet or at the top of the screen, if clear of the target; else the bottom left corner.
+    let [x, y] = [Math.min(16, innerWidth - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
     if (seen) {
       Object.assign(ring.style, { left: `${r.left - 5}px`, top: `${r.top - 5}px`, width: `${r.width + 10}px`, height: `${r.height + 10}px` });
       const cx = Math.max(8, Math.min(innerWidth - w - 8, r.left)),
-        cy = Math.max(8, Math.min(innerHeight - h - 8, r.top));
+        cy = Math.max(8, Math.min(floor - h - 8, r.top));
       const spots = [[cx, r.bottom + m], [cx, r.top - m - h], [r.left - m - w, cy], [r.right + m, cy]];
-      [x, y] = spots.find(([a, b]) => a >= 8 && b >= 8 && a + w <= innerWidth - 8 && b + h <= innerHeight - 8) ?? [x, y];
+      if (sheet) spots.push([cx, floor - h - 8], [cx, 8]);
+      const clear = ([a, b]: number[]) => a + w + m <= r.left || r.right + m <= a || b + h + m <= r.top || r.bottom + m <= b;
+      [x, y] = spots.find(([a, b]) => a >= 8 && b >= 8 && a + w <= innerWidth - 8 && b + h <= floor - 8 && clear([a, b])) ?? [x, y];
     }
     box.style.left = `${x}px`;
     box.style.top = `${y}px`;
@@ -112,6 +122,13 @@
     border-radius: 8px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
     font-size: 13px;
+  }
+  /* On a phone the box is as wide as the screen, so it is short enough to fit above the sheet. */
+  :global(html[data-phone]) .tour {
+    width: calc(100vw - 16px);
+  }
+  :global(html[data-phone]) .tour button {
+    min-height: 44px;
   }
   h2 {
     margin: 4px 0;
