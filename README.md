@@ -18,7 +18,7 @@ uv run python -m pipeline.download
 uv run python -m pipeline.build build.toml
 ```
 
-`build` reads only local files. It writes the static export to `out/data/` and the reports to `out/reports/`. `build.toml` sets the book range, the build date, and the data version.
+`build` reads only local files. It writes the static export to `out/data/` and the reports to `out/reports/`. `build.toml` sets the book range, the build date, and the data version. `out/reports/summary.html` sums up the reports (counts, counts per book, first rows); to see what changed, set `previous_reports` in the config to a previous build's reports folder (it may be `out/reports` itself, which is read before it is replaced).
 
 `uv run pytest` runs the tests on the fixtures in `tests/fixtures/`. The full Genesis test also runs when `sources/` holds a download (or set `WEND_SOURCES`).
 
