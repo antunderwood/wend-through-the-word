@@ -40,12 +40,11 @@ def write(b, reports, previous):
     """Write the page from the TSVs in `reports`. `previous` is `read` of a previous build's
     reports, or None."""
 
-    def change(name, count, book=None):
-        if previous is None:
-            return ""
-        if name not in previous:
+    def change(count, was):
+        """`count`'s change from `was`, the previous build's count, as text; None is "new"."""
+        if was is None:
             return "new"
-        d = count - (len(previous[name][1]) if book is None else previous[name][2][book])
+        d = count - was
         return f"{d:+,}" if d else "0"
 
     compared = ""
@@ -60,16 +59,17 @@ def write(b, reports, previous):
     parts = [head + compared]
     order = {name: x["order"] for name, x in b.books.items()}
     for name, (header, rows, books) in read(b, reports).items():
-        diff = change(name, len(rows))
+        before = previous.get(name) if previous else None  # (header, rows, rows per book)
+        diff = f" ({change(len(rows), before and len(before[1]))})" if compared else ""
         parts.append(
-            f"<section><h2>{name}: {len(rows):,} row{'s' * (len(rows) != 1)}{f' ({diff})' if diff else ''}</h2>"
+            f"<section><h2>{name}: {len(rows):,} row{'s' * (len(rows) != 1)}{diff}</h2>"
             f'<p><a href="{name}.tsv">{name}.tsv</a>'
         )
         if any(books):  # a Counter key of None means no book
-            was = previous.get(name, ((), (), {}))[2] if previous else {}
+            was = before[2] if before else {}
             parts.append("<table><tr><th>Book<th>Rows" + ("<th>Change" if compared else ""))
             for book in sorted(set(books) | set(was), key=lambda k: order.get(k, 99)):
-                diff = f"<td>{change(name, books[book], book)}" if compared else ""
+                diff = f"<td>{change(books[book], before and was[book])}" if compared else ""
                 parts.append(f"<tr><td>{book or 'No book'}<td>{books[book]:,}{diff}")
             parts.append("</table>")
         if rows:

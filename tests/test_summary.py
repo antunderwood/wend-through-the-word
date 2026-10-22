@@ -52,7 +52,6 @@ def test_summary_counts_each_report_and_opens_from_disk(export):
     assert not re.search(r"<script|<link|<img|src=|url\(", page(export))
     links = re.findall(r'href="([^"]*)"', page(export))
     assert links and all((export / "reports" / link).is_file() for link in links)
-    assert not re.search("[\u2013\u2014]", page(export))
     assert not re.search(r"rows? \(", " ".join(text.values()))  # no previous build, no changes
 
 
@@ -61,6 +60,13 @@ def test_summary_shows_the_change_since_a_previous_build(export, compared):
     aliases = len(read_tsv(export / "reports" / "aliases.tsv"))
     assert text["aliases"].startswith(f"aliases: {aliases} rows (+1) ")
     assert text["no_coordinate"].startswith("no_coordinate: 7 rows (0) ")
-    assert "Gen 5 +1 Matt 2 0" in text["verse_mismatches"]
+    # The total's change and each book's, the "No book" row's included, are counted apart.
+    mismatches = len(read_tsv(export / "reports" / "verse_mismatches.tsv"))
+    assert text["verse_mismatches"].startswith(f"verse_mismatches: {mismatches} rows (+1) ")
+    assert "Gen 5 +1 Matt 2 0 3John 1 0 No book 1 0" in text["verse_mismatches"]
     assert re.match(r"dropped_edges: \d+ rows \(new\) ", text["dropped_edges"])
-    assert not re.search("[\u2013\u2014]", page(compared))
+
+
+def test_the_summary_page_has_no_en_or_em_dashes(export, compared):
+    for out in (export, compared):
+        assert not re.search("[\u2013\u2014]", page(out))
