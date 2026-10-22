@@ -3,7 +3,7 @@
   // it, and the panels it holds are its tabs. A tab is one more entry in tabs; each tab's body stays
   // mounted while another tab shows, so it keeps its place. shown is the height it takes at the
   // bottom of the screen, open or closed.
-  import type { Snippet } from "svelte";
+  import { tick, type Snippet } from "svelte";
 
   type Tab = { id: string; name: string; body: Snippet };
   let {
@@ -39,6 +39,19 @@
       root.style.removeProperty("--keyboard");
     };
   });
+
+  // Left and Right step through the tabs, round from the last to the first, and Home and End go to
+  // the first and the last; the tab moved to opens and takes the keyboard, as in an ARIA tab list.
+  async function stepTab(e: KeyboardEvent) {
+    const i = tabs.findIndex((t) => t.id === tab),
+      n = tabs.length;
+    const to = { ArrowLeft: i - 1 + n, ArrowRight: i + 1, Home: 0, End: n - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    tab = tabs[to % n].id;
+    await tick();
+    (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-selected="true"]')!.focus();
+  }
 </script>
 
 <section class="sheet" class:collapsed aria-label="Sheet" bind:offsetHeight={height} bind:this={sheet}>
@@ -46,7 +59,7 @@
     <span class="grip"></span>
   </button>
   <div id="sheet-body" class="body">
-    <div class="tabs" role="tablist" aria-label="Sheet">
+    <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab}>
       {#each tabs as t (t.id)}
         <button role="tab" id="tab-{t.id}" aria-controls="tabpanel-{t.id}" aria-selected={tab === t.id} tabindex={tab === t.id ? 0 : -1} onclick={() => (tab = t.id)}>{t.name}</button>
       {/each}
