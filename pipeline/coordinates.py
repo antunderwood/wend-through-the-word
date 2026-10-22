@@ -7,6 +7,8 @@ identification's `score.time_total` (decision 60). Theographic coordinates never
 
 A dropped point (OpenStreetMap, commercial, or Google) is looked up again, offline, in Pleiades,
 then Wikidata, then GeoNames, by the IDs its OpenBible location cites (decisions 82 to 85).
+An OpenStreetMap point that none of them replaces takes the one GeoNames record that has a name
+of the dropped location and lies in the place's region (decision 167).
 A reviewed `coordinates` row in the curated corrections sets or removes a point (decision 89).
 """
 
@@ -16,10 +18,12 @@ import json
 import re
 import zipfile
 
+from pipeline.common import norm
 from pipeline.download import SOURCES
 
 THEO_PLACE, OB_ANCIENT = "theographic.netlify.app/place/", "openbible.info/geo/ancient/"
 LOOKUPS = ("Pleiades", "Wikidata", "GeoNames")  # in lookup order; also the `coord_source` values
+MARGIN = 0.5  # degrees added on each side of a place's region (decision 167)
 
 
 def link_id(url):
@@ -67,22 +71,63 @@ def load(b):
     # Look dropped points up again (decision record "OpenStreetMap coordinates").
     ids = {e["id"]: lookup_ids(rec, wikidata) for e, _, rec, _, _ in dropped}
     wanted = {s: {i for x in ids.values() for i in x[s]} for s in LOOKUPS}
+    names = {  # the dropped location's names, for an OpenStreetMap point (decision 167)
+        e["id"]: {norm(n["name"]) for n in rec["names"]}
+        for e, _, rec, _, cause in dropped
+        if "OpenStreetMap" in cause
+    }
+    geonames, by_name = geonames_points(
+        [b.source(s) for s in SOURCES if s.startswith("geonames-")],
+        wanted["GeoNames"],
+        set().union(*names.values()),
+    )
     points = {  # in lookup order
         "Pleiades": pleiades_points(b.source("pleiades-locations"), wanted["Pleiades"]),
         "Wikidata": {q: item["point"] for q, item in wikidata.items() if item["point"]},
-        "GeoNames": geonames_points(
-            [b.source(s) for s in SOURCES if s.startswith("geonames-")], wanted["GeoNames"]
-        ),
+        "GeoNames": geonames,
     }
+    unfound = []
     for e, ob_ids, _, confidence, cause in dropped:
         found = next(
             ((points[s][i], s) for s in LOOKUPS for i in ids[e["id"]][s] if i in points[s]), None
         )
         if found is None:
-            b.report("no_coordinate", place=e["id"], openbible=" ".join(ob_ids), cause=cause)
+            unfound.append((e, ob_ids, confidence, cause))
         else:
             (lat, lon), source = found
             e.update(lat=lat, lon=lon, confidence=confidence, coord_source=source)
+
+    # Regions from the points set so far, so that no name match depends on another.
+    regions = {e["id"]: region(b, e["id"]) for e, *_ in unfound if e["id"] in names}
+    for e, ob_ids, confidence, cause in unfound:
+        box = regions.get(e["id"])
+        matches = {
+            gid: point
+            for n in names.get(e["id"], ())
+            for gid, point in by_name.get(n, ())
+            if box and box[0] <= point[0] <= box[1] and box[2] <= point[1] <= box[3]
+        }
+        if len(matches) == 1:
+            ((lat, lon),) = matches.values()
+            e.update(lat=lat, lon=lon, confidence=confidence, coord_source="GeoNames")
+        else:
+            b.report("no_coordinate", place=e["id"], openbible=" ".join(ob_ids), cause=cause)
+
+
+def region(b, place):
+    """(south, north, west, east) around the points of the other Places that share a Verse with
+    `place`, widened by MARGIN degrees, or None when none of them has a point."""
+    verses = b.verse_sets[place]
+    near = [
+        (e["lat"], e["lon"])
+        for e in b.entities.values()
+        if e["type"] == "place" and "lat" in e and e["id"] != place
+        if b.verse_sets[e["id"]] & verses
+    ]
+    if not near:
+        return None
+    lats, lons = zip(*near)
+    return min(lats) - MARGIN, max(lats) + MARGIN, min(lons) - MARGIN, max(lons) + MARGIN
 
 
 def openbible_point(ob_ids, ancient, modern, wikidata):
@@ -160,16 +205,22 @@ def pleiades_points(path, wanted):
     }
 
 
-def geonames_points(paths, wanted):
-    """GeoNames ID -> (lat, lon), from the per country dump files (tab separated, no header)."""
-    found = {}
+def geonames_points(paths, wanted, names):
+    """GeoNames ID -> (lat, lon) of the `wanted` IDs, and name -> [(ID, (lat, lon))] of the
+    records that have one of `names` (`norm`ed) as their name or an alternate name. Not
+    administrative areas (class A): their point is no site. From the per country dump files
+    (tab separated, no header)."""
+    found, by_name = {}, {}
     for path in paths:
         with zipfile.ZipFile(path) as z:
             for line in z.read(path.stem + ".txt").decode().splitlines():
-                gid, _, _, _, lat, lon = line.split("\t", 6)[:6]
+                gid, name, ascii_name, alternates, lat, lon, cls = line.split("\t", 7)[:7]
                 if gid in wanted:
                     found[gid] = (float(lat), float(lon))
-    return found
+                if cls != "A":
+                    for n in {norm(x) for x in (name, ascii_name, *alternates.split(","))} & names:
+                        by_name.setdefault(n, []).append((gid, (float(lat), float(lon))))
+    return found, by_name
 
 
 def from_osm(location):
