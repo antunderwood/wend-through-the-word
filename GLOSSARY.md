@@ -48,6 +48,10 @@ A link from a Verse to a Person, Place, Event, or People Group that the Verse na
 A link from a Verse to a Theme, made because Nave placed the Verse under that heading.
 _Avoid_: Mention (for Themes), about, tagged
 
+**Subheading**:
+The line of a Nave's entry that files a Verse under its Theme, such as "Sold by Esau" under Birthright. It says why the Verse is there.
+_Avoid_: Label, sub-entry
+
 **Co-mention**:
 A derived link between two Entities of any type that share at least one Verse, by Mention or Filed Under. Its weight grows with the Verses they share and is scaled down for Entities that appear very often, so that God does not become the top Neighbour of everyone.
 _Avoid_: Shared verses, co-occurrence

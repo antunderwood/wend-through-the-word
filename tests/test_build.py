@@ -122,11 +122,11 @@ def test_files_trimmed_under_the_limit_let_the_build_succeed(
 
 
 def test_a_file_still_over_the_limit_is_reported_and_fails_the_build(tmp_path, capfd):
-    # Story 74 and decision 73: the limit never fails silently. At 4 KB gzipped, Abraham's entity
+    # Story 74 and decision 73: the limit never fails silently. At 5 KB gzipped, Abraham's entity
     # file (about 8 KB gzipped) and the search index (about 10 KB) are over, and only
-    # cross-references trim: the Gen 25 chapter file (about 6 KB) is trimmed under it.
+    # cross-references trim: the Gen 25 chapter file (about 7 KB) is trimmed under it.
     with pytest.raises(subprocess.CalledProcessError):
-        run_build(tmp_path / "out", size_limit=4000)
+        run_build(tmp_path / "out", size_limit=5000)
     out = tmp_path / "out"
     trimmed = {r["path"]: r for r in read_tsv(out / "reports" / "split_or_trimmed.tsv")}
     over = [r["path"] for r in read_tsv(out / "reports" / "files.tsv") if r["over_limit"] == "yes"]
@@ -136,7 +136,7 @@ def test_a_file_still_over_the_limit_is_reported_and_fails_the_build(tmp_path, c
         assert trimmed[path]["action"].startswith("not trimmed"), path
     gen25 = f"data/{VERSION}/chapter/Gen/25.json"
     assert trimmed[gen25]["action"] == "trimmed" and gen25 not in over
-    assert len(gzip.compress((out / gen25).read_bytes(), 9)) < 4000
+    assert len(gzip.compress((out / gen25).read_bytes(), 9)) < 5000
     assert "over the size limit" in capfd.readouterr().err
 
 

@@ -466,6 +466,12 @@ describe("Relationship words that never vary for a pair of node types are droppe
     expect(shown("theme", link("verse", 1, one("FILED_UNDER", "in"))).text).toBe("");
   });
 
+  it("shows the Subheadings that file a Verse under a Theme", () => {
+    const filed = (direction: Edge["direction"]): Edge => ({ edge: "FILED_UNDER", direction, subheadings: ["A designation of the Jews", "Fellow-worker"] });
+    expect(shown("verse", link("theme", 1, filed("out"))).text).toBe("A designation of the Jews; Fellow-worker");
+    expect(shown("theme", link("verse", 1, filed("in"))).text).toBe("A designation of the Jews; Fellow-worker");
+  });
+
   it("shows only the Votes between two Verses", () => {
     expect(shown("verse", link("verse", 43, one("CROSS_REF", "out"), one("CROSS_REF", "in")))).toEqual({ text: "43 votes", derived: false });
     expect(shown("verse", link("verse", 1, one("CROSS_REF", "in"))).text).toBe("1 vote");

@@ -34,6 +34,20 @@ def test_a_verse_links_to_its_themes_by_filed_under_not_mentions(export):
     assert not [m for m in verse["mentions"] if m["id"].startswith("theme:")]
 
 
+def test_a_filed_under_link_carries_the_subheadings_that_file_the_verse(export):
+    # Fixture: "-Sold by Esau GEN 25:29-34; 25:33; ..." files Gen 25:33 twice, and the synthetic
+    # line "-Synthetic test line GEN 25:33-26:1" files it again.
+    def subheadings(ref):
+        verse = chapter_verse(export, ref)
+        return next(m for m in verse["filed_under"] if m["id"] == "theme:birthright")["subheadings"]
+
+    assert subheadings("Gen.25.29") == ["Sold by Esau"]
+    assert subheadings("Gen.25.33") == ["Sold by Esau", "Synthetic test line"]
+    # The Theme's side of the link, its Verse Neighbour, carries them too.
+    gen_25_29 = next(v for v in theme(export, "birthright")["verses"] if v["key"] == "01025029")
+    assert gen_25_29["subheadings"] == ["Sold by Esau"]
+
+
 def removed(export):
     rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
     return {r.pop("heading"): r for r in rows}

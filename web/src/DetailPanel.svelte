@@ -346,7 +346,7 @@
     }
   }
   .selected {
-    height: 55%;
+    height: 40%;
     overflow-y: auto;
     border-bottom: 1px solid #262a3c;
     mask:
