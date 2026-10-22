@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes } from "../scene";
+import { doubleTap } from "../touch";
 
 const ABRAHAM = "person:abraham_58",
   GERAR = "place:gerar_459";
@@ -108,17 +109,6 @@ test("Your Path is one row that scrolls sideways, with Clear at its end, and a t
   expect(await list.evaluate((l) => l.scrollLeft)).toBeGreaterThan(0);
 });
 
-// Two taps 150 ms apart by their timestamps, which the browser reads to tell a double tap, so a slow
-// test machine cannot turn them into two single taps.
-async function doubleTap(page: Page, x: number, y: number) {
-  const cdp = await page.context().newCDPSession(page);
-  const t = Date.now() / 1000;
-  for (const [type, at] of [["touchStart", 0], ["touchEnd", 0.05], ["touchStart", 0.15], ["touchEnd", 0.2]] as const) {
-    await cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x, y }], timestamp: t + at });
-  }
-  await cdp.detach();
-}
-
 test("a double tap on a list row makes it the Focus, and the row does not move between the taps", async ({ page }) => {
   await open(page);
   const details = page.getByRole("tabpanel", { name: "Details" });
@@ -132,7 +122,7 @@ test("a double tap on a list row makes it the Focus, and the row does not move b
   await row.evaluate((el) =>
     addEventListener("click", () => queueMicrotask(() => Object.assign(window, { between: el.getBoundingClientRect().toJSON() })), { once: true }),
   );
-  await doubleTap(page, before.x + before.width / 2, before.y + before.height / 2);
+  await doubleTap(page, { x: before.x + before.width / 2, y: before.y + before.height / 2 });
   const between = await page.evaluate(() => (window as unknown as { between: DOMRect }).between);
   expect({ x: between.x, y: between.y, width: between.width, height: between.height }).toEqual(before);
   await focusIs(page, "person:isaac_616");

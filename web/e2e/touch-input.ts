@@ -12,14 +12,19 @@ export const selectedIs = (page: Page, id: string) => expect(page.locator(".labe
 // The scene's box on the page.
 export const sceneBox = async (page: Page) => (await page.getByRole("application").boundingBox())!;
 
-// The Ring 1 node a finger can tap with least doubt: its disc lies in the scene, and it is the one
-// farthest from any other drawn node.
+// The Ring 1 node a finger can tap with least doubt: its disc lies in the scene, uncovered by the
+// panels over it (the phone's bottom sheet, the search box), and it is the one farthest from any
+// other drawn node.
 export async function tappable(page: Page): Promise<OnScreen> {
   const all = await nodes(page),
     box = await sceneBox(page);
   const inside = (n: OnScreen) => n.x > box.x + 4 && n.x < box.x + box.width - 4 && n.y > box.y + 4 && n.y < box.y + box.height - 4;
+  const uncovered = await page.evaluate(
+    (ns) => ns.map((n) => document.querySelector('[role="application"]')!.contains(document.elementFromPoint(n.x, n.y))),
+    all,
+  );
   const room = (n: OnScreen) => Math.min(...all.filter((m) => m !== n).map((m) => far(m, n)));
-  const ring1 = all.filter((n) => n.role === "ring1" && inside(n)).sort((a, b) => room(b) - room(a));
+  const ring1 = all.filter((n, i) => n.role === "ring1" && inside(n) && uncovered[i]).sort((a, b) => room(b) - room(a));
   expect(ring1.length).toBeGreaterThan(0);
   return ring1[0];
 }
