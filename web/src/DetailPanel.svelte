@@ -49,6 +49,10 @@
   let keep: "neighbours" | "verses" | undefined;
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   let selectedBox = $state<HTMLElement>();
+  // Long lists show 100 rows at a time (decision 165): rows shown per list, by a key naming the list.
+  const PAGE = 100;
+  let pages = $state<Record<string, number>>({});
+  const paged = <T,>(key: string, rows: T[]) => rows.slice(0, pages[key] ?? PAGE);
 
   const selected = $derived(model.selected);
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
@@ -168,10 +172,11 @@
         {#if verses.length}
           <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
           <ul aria-labelledby="shared-{i}">
-            {#each verses as v (v.key)}
+            {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
               <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
             {/each}
           </ul>
+          {@render more(`${versesOf}|${o}`, verses.length)}
         {/if}
       {/each}
     {:catch e}
@@ -225,11 +230,12 @@
       {@const found = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters, data.bookOf))}
       {@const all = linked ? found.sort((a, b) => (a.id < b.id ? -1 : 1)) : found}
       {@const key = `${neighboursOf}|${t}`}
+      {@const pageKey = `${list.r.id}|${key}`}
       {@const k = model.filters.k}
       {#if all.length}
         <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
         <ol aria-labelledby="list-{t}" data-tour="list-{t}">
-          {#each list.whole || opened[key] ? all : all.slice(0, k) as l (l.id)}
+          {#each list.whole || opened[key] ? paged(pageKey, all) : all.slice(0, k) as l (l.id)}
             {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
             {@const shown = relationWords(list.r.type, l, data.genderOf, plainName(list.r.id)).text}
             {@const kin = isEntity(list.r.id) && isEntity(l.id)}
@@ -244,6 +250,7 @@
             </li>
           {/each}
         </ol>
+        {#if list.whole || opened[key]}{@render more(pageKey, all.length)}{/if}
         {#if !list.whole && all.length > k}
           <button class="more" data-tour="more-{t}" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
             <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
@@ -264,6 +271,13 @@
     {data.label(id, false)}
     {#if words}<span class="muted">{words}</span>{/if}
   </button>
+{/snippet}
+<!-- Below a paged list: the next 100 rows, and how many of the list show. -->
+{#snippet more(key: string, total: number)}
+  {@const shown = Math.min(total, pages[key] ?? PAGE)}
+  {#if shown < total}
+    <button class="more" onclick={() => (pages[key] = shown + PAGE)}>Show {Math.min(PAGE, total - shown)} more ({shown} of {total})</button>
+  {/if}
 {/snippet}
 <!-- A small link that opens the correction form for one item. -->
 {#snippet fix(what: string, kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string)}
