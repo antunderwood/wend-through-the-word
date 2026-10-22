@@ -2,7 +2,10 @@
 GeoNames (ticket #11). The fixture lookups are slices of the real files; OpenStreetMap records
 in them have made-up coordinates (decision 44)."""
 
-from conftest import VERSION, no_coordinate, place, read_json, run_build
+import shutil
+import zipfile
+
+from conftest import FIXTURES, VERSION, no_coordinate, place, read_json, run_build
 
 
 def point(export, name):
@@ -33,9 +36,40 @@ def test_wikidata_coordinate_that_cites_openstreetmap_is_not_used(export):
 
 
 def test_openstreetmap_place_that_no_source_knows_has_no_point_and_is_reported(export):
-    # Kadesh's record is set to source "osm" in the fixture and cites no other source.
+    # Kadesh's record is set to source "osm" in the fixture and cites no other source, and no
+    # GeoNames record has its name (decision 167).
     assert "lat" not in place(export, "kadesh_661")
     assert "confidence" not in place(export, "kadesh_661")
+    assert no_coordinate(export)["place:kadesh_661"] == "OpenBible point dropped: OpenStreetMap"
+
+
+def with_geonames(tmp_path, *points):
+    """Build from a copy of the fixture whose Egypt GeoNames file adds one synthetic line per
+    (lat, lon, feature class), each with Kadesh's modern name, Ain el Qudeirat, as an alternate
+    name. Kadesh's region is Bered's point (31.097188, 34.654209), widened by half a degree."""
+    sources = shutil.copytree(FIXTURES, tmp_path / "sources")
+    lines = [
+        f"{9900001 + i}\tSynthetic {i}\tSynthetic {i}\tAin el Qudeirat\t{lat}\t{lon}\t{cls}\tX"
+        for i, (lat, lon, cls) in enumerate(points)
+    ]
+    with zipfile.ZipFile(FIXTURES / "EG.zip") as z:
+        text = z.read("EG.txt").decode()
+    with zipfile.ZipFile(sources / "EG.zip", "w") as z:
+        z.writestr("EG.txt", text + "".join(f"{line}\n" for line in lines))
+    return run_build(tmp_path / "out", sources=sources)
+
+
+def test_openstreetmap_place_gets_the_one_geonames_name_match_in_its_region(tmp_path):
+    # Decision 167. Outside the region, or an administrative area: not a match.
+    export = with_geonames(tmp_path, (31.0, 34.5, "H"), (25.0, 33.0, "H"), (31.1, 34.6, "A"))
+    assert point(export, "kadesh_661") == (31.0, 34.5, "GeoNames")
+    assert place(export, "kadesh_661")["confidence"] == 864  # OpenBible's score for Kadesh-barnea
+    assert "place:kadesh_661" not in no_coordinate(export)
+
+
+def test_two_geonames_name_matches_in_the_region_give_no_point(tmp_path):
+    export = with_geonames(tmp_path, (31.0, 34.5, "H"), (31.2, 34.8, "S"))
+    assert point(export, "kadesh_661") == (None, None, None)
     assert no_coordinate(export)["place:kadesh_661"] == "OpenBible point dropped: OpenStreetMap"
 
 
