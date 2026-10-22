@@ -8,7 +8,16 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
-from conftest import REAL_CURATED, VERSION, entity, read_json, read_tsv, run_build, top_people
+from conftest import (
+    REAL_CURATED,
+    VERSION,
+    chapter_verse,
+    entity,
+    read_json,
+    read_tsv,
+    run_build,
+    top_people,
+)
 
 SOURCES = Path(os.environ.get("WEND_SOURCES", "sources"))
 BOOKS = tomllib.loads((Path(__file__).parent.parent / "build.toml").read_text())["books"]
@@ -126,3 +135,32 @@ def test_headings_that_spell_a_place_another_way_are_removed_but_not_ordinary_wo
     # The owner's rows: SIMONY and HUSHAH are kept (themes_keep.csv); NOPH is Memphis's alias.
     assert (themes / "simony.json").exists() and (themes / "hushah.json").exists()
     assert not (themes / "noph.json").exists()
+
+
+def test_mentions_follow_the_bsb_where_theographic_follows_a_kjv_reading(bible):
+    # #66: the BSB names Moses (Judg 18:30), Barak (1 Sam 12:11), and Rahab (Matt 1:5), where
+    # Theographic has Manasseh, Bedan, and a second Rahab ("Rachab"); links.csv moves them.
+    expected = {"Judg.18.30": "person:moses_2108", "1Sam.12.11": "person:barak_401"}
+    expected["Matt.1.5"] = "person:rahab_2388"
+    for ref, person in expected.items():
+        assert person in [m["id"] for m in chapter_verse(bible, ref)["mentions"]], ref
+    rahab = entity(bible, "person:rahab_2388")
+    boaz = next(n for n in rahab["neighbours"] if n["id"] == "person:boaz_519")
+    assert "PARENT_OF" in [e["edge"] for e in boaz["edges"]]
+
+
+def test_family_links_follow_the_bsb_where_theographic_follows_a_kjv_reading(bible):
+    # #67: Ladan's sons (1 Chr 23:8), Mered's sons (1 Chr 4:18), and Abihail as Mahalath's mother
+    # (2 Chr 11:18) follow the BSB; links.csv and partners.csv replace Theographic's links.
+    def edges(a, b):
+        found = next((n for n in entity(bible, a)["neighbours"] if n["id"] == b), {"edges": []})
+        return {e["edge"] for e in found["edges"]} - {"CO_MENTION"}
+
+    assert edges("person:laadan_1823", "person:zetham_3056") == {"PARENT_OF"}
+    assert edges("person:jehiel_771", "person:joel_1655") == {"SIBLING_OF"}
+    assert edges("person:mered_2005", "person:heber_1471") == {"PARENT_OF"}
+    assert edges("person:ishbah_619", "person:heber_1471") == set()
+    assert edges("person:abihail_31", "person:mahalath_1888") == {"PARENT_OF"}
+    assert edges("person:abihail_31", "person:rehoboam_2412") == set()
+    assert edges("person:solomon_2762", "person:daughter_of_pharaoh_989") == {"SPOUSE_OF"}
+    assert edges("person:abigail_27", "person:eliab_1075") == {"SIBLING_OF"}
