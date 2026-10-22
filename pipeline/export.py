@@ -10,7 +10,15 @@ import sys
 from pathlib import Path
 
 from pipeline import credits, ranking, search, summary
-from pipeline.common import file_sizes, over_limit, sizes, to_json, write_json, write_tsv
+from pipeline.common import (
+    SIZE_RULE,
+    file_sizes,
+    over_limit,
+    sizes,
+    to_json,
+    write_json,
+    write_tsv,
+)
 
 NOT_TRIMMED = "not trimmed: over the limit, and only cross-references are trimmed"
 
@@ -100,19 +108,20 @@ def write(b):
         rows = sorted(rows, key=lambda r: [str(r[h]) for h in header])
         write_tsv(reports / f"{name}.tsv", header, rows)
     summary.write(b, reports, previous)
-    print(f"{len(files)} files, {len(over)} over {b.size_limit} bytes gzipped or 25 MiB raw")
+    raw = f"{SIZE_RULE['raw_limit'] / 2**20:g} MiB raw"
+    print(f"{len(files)} files, {len(over)} over {b.size_limit} bytes gzipped or {raw}")
     if over:
         sys.exit(f"{len(over)} files are over the size limit: see reports/split_or_trimmed.tsv")
 
 
-def fits(b, data):
+def under_limit(b, data):
     return not over_limit(*sizes(to_json(data).encode()), b.size_limit)
 
 
 def fit(b, path, data, lists):
     """Drop the lowest weight entries of `lists` (lists inside `data`) until `data` is under the
     size limit (PRD 8.2), and report it. Searches for the fewest entries to drop."""
-    if fits(b, data):
+    if under_limit(b, data):
         return
     original = [list(entries) for entries in lists]
     ranked = sorted((e for entries in original for e in entries), key=lambda e: e["weight"])
@@ -121,7 +130,7 @@ def fit(b, path, data, lists):
         gone = {id(e) for e in ranked[:n]}
         for entries, before in zip(lists, original):
             entries[:] = [e for e in before if id(e) not in gone]
-        return fits(b, data)
+        return under_limit(b, data)
 
     path = path.relative_to(b.out).as_posix()
     if not drop(len(ranked)):  # keep them all; the build fails at the end

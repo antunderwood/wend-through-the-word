@@ -6,6 +6,7 @@ HTML with no scripts or network, so it opens from disk."""
 import re
 from collections import Counter
 from html import escape
+from typing import NamedTuple
 
 SAMPLE = 10  # first rows shown per report
 STYLE = (
@@ -15,8 +16,14 @@ STYLE = (
 )
 
 
+class Report(NamedTuple):
+    header: list
+    rows: list
+    books: Counter  # book (None for no book) -> rows
+
+
 def read(b, reports):
-    """Report name -> (header, rows, rows per book) for each TSV in `reports`. A row's book is
+    """Report name -> Report for each TSV in `reports`. A row's book is
     that of its first cell naming a Verse (`Gen.16`) or an Entity (the book of its first Verse);
     None if it names neither."""
     osis = {x["order"]: name for name, x in b.books.items()}
@@ -32,7 +39,7 @@ def read(b, reports):
     out = {}
     for path in sorted(reports.glob("*.tsv")):
         header, *rows = [line.split("\t") for line in path.read_text().splitlines()]
-        out[path.stem] = (header, rows, Counter(map(book, rows)))
+        out[path.stem] = Report(header, rows, Counter(map(book, rows)))
     return out
 
 
@@ -59,14 +66,14 @@ def write(b, reports, previous):
     parts = [head + compared]
     order = {name: x["order"] for name, x in b.books.items()}
     for name, (header, rows, books) in read(b, reports).items():
-        before = previous.get(name) if previous else None  # (header, rows, rows per book)
-        diff = f" ({change(len(rows), before and len(before[1]))})" if compared else ""
+        before = previous.get(name) if previous else None
+        diff = f" ({change(len(rows), before and len(before.rows))})" if compared else ""
         parts.append(
             f"<section><h2>{name}: {len(rows):,} row{'s' * (len(rows) != 1)}{diff}</h2>"
             f'<p><a href="{name}.tsv">{name}.tsv</a>'
         )
         if any(books):  # a Counter key of None means no book
-            was = before[2] if before else {}
+            was = before.books if before else {}
             parts.append("<table><tr><th>Book<th>Rows" + ("<th>Change" if compared else ""))
             for book in sorted(set(books) | set(was), key=lambda k: order.get(k, 99)):
                 diff = f"<td>{change(books[book], before and was[book])}" if compared else ""

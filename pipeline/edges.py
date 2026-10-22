@@ -8,29 +8,8 @@ is the edge's source, `in` when the Neighbour is, `both` for an edge with no dir
 from collections import defaultdict
 
 from pipeline import curation
-from pipeline.entities import facts
+from pipeline.entities import FIELDS, facts, links
 
-# Theographic field: (edge, True when the record holding the field is the edge's source, None
-# when the edge has no direction).
-FIELDS = {
-    "person": {
-        "father": ("PARENT_OF", False),
-        "mother": ("PARENT_OF", False),
-        "children": ("PARENT_OF", True),
-        "siblings": ("SIBLING_OF", None),
-        # Only from these fields, never from shared parents (decision 36).
-        "halfSiblingsSameFather": ("HALF_SIBLING_OF", None),
-        "halfSiblingsSameMother": ("HALF_SIBLING_OF", None),
-        "partners": ("PARTNER_OF", None),  # or the curated edges of the pair (#7)
-        "birthPlace": ("BORN_AT", True),
-        "deathPlace": ("DIED_AT", True),
-        "memberOf": ("MEMBER_OF", True),
-    },
-    "event": {
-        "participants": ("PARTICIPATED_IN", False),
-        "locations": ("OCCURRED_AT", True),
-    },
-}
 DIRECTED = {edge for kind in FIELDS.values() for edge, out in kind.values() if out is not None}
 FAMILY = {"PARENT_OF", "SIBLING_OF", "HALF_SIBLING_OF", "PARTNER_OF"}
 NO_END = "links to a record that is not in Theographic, so the edge has no clear end"
@@ -40,44 +19,29 @@ OUTSIDE = (
 )
 
 
-def links(records):
-    """Every link in an edge field as (from, edge, to, source, record, field, link). An edge with
-    no direction has from < to. `to` is None when the link is not a Theographic record."""
-    for kind, source, f, a in records.values():
-        for field, (edge, out) in FIELDS.get(kind, {}).items():
-            for rec in f.get(field) or []:
-                if rec not in records:
-                    yield a, edge, None, source, a, field, rec
-                    continue
-                c = records[rec][3]
-                x, y = (a, c) if out or (out is None and a < c) else (c, a)
-                yield x, edge, y, source, a, field, c
-
-
 def load(b):
     records = b.records
 
     b.new_report("dropped_edges", "record", "field", "link", "cause")
-    # (from, edge, to) -> (provenance, record, field, link); an edge with no direction has from < to
-    edges = {}
-    for x, edge, y, source, a, field, link in links(records):
-        if y is None:
-            b.report("dropped_edges", record=a, field=field, link=link, cause=NO_END)
+    edges = {}  # Edge -> (provenance, record, field, link)
+    for x in links(records):
+        if x.key.end is None:
+            b.report("dropped_edges", record=x.record, field=x.field, link=x.link, cause=NO_END)
             continue
-        theographic = {"source": "Theographic", "licence": b.licence(source)}
-        edges.setdefault((x, edge, y), (theographic, a, field, link))
-    for key, item, add in b.links:  # links.csv (#44)
-        if add:
-            edges[key] = (item, key[0], "links.csv", key[2])
+        theographic = {"source": "Theographic", "licence": b.licence(x.source)}
+        edges.setdefault(x.key, (theographic, x.record, x.field, x.link))
+    for fix in b.links:  # links.csv (#44)
+        if fix.add:
+            edges[fix.key] = (fix.item, fix.key.start, "links.csv", fix.key.end)
         else:
-            edges.pop(key, None)
+            edges.pop(fix.key, None)
 
     # An edge ships when one end is in the book range. The other end, if outside, ships as a
     # stub (its facts and its Neighbours in range, no Verses) only when it is a Person reached
     # by a family edge or a People Group reached by MEMBER_OF. Other edges are dropped until M6
     # (decision 51 and its note).
     in_range = set(b.entities)
-    edges = {k: v for k, v in edges.items() if {k[0], k[2]} & in_range}
+    edges = {k: v for k, v in edges.items() if {k.start, k.end} & in_range}
     stubs = {
         end
         for x, edge, y in edges
@@ -85,7 +49,7 @@ def load(b):
         if end not in in_range and (edge in FAMILY or edge == "MEMBER_OF" and end == y)
     }
     for key, (_, record, field, link) in list(edges.items()):
-        if not {key[0], key[2]} <= in_range | stubs:
+        if not {key.start, key.end} <= in_range | stubs:
             b.report("dropped_edges", record=record, field=field, link=link, cause=OUTSIDE)
             del edges[key]
     by_id = {r[3]: r for r in records.values()}
