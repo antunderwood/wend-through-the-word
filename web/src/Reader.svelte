@@ -139,6 +139,11 @@
     font: 600 12px/1 system-ui, sans-serif;
     vertical-align: super;
   }
+  /* A verse number keeps its line's height wherever the reader is mounted, even in a place that
+     makes its buttons taller to tap. */
+  .reader .verse button {
+    min-height: 0;
+  }
   /* In the scene: a brighter number, underlined with dots. */
   .verse button.linked {
     color: #d4d8e8;
