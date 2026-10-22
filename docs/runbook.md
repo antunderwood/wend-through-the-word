@@ -30,7 +30,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    It zips `out/data` as `out/wend-data-<data version>.zip`, makes and pushes the tag, and creates the GitHub release with the zip attached and notes giving the data version, build date, and commit.
 5. Publishing the release starts the Deploy workflow (`.github/workflows/deploy.yml`). Follow it with `gh run watch` (pick the Deploy run). It downloads the zip, builds and stages the page from the tag, runs the staged site tests on the folder it deploys, deploys with Wrangler, and runs the live check (`node web/live-check.ts`). Any failed step fails the run, and GitHub emails the owner.
 
-   Upload size: the release zip of the whole Bible is 57 MB (63 MB before compact JSON), and the staged site 9,411 files, 418 MB. Wrangler uploads only files whose content changed, so the first whole-Bible release uploads nearly all of them and a later release only what changed. The staged site tests take 1 to 2 minutes on it. Record the first whole-Bible deploy's upload time here.
+   Upload size: the release zip of the whole Bible is 57 MB (63 MB before compact JSON), and the staged site 9,411 files, 418 MB. Wrangler uploads only files whose content changed, so the first whole-Bible release uploads nearly all of them and a later release only what changed. The staged site tests take 1 to 2 minutes on it. The first whole-Bible deploy (v2026-10-22, 2026-10-22) uploaded 9,391 files (8 already there) in 62 seconds; the Deploy step took 76 seconds and the whole workflow about 2 minutes. No total size limit was hit on the free plan.
 6. If the command stops after pushing the tag (for example, `gh` failed), remove the tag and any draft release, then run it again:
 
    ```
