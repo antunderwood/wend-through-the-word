@@ -52,7 +52,7 @@ def test_summary_counts_each_report_and_opens_from_disk(export):
     assert not re.search(r"<script|<link|<img|src=|url\(", page(export))
     links = re.findall(r'href="([^"]*)"', page(export))
     assert links and all((export / "reports" / link).is_file() for link in links)
-    assert not re.search("[–—]", page(export))
+    assert not re.search("[\u2013\u2014]", page(export))
     assert not re.search(r"rows? \(", " ".join(text.values()))  # no previous build, no changes
 
 
@@ -63,4 +63,4 @@ def test_summary_shows_the_change_since_a_previous_build(export, compared):
     assert text["no_coordinate"].startswith("no_coordinate: 7 rows (0) ")
     assert "Gen 5 +1 Matt 2 0" in text["verse_mismatches"]
     assert re.match(r"dropped_edges: \d+ rows \(new\) ", text["dropped_edges"])
-    assert not re.search("[–—]", page(compared))
+    assert not re.search("[\u2013\u2014]", page(compared))
