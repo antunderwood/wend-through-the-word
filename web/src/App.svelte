@@ -328,6 +328,15 @@
     makeFocus(entryFocus);
   }
 
+  // On a phone the Filters button opens the bottom sheet at the filters in its Details tab.
+  let sheetTab = $state("details");
+  async function showFilters() {
+    collapsed = false;
+    sheetTab = "details";
+    await tick();
+    document.getElementById("filters")!.scrollIntoView({ block: "start" });
+  }
+
   async function copyLink() {
     await navigator.clipboard.writeText(shareLink(model, view));
     model = { ...model, notice: "Link copied." };
@@ -335,6 +344,17 @@
 </script>
 
 <svelte:window onkeydown={sceneKey} onpopstate={moved} />
+{#snippet filters(inline: boolean)}
+  <Filters
+    filters={model.filters}
+    entityFocus={!["verse", "overflow"].includes(typeOf(model.focus))}
+    books={data!.builtBooks}
+    {motion}
+    set={(key, value) => apply({ type: "setFilter", key, value })}
+    {setMotion}
+    {inline}
+  />
+{/snippet}
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- The scene takes the space between the open panels. -->
@@ -358,11 +378,17 @@
       {noWebGL}
       {collapsed}
       reading={!!reading}
+      end={screen.phone ? phoneEnd : undefined}
     />
+  {/snippet}
+  <!-- On a phone the filter panel and the footer end the Details tab, after the lists. -->
+  {#snippet phoneEnd()}
+    {@render filters(true)}
+    <footer class="about">{@render about()}</footer>
   {/snippet}
   <!-- On a phone the panel is a tab of the bottom sheet; elsewhere it is beside the scene. -->
   {#if screen.phone}
-    <Sheet tabs={[{ id: "details", name: "Details", body: details }]} bind:collapsed bind:shown={sheetShown} />
+    <Sheet tabs={[{ id: "details", name: "Details", body: details }]} bind:tab={sheetTab} bind:collapsed bind:shown={sheetShown} />
   {:else}
     <!-- The chevron points the way the panel will move. -->
     <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
@@ -390,45 +416,48 @@
     {#key tours}<Tour offer={tour === "offer"} page={tourPage} onstart={startTour} onend={endTour} />{/key}
   {/if}
 {/if}
-{#if hint}
-  <p class="hint">
-    A click selects a node. A double click, Make Focus, or search moves the Focus.
-    <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
-  </p>
-{/if}
 {#if failure}
   <div class="failure" role="alert">
     <p>{failure.message}</p>
     <button onclick={failure.retry}>Retry</button>
   </div>
 {/if}
-<div class="controls">
-  {#if !noWebGL}
-    <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-      {#each offered as key (key)}
-        <button role="radio" aria-checked={shown === key} tabindex={shown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-      {/each}
-    </div>
+<!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
+     elsewhere each keeps its own place. -->
+<div class="dock">
+  {#if hint}
+    <p class="hint">
+      A click selects a node. A double click, Make Focus, or search moves the Focus.
+      <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
+    </p>
   {/if}
-  {#if onScreen && data}
-    <button class="pill" popovertarget="filters">Filters</button>
-    <Filters
-      filters={model.filters}
-      entityFocus={!["verse", "overflow"].includes(typeOf(model.focus))}
-      books={data.builtBooks}
-      {motion}
-      set={(key, value) => apply({ type: "setFilter", key, value })}
-      {setMotion}
-    />
-    <button class="pill" onclick={copyLink}>Copy link</button>
-  {/if}
+  {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
+  <p class="notice" role="status">{model.notice}</p>
+  <div class="controls">
+    {#if !noWebGL}
+      <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+        {#each offered as key (key)}
+          <button role="radio" aria-checked={shown === key} tabindex={shown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+        {/each}
+      </div>
+    {/if}
+    {#if onScreen && data}
+      {#if screen.phone}
+        <button class="pill" onclick={showFilters}>Filters</button>
+      {:else}
+        <button class="pill" popovertarget="filters">Filters</button>
+        {@render filters(false)}
+      {/if}
+      <button class="pill" onclick={copyLink}>Copy link</button>
+    {/if}
+  </div>
 </div>
-<p class="notice" role="status">{model.notice}</p>
-<footer>
+<!-- On a phone the footer is the end of the Details tab. -->
+{#if !screen.phone}<footer>{@render about()}</footer>{/if}
+{#snippet about()}
   {#if onScreen && !noWebGL}<button class="link" onclick={startTour}>Help: take the tour</button><span class="muted">. </span>{/if}
   <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {version}{/if}</span>
-</footer>
-{#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
+{/snippet}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>
@@ -517,18 +546,53 @@
     font-size: 20px;
     line-height: 1;
   }
-  /* On a phone the notes, the controls, and the footer float above the bottom sheet. */
-  :global(html[data-phone]) .trimmed {
-    bottom: calc(var(--sheet-shown) + 64px);
+  .dock {
+    display: contents;
   }
-  :global(html[data-phone]) .notice {
-    bottom: calc(var(--sheet-shown) + 40px);
+  /* On a phone the hint, the notes, and the controls are one column above the bottom sheet, the
+     controls last; the column itself lets a touch through to the scene. */
+  :global(html[data-phone]) .dock {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(var(--sheet-shown) + 8px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    pointer-events: none;
   }
-  :global(html[data-phone]) footer {
-    bottom: calc(var(--sheet-shown) + 12px);
+  :global(html[data-phone]) .dock > * {
+    position: static;
+    transform: none;
+    pointer-events: auto;
   }
   :global(html[data-phone]) .controls {
-    bottom: calc(var(--sheet-shown) + 16px);
+    align-self: center;
+  }
+  /* Large enough to tap. */
+  :global(html[data-phone]) .controls button,
+  :global(html[data-phone]) .hint button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  :global(html[data-phone]) .views button {
+    padding: 4px 10px;
+  }
+  :global(html[data-phone]) .hint {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 12px;
+  }
+  /* The footer at the end of the Details tab: its links are large enough to tap. */
+  footer.about {
+    position: static;
+    margin: 14px 0 8px;
+    line-height: 44px;
+  }
+  footer.about a {
+    display: inline-block;
+    min-height: 44px;
   }
   .muted {
     color: #9aa0b4;

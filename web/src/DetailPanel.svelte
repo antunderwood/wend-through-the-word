@@ -1,7 +1,7 @@
 <script lang="ts">
   // The detail panel: the Selected Node, the Verses it shares with the Focus and pins, its own data,
   // and the Neighbour lists. Props only; App owns the Focus Model state.
-  import { untrack } from "svelte";
+  import { untrack, type Snippet } from "svelte";
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
@@ -24,6 +24,7 @@
     noWebGL,
     collapsed,
     reading,
+    end,
   }: {
     data: Data;
     model: State;
@@ -40,6 +41,7 @@
     noWebGL: boolean;
     collapsed: boolean;
     reading: boolean;
+    end?: Snippet; // after the lists: on a phone, the filters and the page's own links
   } = $props();
 
   // The nodes whose Neighbours, and whose Verses shared with the Focus, the panel lists. A click in
@@ -263,6 +265,7 @@
     <!-- A Verse outside the build has no lists; the note above says why. -->
     {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
   {/await}
+  {@render end?.()}
 </aside>
 
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
