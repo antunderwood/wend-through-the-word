@@ -195,6 +195,8 @@ def test_rows_that_fix_plain_theographic_errors_are_listed_for_upstream_reportin
     # Corrections, link rows, and "none" partner rows that still match Theographic. The wife and
     # concubine rule and Possibly Same Person links are editorial (PRD 10.5 rule 4).
     assert [(r["table"], r["line"]) for r in report(export, "curated_upstream")] == [
+        ("corrections", "11"),  # lines sort as text
+        ("corrections", "12"),
         ("corrections", "2"),
         ("corrections", "6"),
         ("corrections", "7"),

@@ -30,6 +30,7 @@ STEPS = [
     verses.load,
     entities.load,
     curation.load,  # before themes (themes_keep.csv), and before edges (a gender correction)
+    entities.bsb_names,  # after curation: a curated name wins
     themes.load,
     entities.verse_neighbours,  # after every step that links Entities to Verses
     coordinates.load,

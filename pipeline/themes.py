@@ -14,6 +14,7 @@ from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
 
 from pipeline.common import norm, report_mismatches
+from pipeline.entities import bsb_name
 
 # Nave's book codes, in Bible order, and the OSIS names Theographic uses, in the same order.
 CODES = (
@@ -37,7 +38,8 @@ REF = re.compile(rf"\b({BOOKS}) ({SEG}(?:; (?:with )?{SEG})*)")
 
 def theographic_names(b):
     """Normalised name -> IDs of the People and Places with that name, and the same for aliases.
-    All of Theographic, so a heading's fate does not depend on the book range."""
+    All of Theographic, with the BSB's spellings and the curated names and aliases, so a
+    heading's fate does not depend on the book range."""
     names, aliases = defaultdict(set), defaultdict(set)
     for kind, _, f, entity_id in b.records.values():
         if kind not in ("person", "place"):
@@ -47,10 +49,15 @@ def theographic_names(b):
             own, other = [f["name"], title], f.get("alsoCalled")
         else:
             own, other = [title, f.get("kjvName"), f.get("esvName")], f.get("aliases")
+        own.append(bsb_name(title, b.verse_sets[entity_id], b.bsb, b.bsb_common))  # decision 172
         for n in own:
             names[norm(n or "")].add(entity_id)
         for n in (other or "").split(","):
             aliases[norm(n)].add(entity_id)
+    for entity_id, rows in b.corrections.items():  # a curated name or alias, "Mark" for John Mark
+        for row in rows:
+            if row["field"] in ("name", "aliases"):
+                (names if row["field"] == "name" else aliases)[norm(row["value"])].add(entity_id)
     names.pop("", None)
     aliases.pop("", None)
     return names, aliases

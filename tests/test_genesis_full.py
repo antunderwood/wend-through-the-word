@@ -276,9 +276,9 @@ def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_pla
     rows = read_tsv(genesis / "reports" / "removed_theme_headings.tsv")
     # The owner kept nine headings (decision 109); the four peoples are removed.
     assert Counter((r["action"], r["match"], r["keep_row"]) for r in rows) == {
-        ("removed", "name", ""): 380,
+        ("removed", "name", ""): 383,  # 3 matched an alias before the BSB names (decision 172)
         ("kept", "name", "yes"): 3,  # GOD, HOLY SPIRIT, SALT
-        ("removed", "alias", ""): 25,
+        ("removed", "alias", ""): 22,
         ("kept", "alias", "yes"): 7,  # LIGHT, SUN, MASTER, DAUGHTER, WIFE, FIRSTBORN, SCEPTER
         ("kept", "part of the heading", ""): 1,  # JESUS, THE CHRIST
     }

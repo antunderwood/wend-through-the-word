@@ -92,3 +92,26 @@ def test_cosine_keeps_god_out_of_the_top_6_people_of_most_people(bible):
     with_god = [e["id"] for e in people if "person:god_1324" in top_people(e)]
     # First run: 245 of 3,067 (decisions 20 and 95).
     assert len(with_god) <= len(people) // 10
+
+
+def test_names_take_the_bsb_spelling_unless_it_is_unsafe(bible):
+    # Decision 172 on the real sources: KJV forms take the BSB's spelling, and the curated rows
+    # (reviewed) win. Kept: an ordinary word (Ethiopia is never "Topaz"), a people's adjective
+    # (Lycaonian), a description, a compound (Ben-abinadab), a tie (Aiah and Anah), and a name
+    # with a curly apostrophe in the BSB.
+    names = {
+        "person:timotheus_2863": "Timothy",
+        "person:aholibamah_1761": "Oholibamah",
+        "person:philip_2344": "Philip the Apostle",
+        "person:jesus_904": "Jesus called Justus",
+        "place:ethiopia_419": "Ethiopia",
+        "place:lycaonia_739": "Lycaonia",
+        "person:son_of_abinadab_2763": "son of Abinadab",
+        "person:ajah_178": "Ajah",
+        "place:solomons_portico_1109": "Solomon's Portico",
+    }
+    assert {i: entity(bible, i)["name"] for i in names} == names
+    assert "Timotheus" in entity(bible, "person:timotheus_2863")["aliases"]
+    # Curated aliases remove the Themes that duplicated People by their short names (decision 173).
+    themes = bible / "data" / VERSION / "entity" / "theme"
+    assert not [h for h in ("mark", "peter", "festus", "lysias") if (themes / f"{h}.json").exists()]
