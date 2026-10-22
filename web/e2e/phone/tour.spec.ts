@@ -116,9 +116,9 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
     await drag(page, from, { x: from.x + 60, y: from.y });
   },
   (page) => search(page, "Jesus Christ"),
-  // After a drag the camera glides to a stop over seconds, so a name is tapped where it is, still or not.
-  (page) => scene(page).locator(`[data-node="${GOD}"]`).tap({ force: true }),
-  (page) => scene(page).locator(`[data-node="${JESUS}"]`).tap({ force: true }),
+  // The camera stopped when the finger lifted, so a name holds still to be tapped.
+  (page) => scene(page).locator(`[data-node="${GOD}"]`).tap(),
+  (page) => scene(page).locator(`[data-node="${JESUS}"]`).tap(),
   (page) => details(page).getByRole("button", { name: "27 more" }).tap(),
   (page) => details(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ }).tap(),
   (page) => search(page, "Simon Peter"),

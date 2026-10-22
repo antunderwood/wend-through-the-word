@@ -71,6 +71,21 @@ export function touchSpecs() {
     expect(await pageMoved(page)).toEqual({ scale: 1, x: 0, y: 0 });
   });
 
+  test("the camera stops when the finger lifts, in the free orbit too", async ({ page }) => {
+    await page.goto("/?view=C");
+    await focusIs(page, ABRAHAM);
+    const target = await tappable(page),
+      box = await sceneBox(page);
+    const at = async () => node(page, target.id);
+    const before = await at();
+    await drag(page, target, { x: Math.min(target.x + 100, box.x + box.width - 10), y: target.y });
+    // Read twice, a second apart, from the first frame after the lift: no glide between.
+    const lifted = await at();
+    expect(far(lifted, before)).toBeGreaterThan(20);
+    await page.waitForTimeout(1000);
+    expect(far(await at(), lifted)).toBeLessThan(1);
+  });
+
   test("a pinch zooms the camera, not the page, even with a finger on a name", async ({ page }) => {
     const target = await tappable(page);
     const spread = async () => far(await node(page, ABRAHAM), await node(page, target.id));
