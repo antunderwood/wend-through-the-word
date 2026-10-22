@@ -16,10 +16,10 @@ def test_index_holds_books_counts_date_version_and_licences(export):
     assert index["data_version"] == VERSION
     assert index["licence"] == "CC BY-SA 4.0"
     assert index["sources"]["bsb"] == "CC0 1.0"
-    assert [b["osis"] for b in index["books"]] == ["Gen", "Matt", "3John"]
+    assert [b["osis"] for b in index["books"]] == ["Gen", "Matt", "John", "3John"]
     gen = index["books"][0]
     assert (gen["name"], gen["chapters"], gen["verses"]) == ("Genesis", 5, 160)
-    assert index["counts"] == {"chapters": 9, "verses": 225}
+    assert index["counts"] == {"chapters": 11, "verses": 234}
 
 
 def test_chapter_file_holds_each_verse_with_key_label_and_text(export):

@@ -41,7 +41,7 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
 });
 
 test("a corrected link says so once for each note, and a moved link shows its note and Evidence Verses", async ({ page }) => {
-  // Fixture: links.csv moves Gen 36:25 and Dishon and Aholibamah to the son of Zibeon (#44).
+  // Fixture: links.csv moves Gen 36:25 and Dishon and Oholibamah to the son of Zibeon (#44).
   await focusOn(page, "Anah", /^Anah, father of Dishon \(Gen 36:24\)/, "person:anah_249");
   const corrected = panel(page).getByRole("list", { name: "Corrections" }).getByRole("listitem");
   // One line for each note: Gen 36:25's rows, then 1 Chr 1:41's, which repeats it.

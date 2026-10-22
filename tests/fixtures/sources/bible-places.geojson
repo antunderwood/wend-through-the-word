@@ -303,6 +303,32 @@
    "links": [
     {
      "type": "seeAlso",
+     "identifier": "https://www.digitalmanna.org/encyclopedia/places/caesarea-philippi"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://theographic.netlify.app/place/caesarea_philippi_267/"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.openbible.info/geo/ancient/ab7bf48"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://pleiades.stoa.org/places/678324"
+    },
+    {
+     "type": "seeAlso",
+     "identifier": "https://www.wikidata.org/wiki/Q2484244"
+    }
+   ]
+  },
+  {
+   "type": "Feature",
+   "geometry": null,
+   "links": [
+    {
+     "type": "seeAlso",
      "identifier": "https://www.digitalmanna.org/encyclopedia/places/chanaan"
     },
     {

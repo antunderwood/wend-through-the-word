@@ -72,6 +72,7 @@ def test_no_shipped_coordinate_has_an_openstreetmap_source(export):
     assert sorted(p["id"].split(":")[1] for p in openbible) == [
         "avith_122",
         "beer-lahai-roi_167",
+        "caesarea_philippi_267",
         "dinhabah_337",
         "galilee_433",
         "gerar_459",

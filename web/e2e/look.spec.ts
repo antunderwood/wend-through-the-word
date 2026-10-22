@@ -22,14 +22,14 @@ test("only the Selected Node's edge and a hovered node's carry Relationship word
   const words = page.locator(".labels .el:visible");
   // Abraham is the Focus and the Selected Node: no words.
   await expect(words).toHaveCount(0);
-  // Fixture: Abraham SPOUSE_OF Sarah (Female); Abraham and Genealogy (Theme) only share 8 Verses,
-  // and a Theme's words never vary, so only the count shows (decision 141).
+  // Fixture: Abraham SPOUSE_OF Sarah (Female); Abraham and God (topic), a Theme, only share 3
+  // Verses, and a Theme's words never vary, so only the count shows (decision 141).
   await page.locator(".labels").getByText("Sarah", { exact: true }).click();
   await expect(words).toHaveText(["wife"]);
-  const genealogy = (await nodes(page)).find((n) => n.id === "theme:genealogy")!;
-  await page.mouse.move(genealogy.x, genealogy.y);
-  await expect(words).toHaveText(["wife", "8 verses"]);
-  await expect(words.getByText("8 verses", { exact: true })).toHaveClass(/derived/);
+  const god = (await nodes(page)).find((n) => n.id === "theme:god")!;
+  await page.mouse.move(god.x, god.y);
+  await expect(words).toHaveText(["wife", "3 verses"]);
+  await expect(words.getByText("3 verses", { exact: true })).toHaveClass(/derived/);
   await page.mouse.move(5, 5);
   await expect(words).toHaveText(["wife"]);
 });

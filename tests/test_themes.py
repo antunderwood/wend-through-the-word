@@ -150,22 +150,22 @@ def test_whole_chapters_and_missing_verses_in_naves_are_reported(export):
 
 
 def test_a_theme_and_a_person_that_share_verses_have_a_co_mention(export):
-    # Across the fixture's Bible, Birthright files 17 Verses and Esau is in 64; they share 6
-    # (Gen 25:29, 30, 32, 34, Rom 9:13, Heb 12:16): 6 / sqrt(17 * 64). 4 are in the book range.
+    # Across the fixture's Bible, Birthright files 18 Verses and Esau is in 64; they share 6
+    # (Gen 25:29, 30, 32, 34, Rom 9:13, Heb 12:16): 6 / sqrt(18 * 64). 4 are in the book range.
     esau = neighbour(export, "theme:birthright", "person:esau_1216")
-    assert esau["weight"] == 0.1819
+    assert esau["weight"] == 0.1768
     assert esau["edges"] == [
         {
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": 4,
-            "cosine": 0.1819,
+            "cosine": 0.1768,
             "source": "Nave's Topical Bible; Theographic",
             "licence": "CC BY 4.0; CC BY-SA 4.0",
         }
     ]
-    # In Esau's file the Theme is weighted by rarity (decision 111): 6 x ln(31,102 / 17).
-    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 45.0709
+    # In Esau's file the Theme is weighted by rarity (decision 111): 6 x ln(31,102 / 18).
+    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 44.7279
 
 
 def test_themes_are_in_the_search_index(export):

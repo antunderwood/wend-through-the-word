@@ -19,7 +19,10 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 )
 
 
-def run_build(out, sources=FIXTURES, books=("Gen", "Matt", "3John"), curated=CURATED, **extra):
+BOOKS = ("Gen", "Matt", "John", "3John")  # the fixture's books, in Bible order
+
+
+def run_build(out, sources=FIXTURES, books=BOOKS, curated=CURATED, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
     config keys with TOML values, such as `size_limit` (the gzipped limit) or
     `previous_reports='"path"'`."""
@@ -56,7 +59,7 @@ def untrimmed_export(tmp_path_factory):
     rows = "".join(
         f"{rng.choice(gen25)}\t{key}\t{rng.randint(1, 99)}\n"
         for key in keys
-        if key.split(".")[0] not in ("Gen", "Matt", "3John")
+        if key.split(".")[0] not in BOOKS
     )
     with zipfile.ZipFile(FIXTURES / "cross-references.zip") as z:
         text = z.read("cross_references.txt").decode()

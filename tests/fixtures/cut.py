@@ -16,16 +16,18 @@ import sys
 import zipfile
 from pathlib import Path
 
-CHAPTERS = {"Gen": {11, 16, 25, 26, 36}, "Matt": {1, 2, 17}, "3John": {1}}
-MATT_17_VERSES = {20, 21, 22}  # Matt 17:21 has no BSB text
-BSB_NAMES = {"Genesis": "Gen", "Matthew": "Matt", "3 John": "3John"}
+CHAPTERS = {"Gen": {11, 16, 25, 26, 36}, "Matt": {1, 2, 16, 17}, "John": {1}, "3John": {1}}
+# Chapters cut to some verses. Matt 17:21 has no BSB text. Matt 16:13 to 20 (Peter's
+# confession) and John 1:1 are for the tour (decision 174).
+PART = {("Matt", 16): set(range(13, 21)), ("Matt", 17): {20, 21, 22}, ("John", 1): {1}}
+BSB_NAMES = {"Genesis": "Gen", "Matthew": "Matt", "John": "John", "3 John": "3John"}
 KJV_FIELDS = {"verseText", "mdText", "richText"}
 
 src, dest = Path(sys.argv[1]), Path(__file__).parent / "sources"
 
 
 def keep(book, ch, vs):
-    return ch in CHAPTERS.get(book, ()) and ((book, ch) != ("Matt", 17) or vs in MATT_17_VERSES)
+    return ch in CHAPTERS.get(book, ()) and vs in PART.get((book, ch), {vs})
 
 
 def dump(name, rows):
@@ -384,6 +386,15 @@ for r in naves:
         lines.append(NAVES_SYNTHETIC[r["subject"]])
     r["entry"] = "\n".join(lines)
     writer.writerow(r)
+# Synthetic headings: spelt two ways and surname first (decision 169), and matching a curated
+# alias and a BSB name (decision 172).
+for subject, entry in [
+    ("ABRAHAMUS (ABRAHAM)", "-Synthetic test heading spelt two ways GEN 25:5"),
+    ("ANTIPAS, HEROD", "-Synthetic test heading written surname first GEN 25:5"),
+    ("HAGAR THE EGYPTIAN", "-Synthetic test heading matching a curated alias GEN 16:1"),
+    ("OHOLIBAMAH", "-Synthetic test heading matching a BSB name GEN 36:2"),
+]:
+    writer.writerow({"section": "S", "subject": subject, "entry": entry})
 (dest / NAVES).write_text(out.getvalue(), encoding="utf-8-sig")
 
 for zip_path in sorted(src.glob("*.zip")):
