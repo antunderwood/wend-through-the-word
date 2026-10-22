@@ -44,7 +44,7 @@ test("a Verse outside the build is never fetched: Make Focus and Pin are refused
   await focusIs(page, "01016001");
   // Gen 16:1 has a Cross-reference to Gal 4:24, outside the fixture build.
   const panel = page.getByRole("complementary", { name: "Selected Node" });
-  const note = "Gal 4:24 is outside this build (Genesis, Matthew, 3 John only).";
+  const note = "Gal 4:24 is outside this build (Genesis, Matthew, John, 3 John only).";
   // Selected in the scene, so the panel also tries to list its Neighbours.
   await page.locator(".labels").getByText("Gal 4:24", { exact: true }).click();
   await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Gal 4:24");

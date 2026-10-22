@@ -6,7 +6,9 @@ const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
   HAGAR = "person:hagar_1348",
   NAHOR = "person:nahor_2143",
-  ISAAC = "person:isaac_616";
+  JESUS = "person:jesus_905",
+  GOD = "person:god_1324",
+  PETER = "person:peter_2745";
 const tour = (page: Page) => page.getByRole("dialog", { name: "Tour" });
 // The tour's targets carry data-tour; names in the scene carry their node ID.
 const scene = (page: Page) => page.locator('[data-tour="scene"]');
@@ -80,8 +82,7 @@ for (const view of ["A", "B", "C"] as const) {
 
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
-// The reader's own action for each step, by mouse. Fixture: Genealogy stands in for Faith, which
-// Abraham has no link to in the fixture.
+// The reader's own action for each step, by mouse.
 const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   async (page) => {
     const s = (await scene(page).boundingBox())!;
@@ -89,23 +90,23 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
     await page.mouse.wheel(0, -200);
   },
   async (page) => {
-    await page.getByRole("searchbox", { name: "Search" }).fill("Abraham");
+    await page.getByRole("searchbox", { name: "Search" }).fill("Jesus Christ");
     await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
   },
-  (page) => scene(page).locator(`[data-node="${SARAH}"]`).click(),
-  (page) => scene(page).locator(`[data-node="${ABRAHAM}"]`).click(),
-  (page) => panel(page).getByRole("button", { name: "31 more" }).click(),
-  (page) => panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Genealogy/ }).click(),
-  (page) => doubleClickLabel(page, "Isaac", ISAAC),
+  (page) => scene(page).locator(`[data-node="${GOD}"]`).click(),
+  (page) => scene(page).locator(`[data-node="${JESUS}"]`).click(),
+  (page) => panel(page).getByRole("button", { name: "28 more" }).click(),
+  (page) => panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ }).click(),
+  (page) => doubleClickLabel(page, "Simon Peter", PETER),
   async (page) => {
-    await bar(page).getByRole("button", { name: "Abraham" }).click();
+    await bar(page).getByRole("button", { name: "Jesus Christ" }).click();
     await panel(page).getByRole("button", { name: "Pin", exact: true }).click();
   },
   (page) => panel(page).getByRole("button", { name: "Next", exact: true }).click(),
   (page) => bar(page).getByRole("button", { name: "Clear", exact: true }).click(),
   (page) => bar(page).getByRole("button", { name: "Undo clear" }).click(),
   (page) => panel(page).getByRole("button", { name: "Read", exact: true }).click(),
-  (page) => panel(page).getByRole("textbox", { name: /^Note on Isaac/ }).fill("Isaac, the son of the promise."),
+  (page) => panel(page).getByRole("textbox", { name: /^Note on Simon Peter/ }).fill("Peter, the rock."),
 ];
 
 for (const view of ["A", "B", "C"] as const) {
@@ -121,7 +122,7 @@ for (const view of ["A", "B", "C"] as const) {
     await expect(tour(page)).toContainText("Done");
     await tour(page).getByRole("button", { name: "Finish and keep my note" }).click();
     await focusIs(page, SARAH);
-    const notes = JSON.stringify({ [ABRAHAM]: "My own note.", [ISAAC]: "Isaac, the son of the promise." });
+    const notes = JSON.stringify({ [ABRAHAM]: "My own note.", [PETER]: "Peter, the rock." });
     expect(await state(page)).toEqual({ ...before, kept: { ...before.kept, "wend.notes": notes } });
   });
 }
@@ -135,21 +136,20 @@ test("the whole tour with the keyboard only", async ({ page }) => {
     await page.keyboard.type(name);
     await page.keyboard.press("Enter");
   };
-  // Fixture: Abraham's Ring 1 starts with Isaac, then Sarah (keyboard.spec.ts).
+  // Fixture: Jesus Christ's Ring 1 starts with his People by weight, God first.
   const BY_KEYBOARD: (() => Promise<unknown>)[] = [
     () => enter(tour(page).getByRole("button", { name: "Do it for me" })), // the camera has no keys
-    () => search("Abraham"),
+    () => search("Jesus Christ"),
     async () => {
       await scene(page).focus();
       await page.keyboard.press("ArrowRight");
-      await page.keyboard.press("ArrowDown");
     },
-    () => enter(bar(page).getByRole("button", { name: "Abraham" })),
-    () => enter(panel(page).getByRole("button", { name: "31 more" })),
-    () => enter(panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Genealogy/ })),
-    () => search("Isaac"),
+    () => enter(bar(page).getByRole("button", { name: "Jesus Christ" })),
+    () => enter(panel(page).getByRole("button", { name: "28 more" })),
+    () => enter(panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ })),
+    () => search("Simon Peter"),
     async () => {
-      await enter(bar(page).getByRole("button", { name: "Abraham" }));
+      await enter(bar(page).getByRole("button", { name: "Jesus Christ" }));
       await enter(panel(page).getByRole("button", { name: "Pin", exact: true }));
     },
     () => enter(panel(page).getByRole("button", { name: "Next", exact: true })),
@@ -178,7 +178,7 @@ test.describe("a first visit", () => {
   test("the tour is offered until answered, a skip is remembered, and the footer restarts it", async ({ page }) => {
     await page.goto("/");
     await focusIs(page, ABRAHAM);
-    await expect(tour(page)).toContainText("studying Abraham");
+    await expect(tour(page)).toContainText("studying Jesus Christ");
     // Offered until answered: a reload before an answer offers it again.
     await page.reload();
     await focusIs(page, ABRAHAM);

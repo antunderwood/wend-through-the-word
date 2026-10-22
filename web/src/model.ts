@@ -30,7 +30,8 @@ export const typeOf = (id: Id): NodeType | "overflow" =>
 // where it came from; a curated one also has a note, Evidence Verses, and a request (decision 75).
 export type Evidence = { verse_key: Id; label: string };
 export type Curated = { source: string; licence: string; note: string; evidence: Evidence[]; request: string | null };
-export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number } & Partial<Curated>;
+// subheadings: the Nave's lines that file a Verse under a Theme ("Sold by Esau").
+export type Edge = { edge: string; direction: "out" | "in" | "both"; role?: string; shared_verses?: number; subheadings?: string[] } & Partial<Curated>;
 export type Link = { id: Id; type: NodeType; weight: number; edges: Edge[] };
 // A loaded node: links sorted by weight, then ID; ring2 maps a Ring 1 ID to its stored top 10.
 // text is a Verse's BSB text or an Entity's Dictionary Entry.
@@ -147,7 +148,9 @@ export function relation(link: Link, genderOf: (id: Id) => string | undefined, o
 export function relationWords(owner: NodeType, link: Link, genderOf: (id: Id) => string | undefined, of?: string) {
   const r = relation(link, genderOf, of);
   const pair = [owner, link.type];
-  if (pair.includes("verse")) return { ...r, text: owner === link.type ? `${link.weight} vote${link.weight === 1 ? "" : "s"}` : "" };
+  if (owner === link.type && owner === "verse") return { ...r, text: `${link.weight} vote${link.weight === 1 ? "" : "s"}` };
+  // A Verse and a Theme show the Subheadings that filed it there; a Verse and a Mention, nothing.
+  if (pair.includes("verse")) return { ...r, text: link.edges.flatMap((e) => e.subheadings ?? []).join("; ") };
   if (pair.includes("group")) return { ...r, text: "" };
   if (pair.includes("theme") || (owner === link.type && owner !== "person")) return { ...r, text: r.text.replace(/^together in /, "") };
   return r;

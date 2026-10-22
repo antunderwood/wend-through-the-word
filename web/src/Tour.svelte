@@ -70,7 +70,7 @@
 <div class="tour" role="dialog" aria-label="Tour" bind:this={box}>
   {#if offer}
     <h2>Welcome</h2>
-    <p>New here? A short tour walks you through studying Abraham: search, select, move the Focus, pin, read, and take notes. Each step waits for you, or does it for you.</p>
+    <p>New here? A short tour walks you through studying Jesus Christ: search, select, move the Focus, pin, read, and take notes. Each step waits for you, or does it for you.</p>
     <button onclick={onstart}>Take the tour</button>
     <button onclick={() => onend(false)}>Skip</button>
   {:else if step}

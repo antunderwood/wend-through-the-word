@@ -138,6 +138,7 @@ def test_index_lists_every_book_so_any_verse_key_can_be_labelled(export):
     assert [(b["osis"], b["name"]) for b in books if b["chapters"]] == [
         ("Gen", "Genesis"),
         ("Matt", "Matthew"),
+        ("John", "John"),
         ("3John", "3 John"),
     ]
     assert [b["number"] for b in books] == [f"{n:02}" for n in range(1, 67)]

@@ -56,13 +56,16 @@ def test_a_cross_reference_to_a_range_is_one_edge_to_its_first_verse_with_the_en
 
 def test_a_genesis_verse_links_to_verses_outside_the_book_range(export):
     ids = {n["id"] for n in verse(export, "Gen", 11, 1)["cross_references"]}
-    assert {"44002006", "36003009"} <= ids  # Acts.2.6, Zeph.3.9; the range is Gen, Matt, 3John
+    assert {
+        "44002006",
+        "36003009",
+    } <= ids  # Acts.2.6, Zeph.3.9; the range is Gen, Matt, John, 3John
 
 
 def test_a_cross_reference_to_3john_1_15_arrives_at_3john_1_14(export):
-    # Fixture rows: Matt.17.20 to 3John.1.15 (synthetic, 3 votes), 3John.1.15 to John.10.3 (2)
+    # Fixture row: Matt.17.20 to 3John.1.15 (synthetic, 3 votes)
     found = edges(verse(export, "3John", 1, 14)["cross_references"])
-    assert {("40017020", "in", 3, None), ("43010003", "out", 2, None)} <= set(found)
+    assert ("40017020", "in", 3, None) in found
     matt = edges(verse(export, "Matt", 17, 20)["cross_references"])
     assert ("64001014", "out", 3, None) in matt
 
@@ -78,19 +81,19 @@ def test_chapter_ring2_sidecar_holds_the_top_10_neighbours_of_each_ring1_verse(e
     chapter = export / "data" / VERSION / "chapter" / "Gen"
     ring2 = read_json(chapter / "11.ring2.json")["ring2"]
     # Gen.11.6 is in Ring 1 of Gen.11.1. Its fixture rows, by Votes; a range counts at its first
-    # verse only, so Eccl.7.29 to Gen.11.4-Gen.11.6 is not here. Judg.10.14 (1) and 1Kgs.18.27
-    # (0) are below the top 10.
+    # verse only, so Eccl.7.29 to Gen.11.4-Gen.11.6 is not here. 1Kgs.18.27 (0) is below the
+    # top 10. John is a fixture book, so the row to John.1.10, outside the fixture, is cut.
     assert ring2["01011006"] == [
         {"id": "19002001", "weight": 13},  # Ps.2.1-Ps.2.4
         {"id": "01011001", "weight": 8},
         {"id": "21011009", "weight": 6},  # Eccl.11.9
         {"id": "42001051", "weight": 6},  # Luke.1.51
         {"id": "35002013", "weight": 4},  # Hab.2.13
-        {"id": "43001010", "weight": 4},  # John.1.10
         {"id": "27004009", "weight": 2},  # Dan.4.9
         {"id": "44002003", "weight": 2},  # Acts.2.3
         {"id": "44014018", "weight": 2},  # Acts.14.18
         {"id": "44017026", "weight": 2},  # Acts.17.26
+        {"id": "07010014", "weight": 1},  # Judg.10.14
     ]
     ring1 = read_json(chapter / "11.json")["verses"]
     verse_keys = {k for k in ring2 if ":" not in k}  # the rest are Entities (decision 96)

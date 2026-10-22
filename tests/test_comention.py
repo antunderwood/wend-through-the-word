@@ -81,9 +81,9 @@ def test_co_mention_source_and_licence_come_from_the_shared_verses_links_only(ex
 
 
 def test_a_hub_that_shares_many_verses_is_not_a_top_neighbour(export):
-    # Fixture: God is in 632 Verses and shares 24 with Abraham, more than anyone but Isaac.
+    # Fixture: God is in 714 Verses and shares 24 with Abraham, more than anyone but Isaac.
     god = neighbour(export, "person:abraham_58", "person:god_1324")
-    assert (god["weight"], co_mention(god)["shared_verses"]) == (0.111, 4)
+    assert (god["weight"], co_mention(god)["shared_verses"]) == (0.1044, 4)
     assert "person:god_1324" not in top_people(entity(export, "person:abraham_58"))
     # Esau is in all 6 of Adah's Verses; Eliphaz is in 4.
     adah = [n for n in entity(export, "person:adah_414")["neighbours"] if n["type"] == "person"]

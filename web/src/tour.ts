@@ -1,4 +1,4 @@
-// The first-run tour of studying Abraham (decisions 120 and 155), lifted from the prototype's guide on
+// The first-run tour of studying Jesus Christ (decisions 120, 155, and 174), lifted from the prototype's guide on
 // prototype/navigation. Each step is data: what it points at, what it asks, a check that the reader
 // did it, and a "Do it for me" that uses the page's own actions or its own buttons.
 import type { Data } from "./data";
@@ -28,11 +28,12 @@ export type Step = {
   act: (p: TourPage) => unknown;
 };
 
-// The tour starts at Gen 11:27, where Abram is born into the account of Terah.
-export const TOUR_START = "01011027";
-const ABRAHAM = "person:abraham_58",
-  SARAH = "person:sarah_2473",
-  ISAAC = "person:isaac_616";
+// The tour starts at John 1:1, where the Word is with God.
+export const TOUR_START = "43001001";
+const JESUS = "person:jesus_905",
+  GOD = "person:god_1324",
+  PETER = "person:peter_2745",
+  MIRACLES = "theme:miracles";
 
 // The components mark each target with data-tour; a name in the scene carries its node ID.
 const one = (s: string) => document.querySelector(s);
@@ -54,31 +55,31 @@ const CAMERA: Record<View, string> = {
 export const STEPS: Step[] = [
   {
     title: "Move the camera",
-    text: (p) => `The tour starts at Gen 11:27 with Your Path empty and no pins; yours come back when it ends. ${CAMERA[p.view]} Try it on the scene.`,
+    text: (p) => `The tour starts at John 1:1 with an empty Your Path and no pins. Your own Path, pins, and notes are set aside and come back when the tour ends. ${CAMERA[p.view]} Try it on the scene.`,
     target: (p) => label(p.model.focus),
     check: (_, at) => at.moved,
     act: () => one('[data-tour="scene"] canvas')!.dispatchEvent(new WheelEvent("wheel", { deltaY: -240, bubbles: true, cancelable: true, clientX: innerWidth / 2, clientY: innerHeight / 2 })),
   },
   {
-    title: "Find Abraham",
-    text: () => 'Type "Abraham" in the search box and choose him. A search result becomes the Focus, the centre of the scene.',
+    title: "Find Jesus Christ",
+    text: () => 'Type "Jesus Christ" in the search box and choose him. A search result becomes the Focus, the centre of the scene.',
     target: () => tour("search"),
-    check: (p) => p.model.focus === ABRAHAM,
-    act: (p) => p.makeFocus(ABRAHAM),
+    check: (p) => p.model.focus === JESUS,
+    act: (p) => p.makeFocus(JESUS),
   },
   {
-    title: "Select Sarah",
-    text: () => "Ring 1 holds his closest Neighbours of each type, and the words on the lines say how each relates to him. Click Sarah to select her: the scene stays and the panel shows her.",
-    target: () => label(SARAH),
-    check: (p) => p.model.selected === SARAH,
-    act: (p) => p.apply({ type: "select", id: SARAH }),
+    title: "Select God",
+    text: () => "Ring 1 holds his closest Neighbours of each type, and the words on the lines say how each relates to him. Click God to select him: the scene stays and the panel shows God.",
+    target: () => label(GOD),
+    check: (p) => p.model.selected === GOD,
+    act: (p) => p.apply({ type: "select", id: GOD }),
   },
   {
-    title: "Back to Abraham",
-    text: () => "Select Abraham again: click him in the scene or in the Your Path bar at the top. The panel lists his Neighbours.",
-    target: () => label(ABRAHAM),
-    check: (p) => p.model.selected === ABRAHAM,
-    act: (p) => p.apply({ type: "select", id: ABRAHAM }),
+    title: "Back to Jesus Christ",
+    text: () => "Select Jesus Christ again: click him in the scene or in the Your Path bar at the top. The panel lists his Neighbours.",
+    target: () => label(JESUS),
+    check: (p) => p.model.selected === JESUS,
+    act: (p) => p.apply({ type: "select", id: JESUS }),
   },
   {
     title: "Open his Themes",
@@ -86,37 +87,40 @@ export const STEPS: Step[] = [
     target: () => tour("more-theme"),
     check: () => tour("more-theme")?.getAttribute("aria-expanded") === "true",
     act: async (p) => {
-      if (!tour("more-theme")) p.apply({ type: "select", id: ABRAHAM });
+      if (!tour("more-theme")) p.apply({ type: "select", id: JESUS });
       (await drawn(() => tour("more-theme")))?.click();
     },
   },
   {
     title: "Choose a Theme",
-    text: () => "Select a Theme in his list, Faith for one. Under its name the panel lists the Verses it shares with Abraham, with their text.",
+    text: () => "Select a Theme in his list, Miracles for one. Under its name the panel lists the Verses it shares with Jesus Christ, with their text.",
     target: () => tour("list-theme"),
     check: (p) => typeOf(p.model.selected) === "theme",
-    act: (p) => p.apply({ type: "select", id: p.data.record(ABRAHAM)!.links.find((l) => l.type === "theme")!.id }),
+    act: (p) => {
+      const themes = p.data.record(JESUS)!.links.filter((l) => l.type === "theme");
+      p.apply({ type: "select", id: (themes.find((l) => l.id === MIRACLES) ?? themes[0]).id });
+    },
   },
   {
-    title: "Make Isaac the Focus",
-    text: () => "Double click Isaac in the scene, or select him and press Make Focus. The scene moves to him.",
-    target: (p) => (p.model.selected === ISAAC && tour("make-focus")) || label(ISAAC),
-    check: (p) => p.model.focus === ISAAC,
-    act: (p) => p.makeFocus(ISAAC),
+    title: "Make Simon Peter the Focus",
+    text: () => "Double click Simon Peter in the scene, or select him and press Make Focus. The scene moves to him.",
+    target: (p) => (p.model.selected === PETER && tour("make-focus")) || label(PETER),
+    check: (p) => p.model.focus === PETER,
+    act: (p) => p.makeFocus(PETER),
   },
   {
-    title: "Pin Abraham",
-    text: () => "Abraham joined Your Path, the bar at the top. Click him there to select him, then press Pin in the panel.",
-    target: (p) => (p.model.selected === ABRAHAM && tour("pin")) || tour(`path-${ABRAHAM}`),
-    check: (p) => p.model.pins.includes(ABRAHAM),
+    title: "Pin Jesus Christ",
+    text: () => "Jesus Christ joined Your Path, the bar at the top. Click him there to select him, then press Pin in the panel.",
+    target: (p) => (p.model.selected === JESUS && tour("pin")) || tour(`path-${JESUS}`),
+    check: (p) => p.model.pins.includes(JESUS),
     act: async (p) => {
-      p.apply({ type: "select", id: ABRAHAM });
-      await p.pin(ABRAHAM);
+      p.apply({ type: "select", id: JESUS });
+      await p.pin(JESUS);
     },
   },
   {
     title: "Walk Your Path",
-    text: () => "Rings mark the nodes Isaac shares with the pinned Abraham. Press Prev or Next in the panel to walk Your Path; the Focus stays.",
+    text: () => "Rings mark the nodes Simon Peter shares with the pinned Jesus Christ. Press Prev or Next in the panel to walk Your Path; the Focus stays.",
     target: () => tour("next"),
     check: (p, at) => p.model.selected !== at.model.selected && onPath(p.model).includes(p.model.selected),
     act: (p) => {

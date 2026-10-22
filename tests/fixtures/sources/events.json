@@ -1556,6 +1556,78 @@
   }
  },
  {
+  "id": "recBuPmgXN9v9X6WI",
+  "createdTime": "2024-02-02T02:57:03.000Z",
+  "fields": {
+   "title": "Peter's Confession \"Upon this Rock\"",
+   "eventID": 404,
+   "startDate": "29",
+   "duration": "1D",
+   "predecessor": [
+    "rec1QOmEc6elW8boO"
+   ],
+   "verses": [
+    "recWtKdtq0XrQ34wi",
+    "recYXNC78G5vBgxsp",
+    "recgBR5GtpVqWVORs",
+    "rec94Dlfr6qeFMF9h",
+    "recRkvXbUcuQvSFpu",
+    "recjfPILfdECn33U8",
+    "rechJ4jbsOK16GpaQ",
+    "recg1rsygmxxymB6c",
+    "recDoINQkGGzlw1LD",
+    "recAmtKlfrOKMJRIu",
+    "recgHZlnnpy7E0XdF",
+    "recltiWxqbGnN7SDw",
+    "recRod4MWXgFv4IGj",
+    "rec33msBZddNtaweQ",
+    "reco2nXi9oLiIdQPr",
+    "recuQhw3QwzhAJWBC"
+   ],
+   "participants": [
+    "recgkFqZovgbr3pAi",
+    "recX9MMADoVI2CSP1"
+   ],
+   "locations": [
+    "recC1BM9lEiyJHxTR"
+   ],
+   "groups": [
+    "recDquhyNAst5bTvn"
+   ],
+   "verseSort": "40016013",
+   "modified": "2024-02-02T03:02:50.000Z",
+   "sortKey": 29.40016013,
+   "people (from verses)": [
+    "recgkFqZovgbr3pAi",
+    "recNRRITyGzXsl4yp",
+    "recbHLkz06CSe3C4K",
+    "recVuseK2cy7CXlve",
+    "recX9MMADoVI2CSP1",
+    "reccZB8SVU5bEMcgo",
+    "recgkFqZovgbr3pAi",
+    "recX9MMADoVI2CSP1",
+    "reccZB8SVU5bEMcgo",
+    "recgkFqZovgbr3pAi",
+    "recX9MMADoVI2CSP1",
+    "recgkFqZovgbr3pAi",
+    "recgkFqZovgbr3pAi",
+    "recNRRITyGzXsl4yp",
+    "recbHLkz06CSe3C4K",
+    "recX9MMADoVI2CSP1",
+    "recgkFqZovgbr3pAi",
+    "recNRRITyGzXsl4yp",
+    "recbHLkz06CSe3C4K",
+    "recX9MMADoVI2CSP1",
+    "reccZB8SVU5bEMcgo",
+    "recgkFqZovgbr3pAi"
+   ],
+   "places (from verses)": [
+    "recC1BM9lEiyJHxTR",
+    "recC1BM9lEiyJHxTR"
+   ]
+  }
+ },
+ {
   "id": "recXhKGCw4B1CjXQB",
   "createdTime": "2025-01-22T21:25:51.000Z",
   "fields": {

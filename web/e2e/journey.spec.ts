@@ -142,7 +142,7 @@ for (const view of ["A", "B", "C"] as const) {
     await expect(heading(page)).toHaveText("Gen 36:2");
 
     // Oholibamah's Dictionary Entry, then Anah's correction note.
-    await persons(page).getByRole("button", { name: /^Aholibamah/ }).click();
+    await persons(page).getByRole("button", { name: /^Oholibamah/ }).click();
     await expect(panel(page).getByRole("region", { name: "Easton's Bible Dictionary (1897)" })).toContainText("the daughter of Beeri the Hittite");
     await persons(page).getByRole("button", { name: /^Anah/ }).click();
     await expect(panel(page).getByRole("list", { name: "Corrections" })).toContainText("Corrected after review: gender (Gen 36:24)");

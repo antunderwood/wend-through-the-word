@@ -112,8 +112,8 @@ describe("data loader", () => {
     const data = await createData(async (url) => (read.push(url), readExport(url)), "");
     // Gen 16:1 has a Cross-reference to Gal 4:24; the fixture builds Gen 11, 16, 25, 26, 36, Matt 17, 3 John 1.
     expect((await data.load("01016001")).links.some((l) => l.id === "48004024")).toBe(true);
-    expect(data.outside("48004024")).toBe("Gal 4:24 is outside this build (Genesis, Matthew, 3 John only).");
-    expect(data.outside("01012001")).toBe("Gen 12:1 is outside this build (Genesis, Matthew, 3 John only).");
+    expect(data.outside("48004024")).toBe("Gal 4:24 is outside this build (Genesis, Matthew, John, 3 John only).");
+    expect(data.outside("01012001")).toBe("Gen 12:1 is outside this build (Genesis, Matthew, John, 3 John only).");
     expect(data.outside("01016001")).toBe("");
     expect(data.outside(ABRAHAM)).toBe("");
     await expect(data.load("48004024")).rejects.toThrow("Gal 4:24 is outside this build");
@@ -148,11 +148,12 @@ describe("data loader", () => {
 
   it("steps to the first Verse of the next or previous chapter in the build, and stops at its ends", async () => {
     const data = await createData(readExport, "");
-    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 17, 3 John 1.
+    // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 16, 17, John 1, 3 John 1.
     expect(data.nextChapter("01011027", 1)).toBe("01016001");
     expect(data.nextChapter("01036024", 1)).toBe("40001001");
     expect(data.nextChapter("40001001", -1)).toBe("01036001");
-    expect(data.nextChapter("40017020", -1)).toBe("40002001");
+    expect(data.nextChapter("40017020", -1)).toBe("40016001");
+    expect(data.nextChapter("40017020", 1)).toBe("43001001");
     expect(data.nextChapter("01011001", -1)).toBeUndefined();
     expect(data.nextChapter("64001001", 1)).toBeUndefined();
   });

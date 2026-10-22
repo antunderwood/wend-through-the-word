@@ -163,8 +163,14 @@ def check_correction(row, up):
     if row["field"] == "coordinates":
         return "apply", ""  # Theographic coordinates never ship (decision 41): nothing to match
     was, value, now = row["was"], row["value"], up.entities[row["id"]].get(row["field"])
-    if row["field"] == "aliases":  # one alias: `was` is replaced by `value`, or removed
+    if row["field"] == "aliases":  # one alias: `was` is replaced by `value`, removed, or added
         now = now or []
+        if not was:
+            return (
+                ("redundant", f"Theographic now has the alias {value}")
+                if value in now
+                else ("apply", "")
+            )
         if was in now:
             return "apply", ""
         if value in now or not value:
@@ -312,7 +318,14 @@ def correct(b, e):
             aliases = e["aliases"]
             if row["was"] in aliases:
                 aliases[aliases.index(row["was"])] = row["value"]
+            elif not row["was"]:
+                aliases.append(row["value"])
             e["aliases"] = [a for a in dict.fromkeys(aliases) if a]
+        elif row["field"] == "name":  # the Theographic name stays an alias, so search finds it
+            e["aliases"] = [
+                a for a in dict.fromkeys([*e["aliases"], e["name"]]) if a != row["value"]
+            ]
+            e["name"] = row["value"]
         elif row["field"] not in ("coordinates", "link"):  # a point or a link: applied elsewhere
             e[row["field"]] = row["value"]
         e.setdefault("corrections", []).append(row)

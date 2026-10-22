@@ -447,5 +447,119 @@
    ],
    "verses": []
   }
+ },
+ {
+  "id": "recDquhyNAst5bTvn",
+  "createdTime": "2018-05-13T20:01:17.000Z",
+  "fields": {
+   "groupName": "Apostles",
+   "members": [
+    "recX9MMADoVI2CSP1",
+    "recpvMKljbEMuiK9e",
+    "recvAB7vkczUEFH8Z",
+    "recjr23nobw1dkYdl",
+    "rec9fHLTg7VkJ0h4l",
+    "recVRtBEdN8mgLhHN",
+    "reckJ4vuXzqDbTrMP",
+    "recb1JorKSXGAF6Vg",
+    "recg3914bVvyjBOfN",
+    "rec95raiD3sLuptbO",
+    "recONdJVwpYA57oAi",
+    "recRuqBdtrgeag4gT"
+   ],
+   "modified": "2025-07-31T05:11:51.000Z",
+   "events_dev": [
+    "recajWYSuk71jMpgi",
+    "recDFt0ANS33dAxri",
+    "recpYSwD914PD9tHU",
+    "recSpTfIckUAeEOLd",
+    "rec5EydSXHdbLbzk1",
+    "recMCgwIq1sw9Q779",
+    "reccrRGqDRLWjCHog",
+    "recqtoV4JQiYCmkZN",
+    "recBuPmgXN9v9X6WI",
+    "rec4eZvHbmI1QToIw",
+    "recXhKGCw4B1CjXQB",
+    "recyFfX2l12rwEkqk",
+    "recvkY2icLy3QDClR",
+    "recIZ6XquF0X7jaNE",
+    "rec5EAcIz2rHZRN8q",
+    "rec70ZLu9pdrEWXR9",
+    "recMIEeRCAf7IGRwc",
+    "recBsshyiGaHc6bgC",
+    "recotN6XCwPBF0OzT",
+    "rece7YQZcZkN73mF8",
+    "recYOqX5Qe2a0FHvw",
+    "recOZxrWd00qyF4Ej",
+    "recN1gyMPKbPPQIMa",
+    "recehyRQPiIuEscz4",
+    "recNQ0XuoN4rfJR3o"
+   ],
+   "verses": []
+  }
+ },
+ {
+  "id": "recb9l9ttaZlODOFV",
+  "createdTime": "2018-08-20T16:34:00.000Z",
+  "fields": {
+   "groupName": "Apostles (The Eleven)",
+   "members": [
+    "recX9MMADoVI2CSP1",
+    "recpvMKljbEMuiK9e",
+    "recvAB7vkczUEFH8Z",
+    "recjr23nobw1dkYdl",
+    "rec9fHLTg7VkJ0h4l",
+    "recVRtBEdN8mgLhHN",
+    "reckJ4vuXzqDbTrMP",
+    "recb1JorKSXGAF6Vg",
+    "recg3914bVvyjBOfN",
+    "recONdJVwpYA57oAi",
+    "recRuqBdtrgeag4gT"
+   ],
+   "events": "The Holy Spirit is promised, Jesus ascends to Heaven, Matthias replaces Judas",
+   "modified": "2025-08-21T23:23:51.000Z",
+   "events_dev": [
+    "recvfB75N6vrQwhWW",
+    "rec06pcAZBChUBKxF",
+    "reczDqE366xgbgv2C",
+    "recu6M6co9Iaw0Ow5",
+    "recP6WhPl8eV4tavO",
+    "recwQXXtK8ZbnYuIJ"
+   ],
+   "verses": []
+  }
+ },
+ {
+  "id": "recBC0I2HaciTQbaa",
+  "createdTime": "2018-08-20T16:33:48.000Z",
+  "fields": {
+   "groupName": "Apostles (Post-Ascension)",
+   "members": [
+    "recAKZBlllSFGbCSM",
+    "recX9MMADoVI2CSP1",
+    "recpvMKljbEMuiK9e",
+    "recvAB7vkczUEFH8Z",
+    "recjr23nobw1dkYdl",
+    "rec9fHLTg7VkJ0h4l",
+    "recVRtBEdN8mgLhHN",
+    "reckJ4vuXzqDbTrMP",
+    "recb1JorKSXGAF6Vg",
+    "recg3914bVvyjBOfN",
+    "recONdJVwpYA57oAi",
+    "recRuqBdtrgeag4gT"
+   ],
+   "events": "The Holy Spirit comes, Matthias replaces Judas, Apostles work signs and wonders in Solomon's Portico, \"Apostles arrested, put on trial\", Gamaliel advises the counsel and Apostles freed, Seven chosen to serve, Jerusalem Council",
+   "modified": "2023-12-02T23:09:33.000Z",
+   "events_dev": [
+    "reczDqE366xgbgv2C",
+    "recIu7xhASS4Ufyfd",
+    "rectkWZqlKG1cfOQT",
+    "recCcRDJtUxaIqXnD",
+    "rec1qE6wAe0XINRoV",
+    "recXUpfeHouc4qLEl",
+    "recwmsQ1HEDGztu9O"
+   ],
+   "verses": []
+  }
  }
 ]

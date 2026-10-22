@@ -40,8 +40,8 @@ describe("Abraham as the Focus, K = 6", () => {
     ]);
     // Bastard and Heir tie at 27.7392.
     expect(ring1Of(drawn, "theme")).toEqual([
-      "theme:god",
       "theme:genealogy",
+      "theme:god",
       "theme:blessing",
       "theme:covenant",
       "theme:bastard",
@@ -293,7 +293,7 @@ describe("pins and Shared Nodes", () => {
       ...["place:ur_1189", "place:beer-lahai-roi_167", "place:canaan_272"],
       ...["event:65", "event:61", "event:66"],
       "group:genealogy_of_jesus",
-      ...["theme:god", "theme:genealogy", "theme:blessing"],
+      ...["theme:genealogy", "theme:god", "theme:blessing"],
       ...["01011031", "01011027", "01011029"],
     ]);
     // Isaac is the Focus and Beer-lahai-roi is in his Ring 1, so they keep those roles.
@@ -332,18 +332,18 @@ describe("pins and Shared Nodes", () => {
 
   describe("the node limit with pins (decision 33)", () => {
     // Abraham and Sarah pinned, then Terah and Isaac made the Focus: Your Path is Abraham, Terah.
-    // Fixture: 106 nodes wanted, 54 of them Ring 2 and 17 around the pins (7 of them third).
+    // Fixture: 105 nodes wanted, 53 of them Ring 2 and 17 around the pins (7 of them third).
     const s = () => act(initialState(ABRAHAM), pin(ABRAHAM), pin(SARAH), focus(TERAH), focus(ISAAC));
     const at = (n: number) => draw(act(s(), { type: "setFilter", key: "nodeLimit", value: n }));
     const around = (drawn: Scene, rank: number) => drawn.nodes.filter((n) => n.role === "pinring" && n.rank === rank).length;
 
     it("trims Ring 2 first, then the oldest of Your Path, then the pin rings", () => {
-      expect(at(52).trimmed).toEqual({ ring2: 54, path: 0, pinring: 0 });
+      expect(at(52).trimmed).toEqual({ ring2: 53, path: 0, pinring: 0 });
       // Terah goes; Abraham stays, as a pin.
       const drawn = at(51);
-      expect(drawn.trimmed).toEqual({ ring2: 54, path: 1, pinring: 0 });
+      expect(drawn.trimmed).toEqual({ ring2: 53, path: 1, pinring: 0 });
       expect(drawn.nodes.some((n) => n.id === TERAH)).toBe(false);
-      expect(at(50).trimmed).toEqual({ ring2: 54, path: 1, pinring: 1 });
+      expect(at(50).trimmed).toEqual({ ring2: 53, path: 1, pinring: 1 });
     });
 
     it("takes each pin's third neighbours before any pin's second", () => {
@@ -355,7 +355,7 @@ describe("pins and Shared Nodes", () => {
     it("never trims the Focus, the pins, Ring 1, or Overflow Nodes", () => {
       const drawn = at(10);
       // 1 Focus, 28 Ring 1 (Abraham among them), Sarah, 4 Overflow Nodes.
-      expect([drawn.count, drawn.demand, drawn.hidden]).toEqual([34, 106, 72]);
+      expect([drawn.count, drawn.demand, drawn.hidden]).toEqual([34, 105, 71]);
       expect(drawn.nodes.filter((n) => n.roles.includes("pinned")).map((n) => n.id)).toEqual([ABRAHAM, SARAH]);
       expect(ids(drawn, "focus")).toEqual([ISAAC]);
       expect(drawn.nodes.filter((n) => n.roles.includes("ring1"))).toHaveLength(28);
@@ -466,6 +466,12 @@ describe("Relationship words that never vary for a pair of node types are droppe
     expect(shown("theme", link("verse", 1, one("FILED_UNDER", "in"))).text).toBe("");
   });
 
+  it("shows the Subheadings that file a Verse under a Theme", () => {
+    const filed = (direction: Edge["direction"]): Edge => ({ edge: "FILED_UNDER", direction, subheadings: ["A designation of the Jews", "Fellow-worker"] });
+    expect(shown("verse", link("theme", 1, filed("out"))).text).toBe("A designation of the Jews; Fellow-worker");
+    expect(shown("theme", link("verse", 1, filed("in"))).text).toBe("A designation of the Jews; Fellow-worker");
+  });
+
   it("shows only the Votes between two Verses", () => {
     expect(shown("verse", link("verse", 43, one("CROSS_REF", "out"), one("CROSS_REF", "in")))).toEqual({ text: "43 votes", derived: false });
     expect(shown("verse", link("verse", 1, one("CROSS_REF", "in"))).text).toBe("1 vote");
@@ -509,9 +515,9 @@ describe("a Verse as the Focus", () => {
     // than Abraham 6.1706; HEIR and WILL tie at 9.2464, before INHERITANCE at 8.9587.
     expect(ring1Of(drawn, "person")).toEqual(["person:isaac_616", "person:abraham_58"]);
     expect(ring1Of(drawn, "theme")).toEqual(["theme:heir", "theme:will", "theme:inheritance"]);
-    // 15 Cross-references: two with 5 Votes, then the first four of five with 4 Votes, by ID.
-    expect(ring1Of(drawn, "verse")).toEqual(["48003029", "58001002", "19068018", "43003035", "45008017", "45008032"]);
-    expect(drawn.nodes.find((n) => n.id === "overflow:verse")?.count).toBe(9);
+    // 13 Cross-references: two with 5 Votes, then the four with 4 Votes, by ID.
+    expect(ring1Of(drawn, "verse")).toEqual(["48003029", "58001002", "19068018", "45008017", "45008032", "46003021"]);
+    expect(drawn.nodes.find((n) => n.id === "overflow:verse")?.count).toBe(7);
   });
 
   it("leaves Cross-references under the Vote Limit out of Ring 1", () => {

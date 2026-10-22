@@ -26,12 +26,12 @@ def load(b):
         sys.exit(f"unknown books in config: {sorted(unknown)}")
     b.book_range = sorted(wanted, key=lambda o: b.books[o]["order"])
 
-    bsb = {}
+    whole = {}  # every book: a Person's or Place's name is checked against all its Verses
     for line in b.source("bsb").read_text(encoding="utf-8-sig").splitlines():
         if m := re.match(r"(.+) (\d+):(\d+)\t(.*)", line):
             osis = osis_of.get(BSB_BOOK_NAMES.get(m[1], m[1]))
-            if osis in wanted:
-                bsb[f"{osis}.{m[2]}.{m[3]}"] = m[4].strip()
+            whole[f"{osis}.{m[2]}.{m[3]}"] = m[4].strip()
+    bsb = {ref: text for ref, text in whole.items() if ref.split(".")[0] in wanted}
 
     b.new_report("verse_mismatches", "verse", "cause", "count")
     b.chapters = defaultdict(list)  # (book, chapter) -> verses
@@ -64,6 +64,8 @@ def load(b):
         b.verse_recs[r["id"]] = verse
     for verses in b.chapters.values():
         verses.sort(key=lambda v: v["key"])
+    b.bsb = {b.verse_keys[ref]: text for ref, text in whole.items() if ref in b.verse_keys}
+    b.bsb_common = {w for text in whole.values() for w in re.findall(r"\b[a-z]+\b", text)}
 
     for osis in bsb.keys() - seen:
         b.report(

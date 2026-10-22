@@ -15,6 +15,7 @@ import json
 import re
 import sys
 from collections import Counter
+from difflib import SequenceMatcher
 from typing import NamedTuple
 
 from pipeline.common import report_mismatches
@@ -165,3 +166,59 @@ def verse_neighbours(b):
             neighbour = {k: x for k, x in link.items() if k != "id"}
             neighbours.append({**neighbour, "key": v["key"], "direction": "in", "weight": weight})
         e["verses"] = sorted(neighbours, key=lambda n: (-n["weight"], n["key"]))
+
+
+# A BSB word for a whole people or a people's adjective ("Canaanites", "Lycaonian", "Judean")
+# never names a Person or Place.
+GENTILIC = re.compile(r"(ites?|[ie]ans?)$")
+
+
+def bsb_name(name, keys, text, common):
+    """The BSB's spelling of a Theographic name, or None to keep it (decision 172). A name none of
+    whose capitalised words is in the BSB text of its own Verses takes the capitalised BSB word in
+    them that is most like one of its words (at least 0.7 alike) and in most of its Verses:
+    "Timotheus" is "Timothy", "Phillip the Apostle" is "Philip the Apostle". Kept: a description
+    ("Daughter of Shuah"), and a name with two equally good BSB words. Never taken: a word the BSB
+    also writes in lower case ("iron", "topaz"), and a compound that holds the name ("Ben-geber"
+    is the son of Geber)."""
+    base, bracket = re.fullmatch(r"(.*?)((?: \(.*\))?)", name).groups()
+    words = re.findall(r"[A-Z][\w'-]*", base)
+    verses = [text[k].replace("\u2019", "'") for k in keys if k in text]  # "Solomon’s"
+    if (
+        not (words and verses)
+        or re.search(r"\bof\b", base)
+        or any(re.search(rf"\b{re.escape(w)}\b", v) for v in verses for w in words)
+    ):
+        return None
+    seen = Counter(t for v in verses for t in set(re.findall(r"\b[A-Z][a-z]+(?:-[a-z]+)*\b", v)))
+    scored = []
+    for token, count in seen.items():
+        if token.lower() in common or GENTILIC.search(token):
+            continue
+        for word in words:
+            parts = (set(token.lower().split("-")), set(word.lower().split("-")))
+            if token != word and (word.lower() in parts[0] or token.lower() in parts[1]):
+                continue
+            alike = SequenceMatcher(None, word.lower(), token.lower()).ratio()
+            if alike >= 0.7:
+                scored.append((alike * count, word, token))
+    scored.sort(reverse=True)
+    if not scored or (len(scored) > 1 and scored[0][0] == scored[1][0]):
+        return None
+    _, word, token = scored[0]
+    return re.sub(rf"\b{re.escape(word)}\b", token, base, count=1) + bracket
+
+
+def bsb_names(b):
+    """Give each Person and Place in range the BSB's spelling of its name (decision 172); the
+    Theographic name stays an alias, so search still finds it. A curated name wins."""
+    b.new_report("bsb_names", "id", "theographic_name", "bsb_name")
+    for e in b.entities.values():
+        if e["type"] not in ("person", "place") or any(
+            c["field"] == "name" for c in e.get("corrections", [])
+        ):
+            continue
+        if new := bsb_name(e["name"], b.verse_sets[e["id"]], b.bsb, b.bsb_common):
+            b.report("bsb_names", id=e["id"], theographic_name=e["name"], bsb_name=new)
+            e["aliases"] = sorted({*e["aliases"], re.sub(r" \(.*\)$", "", e["name"])} - {new})
+            e["name"] = new

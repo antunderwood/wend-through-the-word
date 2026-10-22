@@ -48,8 +48,8 @@ test("an address with several books says so in the book filter", async ({ page }
 test("the book filter lists every built book, and one book hides the Verses of the others", async ({ page }) => {
   await open(page);
   const from = filters(page).getByRole("combobox", { name: "Verses from" });
-  // The fixture builds chapters of Genesis, Matthew, and 3 John.
-  await expect(from.locator("option")).toHaveText(["All books", "This build", "Genesis", "Matthew", "3 John"]);
+  // The fixture builds chapters of Genesis, Matthew, John, and 3 John.
+  await expect(from.locator("option")).toHaveText(["All books", "This build", "Genesis", "Matthew", "John", "3 John"]);
   // Fixture: 3 of Abraham's 29 Verses are in Matthew (1:1, 1:2, 1:17).
   await from.selectOption({ label: "Matthew" });
   await page.keyboard.press("Escape");

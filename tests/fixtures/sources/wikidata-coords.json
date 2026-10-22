@@ -1777,6 +1777,90 @@
    {
     "item": {
      "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2484244"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "33.246111"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.693333"
+    },
+    "pleiades": {
+     "type": "literal",
+     "value": "678324"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#PreferredRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q2484244-6F8164BF-A7B3-4F10-8477-A70E9F84D5B6"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2484244"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "33.246111111111"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.693333333333"
+    },
+    "pleiades": {
+     "type": "literal",
+     "value": "678324"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q2484244-47b48b14-4647-b73a-a247-31a45f574882"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2484244"
+    },
+    "lat": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "33.247099"
+    },
+    "lon": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#double",
+     "type": "literal",
+     "value": "35.693736"
+    },
+    "pleiades": {
+     "type": "literal",
+     "value": "678324"
+    },
+    "rank": {
+     "type": "uri",
+     "value": "http://wikiba.se/ontology#NormalRank"
+    },
+    "st": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/statement/Q2484244-BC2CAEF8-31EF-4E3A-9BC5-0E9682080925"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
      "value": "http://www.wikidata.org/entity/Q26082"
     },
     "lat": {

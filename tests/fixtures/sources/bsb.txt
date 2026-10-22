@@ -209,9 +209,18 @@ Matthew 2:20	“Get up!” he said. “Take the Child and His mother and go to t
 Matthew 2:21	So Joseph got up, took the Child and His mother, and went to the land of Israel.
 Matthew 2:22	But when he learned that Archelaus was reigning in Judea in place of his father Herod, he was afraid to go there. And having been warned in a dream, he withdrew to the district of Galilee,
 Matthew 2:23	and he went and lived in a town called Nazareth. So was fulfilled what was spoken through the prophets: “He will be called a Nazarene.”
+Matthew 16:13	When Jesus came to the region of Caesarea Philippi, He questioned His disciples: “Who do people say the Son of Man is?”
+Matthew 16:14	They replied, “Some say John the Baptist; others say Elijah; and still others, Jeremiah or one of the prophets.”
+Matthew 16:15	“But what about you?” Jesus asked. “Who do you say I am?”
+Matthew 16:16	Simon Peter answered, “You are the Christ, the Son of the living God.”
+Matthew 16:17	Jesus replied, “Blessed are you, Simon son of Jonah! For this was not revealed to you by flesh and blood, but by My Father in heaven.
+Matthew 16:18	And I tell you that you are Peter, and on this rock I will build My church, and the gates of Hades will not prevail against it.
+Matthew 16:19	I will give you the keys of the kingdom of heaven. Whatever you bind on earth will be bound in heaven, and whatever you loose on earth will be loosed in heaven.”
+Matthew 16:20	Then He admonished the disciples not to tell anyone that He was the Christ.
 Matthew 17:20	“Because you have so little faith,” He answered. “For truly I tell you, if you have faith the size of a mustard seed, you can say to this mountain, ‘Move from here to there,’ and it will move. Nothing will be impossible for you.”
 Matthew 17:21	
 Matthew 17:22	When they gathered together in Galilee, Jesus told them, “The Son of Man is about to be delivered into the hands of men.
+John 1:1	In the beginning was the Word, and the Word was with God, and the Word was God.
 3 John 1:1	The elder, To the beloved Gaius, whom I love in the truth:
 3 John 1:2	Beloved, I pray that in every way you may prosper and enjoy good health, as your soul also prospers.
 3 John 1:3	For I was overjoyed when the brothers came and testified about your devotion to the truth, in which you continue to walk.

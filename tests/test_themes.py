@@ -34,6 +34,20 @@ def test_a_verse_links_to_its_themes_by_filed_under_not_mentions(export):
     assert not [m for m in verse["mentions"] if m["id"].startswith("theme:")]
 
 
+def test_a_filed_under_link_carries_the_subheadings_that_file_the_verse(export):
+    # Fixture: "-Sold by Esau GEN 25:29-34; 25:33; ..." files Gen 25:33 twice, and the synthetic
+    # line "-Synthetic test line GEN 25:33-26:1" files it again.
+    def subheadings(ref):
+        verse = chapter_verse(export, ref)
+        return next(m for m in verse["filed_under"] if m["id"] == "theme:birthright")["subheadings"]
+
+    assert subheadings("Gen.25.29") == ["Sold by Esau"]
+    assert subheadings("Gen.25.33") == ["Sold by Esau", "Synthetic test line"]
+    # The Theme's side of the link, its Verse Neighbour, carries them too.
+    gen_25_29 = next(v for v in theme(export, "birthright")["verses"] if v["key"] == "01025029")
+    assert gen_25_29["subheadings"] == ["Sold by Esau"]
+
+
 def removed(export):
     rows = read_tsv(export / "reports" / "removed_theme_headings.tsv")
     return {r.pop("heading"): r for r in rows}
@@ -136,22 +150,22 @@ def test_whole_chapters_and_missing_verses_in_naves_are_reported(export):
 
 
 def test_a_theme_and_a_person_that_share_verses_have_a_co_mention(export):
-    # Across the fixture's Bible, Birthright files 17 Verses and Esau is in 64; they share 6
-    # (Gen 25:29, 30, 32, 34, Rom 9:13, Heb 12:16): 6 / sqrt(17 * 64). 4 are in the book range.
+    # Across the fixture's Bible, Birthright files 18 Verses and Esau is in 64; they share 6
+    # (Gen 25:29, 30, 32, 34, Rom 9:13, Heb 12:16): 6 / sqrt(18 * 64). 4 are in the book range.
     esau = neighbour(export, "theme:birthright", "person:esau_1216")
-    assert esau["weight"] == 0.1819
+    assert esau["weight"] == 0.1768
     assert esau["edges"] == [
         {
             "edge": "CO_MENTION",
             "direction": "both",
             "shared_verses": 4,
-            "cosine": 0.1819,
+            "cosine": 0.1768,
             "source": "Nave's Topical Bible; Theographic",
             "licence": "CC BY 4.0; CC BY-SA 4.0",
         }
     ]
-    # In Esau's file the Theme is weighted by rarity (decision 111): 6 x ln(31,102 / 17).
-    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 45.0709
+    # In Esau's file the Theme is weighted by rarity (decision 111): 6 x ln(31,102 / 18).
+    assert neighbour(export, "person:esau_1216", "theme:birthright")["weight"] == 44.7279
 
 
 def test_themes_are_in_the_search_index(export):

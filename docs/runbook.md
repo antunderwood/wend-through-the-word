@@ -14,24 +14,31 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
 
    The whole Bible (data version 2026-10-22) took about 1.5 minutes and under 1 GB of memory on the owner's Mac (up to 5 minutes while other heavy work ran; about 2 minutes of processor time, a third of it measuring gzipped sizes). It writes 9,397 files: 417 MB raw, 53 MB gzipped, the largest 99 KB gzipped (the Psalm 119 Ring 2 file). Before compact JSON (decision 168) the same sources gave 655 MB raw, 57 MB gzipped.
-3. Try the release first. The dry run checks everything and makes the zip, but pushes and creates nothing:
+3. Test the site locally on the new export before releasing. The dev server serves `out/data` (or the folder in `WEND_DATA`) at `/data`:
+
+   ```
+   cd web && npm ci && npm run dev
+   ```
+
+   Open the address it prints (http://localhost:5173) and try the changes. To try the production build of the page instead, run `npm run build && npm run preview` (http://localhost:4173). To try a branch's export without touching `out/`, build it to another folder and start the server with `WEND_DATA=<that folder>/data npm run dev`.
+4. Try the release first. The dry run checks everything and makes the zip, but pushes and creates nothing:
 
    ```
    uv run python -m pipeline.release v2026-10-19 --dry-run
    ```
 
    Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, a file in `out/data` is over the size limit (500 KB gzipped or 25 MiB raw; measuring takes about 15 seconds for the whole Bible), `out/reports/split_or_trimmed.tsv` has a file that is not trimmed, `out/reports/curated_no_longer_matches.tsv` has rows (fix the curated tables, decision 77), or `out/data` holds 20,000 files or more. It prints a warning for each other report with rows: read them before releasing.
-4. Release:
+5. Release:
 
    ```
    uv run python -m pipeline.release v2026-10-19
    ```
 
    It zips `out/data` as `out/wend-data-<data version>.zip`, makes and pushes the tag, and creates the GitHub release with the zip attached and notes giving the data version, build date, and commit.
-5. Publishing the release starts the Deploy workflow (`.github/workflows/deploy.yml`). Follow it with `gh run watch` (pick the Deploy run). It downloads the zip, builds and stages the page from the tag, runs the staged site tests on the folder it deploys, deploys with Wrangler, and runs the live check (`node web/live-check.ts`). Any failed step fails the run, and GitHub emails the owner.
+6. Publishing the release starts the Deploy workflow (`.github/workflows/deploy.yml`). Follow it with `gh run watch` (pick the Deploy run). It downloads the zip, builds and stages the page from the tag, runs the staged site tests on the folder it deploys, deploys with Wrangler, and runs the live check (`node web/live-check.ts`). Any failed step fails the run, and GitHub emails the owner.
 
    Upload size: the release zip of the whole Bible is 57 MB (63 MB before compact JSON), and the staged site 9,411 files, 418 MB. Wrangler uploads only files whose content changed, so the first whole-Bible release uploads nearly all of them and a later release only what changed. The staged site tests take 1 to 2 minutes on it. The first whole-Bible deploy (v2026-10-22, 2026-10-22) uploaded 9,391 files (8 already there) in 62 seconds; the Deploy step took 76 seconds and the whole workflow about 2 minutes. No total size limit was hit on the free plan.
-6. If the command stops after pushing the tag (for example, `gh` failed), remove the tag and any draft release, then run it again:
+7. If the command stops after pushing the tag (for example, `gh` failed), remove the tag and any draft release, then run it again:
 
    ```
    gh release delete v2026-10-19 --yes    # only if a draft release was made

@@ -14,6 +14,7 @@ from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
 
 from pipeline.common import norm, report_mismatches
+from pipeline.entities import bsb_name
 
 # Nave's book codes, in Bible order, and the OSIS names Theographic uses, in the same order.
 CODES = (
@@ -37,7 +38,8 @@ REF = re.compile(rf"\b({BOOKS}) ({SEG}(?:; (?:with )?{SEG})*)")
 
 def theographic_names(b):
     """Normalised name -> IDs of the People and Places with that name, and the same for aliases.
-    All of Theographic, so a heading's fate does not depend on the book range."""
+    All of Theographic, with the BSB's spellings and the curated names and aliases, so a
+    heading's fate does not depend on the book range."""
     names, aliases = defaultdict(set), defaultdict(set)
     for kind, _, f, entity_id in b.records.values():
         if kind not in ("person", "place"):
@@ -47,35 +49,47 @@ def theographic_names(b):
             own, other = [f["name"], title], f.get("alsoCalled")
         else:
             own, other = [title, f.get("kjvName"), f.get("esvName")], f.get("aliases")
+        own.append(bsb_name(title, b.verse_sets[entity_id], b.bsb, b.bsb_common))  # decision 172
         for n in own:
             names[norm(n or "")].add(entity_id)
         for n in (other or "").split(","):
             aliases[norm(n)].add(entity_id)
+    for entity_id, rows in b.corrections.items():  # a curated name or alias, "Mark" for John Mark
+        for row in rows:
+            if row["field"] in ("name", "aliases"):
+                (names if row["field"] == "name" else aliases)[norm(row["value"])].add(entity_id)
     names.pop("", None)
     aliases.pop("", None)
     return names, aliases
 
 
 def filed_verses(b, entry, keys, chapters, missing):
-    """Verse Keys of every Verse an entry's references file, in the whole Bible. Adds the whole
-    chapters it skips to `chapters` and counts its references to no Theographic verse."""
-    found = set()
-    for m in REF.finditer(entry):
-        book = OSIS[m[1]]
-        for seg in re.split(r"; (?:with )?", m[2]):
-            ch, _, items = seg.partition(":")
-            if not items:
-                chapters.add(f"{book}.{ch}")
-                continue
-            for item in items.split(","):
-                first, _, last = item.partition("-")
-                last = last.replace(":", ".") if ":" in last else f"{ch}.{last or first}"
-                ends = [f"{book}.{ch}.{first}", f"{book}.{last}"]
-                start, end = (b.verse_keys.get(ref) for ref in ends)
-                if not (start and end):
-                    missing.update({ref for ref in ends if ref not in b.verse_keys})
+    """Verse Key -> the Subheadings that file it, for every Verse an entry's references file in
+    the whole Bible. A Subheading is the text before the references on its line ("Sold by Esau").
+    Adds the whole chapters it skips to `chapters` and counts its references to no Theographic
+    verse."""
+    found = defaultdict(list)
+    for line in entry.splitlines():
+        first = REF.search(line)
+        subheading = first and line[: first.start()].strip(" -:;,")
+        for m in REF.finditer(line):
+            book = OSIS[m[1]]
+            for seg in re.split(r"; (?:with )?", m[2]):
+                ch, _, items = seg.partition(":")
+                if not items:
+                    chapters.add(f"{book}.{ch}")
                     continue
-                found.update(keys[bisect_left(keys, start) : bisect_right(keys, end)])
+                for item in items.split(","):
+                    first_v, _, last = item.partition("-")
+                    last = last.replace(":", ".") if ":" in last else f"{ch}.{last or first_v}"
+                    ends = [f"{book}.{ch}.{first_v}", f"{book}.{last}"]
+                    start, end = (b.verse_keys.get(ref) for ref in ends)
+                    if not (start and end):
+                        missing.update({ref for ref in ends if ref not in b.verse_keys})
+                        continue
+                    for k in keys[bisect_left(keys, start) : bisect_right(keys, end)]:
+                        if subheading not in found[k]:
+                            found[k].append(subheading)
     return found
 
 
@@ -96,7 +110,7 @@ def load(b):
     for h in headings:
         heading, skipped = h["subject"], set()
         whole_bible = filed_verses(b, h["entry"], keys, skipped, missing)
-        in_range = sorted(whole_bible & verses.keys())
+        in_range = sorted(whole_bible.keys() & verses.keys())
         if not in_range:
             continue
         # "REBEKAH (REBECCA)" is Rebekah, as "Jacob (Israel)" is Jacob; "SHUSHAN (SUSA)" is Susa by
@@ -129,7 +143,7 @@ def load(b):
         theme_id = "theme:" + re.sub(r"[^a-z0-9]+", "_", heading.lower()).strip("_")
         if theme_id in b.entities:
             sys.exit(f"two Nave's headings give the ID {theme_id}")
-        b.verse_sets[theme_id] = whole_bible
+        b.verse_sets[theme_id] = set(whole_bible)
         b.entities[theme_id] = {
             "id": theme_id,
             "type": "theme",
@@ -138,7 +152,9 @@ def load(b):
             "verses": [verses[k] for k in in_range],  # replaced by Verse Neighbours
         }
         for k in in_range:
-            verses[k]["filed_under"].append({"id": theme_id, "edge": "FILED_UNDER", **naves})
+            subheadings = [x for x in whole_bible[k] if x]
+            link = {"id": theme_id, "edge": "FILED_UNDER", "subheadings": subheadings, **naves}
+            verses[k]["filed_under"].append(link)
         chapters.update(skipped & in_range_chapters)
     for v in verses.values():
         v["filed_under"].sort(key=lambda x: x["id"])

@@ -61,15 +61,15 @@ test("previous and next chapter stay within the build", async ({ page }) => {
   await readFromList(page, "Gen 11:31");
   const previous = reader(page).getByRole("button", { name: "Previous chapter" });
   const next = reader(page).getByRole("button", { name: "Next chapter" });
-  // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 17, 3 John 1.
+  // The fixture builds Gen 11, 16, 25, 26, 36, Matt 1, 2, 16, 17, John 1, 3 John 1.
   await expect(previous).toBeDisabled();
-  for (const title of ["Genesis 16", "Genesis 25", "Genesis 26", "Genesis 36", "Matthew 1", "Matthew 2", "Matthew 17", "3 John 1"]) {
+  for (const title of ["Genesis 16", "Genesis 25", "Genesis 26", "Genesis 36", "Matthew 1", "Matthew 2", "Matthew 16", "Matthew 17", "John 1", "3 John 1"]) {
     await next.click();
     await expect(reader(page).getByRole("heading", { name: title })).toBeVisible();
   }
   await expect(next).toBeDisabled();
   await previous.click();
-  await expect(reader(page).getByRole("heading", { name: "Matthew 17" })).toBeVisible();
+  await expect(reader(page).getByRole("heading", { name: "John 1" })).toBeVisible();
   // Moving through chapters does not change the selection.
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:31");
 });
@@ -168,7 +168,7 @@ test("the reader follows the Selected Verse, and a Verse outside the build shows
   // Gen 16:1 has a Cross-reference to Gal 4:24, outside the fixture build.
   await page.locator(".labels").getByText("Gal 4:24", { exact: true }).click();
   await expect(reader(page).getByRole("heading", { name: "Gal 4:24" })).toBeVisible();
-  await expect(reader(page)).toContainText("Gal 4:24 is outside this build (Genesis, Matthew, 3 John only).");
+  await expect(reader(page)).toContainText("Gal 4:24 is outside this build (Genesis, Matthew, John, 3 John only).");
   expect(asked.filter((u) => u.includes("/Gal/"))).toEqual([]);
 });
 
