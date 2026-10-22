@@ -512,6 +512,11 @@
     color: #e6e8f0;
     font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
+  /* A phone browser zooms in on a field whose text is under 16 px, so on a phone every field is
+     16 px (decision 182); pinch zoom of the page stays available. */
+  :global(html[data-phone] :is(input, textarea, select)) {
+    font-size: 16px;
+  }
   /* Below the top strip of the search box and the Your Path bar, like the panel. */
   .stage {
     position: fixed;

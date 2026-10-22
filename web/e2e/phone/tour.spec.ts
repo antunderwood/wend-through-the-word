@@ -156,7 +156,7 @@ for (const view of ["A", "C"] as const) {
   });
 }
 
-test("the camera step names drag and pinch, the search step points at the search button, and a step in the sheet opens its tab", async ({ page }) => {
+test("the camera step names drag and pinch, the search step points at the search button, a step says tap, and a step in the sheet opens its tab", async ({ page }) => {
   await reader(page, "A");
   await help(page).tap();
   await expect(tour(page)).toContainText("In the tilted plane, drag to pan and pinch to zoom.");
@@ -168,7 +168,11 @@ test("the camera step names drag and pinch, the search step points at the search
   expect((await ring(page).boundingBox())!.y).toBeCloseTo(button.y - 5, 0);
 
   // The reader moves to the Reader tab; the step whose target is in Details opens it again.
-  for (let n = 2; n <= 4; n++) await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  for (let n = 2; n <= 4; n++) {
+    // A touch screen taps where a mouse clicks (decision 182).
+    if (n === 3) await expect(tour(page)).toContainText("Tap God to select him");
+    await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  }
   await expect(tour(page)).toContainText(`Step 5 of ${STEPS.length}`);
   await sheet(page).getByRole("tab", { name: "Reader" }).tap();
   await tour(page).getByRole("button", { name: "Do it for me" }).tap();

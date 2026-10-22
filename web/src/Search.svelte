@@ -98,10 +98,6 @@
     right: 8px;
     width: auto;
   }
-  /* A phone browser zooms in on a text field whose text is under 16 px. */
-  :global(html[data-phone]) input {
-    font-size: 16px;
-  }
   /* On a phone the type chips are one row that scrolls sideways, and every chip and result is
      large enough to tap. */
   :global(html[data-phone]) .chips {
