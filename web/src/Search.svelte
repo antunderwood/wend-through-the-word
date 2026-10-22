@@ -31,6 +31,11 @@
     if (e.key === "Enter" && hits[0]) choose(hits[0].id);
     else if (e.key === "Escape") opened = false;
   }
+  // A box left open closes when the layout crosses the phone breakpoint, either way.
+  $effect(() => {
+    void screen.phone;
+    opened = false;
+  });
   // A tap anywhere outside the open box closes it.
   function outside(e: PointerEvent) {
     if (opened && !box?.contains(e.target as Node)) opened = false;

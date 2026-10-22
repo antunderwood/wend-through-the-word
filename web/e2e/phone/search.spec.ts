@@ -49,6 +49,19 @@ test("search closes on Escape and on a tap outside it", async ({ page }) => {
   await focusIs(page, ABRAHAM);
 });
 
+test("search left open closes when the window widens past the phone layout and narrows again", async ({ page }) => {
+  await open(page);
+  const box = page.getByRole("searchbox", { name: "Search" });
+  await page.getByRole("button", { name: "Search" }).tap();
+  await expect(box).toBeFocused();
+  // The desktop layout always shows the box; back on a phone it is a button again.
+  await page.setViewportSize({ width: 900, height: 844 });
+  await expect(box).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole("button", { name: "Search" })).toBeVisible();
+  await expect(box).toBeHidden();
+});
+
 test("the page does not zoom when the search box is focused: its text is at least 16 px", async ({ page }) => {
   // A phone browser zooms in on a text field whose text is smaller than 16 px.
   await open(page);
