@@ -6,6 +6,7 @@
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
   import { passes, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import { screen } from "./screen.svelte";
   import type { Notes } from "./session";
 
   let {
@@ -57,6 +58,8 @@
   const paged = <T,>(key: string, rows: T[]) => rows.slice(0, pages[key] ?? PAGE);
 
   const selected = $derived(model.selected);
+  // A phone, or a phone on its side: the Selected Node's section is too short to hold its actions.
+  const compact = $derived(screen.phone || screen.short);
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
 
@@ -135,7 +138,10 @@
 
 <aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node">
   {#if noWebGL}
-    <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
+    <p class="fallback">
+      This browser has no WebGL, so the graph is not drawn. The lists below work alone:
+      {screen.coarse ? "a tap selects, a double tap makes the Focus." : "a click selects, a double click makes the Focus."}
+    </p>
   {/if}
   <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
   <section class="selected" bind:this={selectedBox}>
@@ -157,18 +163,7 @@
         {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
     </p>
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
-    <button data-tour="make-focus" onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
-    {#if model.pins.includes(selected)}
-      <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
-    {:else}
-      <button data-tour="pin" onclick={() => pin(selected)}>Pin</button>
-    {/if}
-    <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-    <button data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
-    <button data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
-    <button onclick={() => suggest(typeOf(selected) === "verse" ? "verse" : "fact", [selected], `${selectedType}: ${label(selected)}`)} disabled={typeOf(selected) === "overflow"}>
-      Suggest a correction
-    </button>
+    {#if !compact}{@render actions()}{/if}
     {#await sharing then lists}
       {#each lists as { with: o, verses }, i (o)}
         {#if verses.length}
@@ -223,6 +218,7 @@
       {@render failed("the details", e)}
     {/await}
   </section>
+  {#if compact}<div class="actions">{@render actions()}</div>{/if}
   {#await listing then list}
     <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
          in its title and a correction link after it; a link between two Entities is a
@@ -268,6 +264,29 @@
   {@render end?.()}
 </aside>
 
+<!-- What the reader can do with the Selected Node. On a phone, upright or on its side, they are one
+     row below its section, held at the top of the panel while the lists scroll, and the correction
+     link is a flag. -->
+{#snippet actions()}
+  <button data-tour="make-focus" onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+  {#if model.pins.includes(selected)}
+    <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
+  {:else}
+    <button data-tour="pin" onclick={() => pin(selected)}>Pin</button>
+  {/if}
+  <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
+  <button data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
+  <button data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
+  <button
+    class:flag={compact}
+    aria-label={compact ? "Suggest a correction" : undefined}
+    title={compact ? "Suggest a correction" : undefined}
+    onclick={() => suggest(typeOf(selected) === "verse" ? "verse" : "fact", [selected], `${selectedType}: ${label(selected)}`)}
+    disabled={typeOf(selected) === "overflow"}
+  >
+    {compact ? "\u2691" : "Suggest a correction"}
+  </button>
+{/snippet}
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
 {#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
   <button class="item" class:sel={id === selected} onclick={() => pick(id, from)} ondblclick={() => makeFocus(id)}>
@@ -375,6 +394,28 @@
   /* 40% of the sheet on a phone, fixed for the same reason (decision 171). */
   :global(html[data-phone]) .selected {
     height: calc(var(--sheet) * 0.4);
+  }
+  /* On a phone the actions are one row of fixed height between the section and the lists, held at
+     the top of the panel while the lists scroll under it; the lists below never move between two taps. */
+  .actions {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    gap: 4px;
+    padding: 6px 0;
+    background: #121520;
+    border-bottom: 1px solid #262a3c;
+  }
+  .actions button {
+    flex: auto;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 6px;
+  }
+  .actions .flag {
+    flex: none;
+    font-size: 16px;
   }
   h2 {
     margin: 0;

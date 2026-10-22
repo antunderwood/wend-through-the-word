@@ -55,6 +55,29 @@ test("Read opens the Reader tab at the Selected Verse's chapter; a tap on a vers
   await expect(verse(page, "Gen 11:26")).toHaveAttribute("aria-current", "true");
 });
 
+test("on a phone the whole verse is the target: a tap on its words selects it, a double tap makes it the Focus", async ({ page }) => {
+  await open(page);
+  await focusIs(page, ABRAHAM);
+  await readFromList(page, "Gen 11:31");
+  // The verse is the size of its words, far larger than a verse number.
+  const line = verse(page, "Gen 11:29");
+  await line.scrollIntoViewIfNeeded();
+  const box = (await line.boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(box.width).toBeGreaterThan(200);
+  // A tap on its words, far from its number.
+  await expect(line).toContainText("Milcah");
+  await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(line).toHaveAttribute("aria-current", "true");
+  await focusIs(page, ABRAHAM);
+
+  const other = verse(page, "Gen 11:30");
+  await other.scrollIntoViewIfNeeded();
+  const b = (await other.boundingBox())!;
+  await doubleTap(page, { x: b.x + b.width / 2, y: b.y + b.height / 2 });
+  await focusIs(page, "01011030");
+});
+
 test("Read on an Entity opens the Reader tab at the chapter of its first linked Verse, with the sheet open", async ({ page }) => {
   await open(page);
   await focusIs(page, ABRAHAM);

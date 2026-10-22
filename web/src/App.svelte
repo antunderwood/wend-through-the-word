@@ -38,6 +38,12 @@
   // The height the bottom sheet takes on a phone, open or closed: the scene's centre sits above it.
   let sheetShown = $state(0);
   $effect(() => graph?.setOffset(screen.phone ? sheetShown : 0));
+  // Without WebGL there is no scene on a phone: the sheet takes the screen between the Your Path bar
+  // and the column of controls above it.
+  let dockHeight = $state(0);
+  $effect(() => {
+    document.documentElement.style.setProperty("--sheet", noWebGL && screen.phone ? `calc(100dvh - var(--keyboard, 0px) - ${72 + dockHeight + 16}px)` : "");
+  });
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
@@ -460,10 +466,11 @@
 {/if}
 <!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
      elsewhere each keeps its own place. -->
-<div class="dock">
+<div class="dock" bind:offsetHeight={dockHeight}>
   {#if hint}
+    <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
-      A click selects a node. A double click, Make Focus, or search moves the Focus.
+      {#if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}
       <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
     </p>
   {/if}
@@ -616,6 +623,40 @@
   :global(html[data-phone]) .hint button {
     min-height: 44px;
     min-width: 44px;
+  }
+  /* A phone on its side has the desktop layout on a short screen: the hint, the notes, and the
+     controls are one column in the bottom left corner of the scene, clear of the panel and above the
+     footer, and the reader drawer takes the panel's place. */
+  :global(html[data-short]:not([data-phone])) .dock {
+    position: fixed;
+    left: 16px;
+    right: 356px; /* the panel's width and a gap */
+    bottom: 36px; /* above the footer */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    pointer-events: none;
+  }
+  :global(html[data-short]:not([data-phone]):has(.panel.collapsed)) .dock {
+    right: 16px;
+  }
+  :global(html[data-short]:not([data-phone])) .dock > * {
+    position: static;
+    transform: none;
+    pointer-events: auto;
+  }
+  :global(html[data-short]:not([data-phone])) .drawer {
+    top: 56px;
+    left: auto;
+    right: 0;
+    bottom: 0;
+    width: 340px;
+    border-radius: 0;
+    background: rgb(20, 23, 34); /* opaque over the panel */
+  }
+  :global(html[data-short]:not([data-phone])) .stage.reading {
+    left: 0;
   }
   :global(html[data-phone]) .views button {
     padding: 4px 10px;

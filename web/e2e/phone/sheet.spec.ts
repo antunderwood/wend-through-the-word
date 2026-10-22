@@ -129,3 +129,31 @@ test("a double tap on a list row makes it the Focus, and the row does not move b
   await focusIs(page, "person:isaac_616");
   await expect(details.getByRole("heading", { level: 2 })).toHaveText("Isaac");
 });
+
+// Each of the Selected Node's actions is drawn whole on screen and nothing lies over its middle.
+const ACTIONS = ["Make Focus", "Pin", "Prev", "Next", "Read", "Suggest a correction"];
+async function actionsInReach(page: Page) {
+  const details = page.getByRole("tabpanel", { name: "Details" });
+  for (const name of ACTIONS) {
+    const button = details.getByRole("button", { name, exact: true });
+    await expect(button, name).toBeInViewport({ ratio: 1 });
+    const b = (await button.boundingBox())!;
+    expect(b.height, name).toBeGreaterThanOrEqual(44);
+    expect(b.width, name).toBeGreaterThanOrEqual(44);
+    expect(await button.evaluate((e, p) => e.contains(document.elementFromPoint(p.x, p.y)), { x: b.x + b.width / 2, y: b.y + b.height / 2 }), name).toBe(true);
+  }
+}
+
+test("the Selected Node's actions stay in view while its section or the lists scroll", async ({ page }) => {
+  await open(page);
+  await actionsInReach(page);
+  // Abraham's section holds his journey note and his Dictionary Entry: far more than it shows.
+  const section = page.getByRole("tabpanel", { name: "Details" }).getByRole("heading", { level: 2, name: "Abraham" }).locator("xpath=..");
+  expect(await section.evaluate((s) => s.scrollHeight > s.clientHeight + 100)).toBe(true);
+  await section.evaluate((s) => s.scrollTo(0, s.scrollHeight));
+  await actionsInReach(page);
+  // Down in the lists, past the section.
+  const details = page.getByRole("tabpanel", { name: "Details" });
+  await details.getByRole("list", { name: /^Verse/ }).getByRole("listitem").last().scrollIntoViewIfNeeded();
+  await actionsInReach(page);
+});

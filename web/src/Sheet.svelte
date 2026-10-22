@@ -18,9 +18,30 @@
   $effect(() => {
     shown = collapsed ? handle + 1 : height; // and the top border
   });
+
+  // The on-screen keyboard lies over the bottom of the page and shrinks the visual viewport, not the
+  // page. The sheet sits above it (--keyboard is its height), and a field being typed in stays in view.
+  let sheet: HTMLElement;
+  $effect(() => {
+    const vv = visualViewport;
+    if (!vv) return;
+    const root = document.documentElement;
+    const follow = () => {
+      root.style.setProperty("--keyboard", `${Math.max(0, innerHeight - vv.height - vv.offsetTop)}px`);
+      requestAnimationFrame(() => {
+        const typing = document.activeElement;
+        if (typing && sheet.contains(typing) && typing.matches("input, textarea")) typing.scrollIntoView({ block: "nearest" });
+      });
+    };
+    vv.addEventListener("resize", follow);
+    return () => {
+      vv.removeEventListener("resize", follow);
+      root.style.removeProperty("--keyboard");
+    };
+  });
 </script>
 
-<section class="sheet" class:collapsed aria-label="Sheet" bind:offsetHeight={height}>
+<section class="sheet" class:collapsed aria-label="Sheet" bind:offsetHeight={height} bind:this={sheet}>
   <button class="handle" aria-controls="sheet-body" aria-expanded={!collapsed} aria-label={collapsed ? "Open the sheet" : "Close the sheet"} onclick={() => (collapsed = !collapsed)} bind:clientHeight={handle}>
     <span class="grip"></span>
   </button>
@@ -38,20 +59,20 @@
 
 <style>
   /* 46% of the height (the navigation prototype's finding); closed, only the handle shows. What
-     floats at the bottom of the screen sits above --sheet-shown. */
+     floats at the bottom of the screen sits above --sheet-shown, which counts the keyboard. */
   :global(html:has(.sheet)) {
-    --sheet: 46dvh;
-    --sheet-shown: var(--sheet);
+    --sheet: min(46dvh, 100dvh - var(--keyboard, 0px) - 160px); /* with the keyboard up, room above for the controls */
+    --sheet-shown: calc(var(--sheet) + var(--keyboard, 0px));
   }
   :global(html:has(.sheet.collapsed)) {
-    --sheet-shown: 45px; /* the handle and the top border */
+    --sheet-shown: calc(45px + var(--keyboard, 0px)); /* the handle and the top border */
   }
   .sheet {
     --handle: 44px;
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: var(--keyboard, 0px);
     height: var(--sheet);
     box-sizing: border-box;
     display: flex;
