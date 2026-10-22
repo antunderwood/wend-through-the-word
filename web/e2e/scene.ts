@@ -1,10 +1,12 @@
 import type { Page } from "@playwright/test";
 
-// The browser tests read the drawn scene through window.wendGraph, set only in the e2e build.
+// The browser tests read the drawn scene through window.wendGraph, set only in the e2e build, and
+// can act on the Focus Model through window.wendApply, for a state no control sets (a low node limit).
 export type OnScreen = { id: string; role: string; x: number; y: number };
 declare global {
   interface Window {
     wendGraph?: { testNodes(): OnScreen[] };
+    wendApply?: (a: import("../src/model").Action) => void;
   }
 }
 

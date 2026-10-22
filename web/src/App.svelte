@@ -320,8 +320,9 @@
     graph.onHover(showTip);
     graph.render(onScreen, model.selected);
     if (!stored(TOUR_KEY)) tour = "offer";
-    // The browser tests read node positions; only their build (vite build --mode e2e) has the hook.
-    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph });
+    // The browser tests read node positions and set what no control sets, such as a low node limit;
+    // only their build (vite build --mode e2e) has the hooks.
+    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph, wendApply: apply });
   }
 
   onMount(() => {
