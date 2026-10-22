@@ -45,6 +45,19 @@ test("an address with several books says so in the book filter", async ({ page }
   await expect(filters(page).getByRole("combobox", { name: "Verses from" }).locator("option:checked")).toHaveText("Several books: Genesis, 3 John");
 });
 
+test("the book filter lists every built book, and one book hides the Verses of the others", async ({ page }) => {
+  await open(page);
+  const from = filters(page).getByRole("combobox", { name: "Verses from" });
+  // The fixture builds chapters of Genesis, Matthew, and 3 John.
+  await expect(from.locator("option")).toHaveText(["All books", "This build", "Genesis", "Matthew", "3 John"]);
+  // Fixture: 3 of Abraham's 29 Verses are in Matthew (1:1, 1:2, 1:17).
+  await from.selectOption({ label: "Matthew" });
+  await page.keyboard.press("Escape");
+  await expect(panel(page).getByRole("list", { name: "Verse (3)" }).getByRole("button", { name: /^Matt 1:/ })).toHaveCount(3);
+  await expect.poll(async () => (await nodes(page)).filter((n) => /^\d{8}$/.test(n.id)).map((n) => n.id.slice(0, 2))).toContain("40");
+  expect((await nodes(page)).filter((n) => /^\d{8}$/.test(n.id) && !n.id.startsWith("40"))).toEqual([]);
+});
+
 test("the book filter leaves the Verses two nodes share, as they are the evidence for their link", async ({ page }) => {
   // Decision 136: Genealogy is together with Abraham in 6 Genesis verses, with only Matthew chosen.
   await open(page, "/?focus=person:abraham_58&books=Matt");

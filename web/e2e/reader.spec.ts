@@ -74,6 +74,33 @@ test("previous and next chapter stay within the build", async ({ page }) => {
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:31");
 });
 
+test("next chapter from the last built chapter of a book opens the first of the next book, and previous comes back", async ({ page }) => {
+  // Fixture: Gen 36 is the last built chapter of Genesis (as Mal 4 is of the Old Testament).
+  await page.goto("/?focus=01036001");
+  await expect(reader(page).getByRole("heading", { name: "Genesis 36" })).toBeVisible();
+  await reader(page).getByRole("button", { name: "Next chapter" }).click();
+  await expect(reader(page).getByRole("heading", { name: "Matthew 1" })).toBeVisible();
+  await expect(reader(page)).toContainText("This is the record of the genealogy of Jesus Christ, the son of David, the son of Abraham:");
+  await reader(page).getByRole("button", { name: "Previous chapter" }).click();
+  await expect(reader(page).getByRole("heading", { name: "Genesis 36" })).toBeVisible();
+});
+
+test("a Cross-reference into another book opens in the reader and can become the Focus", async ({ page }) => {
+  await page.goto("/?focus=01016011");
+  await focusIs(page, "01016011");
+  // Fixture: Gen 16:11 has 14 Cross-references, Matt 1:21 (8 votes) among the 8 past the top 6.
+  await panel(page).getByRole("button", { name: "8 more" }).click();
+  const row = panel(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: /^Matt 1:21/ });
+  await row.click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Matt 1:21");
+  await expect(panel(page)).toContainText("you are to give Him the name Jesus");
+  await expect(reader(page).getByRole("heading", { name: "Matthew 1" })).toBeVisible();
+  await expect(verse(page, "Matt 1:21")).toHaveAttribute("aria-current", "true");
+  await row.dblclick();
+  await focusIs(page, "40001021");
+  await expect(reader(page).getByRole("heading", { name: "Matthew 1" })).toBeVisible();
+});
+
 // Makes a Verse the Focus through the search box.
 async function searchVerse(page: Page, ref: string, id: string) {
   await page.getByRole("searchbox", { name: "Search" }).fill(ref);
