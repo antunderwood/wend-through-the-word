@@ -134,11 +134,8 @@ def test_genesis_ships_the_real_curated_tables(genesis):
         assert read_tsv(genesis / "reports" / f"curated_{name}.tsv") == []
     unreviewed = read_tsv(genesis / "reports" / "curated_unreviewed.tsv")
     # The owner reviewed the last three correction rows on 2026-10-19 (decision 110), and the
-    # places of #16 they researched on 2026-10-22 (decision 167); Abarim, Mount Nebo, and
-    # Alush await review.
-    assert {r["ids"] for r in unreviewed if r["table"] == "corrections"} == {
-        f"place:{p} coordinates" for p in ("abarim_2", "mount_nebo_849", "alush_51")
-    }
+    # places of #16 on 2026-10-22 (decision 167).
+    assert not [r for r in unreviewed if r["table"] == "corrections"]
     place = genesis / "data" / VERSION / "entity" / "place"
     nile = read_json(place / "nile_895.json")
     assert (nile["lat"], nile["lon"], nile["coord_source"]) == (29.85, 31.25, "Curated")
