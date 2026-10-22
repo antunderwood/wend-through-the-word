@@ -65,16 +65,15 @@ def test_the_ring_1_people_of_abraham_jesus_and_paul(bible):
         "person:nahor_2143",
         "person:lot_1830",
     ]
+    # A letter's greeting links nothing to Jesus Christ (decision 176), so Timothy and Paul, who
+    # share mostly greetings with him, give way to People of the Gospel scenes.
     assert top_people(entity(bible, "person:jesus_905")) == [
         "person:god_1324",
         "person:peter_2745",
         "person:holy_spirit_7400",
-        "person:paul_2479",
-        # A Co-mention artefact: the letters say "Christ Jesus" in Verses that also name Timothy
-        # (issue #64, formulaic phrases in the letters inflate Co-mentions). Kept as the expected
-        # value until that issue changes the ranking (owner).
-        "person:timotheus_2863",
         "person:pilate_2365",
+        "person:philip_2344",
+        "person:martha_1937",
     ]
     assert top_people(entity(bible, "person:paul_2479")) == [
         "person:barnabas_1722",
