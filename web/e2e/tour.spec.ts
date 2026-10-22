@@ -95,7 +95,7 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   },
   (page) => scene(page).locator(`[data-node="${GOD}"]`).click(),
   (page) => scene(page).locator(`[data-node="${JESUS}"]`).click(),
-  (page) => panel(page).getByRole("button", { name: "28 more" }).click(),
+  (page) => panel(page).getByRole("button", { name: "27 more" }).click(),
   (page) => panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ }).click(),
   (page) => doubleClickLabel(page, "Simon Peter", PETER),
   async (page) => {
@@ -145,7 +145,7 @@ test("the whole tour with the keyboard only", async ({ page }) => {
       await page.keyboard.press("ArrowRight");
     },
     () => enter(bar(page).getByRole("button", { name: "Jesus Christ" })),
-    () => enter(panel(page).getByRole("button", { name: "28 more" })),
+    () => enter(panel(page).getByRole("button", { name: "27 more" })),
     () => enter(panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ })),
     () => search("Simon Peter"),
     async () => {

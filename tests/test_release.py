@@ -95,7 +95,7 @@ def test_refuses_an_export_that_breaks_the_file_limit(repo):
         (extra / f"{i}.json").touch()
     run = release(repo, "v1")
     assert run.returncode == 1
-    assert "out/data holds 20672 files, the limit is 20000" in run.stderr
+    assert "out/data holds 20667 files, the limit is 20000" in run.stderr
 
 
 def test_refuses_an_untrimmed_file_or_a_curated_row_that_no_longer_matches(repo):

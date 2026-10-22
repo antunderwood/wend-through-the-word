@@ -115,3 +115,12 @@ def test_names_take_the_bsb_spelling_unless_it_is_unsafe(bible):
     # Curated aliases remove the Themes that duplicated People by their short names (decision 173).
     themes = bible / "data" / VERSION / "entity" / "theme"
     assert not [h for h in ("mark", "peter", "festus", "lysias") if (themes / f"{h}.json").exists()]
+
+
+def test_headings_that_spell_a_place_another_way_are_removed_but_not_ordinary_words(bible):
+    # Decision 175 on the real sources. Removed: AJALON (Aijalon), KIRJATHAIM (Kiriathaim; the BSB
+    # writes "Shaveh-kiriathaim", which is not an ordinary word), GERIZIM (Mount Gerizim). Kept:
+    # HOSTAGE (an ordinary word, not Host) and SHECHEMITES (a people, not Shechem).
+    themes = bible / "data" / VERSION / "entity" / "theme"
+    assert not [h for h in ("ajalon", "kirjathaim", "gerizim") if (themes / f"{h}.json").exists()]
+    assert (themes / "hostage.json").exists() and (themes / "shechemites.json").exists()

@@ -60,7 +60,7 @@ def test_genesis_has_one_file_for_each_entity_in_range_and_each_stub(genesis):
     entity = genesis / "data" / VERSION / "entity"
     files = [read_json(p) for p in entity.rglob("*.json")]
     in_range = Counter(e["type"] for e in files if e["verses"])
-    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 544}
+    assert in_range == {"person": 352, "place": 119, "event": 116, "theme": 529}
     # Stubs: Entities with no Genesis verse that an explicit edge links to Genesis (decision 51).
     stubs = Counter(e["type"] for e in files if not e["verses"])
     # Only People (family edges) and People Groups (MEMBER_OF) ship as stubs.
@@ -254,10 +254,10 @@ def test_abrahams_top_6_themes_weight_broad_topics_by_rarity_not_cosine(genesis)
     ]
 
 
-def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_place_name(genesis):
+def test_genesis_themes_file_5450_verses_and_only_kept_ones_have_a_person_or_place_name(genesis):
     entity = genesis / "data" / VERSION / "entity"
     verses = [v for p in chapter_files(genesis) for v in read_json(p)["verses"]]
-    assert sum(len(v["filed_under"]) for v in verses) == 5470
+    assert sum(len(v["filed_under"]) for v in verses) == 5450
 
     # PRD 12.13: no Theme has the name or an alias of a Theographic Person or Place ("Jacob
     # (Israel)" is Jacob). A heading that matches only a part before a comma is kept and reported.
@@ -268,7 +268,7 @@ def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_pla
     names = {norm(re.sub(r"\s*\(.*\)$", "", e["name"])) for e in files}
     names |= {norm(a) for e in files for a in e["aliases"]}
     themes = [read_json(p)["name"] for p in (entity / "theme").glob("*.json")]
-    assert len(themes) == 544
+    assert len(themes) == 529
     clashes = {t for t in themes if norm(re.sub(r"\s*\(.*\)$", "", t)) in names}
     # Only headings the owner kept (decision 109) may share a name with an Entity.
     kept = {"God (topic)", "Holy Spirit (topic)", "SALT", "LIGHT", "SUN", "MASTER", "DAUGHTER"}
@@ -279,6 +279,7 @@ def test_genesis_themes_file_5470_verses_and_only_kept_ones_have_a_person_or_pla
         ("removed", "name", ""): 383,  # 3 matched an alias before the BSB names (decision 172)
         ("kept", "name", "yes"): 3,  # GOD, HOLY SPIRIT, SALT
         ("removed", "alias", ""): 22,
+        ("removed", "alike", ""): 15,  # HAI is Ai, KIRJATH-ARBA is Kiriath-arba (decision 175)
         ("kept", "alias", "yes"): 7,  # LIGHT, SUN, MASTER, DAUGHTER, WIFE, FIRSTBORN, SCEPTER
         ("kept", "part of the heading", ""): 1,  # JESUS, THE CHRIST
     }

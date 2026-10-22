@@ -65,7 +65,9 @@ def load(b):
     for verses in b.chapters.values():
         verses.sort(key=lambda v: v["key"])
     b.bsb = {b.verse_keys[ref]: text for ref, text in whole.items() if ref in b.verse_keys}
-    b.bsb_common = {w for text in whole.values() for w in re.findall(r"\b[a-z]+\b", text)}
+    # Words the BSB writes in lower case, not after a hyphen: "kiriathaim" in "Shaveh-kiriathaim"
+    # is a name.
+    b.bsb_common = {w for t in whole.values() for w in re.findall(r"(?<![\w-])[a-z]+\b", t)}
 
     for osis in bsb.keys() - seen:
         b.report(
