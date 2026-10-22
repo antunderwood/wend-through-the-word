@@ -138,7 +138,10 @@
 
 <aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node">
   {#if noWebGL}
-    <p class="fallback">This browser has no WebGL, so the graph is not drawn. The lists below work alone: a click selects, a double click makes the Focus.</p>
+    <p class="fallback">
+      This browser has no WebGL, so the graph is not drawn. The lists below work alone:
+      {screen.coarse ? "a tap selects, a double tap makes the Focus." : "a click selects, a double click makes the Focus."}
+    </p>
   {/if}
   <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
   <section class="selected" bind:this={selectedBox}>

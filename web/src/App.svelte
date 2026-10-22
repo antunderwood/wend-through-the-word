@@ -38,6 +38,12 @@
   // The height the bottom sheet takes on a phone, open or closed: the scene's centre sits above it.
   let sheetShown = $state(0);
   $effect(() => graph?.setOffset(screen.phone ? sheetShown : 0));
+  // Without WebGL there is no scene on a phone: the sheet takes the screen between the Your Path bar
+  // and the column of controls above it.
+  let dockHeight = $state(0);
+  $effect(() => {
+    document.documentElement.style.setProperty("--sheet", noWebGL && screen.phone ? `calc(100dvh - ${72 + dockHeight + 16}px)` : "");
+  });
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
@@ -455,7 +461,7 @@
 {/if}
 <!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
      elsewhere each keeps its own place. -->
-<div class="dock">
+<div class="dock" bind:offsetHeight={dockHeight}>
   {#if hint}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
