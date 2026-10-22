@@ -17,6 +17,7 @@ const roleOf = async (page: Page, id: string) => (await nodes(page)).find((n) =>
 test.use({ reducedMotion: "reduce", permissions: ["clipboard-read", "clipboard-write"] });
 
 test("the student journey by touch, and its shared link opened on another phone", async ({ page, browser }) => {
+  test.slow(); // the whole journey, then a second phone loads the link
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
   await page.goto("/");
   await focusIs(page, ABRAHAM);
