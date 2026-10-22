@@ -35,7 +35,7 @@
 
 <style>
   .warning {
-    max-width: 360px;
+    max-width: min(360px, 100vw - 74px); /* within a phone's width, with its margins, padding, and border */
     padding: 16px 20px;
     background: #161a28;
     color: inherit;
@@ -49,6 +49,15 @@
   .warning a {
     margin-right: 12px;
     color: #ffd27a;
+  }
+  /* On a phone the links and the button are large enough to tap. */
+  :global(html[data-phone]) .warning :is(a, button) {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
+  :global(html[data-phone]) .warning button {
+    padding: 0 16px;
   }
   .muted {
     color: #9aa0b4;
