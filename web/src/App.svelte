@@ -10,6 +10,7 @@
   import Reader from "./Reader.svelte";
   import { notesMarkdown } from "./notes";
   import { afterClear, hiddenNote, initialState, reduce, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
+  import { screen } from "./screen.svelte";
   import Search from "./Search.svelte";
   import Tour from "./Tour.svelte";
   import { TOUR_START, type TourPage } from "./tour";
@@ -39,6 +40,10 @@
   const storedView = stored(VIEW_STORE);
   // The tilted plane unless the reader chose another view in this browser (decision 118).
   let view = $state<View>(storedView && Object.hasOwn(VIEWS, storedView) ? (storedView as View) : "A");
+  // A phone offers the tilted plane and the free orbit only. A kept or shared B shows as A there,
+  // and stays B in this browser and the address, so a desktop still gets it (docs/specs/mobile.md).
+  const offered = $derived(screen.phone ? VIEW_KEYS.filter((v) => v !== "B") : VIEW_KEYS);
+  const shown = $derived(offered.includes(view) ? view : "A");
   // Animation turned off in the filter panel is kept in this browser (PRD 10.2 rule 6).
   const MOTION_STORE = "wend.motion";
   let motion = $state(stored(MOTION_STORE) !== "off");
@@ -53,15 +58,19 @@
   function choose(v: View) {
     view = v;
     store(VIEW_STORE, v);
-    graph?.setView(v); // the Focus Model state is untouched: only the view changes
   }
+  // The Focus Model state is untouched: only the view changes, also when the width crosses the breakpoint.
+  $effect(() => {
+    const v = shown; // read first: the effect follows it even before the scene exists
+    graph?.setView(v);
+  });
 
   // Left and Right on the picker step through the views, as a radio group does.
   async function stepView(e: KeyboardEvent) {
     const dir = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
     if (!dir) return;
     e.preventDefault();
-    choose(VIEW_KEYS[(VIEW_KEYS.indexOf(view) + dir + VIEW_KEYS.length) % VIEW_KEYS.length]);
+    choose(offered[(offered.indexOf(shown) + dir + offered.length) % offered.length]);
     await tick();
     (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-checked="true"]')!.focus();
   }
@@ -210,7 +219,7 @@
       return model;
     },
     get view() {
-      return view;
+      return shown;
     },
     get reading() {
       return reading;
@@ -277,7 +286,7 @@
       noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
       return;
     }
-    graph.setView(view);
+    graph.setView(shown);
     graph.setMotion(motion);
     graph.onNodeClick((id) => apply({ type: "select", id }));
     graph.onNodeDoubleClick(makeFocus);
@@ -384,8 +393,8 @@
 <div class="controls">
   {#if !noWebGL}
     <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-      {#each VIEW_KEYS as key (key)}
-        <button role="radio" aria-checked={view === key} tabindex={view === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+      {#each offered as key (key)}
+        <button role="radio" aria-checked={shown === key} tabindex={shown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
       {/each}
     </div>
   {/if}
