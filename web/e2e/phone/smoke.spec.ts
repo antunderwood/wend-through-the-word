@@ -4,6 +4,7 @@ import { focusIs } from "../scene";
 test("a phone loads the page and walks to Abraham by search and touch", async ({ page }) => {
   await page.goto("/?focus=person:isaac_616");
   await focusIs(page, "person:isaac_616");
+  await page.getByRole("button", { name: "Search" }).tap();
   await page.getByRole("searchbox", { name: "Search" }).fill("Abraham");
   await page.getByRole("list", { name: "Search results" }).getByRole("button").first().tap();
   await focusIs(page, "person:abraham_58");

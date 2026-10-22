@@ -74,11 +74,11 @@
     background: #262a3c;
   }
   /* On a phone the bar spans the top of the screen in one row: the steps scroll sideways and Clear
-     or Undo clear stays at its end. Its steps are large enough to tap. */
+     or Undo clear stays at its end, clear of the search button. Its steps are large enough to tap. */
   :global(html[data-phone]) .path {
     top: 8px;
     left: 8px;
-    right: 8px;
+    right: 70px; /* the search button (8 + 54) and a gap */
     padding: 4px;
   }
   :global(html[data-phone]) ol {
