@@ -12,6 +12,7 @@
   import { afterClear, hiddenNote, initialState, reduce, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import { screen } from "./screen.svelte";
   import Search from "./Search.svelte";
+  import Sheet from "./Sheet.svelte";
   import Tour from "./Tour.svelte";
   import { TOUR_START, type TourPage } from "./tour";
   import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
@@ -24,7 +25,7 @@
   const VIEW_STORE = "wend.view";
 
   let host: HTMLDivElement;
-  let graph: Graph | undefined;
+  let graph = $state.raw<Graph>();
   let data = $state.raw<Data>();
   let model = $state.raw(initialState(START));
   let onScreen = $state.raw<Scene>();
@@ -34,6 +35,9 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
+  // The height the bottom sheet takes on a phone, open or closed: the scene's centre sits above it.
+  let sheetShown = $state(0);
+  $effect(() => graph?.setOffset(screen.phone ? sheetShown : 0));
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
@@ -337,27 +341,35 @@
 <div class="stage" data-tour="scene" class:reading class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
-  <!-- The chevron points the way the panel will move. -->
-  <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
-    {collapsed ? "‹" : "›"}
-  </button>
-  <DetailPanel
-    {data}
-    {model}
-    {label}
-    {apply}
-    {makeFocus}
-    {pin}
-    onread={openReader}
-    suggest={(kind, nodeIds, currentValue) => correction?.suggest(kind, nodeIds, currentValue)}
-    {notes}
-    onnote={(id, text) => setNotes(withNote(notes, id, text))}
-    download={downloadNotes}
-    deleteAll={() => setNotes({})}
-    {noWebGL}
-    {collapsed}
-    reading={!!reading}
-  />
+  {#snippet details()}
+    <DetailPanel
+      data={data!}
+      {model}
+      {label}
+      {apply}
+      {makeFocus}
+      {pin}
+      onread={openReader}
+      suggest={(kind, nodeIds, currentValue) => correction?.suggest(kind, nodeIds, currentValue)}
+      {notes}
+      onnote={(id, text) => setNotes(withNote(notes, id, text))}
+      download={downloadNotes}
+      deleteAll={() => setNotes({})}
+      {noWebGL}
+      {collapsed}
+      reading={!!reading}
+    />
+  {/snippet}
+  <!-- On a phone the panel is a tab of the bottom sheet; elsewhere it is beside the scene. -->
+  {#if screen.phone}
+    <Sheet tabs={[{ id: "details", name: "Details", body: details }]} bind:collapsed bind:shown={sheetShown} />
+  {:else}
+    <!-- The chevron points the way the panel will move. -->
+    <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+      {collapsed ? "‹" : "›"}
+    </button>
+    {@render details()}
+  {/if}
   <PathBar {model} {label} {apply} {notes} />
   {#if reading}
     <div class="drawer">
@@ -440,6 +452,13 @@
   .stage.narrow {
     right: 340px; /* the panel's width */
   }
+  /* On a phone the scene is the whole width below the Your Path bar; the bottom sheet lies over it,
+     and the camera's view offset keeps the centre above the sheet. */
+  :global(html[data-phone]) .stage {
+    top: 64px;
+    left: 0;
+    right: 0;
+  }
   .stage :global(canvas) {
     display: block;
   }
@@ -497,6 +516,19 @@
     border-radius: 999px;
     font-size: 20px;
     line-height: 1;
+  }
+  /* On a phone the notes, the controls, and the footer float above the bottom sheet. */
+  :global(html[data-phone]) .trimmed {
+    bottom: calc(var(--sheet-shown) + 64px);
+  }
+  :global(html[data-phone]) .notice {
+    bottom: calc(var(--sheet-shown) + 40px);
+  }
+  :global(html[data-phone]) footer {
+    bottom: calc(var(--sheet-shown) + 12px);
+  }
+  :global(html[data-phone]) .controls {
+    bottom: calc(var(--sheet-shown) + 16px);
   }
   .muted {
     color: #9aa0b4;

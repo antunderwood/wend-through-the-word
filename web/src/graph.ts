@@ -172,11 +172,16 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   let names: Name[] = [],
     crowded = true; // names need placing again
 
+  // Pixels at the bottom of the scene covered by a panel (the phone's bottom sheet): the picture
+  // moves up by half of them, so its centre sits in the space above the panel.
+  let covered = 0;
   function resize() {
     const { clientWidth: w, clientHeight: h } = host;
     renderer.setSize(w, h);
     labels.setSize(w, h);
     camera.aspect = w / h;
+    if (covered) camera.setViewOffset(w, h, 0, covered / 2, w, h);
+    else camera.clearViewOffset();
     camera.updateProjectionMatrix();
     crowded = true;
   }
@@ -629,6 +634,11 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     },
     setMotion(on: boolean) {
       motion = on;
+    },
+    // The scene's bottom px are covered: its centre moves into the space above them.
+    setOffset(px: number) {
+      covered = px;
+      resize();
     },
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),
     onNodeDoubleClick: (f: (id: Id) => void) => handlers.double.push(f),
