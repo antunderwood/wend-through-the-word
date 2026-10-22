@@ -40,8 +40,8 @@ test("Enter picks the first result, within the chosen type", async ({ page }) =>
 test("search results, the scene label, and the panel tell same-name Entities apart", async ({ page }) => {
   // Fixture: People named Anah (decisions 122, 125).
   await page.getByRole("searchbox", { name: "Search" }).fill("Anah");
-  await page.getByRole("list", { name: "Search results" }).getByRole("button", { name: /^Anah, brother of Ajah \(Gen 36:24\)/ }).click();
+  await page.getByRole("list", { name: "Search results" }).getByRole("button", { name: /^Anah, father of Dishon \(Gen 36:24\)/ }).click();
   await expect.poll(() => focusOf(page)).toBe("person:anah_249");
-  await expect(page.locator(".labels").getByText("Anah, brother of Ajah (Gen 36:24)", { exact: true })).toBeVisible();
-  await expect(page.getByRole("complementary", { name: "Selected Node" }).getByRole("heading", { level: 2 })).toHaveText("Anah, brother of Ajah (Gen 36:24)");
+  await expect(page.locator(".labels").getByText("Anah, father of Dishon (Gen 36:24)", { exact: true })).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Selected Node" }).getByRole("heading", { level: 2 })).toHaveText("Anah, father of Dishon (Gen 36:24)");
 });

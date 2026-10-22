@@ -5,7 +5,7 @@ import subprocess
 
 import pytest
 from conftest import CURATED as CURATED_FIXTURES
-from conftest import entity, read_tsv, run_build
+from conftest import chapter_verse, entity, read_tsv, run_build
 
 CURATED = {"source": "Curated", "licence": "CC BY-SA 4.0"}
 THEOGRAPHIC = {"source": "Theographic", "licence": "CC BY-SA 4.0"}
@@ -83,8 +83,15 @@ def report(export, name):
 def test_an_unreviewed_row_does_not_ship_and_is_reported(export):
     assert edge_types(export, "person:esau_1216", "person:adah_414") == [("PARTNER_OF", "both")]
     assert entity(export, "person:isaac_616")["gender"] == "Male"
+    assert edge_types(export, "person:abraham_58", "person:isaac_616")[0] == ("PARENT_OF", "out")
     assert report(export, "curated_unreviewed") == [
         {"table": "corrections", "line": "8", "ids": "person:isaac_616 gender", "detail": "no"},
+        {
+            "table": "links",
+            "line": "8",
+            "ids": "remove person:abraham_58 PARENT_OF person:isaac_616",
+            "detail": "no",
+        },
         {
             "table": "partners",
             "line": "8",
@@ -127,16 +134,25 @@ def test_anah_ships_as_male_with_the_correction_and_its_evidence(export):
     assert "corrections" not in entity(export, "person:abraham_58")
 
 
-def test_a_redundant_correction_applies_and_is_reported(export):
+def test_a_redundant_row_is_reported_and_a_redundant_link_changes_nothing(export):
     beeri = entity(export, "person:beeri_432")
     assert (beeri["gender"], beeri["corrections"][0]["value"]) == ("Male", "Male")
+    # Theographic already has the Mention, so it ships as Theographic's.
+    mentions = {m["id"]: m for m in chapter_verse(export, "Gen.36.24")["mentions"]}
+    assert mentions["person:anah_249"]["source"] == "Theographic"
     assert report(export, "curated_redundant") == [
         {
             "table": "corrections",
             "line": "3",
             "ids": "person:beeri_432 gender",
             "detail": "Theographic now has Male",
-        }
+        },
+        {
+            "table": "links",
+            "line": "10",
+            "ids": "add Gen.36.24 MENTIONS person:anah_249",
+            "detail": "Theographic now has the link",
+        },
     ]
 
 
@@ -145,6 +161,8 @@ def test_a_row_that_no_longer_matches_is_not_applied_and_is_reported(export):
     assert (ur["name"], "corrections" in ur) == ("Ur of the Chaldees", False)
     abraham = [n["id"] for n in entity(export, "person:abraham_58")["neighbours"]]
     assert "person:nobody_0" not in abraham
+    isaac = [n["id"] for n in entity(export, "person:isaac_616")["neighbours"]]
+    assert "person:nobody_0" not in isaac
     assert report(export, "curated_no_longer_matches") == [
         {
             "table": "corrections",
@@ -159,6 +177,12 @@ def test_a_row_that_no_longer_matches_is_not_applied_and_is_reported(export):
             "detail": "person:nobody_0 is not in Theographic",
         },
         {
+            "table": "links",
+            "line": "9",
+            "ids": "add person:nobody_0 PARENT_OF person:isaac_616",
+            "detail": "person:nobody_0 is not in Theographic",
+        },
+        {
             "table": "partners",
             "line": "9",
             "ids": "person:abraham_58 person:nobody_0",
@@ -168,13 +192,14 @@ def test_a_row_that_no_longer_matches_is_not_applied_and_is_reported(export):
 
 
 def test_rows_that_fix_plain_theographic_errors_are_listed_for_upstream_reporting(export):
-    # Corrections and "none" partner rows that still match Theographic. The wife and concubine
-    # rule and Possibly Same Person links are editorial (PRD 10.5 rule 4).
+    # Corrections, link rows, and "none" partner rows that still match Theographic. The wife and
+    # concubine rule and Possibly Same Person links are editorial (PRD 10.5 rule 4).
     assert [(r["table"], r["line"]) for r in report(export, "curated_upstream")] == [
         ("corrections", "2"),
         ("corrections", "6"),
         ("corrections", "7"),
         ("corrections", "8"),
+        *[("links", str(line)) for line in range(2, 9)],
         ("partners", "7"),
     ]
 
@@ -188,6 +213,57 @@ def test_an_alias_correction_removes_or_replaces_one_alias_and_every_alias_is_re
     assert {"id": "person:daughter_of_lot_younger_984", "alias": "younger daughter"} in rows
     assert {"id": "place:canaan_272", "alias": "Promised Land"} in rows
     assert "firstborn" not in [r["alias"] for r in rows]
+
+
+# The Evidence Verses of the Gen 36:25 rows in links.csv (#44).
+GEN_36_25 = [
+    {"verse_key": "01036024", "label": "Gen.36.24"},
+    {"verse_key": "01036025", "label": "Gen.36.25"},
+]
+
+
+def test_the_gen_36_25_mention_moves_from_the_son_of_seir_to_the_son_of_zibeon(export):
+    mentions = {m["id"]: m for m in chapter_verse(export, "Gen.36.25")["mentions"]}
+    assert "person:anah_248" not in mentions
+    anah = mentions["person:anah_249"]
+    assert (anah["source"], anah["evidence"], anah["request"]) == ("Curated", GEN_36_25, None)
+    assert anah["note"].startswith("The owner's reading, with most commentators")
+    assert mentions["person:dishon_1017"]["source"] == "Theographic"
+    # Each Anah's own list of Verses agrees, with the same provenance.
+    assert "01036025" not in [v["key"] for v in entity(export, "person:anah_248")["verses"]]
+    verse = next(v for v in entity(export, "person:anah_249")["verses"] if v["key"] == "01036025")
+    assert (verse["edge"], verse["source"], verse["evidence"]) == ("MENTIONS", "Curated", GEN_36_25)
+
+
+def test_dishon_and_aholibamah_move_to_the_son_of_zibeon(export):
+    for child in ("person:dishon_1017", "person:aholibamah_172"):
+        assert edges(export, "person:anah_248", child) == []
+        (parent,) = edges(export, "person:anah_249", child)
+        assert {k: parent[k] for k in ("edge", "direction", "role", "source", "evidence")} == {
+            "edge": "PARENT_OF",
+            "direction": "out",
+            "role": "father",
+            "source": "Curated",
+            "evidence": GEN_36_25,
+        }
+
+
+def test_each_entity_at_an_end_of_a_corrected_link_is_marked_corrected_after_review(export):
+    def fixes(entity_id):
+        return [
+            (c["field"], c["was"], c["value"]) for c in entity(export, entity_id)["corrections"]
+        ]
+
+    assert fixes("person:anah_248") == [
+        ("link", "Gen.36.25 MENTIONS person:anah_248", ""),
+        ("link", "person:anah_248 PARENT_OF person:dishon_1017", ""),
+        ("link", "person:anah_248 PARENT_OF person:aholibamah_172", ""),
+    ]
+    assert fixes("person:dishon_1017") == [
+        ("link", "person:anah_248 PARENT_OF person:dishon_1017", ""),
+        ("link", "", "person:anah_249 PARENT_OF person:dishon_1017"),
+    ]
+    assert entity(export, "person:anah_249")["corrections"][0]["evidence"] == GEN_36_25
 
 
 def broken_tables(tmp_path, new, table="possibly_same.csv", old="Gen.26.34;Gen.36.2;Gen.36.24"):
@@ -221,3 +297,22 @@ def test_a_partner_row_with_two_relations_fails_the_build(tmp_path, capfd):
     with pytest.raises(subprocess.CalledProcessError):
         run_build(tmp_path / "out", curated=folder)
     assert "partners.csv line 5: relation spouse;concubine is not one of" in capfd.readouterr().err
+
+
+@pytest.mark.parametrize(
+    "new, old, message",
+    [
+        (
+            "abraham_58,CHILD_OF",
+            "abraham_58,PARENT_OF",
+            "links.csv line 8: remove CHILD_OF is not add or remove, then one of MENTIONS,",
+        ),
+        ("add,Gen.99.1,MENTIONS", "add,Gen.36.24,MENTIONS", "links.csv line 10: Gen.99.1 is not"),
+    ],
+)
+def test_a_links_row_that_does_not_name_one_link_fails_the_build(
+    tmp_path, capfd, new, old, message
+):
+    with pytest.raises(subprocess.CalledProcessError):
+        run_build(tmp_path / "out", curated=broken_tables(tmp_path, new, "links.csv", old))
+    assert message in capfd.readouterr().err

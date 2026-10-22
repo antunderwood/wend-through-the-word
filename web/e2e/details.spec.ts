@@ -40,6 +40,20 @@ test("a corrected item says so with its Evidence Verse, and a curated link shows
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 26:34");
 });
 
+test("a corrected link says so once, and a moved link shows its note and Evidence Verses", async ({ page }) => {
+  // Fixture: links.csv moves Gen 36:25 and Dishon and Aholibamah to the son of Zibeon (#44).
+  await focusOn(page, "Anah", /^Anah, father of Dishon \(Gen 36:24\)/, "person:anah_249");
+  const corrected = panel(page).getByRole("list", { name: "Corrections" }).getByRole("listitem");
+  await expect(corrected).toHaveCount(1);
+  await expect(corrected).toContainText("Corrected after review: link (Gen 36:24, Gen 36:25). The owner's reading");
+  const note = /^Note on the Relationship: The owner's reading, with most commentators: .* Evidence: Gen 36:24, Gen 36:25\.$/;
+  await panel(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Dishon/ }).click();
+  await expect(relationship(page)).toHaveText("Relationship: son of Anah (Gen 36:24) Suggest a correction");
+  await expect(notes(page)).toHaveText([note]);
+  await panel(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: /^Gen 36:25/ }).click();
+  await expect(notes(page)).toHaveText([note]);
+});
+
 test("a curated item with a request links to it", async ({ page }) => {
   // Fixture: Hagar's curated links to Abraham carry request #900 (synthetic).
   await panel(page).getByRole("list", { name: "Person (21)" }).getByRole("button", { name: /^Hagar/ }).click();

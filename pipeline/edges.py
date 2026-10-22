@@ -7,7 +7,7 @@ is the edge's source, `in` when the Neighbour is, `both` for an edge with no dir
 
 from collections import defaultdict
 
-from pipeline.curation import correct
+from pipeline import curation
 from pipeline.entities import facts
 
 # Theographic field: (edge, True when the record holding the field is the edge's source, None
@@ -40,21 +40,37 @@ OUTSIDE = (
 )
 
 
-def load(b):
-    records = b.records
-
-    b.new_report("dropped_edges", "record", "field", "link", "cause")
-    # (from, edge, to) -> (licence, record, field, link); an edge with no direction has from < to
-    edges = {}
+def links(records):
+    """Every link in an edge field as (from, edge, to, source, record, field, link). An edge with
+    no direction has from < to. `to` is None when the link is not a Theographic record."""
     for kind, source, f, a in records.values():
         for field, (edge, out) in FIELDS.get(kind, {}).items():
             for rec in f.get(field) or []:
                 if rec not in records:
-                    b.report("dropped_edges", record=a, field=field, link=rec, cause=NO_END)
+                    yield a, edge, None, source, a, field, rec
                     continue
                 c = records[rec][3]
                 x, y = (a, c) if out or (out is None and a < c) else (c, a)
-                edges.setdefault((x, edge, y), (b.licence(source), a, field, c))
+                yield x, edge, y, source, a, field, c
+
+
+def load(b):
+    records = b.records
+
+    b.new_report("dropped_edges", "record", "field", "link", "cause")
+    # (from, edge, to) -> (provenance, record, field, link); an edge with no direction has from < to
+    edges = {}
+    for x, edge, y, source, a, field, link in links(records):
+        if y is None:
+            b.report("dropped_edges", record=a, field=field, link=link, cause=NO_END)
+            continue
+        theographic = {"source": "Theographic", "licence": b.licence(source)}
+        edges.setdefault((x, edge, y), (theographic, a, field, link))
+    for key, item, add in b.links:  # links.csv (#44)
+        if add:
+            edges[key] = (item, key[0], "links.csv", key[2])
+        else:
+            edges.pop(key, None)
 
     # An edge ships when one end is in the book range. The other end, if outside, ships as a
     # stub (its facts and its Neighbours in range, no Verses) only when it is a Person reached
@@ -83,7 +99,7 @@ def load(b):
             "licence": b.licence(source),
             "verses": [],
         }
-        correct(b, b.entities[end])
+        curation.correct(b, b.entities[end])
 
     b.new_report("uncurated_partners", "man_id", "woman_id")
     neighbours = defaultdict(lambda: defaultdict(list))  # Entity ID -> Neighbour ID -> edges
@@ -92,8 +108,8 @@ def load(b):
         neighbours[x][y].append({**item, "direction": "out" if directed else "both"})
         neighbours[y][x].append({**item, "direction": "in" if directed else "both"})
 
-    for (x, edge, y), (licence, *_) in sorted(edges.items()):
-        item = {"edge": edge, "source": "Theographic", "licence": licence}
+    for (x, edge, y), (provenance, *_) in sorted(edges.items()):
+        item = {"edge": edge, **provenance}
         if edge == "PARENT_OF":
             item["role"] = "father" if b.entities[x]["gender"] == "Male" else "mother"
         if edge == "PARTNER_OF" and (x, y) in b.partners:  # x < y for an edge with no direction

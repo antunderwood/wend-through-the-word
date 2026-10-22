@@ -97,7 +97,7 @@ describe("data loader", () => {
     expect(["person:anah_247", "person:anah_248", "person:anah_249"].map((id) => data.label(id))).toEqual([
       "Anah, son of Zibeon (Gen 36:2)",
       "Anah, son of Seir (Gen 36:20)",
-      "Anah, brother of Ajah (Gen 36:24)",
+      "Anah, father of Dishon (Gen 36:24)", // its children are curated (#44)
     ]);
     // A panel list, whose Relationship words already say it, leaves the relation out.
     expect(data.label("person:anah_248", false)).toBe("Anah (Gen 36:20)");
@@ -179,6 +179,19 @@ describe("details of an Entity", () => {
     expect((await data.details("person:anah_247")).corrections).toEqual([
       expect.objectContaining({ field: "gender", evidence: [{ verse_key: "01036024", label: "Gen.36.24" }], request: null, source: "Curated", licence: "CC BY-SA 4.0" }),
     ]);
+  });
+
+  it("gives a corrected link once for each note, and the moved links with their note", async () => {
+    const data = await createData(readExport, "");
+    // Fixture: links.csv moves Gen 36:25 and its two children from anah_248 to anah_249 (#44).
+    const [link] = (await data.details("person:anah_248")).corrections;
+    expect((await data.details("person:anah_248")).corrections).toHaveLength(1);
+    expect(link).toMatchObject({ field: "link", source: "Curated", note: expect.stringMatching(/^The owner's reading/) });
+    const curated = { source: "Curated", evidence: link.evidence, note: link.note };
+    const verse = await data.load("01036025");
+    expect(verse.links.find((l) => l.id === "person:anah_249")!.edges).toEqual([expect.objectContaining(curated)]);
+    const anah = await data.load("person:anah_249");
+    expect(anah.links.find((l) => l.id === "01036025")!.edges).toEqual([expect.objectContaining(curated)]);
   });
 
   it("gives an Event's year as approximate, in the Jones chronology, with BC and AD", async () => {

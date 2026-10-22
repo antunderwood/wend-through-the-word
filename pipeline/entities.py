@@ -99,15 +99,11 @@ def verse_neighbours(b):
     """Turn each Entity's Verses into Verse Neighbours. The weight is the number of other
     Entities in the Verse, Themes included (PRD 10.4 rule 2), so this runs after `themes`."""
     for e in b.entities.values():
-        neighbours = [
-            {
-                "key": v["key"],
-                "edge": "FILED_UNDER" if e["type"] == "theme" else "MENTIONS",
-                "direction": "in",
-                "weight": len(v["mentions"]) + len(v["filed_under"]) - 1,
-                "source": e["source"],
-                "licence": e["licence"],
-            }
-            for v in e["verses"]
-        ]
+        neighbours = []
+        for v in e["verses"]:
+            # The Verse's own link to the Entity: its edge and provenance, curated or not (#44).
+            link = next(m for m in v["mentions"] + v["filed_under"] if m["id"] == e["id"])
+            weight = len(v["mentions"]) + len(v["filed_under"]) - 1
+            neighbour = {k: x for k, x in link.items() if k != "id"}
+            neighbours.append({**neighbour, "key": v["key"], "direction": "in", "weight": weight})
         e["verses"] = sorted(neighbours, key=lambda n: (-n["weight"], n["key"]))
