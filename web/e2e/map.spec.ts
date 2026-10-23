@@ -61,7 +61,7 @@ test("a shared link to a Place asks nothing of the tile host until Show map, and
   await expect(map(page).getByText("Bethlehem", { exact: true })).toBeVisible();
 });
 
-test("a Place with no point and a Node that is not a Place say so, and ask nothing of the tile host", async ({ page }) => {
+test("a Place with no point says so and asks nothing of the tile host; a Node that is not a Place then shows the Focus's Neighbours", async ({ page }) => {
   const asked = await thirdParty(page, "abort");
   // Fixture: Kadesh's OpenStreetMap point was dropped, with nothing in its place.
   await page.goto("/?focus=place:kadesh_661");
@@ -69,10 +69,12 @@ test("a Place with no point and a Node that is not a Place say so, and ask nothi
   await panel(page).getByRole("button", { name: "Show map" }).click();
   await panel(page).getByRole("button", { name: "Continue" }).click();
   await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
-
-  await panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button").first().click();
-  await expect(panel(page).getByText("No Place to show.")).toBeVisible();
   expect(asked).toEqual([]);
+
+  // Your Path has one Place, so a Theme selected shows the Focus's Neighbours (#86); "No Place to
+  // show." is in map-journey.spec.ts.
+  await panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button").first().click();
+  await expect(panel(page).getByText("The Focus, Kadesh, and its Neighbours.")).toBeVisible();
 });
 
 test("Neighbours shows the selected Place's Ring 1 Places that have points; a click on a dot selects it and a double click makes it the Focus", async ({ page }) => {
@@ -122,15 +124,16 @@ test("the open map is a block of its own below the Selected Node's section, and 
   expect(m.y).toBeGreaterThanOrEqual(section.y + section.height);
   expect(m.height).toBeGreaterThanOrEqual(280);
 
-  // A click in a list changes what the block shows (a Person, then a Place with no point); the
-  // lists stay where they were, so the second click of a double click lands where the first did.
+  // A click in a list changes what the block shows (a Person: no switch and the Focus's
+  // Neighbours; then a Place with no point); the lists stay where they were, so the second click of
+  // a double click lands where the first did.
   const people = panel(page).getByRole("list", { name: /^Person/ });
   const places = panel(page).getByRole("list", { name: /^Place/ });
   // Where each list lies in the panel, however far the panel is scrolled.
   const at = async () => [await people.evaluate((e: HTMLElement) => e.offsetTop), await places.evaluate((e: HTMLElement) => e.offsetTop)];
   const before = await at();
   await people.getByRole("button", { name: /^Terah/ }).click();
-  await expect(panel(page).getByText("No Place to show.")).toBeVisible();
+  await expect(panel(page).getByText("The Focus, Haran, and its Neighbours.")).toBeVisible();
   expect(await at()).toEqual(before);
   await places.getByRole("button", { name: /^Canaan/ }).click();
   await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
