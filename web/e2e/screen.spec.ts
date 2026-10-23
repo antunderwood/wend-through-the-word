@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { openOnAbraham } from "./scene";
 
 test("a desktop has a fine pointer, and a window 640 px wide or less has the phone layout", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   const root = page.locator("html");
   await expect(root).not.toHaveAttribute("data-phone");
   await expect(root).not.toHaveAttribute("data-coarse");
@@ -19,7 +20,7 @@ test("a desktop has a fine pointer, and a window 640 px wide or less has the pho
 });
 
 test("a desktop keeps a notice: it does not fade as on a phone (decision 183)", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await page.getByRole("searchbox", { name: "Search" }).fill("Abraham");
   await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
   const notice = page.getByRole("status");

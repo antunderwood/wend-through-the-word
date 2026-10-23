@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { doubleTap } from "../touch";
+import { openOnAbraham } from "../scene";
 
 // A phone without WebGL: no scene, and the lists alone walk the journey by touch.
 const details = (page: Page) => page.getByRole("tabpanel", { name: "Details" });
@@ -18,7 +19,7 @@ async function doubleTapRow(page: Page, row: ReturnType<Page["getByRole"]>) {
 
 test("without WebGL the lists walk the journey by touch on a phone", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await expect(page.locator("canvas")).toHaveCount(0);
   await expect(details(page)).toContainText("This browser has no WebGL, so the graph is not drawn. The lists below work alone: a tap selects, a double tap makes the Focus.");
   await expect(heading(page)).toHaveText("Abraham");

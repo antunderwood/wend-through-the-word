@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { nodes } from "./scene";
+import { nodes, openOnAbraham } from "./scene";
 
 const ISAAC = "person:isaac_616";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
@@ -7,7 +7,7 @@ const panel = (page: Page) => page.getByRole("complementary", { name: "Selected 
 test.use({ reducedMotion: "reduce" });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
 });
 

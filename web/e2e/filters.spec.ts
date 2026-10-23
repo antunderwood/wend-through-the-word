@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, themesOnScreen, type OnScreen } from "./scene";
+import { focusIs, nodes, openOnAbraham, themesOnScreen, type OnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473";
@@ -8,7 +8,7 @@ const filters = (page: Page) => page.getByRole("dialog", { name: "Filters" });
 const search = (page: Page) => new URL(page.url()).search;
 
 async function open(page: Page, address = "/") {
-  await page.goto(address);
+  await openOnAbraham(page, address);
   await focusIs(page, ABRAHAM);
   await page.getByRole("button", { name: "Filters" }).click();
 }
@@ -28,7 +28,7 @@ test.describe("with reduced motion", () => {
     await filters(page).getByRole("checkbox", { name: "Themes" }).uncheck();
     await expect.poll(() => themesOnScreen(page)).toBe(0);
     await expect(panel(page).getByRole("list", { name: /^Theme/ })).toHaveCount(0);
-    await expect.poll(() => search(page)).toBe("?hide=theme");
+    await expect.poll(() => search(page)).toBe("?focus=person:abraham_58&hide=theme");
 
     // Opening that address restores it.
     await page.reload();

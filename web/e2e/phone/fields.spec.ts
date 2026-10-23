@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 
 // A phone browser zooms in on a text field whose text is under 16 px, so on a phone every field is
 // 16 px (decision 182): the search box, the note box, the filters, and any field added later.
@@ -16,7 +16,7 @@ const small = (page: Page) =>
   );
 
 test("on a phone every text field and list of choices is 16 px", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   const details = page.getByRole("tabpanel", { name: "Details" });
   // The Focus's note box and the filters, with the book filter, are in the Details tab.

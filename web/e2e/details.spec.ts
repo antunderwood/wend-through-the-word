@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "./scene";
+import { focusIs, openOnAbraham } from "./scene";
 
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const facts = (page: Page) => panel(page).getByRole("list", { name: "Facts" });
@@ -9,7 +9,7 @@ const notes = (page: Page) => panel(page).getByText(/^Note on the Relationship:/
 test.use({ reducedMotion: "reduce" });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
 });
 

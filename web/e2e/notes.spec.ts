@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { doubleClickLabel, focusIs } from "./scene";
+import { doubleClickLabel, focusIs, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -12,7 +12,7 @@ const note = (page: Page, name: string) => panel(page).getByRole("textbox", { na
 test.use({ reducedMotion: "reduce" });
 
 test("a note survives a reload, and the download holds it with a link back", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await expect(panel(page)).toContainText("Notes stay in this browser only.");
   await note(page, "Abraham").fill("Called out of Ur.");
@@ -38,7 +38,7 @@ test("a note survives a reload, and the download holds it with a link back", asy
 });
 
 test("an address naming a Focus wins over the one kept in this browser", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await doubleClickLabel(page, "Isaac", ISAAC);
   await page.goto(`/?focus=${SARAH}`);
@@ -50,7 +50,7 @@ test("an address naming a Focus wins over the one kept in this browser", async (
 });
 
 test("Clear and Undo clear keep notes; Delete all notes asks first", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await note(page, "Abraham").fill("Called out of Ur.");
   await doubleClickLabel(page, "Isaac", ISAAC);
@@ -73,7 +73,7 @@ test("Clear and Undo clear keep notes; Delete all notes asks first", async ({ pa
 });
 
 test("a focused note box has the app's focus ring, not the browser's blue one", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await note(page, "Abraham").focus();
   const style = await note(page, "Abraham").evaluate((e) => {

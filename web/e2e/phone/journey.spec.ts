@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, themesOnScreen } from "../scene";
+import { focusIs, nodes, openOnAbraham, themesOnScreen } from "../scene";
 import { doubleTap } from "../touch";
 import { selectedIs, tappable } from "../touch-input";
 
@@ -19,7 +19,7 @@ test.use({ reducedMotion: "reduce", permissions: ["clipboard-read", "clipboard-w
 test("the student journey by touch, and its shared link opened on another phone", async ({ page, browser }) => {
   test.slow(); // the whole journey, then a second phone loads the link
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
 
   // Search from the button: Isaac is the Focus and search closes.

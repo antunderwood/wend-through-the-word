@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 import { doubleTap } from "../touch";
 
 // On a phone the reader is the Reader tab of the bottom sheet, beside Details (decision 127).
@@ -15,7 +15,7 @@ test.use({ reducedMotion: "reduce" });
 // The hint, dismissed before in this browser, would lie over the top of the scene on a phone.
 async function open(page: Page, path = "/") {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto(path);
+  await openOnAbraham(page, path);
 }
 
 // Selects a Verse from Abraham's Verse list, then taps Read.

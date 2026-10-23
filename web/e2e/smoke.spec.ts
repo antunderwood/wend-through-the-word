@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { focusIs, nodes } from "./scene";
+import { focusIs, nodes, openOnAbraham } from "./scene";
 
 test("the page opens on Abraham in the tilted plane", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
   const drawn = await nodes(page);
   const size = page.viewportSize()!;
@@ -18,7 +18,7 @@ test("the page opens on Abraham in the tilted plane", async ({ page }) => {
 });
 
 test("a Verse can be the Focus, with a short BSB quote", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
   await page.getByRole("searchbox", { name: "Search" }).fill("Gen 25:5");
   await page.getByRole("searchbox", { name: "Search" }).press("Enter");
@@ -34,7 +34,7 @@ test("a Verse can be the Focus, with a short BSB quote", async ({ page }) => {
 });
 
 test("a long quote wraps and stops after three lines", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
   // Fixture: Gen 25:8 is one sentence of 103 characters.
   await page.getByRole("searchbox", { name: "Search" }).fill("Gen 25:8");
