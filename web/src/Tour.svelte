@@ -47,6 +47,18 @@
     return !!tab;
   }
 
+  // What the ring goes round and the box keeps clear of: the target's box, and on a phone, for a
+  // name in the scene, its node's disc too, which is what the reader taps.
+  function marked(el: Element) {
+    const r = el.getBoundingClientRect(),
+      id = el.getAttribute("data-node"),
+      d = screen.phone && id && el.closest('[data-tour="scene"]') ? page.nodeRect(id) : null;
+    if (!d) return r;
+    const left = Math.min(r.left, d.left),
+      top = Math.min(r.top, d.top);
+    return new DOMRect(left, top, Math.max(r.right, d.right) - left, Math.max(r.bottom, d.bottom) - top);
+  }
+
   function place(el: Element | null | undefined) {
     if (el && el !== target && arrange(el)) return;
     // A target in the panel is scrolled into its view once; scene names are never scrolled. Any other
@@ -57,7 +69,7 @@
     if (panel) el.scrollIntoView({ block: el.getBoundingClientRect().height > panel.clientHeight / 2 ? "start" : "nearest" });
     else if (el !== target) document.getElementById("panel")?.scrollTo(0, 0);
     target = el;
-    const r = el?.getBoundingClientRect();
+    const r = el && marked(el);
     const seen = r && r.width > 0 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
     ring.hidden = !seen;
     const w = box.offsetWidth,

@@ -646,6 +646,24 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       coveredSide = side;
       resize();
     },
+    // A drawn node's disc on the page, with its ring when it has one, as a square round its centre;
+    // null when the node is not drawn.
+    nodeRect(id: Id) {
+      const s = sprites.get(id);
+      if (!s) return null;
+      const r = el.getBoundingClientRect(),
+        c = new THREE.Vector3(),
+        edge = new THREE.Vector3();
+      camera.updateMatrixWorld(); // the camera may have moved since the last frame drawn
+      s.getWorldPosition(c);
+      // A point on the rim, across the view from the centre: sprites face the camera.
+      edge.setFromMatrixColumn(camera.matrixWorld, 0).multiplyScalar(rim(s)).add(c).project(camera);
+      c.project(camera);
+      const x = r.left + ((c.x + 1) / 2) * r.width,
+        y = r.top + ((1 - c.y) / 2) * r.height,
+        radius = Math.hypot(((edge.x - c.x) / 2) * r.width, ((edge.y - c.y) / 2) * r.height);
+      return new DOMRect(x - radius, y - radius, 2 * radius, 2 * radius);
+    },
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),
     onNodeDoubleClick: (f: (id: Id) => void) => handlers.double.push(f),
     onHover: (f: (n: SceneNode | null, x: number, y: number) => void) => handlers.hover.push(f),

@@ -25,6 +25,7 @@ const help = (page: Page) => details(page).getByRole("button", { name: "Help: ta
 
 const UPRIGHT = { width: 390, height: 844 },
   OWNER_UPRIGHT = { width: 325, height: 700 },
+  OWNER = { width: 325, height: 600 }, // the owner's phone in Chrome
   SIDEWAYS = { width: 844, height: 390 },
   OWNER_SIDEWAYS = { width: 760, height: 330 };
 
@@ -62,7 +63,9 @@ const state = async (page: Page) => ({
 // The step's target, the element the ring is drawn round, is on screen and nothing lies over it
 // (its middle, or its first row when it is a long list); a name in the scene has the sheet closed,
 // a target in the sheet has it open; and the box is on screen, clear of the target and the sheet.
-// The problems found, none when the step is shown as it should be.
+// A name in the scene is marked with its node's disc, which the reader taps: the ring goes round
+// both, and nothing but the scene lies over the disc's centre. The problems found, none when the
+// step is shown as it should be.
 const problems = (page: Page) =>
   page.evaluate(() => {
     const ring = document.querySelector(".tour-target") as HTMLElement;
@@ -72,10 +75,21 @@ const problems = (page: Page) =>
     const sheetEl = document.querySelector('[data-tour="sheet"]')!,
       sheet = sheetEl.getBoundingClientRect();
     const open = sheetEl.querySelector('[aria-controls="sheet-body"]')!.getAttribute("aria-expanded") === "true";
+    const scene = document.querySelector('[data-tour="scene"]')!;
+    const disc = (e: Element) => (scene.contains(e) && e.getAttribute("data-node") ? window.wendGraph!.nodeRect(e.getAttribute("data-node")!) : null);
+    // The element's box, with its node's disc for a name in the scene.
+    const marked = (e: Element) => {
+      const r = e.getBoundingClientRect(),
+        d = disc(e);
+      if (!d) return r;
+      const left = Math.min(r.left, d.left),
+        top = Math.min(r.top, d.top);
+      return new DOMRect(left, top, Math.max(r.right, d.right) - left, Math.max(r.bottom, d.bottom) - top);
+    };
     const near = (a: number, b: number) => Math.abs(a - b) <= 1.5;
     const target = [...document.querySelectorAll("[data-tour], [data-node]")].find((e) => {
-      const r = e.getBoundingClientRect();
-      return r.width > 0 && near(r.left - 5, at.left) && near(r.top - 5, at.top) && Math.abs(at.width - r.width - 10) <= 5;
+      const r = marked(e);
+      return r.width > 0 && near(r.left - 5, at.left) && near(r.top - 5, at.top) && Math.abs(at.width - r.width - 10) <= 5 && Math.abs(at.height - r.height - 10) <= 5;
     });
     if (!target) return "no target under the ring";
     const r = target.getBoundingClientRect();
@@ -86,6 +100,12 @@ const problems = (page: Page) =>
     const name = target.getAttribute("data-tour") ?? target.getAttribute("data-node");
     if (x < 0 || x > innerWidth || y < 0 || y > innerHeight) found.push(`${name} off screen`);
     else if (!target.contains(document.elementFromPoint(x, y))) found.push(`${name} covered by ${document.elementFromPoint(x, y)?.outerHTML.slice(0, 60)}`);
+    const d = disc(target);
+    if (d) {
+      const [dx, dy] = [d.left + d.width / 2, d.top + d.height / 2];
+      if (dx < 0 || dx > innerWidth || dy < 0 || dy > innerHeight) found.push(`${name}'s disc off screen`);
+      else if (!scene.contains(document.elementFromPoint(dx, dy))) found.push(`${name}'s disc covered by ${document.elementFromPoint(dx, dy)?.outerHTML.slice(0, 60)}`);
+    }
     if (target.closest('[data-tour="scene"]') && open) found.push(`${name}: the sheet is open`);
     if (sheetEl.contains(target) && !open) found.push(`${name}: the sheet is closed`);
     if (!apart(box, at)) found.push(`the box is over ${name}`);
@@ -99,6 +119,8 @@ for (const [size, view] of [
   [UPRIGHT, "A"],
   [UPRIGHT, "C"],
   [OWNER_UPRIGHT, "A"],
+  [OWNER, "A"],
+  [OWNER, "C"],
   [SIDEWAYS, "C"],
   [OWNER_SIDEWAYS, "A"],
 ] as const) {
@@ -275,4 +297,27 @@ test("a tour taken from the offer on a closed sheet's Reader tab gives both back
   await expect(sheet(page).getByRole("button", { name: "Open the sheet" })).toBeVisible();
   await expect(sheet(page).getByRole("tab", { name: "Reader", includeHidden: true })).toHaveAttribute("aria-selected", "true");
   expect(await page.evaluate(() => localStorage.getItem("wend.sheetTab"))).toBe("reader");
+});
+
+test("a sheet dragged to nearly the whole screen is half open during the tour and full again when it ends", async ({ page }) => {
+  await reader(page, "A");
+  const shownPx = async () => UPRIGHT.height - (await sheet(page).boundingBox())!.y;
+  const b = (await sheet(page).getByRole("button", { name: "Close the sheet" }).boundingBox())!;
+  await drag(page, { x: b.x + b.width / 2, y: b.y + b.height / 2 }, { x: b.x + b.width / 2, y: b.y - 250 });
+  const full = UPRIGHT.height - 40 - 80; // all but the top bar and a strip of the scene
+  await expect.poll(shownPx).toBeCloseTo(full, 0);
+  await help(page).tap();
+  // The first steps' targets are in the scene, so the tour closes the sheet; the fifth's is in it,
+  // so the tour opens it, at half.
+  await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+  await expect(sheet(page).getByRole("button", { name: "Open the sheet" })).toBeVisible();
+  for (let n = 1; n <= 4; n++) {
+    await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
+    await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  }
+  await expect(tour(page)).toContainText(`Step 5 of ${STEPS.length}`);
+  await expect.poll(shownPx).toBeCloseTo(UPRIGHT.height * 0.46, 0);
+  await tour(page).getByRole("button", { name: "End tour" }).tap();
+  await focusIs(page, SARAH);
+  await expect.poll(shownPx).toBeCloseTo(full, 0);
 });
