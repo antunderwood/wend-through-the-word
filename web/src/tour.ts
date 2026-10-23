@@ -185,7 +185,7 @@ export const STEPS: Step[] = [
   {
     // Show map is pointed out, not pressed, so the tour asks nothing of the tile host (#88).
     title: "A Place on a map",
-    text: (p) => `Show map, below a Place's facts, puts it on a map. Its tiles come from ${TILES.name}, which sees your address, so it opens only when you press it; the tour leaves it shut. ${Click(p)} Jesus Christ in the Your Path bar, then Bethlehem, where he was born, in his Places.`,
+    text: (p) => `Show map, in the panel below the Selected Node's section, puts a Place on a map. Its tiles come from ${TILES.name}, which sees your address, so it opens only when you press it; the tour leaves it shut. ${Click(p)} Jesus Christ in the Your Path bar, then Bethlehem, where he was born, in his Places.`,
     target: () => tour("show-map"),
     check: (p) => typeOf(p.model.selected) === "place",
     act: (p) => p.apply({ type: "select", id: BETHLEHEM }),

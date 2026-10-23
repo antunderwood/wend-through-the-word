@@ -110,6 +110,75 @@ test("Neighbours shows the selected Place's Ring 1 Places that have points; a cl
   await expect(label(page, "Ur of the Chaldees")).toBeVisible();
 });
 
+test("the open map is a block of its own below the Selected Node's section, and the lists below keep their place whatever it shows", async ({ page }) => {
+  await thirdParty(page, "abort");
+  // Fixture: Haran has a point; Terah is a Person; Canaan is a Place with none.
+  await page.goto("/?focus=place:haran_527");
+  await focusIs(page, "place:haran_527");
+  await openMap(page);
+  await expect(label(page, "Haran")).toBeVisible();
+  const section = (await panel(page).locator("section.selected").boundingBox())!;
+  const m = (await map(page).boundingBox())!;
+  expect(m.y).toBeGreaterThanOrEqual(section.y + section.height);
+  expect(m.height).toBeGreaterThanOrEqual(280);
+
+  // A click in a list changes what the block shows (a Person, then a Place with no point); the
+  // lists stay where they were, so the second click of a double click lands where the first did.
+  const people = panel(page).getByRole("list", { name: /^Person/ });
+  const places = panel(page).getByRole("list", { name: /^Place/ });
+  // Where each list lies in the panel, however far the panel is scrolled.
+  const at = async () => [await people.evaluate((e: HTMLElement) => e.offsetTop), await places.evaluate((e: HTMLElement) => e.offsetTop)];
+  const before = await at();
+  await people.getByRole("button", { name: /^Terah/ }).click();
+  await expect(panel(page).getByText("No Place to show.")).toBeVisible();
+  expect(await at()).toEqual(before);
+  await places.getByRole("button", { name: /^Canaan/ }).click();
+  await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
+  expect(await at()).toEqual(before);
+});
+
+test("Tab reaches the view switch, every dot, and Recentre map; Enter on a dot selects at once; a text list names the Places shown; reduced motion re-frames in one step", async ({ page }) => {
+  await thirdParty(page, "abort");
+  await page.goto("/?focus=place:haran_527");
+  await focusIs(page, "place:haran_527");
+  await openMap(page);
+  await view(page, "Neighbours").focus();
+  await page.keyboard.press("Enter");
+  await expect(view(page, "Neighbours")).toHaveAttribute("aria-pressed", "true");
+  await expect(panel(page).getByRole("list", { name: "Shown on the map" }).getByRole("listitem")).toHaveText(["Haran (selected)", "Ur of the Chaldees"]);
+
+  // From Hide map, Tab reaches Recentre map, the switch, and both dots.
+  await panel(page).getByRole("button", { name: "Hide map" }).focus();
+  const reached: string[] = [];
+  while (!reached.includes("Ur of the Chaldees") && reached.length < 12) {
+    await page.keyboard.press("Tab");
+    reached.push(await page.evaluate(() => document.activeElement!.textContent!.trim()));
+  }
+  expect(reached).toEqual(expect.arrayContaining(["Recentre map", "Place", "Neighbours", "Haran", "Ur of the Chaldees"]));
+
+  // Enter selects without the pointer's wait for a second click, and the keyboard stays on the dot.
+  const ur = map(page).getByRole("button", { name: "Ur of the Chaldees" });
+  await ur.focus();
+  const pressed = Date.now();
+  await page.keyboard.press("Enter");
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Ur of the Chaldees");
+  expect(Date.now() - pressed).toBeLessThan(400);
+  await expect(ur).toBeFocused();
+
+  // With reduced motion, Recentre map puts the map back at once, with no glide.
+  await map(page).scrollIntoViewIfNeeded();
+  const framed = await selectedDot(page);
+  const box = (await map(page).boundingBox())!;
+  await page.mouse.move(box.x + 30, box.y + box.height - 30);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 90, box.y + box.height - 60, { steps: 8 });
+  await page.mouse.up();
+  await expect.poll(async () => (await selectedDot(page)).x - framed.x).toBeGreaterThan(30);
+  await panel(page).getByRole("button", { name: "Recentre map" }).focus();
+  await page.keyboard.press("Enter");
+  expect(Math.abs((await selectedDot(page)).x - framed.x)).toBeLessThan(2);
+});
+
 test("two Places at one point both show and each can be selected; after a pan, Recentre map and a new selection frame the map again", async ({ page }) => {
   await thirdParty(page, "abort");
   // Fixture: Bethlehem's Ring 1 Places, Judea and Jerusalem, share one point.

@@ -210,7 +210,6 @@
     {:catch e}
       {@render failed("the details", e)}
     {/await}
-    <PlaceMap {data} {model} select={(id) => apply({ type: "select", id })} {makeFocus} />
     {#await details then d}
       {#if d?.entry}
         {@const [first, ...rest] = d.entry.text.split(/\n\s*\n\s*/)}
@@ -226,6 +225,10 @@
     {/await}
   </section>
   {#if compact}<div class="actions">{@render actions()}</div>{/if}
+  <!-- The map's own block, below the fixed section (and on a phone its actions), so the map can be
+       taller than the section allows. It keeps one height whatever it shows, so the lists below
+       never move between the two clicks of a double click. -->
+  <PlaceMap {data} {model} select={(id) => apply({ type: "select", id })} {makeFocus} />
   {#await listing then list}
     <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
          in its title and a correction link after it; a link between two Entities is a

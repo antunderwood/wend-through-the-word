@@ -2,7 +2,8 @@
   // "Show map" in the Details tab (#84): the Selected Place's dot and name on a map. Nothing is asked
   // of the tile host until the reader presses it, and the first time in a session a notice says what
   // the host sees. Once open, the map stays open and follows the selection. The view switch shows
-  // the Place alone or with its Neighbours (#85), whose dots select and make the Focus.
+  // the Place alone or with its Neighbours (#85), whose dots select and make the Focus. The map is a
+  // block of its own below the Selected Node's section, of one height whatever it shows (#87).
   import type { Data } from "./data";
   import { typeColour } from "./graph";
   import type { MapActions, MapPlace, PlaceMap } from "./map";
@@ -102,27 +103,39 @@
 </script>
 
 <div class="place-map">
-  <button data-tour="show-map" aria-expanded={open} onclick={press}>{open ? "Hide map" : "Show map"}</button>
-  {#if asking}
-    <p class="notice">
-      The map's tiles come from {TILES.name}, which sees your address and the area you view.
-      <button onclick={accept}>Continue</button>
-      <button onclick={() => (asking = false)}>Cancel</button>
-    </p>
-  {/if}
-  {#if open}
-    {#if !isPlace}
-      <p class="muted">No Place to show.</p>
-    {:else if shown}
-      <div class="bar">
-        <div role="group" aria-label="Map view">
+  <!-- Recentre map shares the row with Hide map, clear of the map, which on a phone is too short
+       for a button over it. -->
+  <div class="top">
+    <button data-tour="show-map" aria-expanded={open} onclick={press}>{open ? "Hide map" : "Show map"}</button>
+    {#if open && isPlace && shown?.places.length}<button onclick={() => map?.recentre()}>Recentre map</button>{/if}
+  </div>
+  <!-- Asking or open, the box keeps one height whatever it shows (the notice, no Place, no point, a
+       load under way, the map), so the lists below it never move between the two clicks of a double
+       click. Only Show map and Hide map change its height. -->
+  {#if asking || open}
+    <div class="box">
+      {#if asking}
+        <p class="notice">
+          The map's tiles come from {TILES.name}, which sees your address and the area you view.
+          <button onclick={accept}>Continue</button>
+          <button onclick={() => (asking = false)}>Cancel</button>
+        </p>
+      {:else if !isPlace}
+        <p class="muted">No Place to show.</p>
+      {:else if shown}
+        <div class="bar" role="group" aria-label="Map view">
           {#each VIEWS as v (v)}<button aria-pressed={view === v} onclick={() => choose(v)}>{v}</button>{/each}
         </div>
-        {#if shown.places.length}<button onclick={() => map?.recentre()}>Recentre map</button>{/if}
-      </div>
-      {#if !shown.own}<p class="muted">No point for this Place. Its sources give none, or none this site can use.</p>{/if}
-      {#if shown.places.length}<div class="map" role="region" aria-label="Map" {@attach draw}></div>{/if}
-    {/if}
+        {#if !shown.own}<p class="muted">No point for this Place. Its sources give none, or none this site can use.</p>{/if}
+        {#if shown.places.length}
+          <!-- The text list names the Places drawn, for a screen reader. -->
+          <div class="map" role="region" aria-label="Map" {@attach draw}></div>
+          <ul class="text" aria-label="Shown on the map">
+            {#each shown.places as p (p.id)}<li>{p.name}{p.role === "selected" ? " (selected)" : ""}</li>{/each}
+          </ul>
+        {/if}
+      {/if}
+    </div>
   {/if}
 </div>
 
@@ -130,15 +143,51 @@
   .place-map {
     margin: 8px 0;
   }
+  /* The view switch's row (--bar) and the map (--map) set the box's one height: on a desktop the map
+     is about 300 px; in the phone's sheet less, and less again in the side sheet, so that the box
+     fits under the actions held at the sheet's top (decision 193). */
+  .box {
+    --bar: 30px;
+    --map: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: calc(var(--bar) + 6px + var(--map));
+    margin-top: 6px;
+  }
+  :global(html[data-phone]) .box {
+    --bar: 44px;
+    --map: 240px;
+  }
+  :global(html[data-side]) .box {
+    --map: 116px;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
   .notice {
+    margin: 0;
     font-size: 13px;
   }
   .bar {
+    flex: none;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
     gap: 6px;
-    margin-top: 6px;
+    height: var(--bar);
+  }
+  .box > .muted {
+    margin: 0;
+  }
+  /* For a screen reader only: the names of the Places on the map. */
+  .text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   [aria-pressed="true"] {
     background: #3a4060;
@@ -147,10 +196,13 @@
   .muted {
     color: #9aa0b4;
   }
-  /* A plain background, under the tiles and in their place when they fail to load. */
+  /* A plain background, under the tiles and in their place when they fail to load. Its own stacking
+     context keeps the library's layers (z-index up to 1000) under the rest of the page, such as the
+     actions held at the top of the phone's sheet when the map scrolls under them. */
   .map {
-    height: 200px;
-    margin-top: 6px;
+    flex: 1;
+    min-height: 0;
+    isolation: isolate;
     border-radius: 4px;
     background: #1b1f2d;
     font: inherit;
@@ -170,6 +222,20 @@
   /* The Selected Place: larger, and ringed. */
   .map :global(.selected .dot) {
     box-shadow: 0 0 0 3px #ffd27a;
+  }
+  /* On a touch screen a dot and a name are each at least 44 px to tap, though drawn smaller. */
+  :global(html[data-coarse]) .map :global(.dot) {
+    position: relative;
+  }
+  :global(html[data-coarse]) .map :global(.dot::before),
+  :global(html[data-coarse]) .map :global(.map-place .name::before) {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: 44px;
+    translate: -50% -50%;
   }
   .map :global(.map-place .name) {
     position: absolute;
