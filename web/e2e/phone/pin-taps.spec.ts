@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, type OnScreen } from "../scene";
+import { focusIs, nodes, openOnAbraham, type OnScreen } from "../scene";
 import { pinchFromName, selectedIs, tappable } from "../touch-input";
 
 // The owner's phone test: after a pin, a tap on a node did nothing. The pin's ring lies off the
@@ -16,7 +16,7 @@ for (const view of ["A", "C"]) {
   test(`after a pin and a pinch from a name, a tap selects Ring 1, the pin, its ring, and a Shared Node, in view ${view}`, async ({ page }) => {
     test.slow(); // a pin, a pinch, and four taps, each drawn by software WebGL
     await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-    await page.goto(`/?view=${view}`);
+    await openOnAbraham(page, `/?view=${view}`);
     await focusIs(page, ABRAHAM);
     const sarah = await tappable(page, (n) => n.id === SARAH);
     await page.touchscreen.tap(sarah.x, sarah.y);
