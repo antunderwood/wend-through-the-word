@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { doubleClickLabel, focusIs, nodes, themesOnScreen } from "./scene";
+import { doubleClickLabel, focusIs, nodes, openOnAbraham, themesOnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -20,7 +20,7 @@ for (const view of ["A", "B", "C"] as const) {
   test(`the student journey, studying Abraham, in view ${view}`, async ({ page }) => {
     // Only the first load: a reload must find the view the journey chose.
     await page.addInitScript((v) => localStorage.getItem("wend.view") || localStorage.setItem("wend.view", v), view);
-    await page.goto("/");
+    await openOnAbraham(page);
     await focusIs(page, ABRAHAM);
     await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName(VIEW_NAME[view]);
 
@@ -123,7 +123,7 @@ const search = (page: Page) => new URL(page.url()).search;
 for (const view of ["A", "B", "C"] as const) {
   test(`the M4 journey, from a shared link to the credits, in view ${view}`, async ({ page }) => {
     // A shared link: Abraham the Focus, Gen 11:31 selected, in this view.
-    await page.goto(`/?sel=01011031&view=${view}`);
+    await openOnAbraham(page, `/?sel=01011031&view=${view}`);
     await focusIs(page, ABRAHAM);
     await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName(VIEW_NAME[view]);
     await expect(heading(page)).toHaveText("Gen 11:31");

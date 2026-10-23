@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes } from "./scene";
+import { focusIs, nodes, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   ISAAC = "person:isaac_616";
@@ -27,7 +27,7 @@ const overlapping = async (page: Page) => {
 for (const view of ["A", "B", "C"] as const)
   test(`no two names overlap with Isaac the Focus and Abraham pinned, and a hidden name shows on hover: view ${view}`, async ({ page }) => {
     await page.addInitScript((v) => localStorage.setItem("wend.view", v), view);
-    await page.goto("/");
+    await openOnAbraham(page);
     await focusIs(page, ABRAHAM);
     await panel(page).getByRole("button", { name: "Pin", exact: true }).click();
     await panel(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Isaac/ }).click();

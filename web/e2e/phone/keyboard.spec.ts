@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 
 // The on-screen keyboard. A phone browser shows it over the bottom of the page and shrinks the
 // visual viewport, not the page (Chrome's default, and Safari's). A browser test has no keyboard, so
@@ -13,7 +13,7 @@ test.use({ reducedMotion: "reduce" });
 
 async function open(page: Page) {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
 }
 

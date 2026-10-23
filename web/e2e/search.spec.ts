@@ -1,11 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openOnAbraham } from "./scene";
 
 const focusOf = (page: Page) => page.evaluate(() => window.wendGraph?.testNodes().find((n) => n.role === "focus")?.id);
 
 test.use({ reducedMotion: "reduce" });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await expect.poll(() => focusOf(page)).toBe("person:abraham_58");
 });
 

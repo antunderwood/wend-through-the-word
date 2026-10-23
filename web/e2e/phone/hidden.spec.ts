@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { focusIs, nodes } from "../scene";
+import { focusIs, nodes, openOnAbraham } from "../scene";
 
 // The hidden-nodes note on a phone (story 30, decision 33): one node limit everywhere (decision 177),
 // so the fixture's scenes are never trimmed; the test sets a low limit through the Focus Model's
@@ -10,7 +10,7 @@ test.use({ reducedMotion: "reduce" });
 
 test("the hidden-nodes note says how many nodes the limit trimmed, in the column above the sheet", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   const note = page.getByText(/hidden to keep the view fast$/);
   await expect(note).toHaveCount(0);

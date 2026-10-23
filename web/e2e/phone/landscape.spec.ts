@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { box, covered, overlaps } from "../boxes";
-import { focusIs, nodes } from "../scene";
+import { focusIs, nodes, openOnAbraham } from "../scene";
 
 // A phone on its side keeps the phone layout (decision 184): the sheet is a full-height side panel
 // on the right, about 40% of the width, and the scene keeps the full height to its left, with its
@@ -47,7 +47,7 @@ for (const size of [
     test.use({ viewport: size });
 
     test("the sheet is a full-height side panel on the right, and the scene has the rest, with nothing over anything else", async ({ page }) => {
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       await expect(page.locator("html")).toHaveAttribute("data-phone");
       const s = await box("sheet", sheet(page));
@@ -80,7 +80,7 @@ for (const size of [
 
     test("the scene has everything left of the sheet below the top bar, and all but the handle when the sheet is closed", async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       const top = (await bar(page).boundingBox())!;
       const below = top.y + top.height;
@@ -95,7 +95,7 @@ for (const size of [
     });
 
     test("the tabs work: Read opens the Reader tab, and Details has the view picker with views A and C only", async ({ page }) => {
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       await expect(details(page).getByRole("radiogroup", { name: "View" }).getByRole("radio")).toHaveText(["Tilted plane", "Free orbit"]);
       await details(page).getByRole("button", { name: "Read", exact: true }).tap();
@@ -113,7 +113,7 @@ for (const size of [
 
     test("search opens over the scene, clear of the sheet, and fits the screen", async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       await page.getByRole("button", { name: "Search" }).tap();
       await page.keyboard.type("Isaac");
@@ -129,7 +129,7 @@ for (const size of [
 }
 
 test("turning the phone keeps the state: the Focus, the selection, the tab, and the sheet open or closed", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await details(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Sarah/ }).tap();
   await expect(heading(page)).toHaveText("Sarah");

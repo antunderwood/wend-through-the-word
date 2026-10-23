@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes } from "./scene";
+import { focusIs, nodes, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
@@ -9,7 +9,7 @@ const typeList = (page: Page, title: string) => panel(page).getByRole("list", { 
 test.use({ reducedMotion: "reduce" });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
 });
 

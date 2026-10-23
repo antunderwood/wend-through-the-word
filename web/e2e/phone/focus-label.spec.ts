@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 
 // Fixture: Abraham's Easton entry starts "Father of a multitude, son of Terah" (e2e/look.spec.ts).
 test("the Focus label has no dictionary subtitle on a phone", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
   await expect(page.locator(".nl.focus")).toBeVisible();
   await expect(page.locator(".nl.focus").getByText("Father of a multitude, son of Terah")).toBeHidden();

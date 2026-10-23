@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes } from "../scene";
+import { focusIs, nodes, openOnAbraham } from "../scene";
 import { covered } from "../boxes";
 import { doubleTap, drag } from "../touch";
 
@@ -12,7 +12,7 @@ test.use({ reducedMotion: "reduce" });
 // The hint, dismissed before in this browser, would lie over the top of the scene on a phone.
 async function open(page: Page) {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
 }
 

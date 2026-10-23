@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { nodes, type OnScreen } from "./scene";
+import { nodes, openOnAbraham, type OnScreen } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473";
@@ -22,7 +22,7 @@ const centre = async (page: Page) => {
 const far = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
 
 async function open(page: Page) {
-  await page.goto("/");
+  await openOnAbraham(page);
   await firstFrameWith(page, ABRAHAM);
 }
 
@@ -99,7 +99,9 @@ test("the page works when browser storage is blocked", async ({ page }) => {
       },
     }),
   );
-  await open(page);
+  // Nothing can be kept, so the address names Abraham.
+  await page.goto(`/?focus=${ABRAHAM}`);
+  await firstFrameWith(page, ABRAHAM);
   await page.getByRole("button", { name: "Dismiss hint" }).click();
   await expect(page.getByText("A click selects a node")).toBeHidden();
 });

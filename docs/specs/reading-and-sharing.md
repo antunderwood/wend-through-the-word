@@ -70,7 +70,7 @@ No build change is expected: the export already carries corrections, Evidence Ve
 25. As a reader, I want the page address to change when the Focus, Selected Node, pins, filters, or view change, so that I can copy it at any moment.
 26. As a reader, I want a "Copy link" button, so that sharing does not need the address bar.
 27. As a reader, I want to open a shared link and see the same Focus, Selected Node, pins, filters, and view, so that the sender and I look at the same thing.
-28. As a reader, I want a link with a missing or unknown node to open on Abraham with a notice, so that a broken link still gives me a page.
+28. As a reader, I want a link with a missing or unknown node to open on the first Focus (Jesus Christ, decision 186) with a notice, so that a broken link still gives me a page.
 29. As a reader, I want the browser's Back and Forward to move between the Foci I visited, so that the browser behaves as I expect.
 30. As a reader, I want selecting a node or changing a filter not to fill my browser history, so that Back is still useful.
 
@@ -147,7 +147,7 @@ Stable (decision 128): links shared now must still open after later releases, so
 
 | Parameter | Value | Default (left out) |
 |---|---|---|
-| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse, written as its OSIS reference with dots (`Gen.25.1`, decision 149) | `person:abraham_58`, but a shared link always names it (decision 134) |
+| `focus` | The Focus: an Entity ID (`person:isaac_616`) or a Verse, written as its OSIS reference with dots (`Gen.25.1`, decision 149) | `person:jesus_905` (decision 186), but a shared link always names it (decision 134) |
 | `sel` | The Selected Node: an Entity ID, a Verse, or an Overflow Node (`overflow:person`) | the Focus |
 | `pins` | Pinned Nodes (Entity IDs or Verses), comma-separated, in pin order, at most 3 | none |
 | `view` | `A` (tilted plane), `B` (stacked discs), or `C` (free orbit) | the view kept in this browser, else `A` |
@@ -157,7 +157,7 @@ Stable (decision 128): links shared now must still open after later releases, so
 
 - Parameters are written in the order above. Colons and commas in IDs are not escaped; a reader of the address decodes it as usual form encoding, so escaped forms work too.
 - A Verse is written `Gen.22.2`, which needs no encoding. `focus`, `sel`, and `pins` also read a Verse as its Verse Key (`01022002`, the form written before decision 149, so older links keep working) and in any form the search box accepts (`Gen 22:2`, `Gen22:2`, `Genesis 22:2`).
-- With every default, the page's own address is the bare page: Abraham with default settings. The bare address names no Focus, so it restores the Focus and Your Path kept in this browser (decision 133). A shared link ("Copy link", the notes download, a correction request) always names the Focus (decision 134).
+- With every default, the page's own address is the bare page: Jesus Christ with default settings (decision 186). The bare address names no Focus, so it restores the Focus and Your Path kept in this browser (decision 133). A shared link ("Copy link", the notes download, a correction request) always names the Focus (decision 134).
 - A parameter that is not recognised (an ID not in this build, a Verse outside the built chapters, a Verse number its chapter does not have, a view other than A, B, or C, votes that are not a whole number, a fourth pin, an unknown node type, a book not in this build) is left out and named in a notice. A node value that is neither an ID nor a Verse in any form gets a notice that says what was expected: "0102200 is not a Verse here. Write a Verse as Gen.22.2 or Gen 22:2." A missing or unknown Focus opens on the Focus kept in this browser, else Abraham. Unknown parameter names are ignored.
 - A `view` in the address wins over the view kept in this browser.
 - Your Path is not in the address.

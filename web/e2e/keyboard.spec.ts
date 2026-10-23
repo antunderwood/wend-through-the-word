@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes } from "./scene";
+import { focusIs, nodes, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   ISAAC = "person:isaac_616";
@@ -8,7 +8,7 @@ const heading = (page: Page) => page.getByRole("complementary", { name: "Selecte
 test.use({ reducedMotion: "reduce" });
 
 test("arrows step the Selected Node through Ring 1, Enter makes it the Focus, Backspace goes back", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   const before = await nodes(page);
 
@@ -39,7 +39,7 @@ test("arrows step the Selected Node through Ring 1, Enter makes it the Focus, Ba
 });
 
 test("scene keys leave the view picker and the search box alone", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   const picker = page.getByRole("radiogroup", { name: "View" });
 
@@ -64,7 +64,7 @@ test("scene keys leave the view picker and the search box alone", async ({ page 
 });
 
 test("controls show keyboard focus and have text names", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await page.keyboard.press("Tab");
   const outline = await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle);

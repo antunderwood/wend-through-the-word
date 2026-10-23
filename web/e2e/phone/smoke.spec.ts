@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 
 test("a phone loads the page and walks to Abraham by search and touch", async ({ page }) => {
   await page.goto("/?focus=person:isaac_616");
@@ -11,7 +11,7 @@ test("a phone loads the page and walks to Abraham by search and touch", async ({
 });
 
 test("a phone has the phone layout and a coarse pointer, and keeps the layout sideways", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   const root = page.locator("html");
   await expect(root).toHaveAttribute("data-phone");
   await expect(root).toHaveAttribute("data-coarse");
