@@ -99,6 +99,11 @@ const hides = (id: Id, f: State["filters"], bookOf: BookOf) => {
   return f.books === "build" ? !built : !f.books.includes(osis!);
 };
 export const passes = (l: Link, f: State["filters"], bookOf: BookOf) => !hides(l.id, f, bookOf) && (!isCrossRef(l) || l.weight >= f.minVotes);
+// A record's links of one type that pass the filters, strongest first (links are pre-sorted), and
+// their top K (decision 94): the scene's Ring 1 and pin rings, the panel's lists before "N more",
+// and the map's Neighbours (decision 192).
+export const passing = (R: Rec, t: NodeType, f: State["filters"], bookOf: BookOf) => R.links.filter((l) => l.type === t && l.id !== R.id && passes(l, f, bookOf));
+export const topK = (R: Rec, t: NodeType, k: number, f: State["filters"], bookOf: BookOf) => passing(R, t, f, bookOf).slice(0, k);
 // A Ring 2 entry is a Cross-reference when both ends are Verses; its weight is then Votes.
 const passesVotes = (parent: Id, c: { id: Id; weight: number }, f: State["filters"]) =>
   !(typeOf(parent) === "verse" && typeOf(c.id) === "verse") || c.weight >= f.minVotes;
@@ -230,9 +235,6 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
   const pathShown = s.path.slice(-SCENE_PATH); // oldest first
   pathShown.forEach((id) => tag(id, "path"));
 
-  // The top K of each type, after filters, by weight then ID (decision 94). Links are pre-sorted.
-  const topK = (R: Rec, t: NodeType, k: number) => R.links.filter((l) => l.type === t && l.id !== R.id && passes(l, f, bookOf)).slice(0, k);
-
   let hiddenVotes = 0;
   const ring1 = {} as Record<NodeType, Link[]>,
     overflow = {} as Record<NodeType, Link[]>,
@@ -257,7 +259,7 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
   const pinRing: Record<Id, Around[]> = {};
   s.pins.forEach((p, pinIndex) => {
     if (p === s.focus) return;
-    pinRing[p] = TYPES.flatMap((t, typeIndex) => topK(record(p)!, t, PIN_K).map((l, rank) => ({ id: l.id, pin: p, rank, typeIndex, pos: pinIndex })));
+    pinRing[p] = TYPES.flatMap((t, typeIndex) => topK(record(p)!, t, PIN_K, f, bookOf).map((l, rank) => ({ id: l.id, pin: p, rank, typeIndex, pos: pinIndex })));
     pinRing[p].forEach((n) => tag(n.id, "pinring"));
   });
 
@@ -309,7 +311,7 @@ export function scene(s: State, record: (id: Id) => Rec | undefined, genderOf: (
 
   // Shared Node (decision 119): in Ring 1 or around a pin, and in the top K of its type for both
   // the Focus and a Pinned Node.
-  const topIds = (R: Rec) => new Set(TYPES.flatMap((t) => topK(R, t, f.k).map((l) => l.id)));
+  const topIds = (R: Rec) => new Set(TYPES.flatMap((t) => topK(R, t, f.k, f, bookOf).map((l) => l.id)));
   const focusTop = topIds(F);
   const pinTops = s.pins.filter((p) => p !== s.focus).map((p) => topIds(record(p)!));
   const isShared = (id: Id, rs: Set<Role>) =>

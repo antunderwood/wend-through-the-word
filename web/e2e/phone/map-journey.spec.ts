@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openMap, thirdParty } from "../map";
 import { focusIs } from "../scene";
 
 test.use({ reducedMotion: "reduce" });
@@ -9,15 +10,11 @@ test("in Journey, the Path's Places are joined and a tap on a dot selects that P
   // Fixture: Ur, Haran, and Egypt have points; Abraham is a Person.
   const journey = JSON.stringify({ focus: "place:egypt_362", path: ["place:ur_1189", "person:abraham_58", "place:haran_527"] });
   await page.addInitScript((j) => (localStorage.setItem("wend.hintDismissed", "1"), localStorage.setItem("wend.journey", j)), journey);
-  await page.route(
-    (url) => url.hostname !== "localhost",
-    (route) => route.abort(),
-  );
+  await thirdParty(page);
   await page.goto("/");
   await focusIs(page, "place:egypt_362");
   const details = page.getByRole("region", { name: "Sheet" }).getByRole("tabpanel", { name: "Details" });
-  await details.getByRole("button", { name: "Show map" }).tap();
-  await details.getByRole("button", { name: "Continue" }).tap();
+  await openMap(details, true);
   await details.getByRole("group", { name: "Map view" }).getByRole("button", { name: "Journey" }).tap();
 
   const map = details.getByRole("region", { name: "Map" });

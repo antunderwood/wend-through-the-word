@@ -1,9 +1,10 @@
-// The map module (#83): the one place that touches the map library. The panel imports it only when
+// The map module (#83): the one place that calls the map library. The panel imports it only when
 // the reader first opens the map, so Leaflet adds nothing to the first load and no tile is asked for
 // before then. The dots and names are the page's own, drawn over the tiles: when the tiles fail to
 // load, they still show on the plain background.
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { DOUBLE_CLICK_MS } from "./graph";
 import type { Id } from "./model";
 import { TILES } from "./tiles";
 
@@ -17,8 +18,6 @@ export type MapActions = { select: (id: Id) => void; makeFocus: (id: Id) => void
 // the scale of a town, so that the names of Places a few kilometres apart do not cover each other.
 const PLACE_ZOOM = 8;
 const NEAR_ZOOM = 11;
-// Two clicks on one dot within this time are a double click, as in the scene (decision 192).
-const DOUBLE_CLICK_MS = 400;
 
 export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   // The height of a name, for the names of Places at one point, one under another: on a touch
@@ -64,8 +63,9 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
       .on("keypress", (e) => (e as L.LeafletKeyboardEvent).originalEvent.key === "Enter" && on.select(p.id));
   }
 
-  // A single click selects only once the double click time has passed, because a selection moves
-  // the map and the panel under the pointer before a second click could land on the same dot.
+  // A single click selects only once the double click time (the scene's, decision 192) has passed,
+  // because a selection moves the map and the panel under the pointer before a second click could
+  // land on the same dot.
   let pending: { id: Id; timer: ReturnType<typeof setTimeout> } | undefined;
   function clicked(id: Id) {
     clearTimeout(pending?.timer);
@@ -86,10 +86,10 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   function frame() {
     const bounds = L.latLngBounds(shown.map((p) => [p.lat, p.lon]));
     framing = true;
+    // The framing lasts until the move ends: after a glide, or at once (the first view, a move of
+    // nothing, a jump of many zoom levels, reduced motion), so the end is listened for first.
+    map.once("moveend", () => (framing = false));
     map.fitBounds(bounds, { padding: [24, 24], maxZoom: bounds.getNorthEast().equals(bounds.getSouthWest()) ? PLACE_ZOOM : NEAR_ZOOM, animate: !still });
-    // An animated zoom starts on the next frame, so the framing lasts until the move ends.
-    if (still) framing = false;
-    else map.once("moveend", () => (framing = false));
   }
   // The box can change size (a message above the map comes or goes, the phone turns): the library
   // fills it again, and a map that follows is framed again.
@@ -110,7 +110,8 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
       dots.clearLayers();
       markers.clear();
       const at = new Map<string, number>();
-      for (const p of places) {
+      // The Selected Place first, so it has the dot (and the ring) at a point it shares.
+      for (const p of [...places].sort((a, b) => +(b.role === "selected") - +(a.role === "selected"))) {
         const n = at.get(`${p.lat},${p.lon}`) ?? 0;
         at.set(`${p.lat},${p.lon}`, n + 1);
         markers.set(p.id, dot(p, n).addTo(dots));
@@ -127,6 +128,11 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
     recentre() {
       follow = true;
       frame();
+    },
+    // Drops a click on a dot still waiting to select, as a selection made elsewhere replaces it.
+    cancel() {
+      clearTimeout(pending?.timer);
+      pending = undefined;
     },
     remove() {
       clearTimeout(pending?.timer);

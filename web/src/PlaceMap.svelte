@@ -8,7 +8,8 @@
   import type { Data } from "./data";
   import { typeColour } from "./graph";
   import type { MapActions, MapPlace, PlaceMap } from "./map";
-  import { passes, TYPE_NAME, TYPES, typeOf, type Id, type State } from "./model";
+  import { topK, TYPE_NAME, TYPES, typeOf, type Id, type State } from "./model";
+  import { store, stored } from "./storage";
   import { TILES } from "./tiles";
 
   let { data, model, select, makeFocus }: { data: Data; model: State } & MapActions = $props();
@@ -16,52 +17,36 @@
   const filters = $derived(model.filters);
 
   // The notice is shown once a session (sessionStorage); where storage is blocked, once a page.
+  // Continue and Cancel leave the keyboard on Hide map or Show map, the button that asked.
   const TOLD = "wend.mapNotice";
-  const told = () => {
-    try {
-      return sessionStorage.getItem(TOLD) === "1";
-    } catch {
-      return false;
-    }
-  };
   let open = $state(false);
   let asking = $state(false);
-  let accepted = $state(told());
+  let accepted = $state(stored(TOLD, "sessionStorage") === "1");
+  let toggle = $state<HTMLButtonElement>();
   function press() {
     if (open) open = false;
     else if (accepted) open = true;
     else asking = true;
   }
   function accept() {
-    try {
-      sessionStorage.setItem(TOLD, "1");
-    } catch {
-      // once a page
-    }
+    store(TOLD, "1", "sessionStorage");
     [accepted, asking, open] = [true, false, true];
+    toggle?.focus();
+  }
+  function cancel() {
+    asking = false;
+    toggle?.focus();
   }
 
   // The view, kept for the session (sessionStorage); where storage is blocked, for the page.
   const VIEWS = ["Place", "Neighbours", "Journey"] as const;
   type View = (typeof VIEWS)[number];
   const VIEW = "wend.mapView";
-  let view = $state<View>(
-    (() => {
-      try {
-        const kept = sessionStorage.getItem(VIEW) as View;
-        return VIEWS.includes(kept) ? kept : "Place";
-      } catch {
-        return "Place";
-      }
-    })(),
-  );
+  const kept = stored(VIEW, "sessionStorage") as View;
+  let view = $state<View>(VIEWS.includes(kept) ? kept : "Place");
   function choose(v: View) {
     view = v;
-    try {
-      sessionStorage.setItem(VIEW, v);
-    } catch {
-      // for the page
-    }
+    store(VIEW, v, "sessionStorage");
   }
 
   // The Places to show, the Selected Place first, and whether it has a point itself. Neighbours adds
@@ -77,12 +62,14 @@
   $effect(() => {
     const [id, v, f, p] = [selected, view, filters, path];
     if (!open) return void (shown = undefined);
+    // A late answer, kept or failed, leaves alone what a newer selection or view shows.
+    const current = () => id === selected && v === view && p === path;
     (!isPlace ? fallback(id, f, p) : v === "Journey" ? journey(id, p) : places(id, v, f))
-      .then((s) => id === selected && v === view && p === path && (shown = s))
-      .catch(() => (shown = undefined));
+      .then((s) => current() && (shown = s))
+      .catch(() => current() && (shown = undefined));
   });
   async function places(id: Id, v: View, f: State["filters"]) {
-    const ring = v === "Neighbours" ? (await data.load(id)).links.filter((l) => l.type === "place" && l.id !== id && passes(l, f, data.bookOf)).slice(0, f.k) : [];
+    const ring = v === "Neighbours" ? topK(await data.load(id), "place", f.k, f, data.bookOf) : [];
     const [own, ...others] = await Promise.all([
       data.point(id),
       ...ring.map((l) => data.point(l.id).catch(() => undefined)), // a Neighbour that fails to load is left out
@@ -127,7 +114,7 @@
   }
 
   // The map is made when its box first shows, and removed with it.
-  let map = $state<PlaceMap>();
+  let map = $state.raw<PlaceMap>();
   function draw(host: HTMLElement) {
     let gone = false;
     import("./map").then((m) => gone || (map = m.createMap(host, typeColour("place"), { select: (id) => select(id), makeFocus: (id) => makeFocus(id) })));
@@ -141,25 +128,30 @@
     if (map && shown?.places.length) map.show(shown.places, shown.key);
   });
   $effect(() => map?.join(shown?.line ? shown.places : []));
+  // A selection made elsewhere (a list, the search) drops a click on a dot still waiting to select.
+  $effect(() => {
+    selected;
+    map?.cancel();
+  });
 </script>
 
 <div class="place-map">
   <!-- Recentre map shares the row with Hide map, clear of the map, which on a phone is too short
        for a button over it. -->
   <div class="top">
-    <button data-tour="show-map" aria-expanded={open} onclick={press}>{open ? "Hide map" : "Show map"}</button>
+    <button data-tour="show-map" aria-expanded={open} onclick={press} bind:this={toggle}>{open ? "Hide map" : "Show map"}</button>
     {#if open && shown?.places.length}<button onclick={() => map?.recentre()}>Recentre map</button>{/if}
   </div>
   <!-- Asking or open, the box keeps one height whatever it shows (the notice, a message, a load
        under way, the map), so the lists below it never move between the two clicks of a double
-       click. Only Show map and Hide map change its height. -->
+       click. Only Show map, Hide map, Continue, and Cancel change its height (decision 194). -->
   {#if asking || open}
     <div class="box">
       {#if asking}
-        <p class="notice">
+        <p class="notice" role="status">
           The map's tiles come from {TILES.name}, which sees your address and the area you view.
           <button onclick={accept}>Continue</button>
-          <button onclick={() => (asking = false)}>Cancel</button>
+          <button onclick={cancel}>Cancel</button>
         </p>
       {:else if shown}
         <div class="bar">
@@ -254,6 +246,10 @@
     background: #1b1f2d;
     font: inherit;
   }
+  /* The tiles dimmed for the page's dark theme (story 25); the dots, names, and line keep their colour. */
+  .map :global(.leaflet-tile-pane) {
+    filter: brightness(0.7) saturate(0.8);
+  }
   .map :global(.map-place) {
     overflow: visible;
     white-space: nowrap;
@@ -266,7 +262,7 @@
     border-radius: 50%;
     box-sizing: border-box;
   }
-  /* The Selected Place: larger, and ringed. */
+  /* The Selected Place's ring; map.ts draws its dot larger. */
   .map :global(.selected .dot) {
     box-shadow: 0 0 0 3px #ffd27a;
   }

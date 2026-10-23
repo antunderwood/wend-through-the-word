@@ -1,10 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openMap as open, thirdParty } from "./map";
 import { focusIs } from "./scene";
 
 // The map's Journey view (#86): the Places on Your Path that have points, joined in Path order.
 // Every request to another host than the page's own is aborted, as when the reader is offline.
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const map = (page: Page) => panel(page).getByRole("region", { name: "Map" });
+const openMap = (page: Page) => open(panel(page));
 const view = (page: Page, name: "Place" | "Neighbours" | "Journey") => panel(page).getByRole("group", { name: "Map view" }).getByRole("button", { name });
 const label = (page: Page, name: string) => map(page).getByText(name, { exact: true });
 const pathBar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
@@ -12,16 +14,9 @@ const pathBar = (page: Page) => page.getByRole("navigation", { name: "Your Path"
 // Opens the page on this Your Path (oldest first) and Focus, with the tile host unreachable.
 async function openOn(page: Page, path: string[], focus: string) {
   await page.addInitScript((j) => localStorage.setItem("wend.journey", j), JSON.stringify({ focus, path }));
-  await page.route(
-    (url) => url.hostname !== "localhost",
-    (route) => route.abort(),
-  );
+  await thirdParty(page);
   await page.goto("/");
   await focusIs(page, focus);
-}
-async function openMap(page: Page) {
-  await panel(page).getByRole("button", { name: "Show map" }).click();
-  await panel(page).getByRole("button", { name: "Continue" }).click();
 }
 
 // The line's corners, and the centres of the named dots, on the page.
@@ -67,6 +62,15 @@ test("Journey joins Your Path's Places that have points in Path order, says what
   await expect(view(page, "Journey")).toHaveAttribute("aria-pressed", "true");
   await expect(map(page).locator(".map-place.selected")).toHaveText("Haran");
   await expect(label(page, "Egypt")).toBeVisible();
+});
+
+test("a Selected Place at the point of an earlier stop has the dot there, ringed", async ({ page }) => {
+  // Fixture: Judea and Jerusalem share one point.
+  await openOn(page, ["place:judea_657"], "place:jerusalem_636");
+  await openMap(page);
+  await view(page, "Journey").click();
+  await expect(label(page, "Judea")).toBeVisible();
+  await expect(map(page).locator(".map-place.selected .dot")).toBeVisible();
 });
 
 test("Journey under two Places says so; a Selected Node that is not a Place shows the Journey, else the Focus's Neighbours, else no Place", async ({ page }) => {

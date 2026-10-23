@@ -6,7 +6,7 @@
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
   import PlaceMap from "./PlaceMap.svelte";
-  import { passes, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import { passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import { screen } from "./screen.svelte";
   import type { Notes } from "./session";
 
@@ -207,10 +207,6 @@
           {/each}
         </ul>
       {/if}
-    {:catch e}
-      {@render failed("the details", e)}
-    {/await}
-    {#await details then d}
       {#if d?.entry}
         {@const [first, ...rest] = d.entry.text.split(/\n\s*\n\s*/)}
         {@const key = `${selected}|entry`}
@@ -222,6 +218,8 @@
           {/if}
         </section>
       {/if}
+    {:catch e}
+      {@render failed("the details", e)}
     {/await}
   </section>
   {#if compact}<div class="actions">{@render actions()}</div>{/if}
@@ -235,7 +233,7 @@
          Relationship, sent as the Relationship line sends it. -->
     {#each list.types as t (t)}
       {@const linked = t === "verse" && isEntity(list.r.id)}
-      {@const found = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters, data.bookOf))}
+      {@const found = passing(list.r, t, model.filters, data.bookOf)}
       {@const all = linked ? found.sort((a, b) => (a.id < b.id ? -1 : 1)) : found}
       {@const key = `${neighboursOf}|${t}`}
       {@const pageKey = `${list.r.id}|${key}`}

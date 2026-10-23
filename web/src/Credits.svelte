@@ -34,7 +34,7 @@
   <ul aria-labelledby="map">
     <li>
       <a href={TILES.link}>{TILES.name}</a>
-      <p>Map tiles, loaded only when a reader opens the map. Map data &copy; OpenStreetMap contributors.</p>
+      <p>Map tiles, loaded only when a reader opens the map. {TILES.credit}</p>
       <p class="muted">Licence: {TILES.licence}</p>
     </li>
     <li>

@@ -7,6 +7,8 @@ export const TILES = {
   licence: "Open Database License (ODbL), tiles under the OSMF Tile Usage Policy",
   url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  // The attribution as plain text, for the credits page.
+  credit: "Map data © OpenStreetMap contributors.",
   maxZoom: 19,
 };
 
