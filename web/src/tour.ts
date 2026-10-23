@@ -42,7 +42,7 @@ const one = (s: string) => document.querySelector(s);
 const tour = (name: string) => one(`[data-tour="${name}"]`);
 const label = (id: Id) => one(`[data-tour="scene"] [data-node="${id}"]`);
 // A label the scene hides as crowded (decision 124) cannot be pointed at.
-const shown = (el: Element | null) => (el?.checkVisibility() ? el : null);
+const shown = (el: Element | null) => (el?.checkVisibility({ visibilityProperty: true }) ? el : null);
 const onPath = (s: State) => [...s.path, s.focus];
 // Waits a few frames for the panel to draw what an action asked for.
 async function drawn(find: () => Element | null | undefined) {

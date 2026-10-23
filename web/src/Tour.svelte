@@ -3,6 +3,7 @@
   // step's target and the box never covers it (decision 155). Props only; App saves and restores the
   // reader's state.
   import { untrack } from "svelte";
+  import { screen } from "./screen.svelte";
   import { STEPS, type At, type TourPage } from "./tour";
 
   let { offer, page, onstart, onend }: { offer: boolean; page: TourPage; onstart: () => void; onend: (keep: boolean) => void } = $props();
@@ -27,17 +28,33 @@
     return () => cancelAnimationFrame(raf);
   });
 
-  function place(el: Element | null | undefined) {
-    // A target in a hidden tab of the bottom sheet opens that tab, as a tap on the tab would; the
-    // target is placed once the tab shows. A tab the reader opens later is left open.
-    const tab = el !== target && el?.closest("[role=tabpanel][hidden]");
-    if (tab) {
-      document.getElementById(tab.getAttribute("aria-labelledby")!)?.click();
-      return;
+  // On a phone, before a step shows its target, the sheet is set as the target needs, as taps on its
+  // handle and tabs would (decision 185): a target in the sheet opens it at the target's tab, and a
+  // target in the scene closes it, so neither the sheet nor the box is in the scene's way. Anything
+  // else (the top bar) leaves it as it is, and so does a change the reader makes during the step.
+  // True when it changed the sheet: the target is placed on a later frame, once the sheet shows it.
+  function arrange(el: Element) {
+    const sheet = document.querySelector('[data-tour="sheet"]');
+    if (!sheet) return false;
+    const handle = sheet.querySelector<HTMLElement>('[aria-controls="sheet-body"]')!;
+    const open = handle.getAttribute("aria-expanded") === "true";
+    if (sheet.contains(el) ? !open : open && el.closest('[data-tour="scene"]')) {
+      handle.click();
+      return true;
     }
+    const tab = el.closest("[role=tabpanel][hidden]");
+    if (tab) document.getElementById(tab.getAttribute("aria-labelledby")!)!.click();
+    return !!tab;
+  }
+
+  function place(el: Element | null | undefined) {
+    if (el && el !== target && arrange(el)) return;
     // A target in the panel is scrolled into its view once; scene names are never scrolled. Any other
-    // target brings the panel back to its top, where the Selected Node is.
-    if (el !== target && el?.closest("#panel")) el.scrollIntoView({ block: "nearest" });
+    // target brings the panel back to its top, where the Selected Node is. A target taller than half
+    // the panel (a long list) is scrolled to its start, as "nearest" would leave it where it is when
+    // it overflows both edges; the panel's scroll padding keeps it below the actions held at its top.
+    const panel = el && el !== target && el.closest("#panel");
+    if (panel) el.scrollIntoView({ block: el.getBoundingClientRect().height > panel.clientHeight / 2 ? "start" : "nearest" });
     else if (el !== target) document.getElementById("panel")?.scrollTo(0, 0);
     target = el;
     const r = el?.getBoundingClientRect();
@@ -46,22 +63,23 @@
     const w = box.offsetWidth,
       h = box.offsetHeight,
       m = 14;
-    // On a phone the box stays above the bottom sheet, open or closed.
-    const sheet = document.querySelector('[data-tour="sheet"]'),
-      floor = sheet ? sheet.getBoundingClientRect().top : innerHeight;
-    // Below, above, left of, or right of the target, whichever fits; on a phone also just above the
-    // sheet or at the top of the screen, if clear of the target. Where none fits (a short screen), the
-    // spot moved onto the screen that covers least of the target. With no target, the bottom left corner.
-    let [x, y] = [Math.min(16, innerWidth - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
+    // On a phone the box stays above the bottom sheet, or left of it at the side, open or closed.
+    const sheet = document.querySelector('[data-tour="sheet"]')?.getBoundingClientRect(),
+      floor = sheet && !screen.side ? sheet.top : innerHeight,
+      wall = sheet && screen.side ? sheet.left : innerWidth;
+    // Below, above, left of, or right of the target, whichever fits; on a phone also at the edges of
+    // the space the sheet leaves, if clear of the target. Where none fits, the spot moved onto the
+    // screen that covers least of the target. With no target, the bottom left corner.
+    let [x, y] = [Math.min(16, wall - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
     if (seen) {
       Object.assign(ring.style, { left: `${r.left - 5}px`, top: `${r.top - 5}px`, width: `${r.width + 10}px`, height: `${r.height + 10}px` });
-      const cx = Math.max(8, Math.min(innerWidth - w - 8, r.left)),
+      const cx = Math.max(8, Math.min(wall - w - 8, r.left)),
         cy = Math.max(8, Math.min(floor - h - 8, r.top));
       const spots = [[cx, r.bottom + m], [cx, r.top - m - h], [r.left - m - w, cy], [r.right + m, cy]];
-      if (sheet) spots.push([cx, floor - h - 8], [cx, 8]);
+      if (sheet) spots.push([cx, floor - h - 8], [cx, 8], [8, cy], [wall - w - 8, cy]);
       const clear = ([a, b]: number[]) => a + w + m <= r.left || r.right + m <= a || b + h + m <= r.top || r.bottom + m <= b;
-      const fits = ([a, b]: number[]) => a >= 8 && b >= 8 && a + w <= innerWidth - 8 && b + h <= floor - 8;
-      const onto = ([a, b]: number[]) => [Math.max(8, Math.min(innerWidth - w - 8, a)), Math.max(8, Math.min(floor - h - 8, b))];
+      const fits = ([a, b]: number[]) => a >= 8 && b >= 8 && a + w <= wall - 8 && b + h <= floor - 8;
+      const onto = ([a, b]: number[]) => [Math.max(8, Math.min(wall - w - 8, a)), Math.max(8, Math.min(floor - h - 8, b))];
       const covered = ([a, b]: number[]) =>
         Math.max(0, Math.min(a + w, r.right) - Math.max(a, r.left)) * Math.max(0, Math.min(b + h, r.bottom) - Math.max(b, r.top));
       const fallback = [...spots, [x, y]].map(onto).reduce((best, s) => (covered(s) < covered(best) ? s : best));
@@ -135,6 +153,10 @@
   /* On a phone the box is as wide as the screen, so it is short enough to fit above the sheet. */
   :global(html[data-phone]) .tour {
     width: calc(100vw - 16px);
+  }
+  /* At the side, it fits beside a name in the scene, left of the sheet. */
+  :global(html[data-side]) .tour {
+    width: min(280px, calc(100vw - var(--sheet-covered) - 16px));
   }
   :global(html[data-phone]) .tour button {
     min-height: 44px;
