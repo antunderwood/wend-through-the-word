@@ -210,7 +210,7 @@
     {:catch e}
       {@render failed("the details", e)}
     {/await}
-    <PlaceMap {data} {selected} name={label(selected)} />
+    <PlaceMap {data} {model} select={(id) => apply({ type: "select", id })} {makeFocus} />
     {#await details then d}
       {#if d?.entry}
         {@const [first, ...rest] = d.entry.text.split(/\n\s*\n\s*/)}

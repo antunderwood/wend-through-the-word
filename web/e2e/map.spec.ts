@@ -1,7 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs } from "./scene";
+import { selectedIs } from "./touch-input";
 
-// The map of the selected Place (#84). Nothing here reaches the network: every request to another
+// The map of the selected Place (#84) and its Neighbours (#85). Nothing here reaches the network: every request to another
 // host than the page's own is recorded, then answered with a blank tile or aborted.
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const map = (page: Page) => panel(page).getByRole("region", { name: "Map" });
@@ -15,6 +16,17 @@ async function thirdParty(page: Page, answer: "tile" | "abort") {
   );
   return asked;
 }
+
+// Opens the map, past the notice the first time in a session.
+async function openMap(page: Page) {
+  await panel(page).getByRole("button", { name: "Show map" }).click();
+  const go = panel(page).getByRole("button", { name: "Continue" });
+  if (await go.isVisible()) await go.click();
+}
+const view = (page: Page, name: "Place" | "Neighbours") => panel(page).getByRole("group", { name: "Map view" }).getByRole("button", { name });
+const label = (page: Page, name: string) => map(page).getByText(name, { exact: true });
+// Where on the page the selected Place's dot is.
+const selectedDot = async (page: Page) => (await map(page).locator(".map-place.selected .dot").boundingBox())!;
 
 test.use({ reducedMotion: "reduce" });
 
@@ -61,4 +73,76 @@ test("a Place with no point and a Node that is not a Place say so, and ask nothi
   await panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button").first().click();
   await expect(panel(page).getByText("No Place to show.")).toBeVisible();
   expect(asked).toEqual([]);
+});
+
+test("Neighbours shows the selected Place's Ring 1 Places that have points; a click on a dot selects it and a double click makes it the Focus", async ({ page }) => {
+  await thirdParty(page, "tile");
+  // Fixture: Haran's Ring 1 Places are Ur of the Chaldees, which has a point, and Canaan, which has none.
+  await page.goto("/?focus=place:haran_527");
+  await focusIs(page, "place:haran_527");
+  await openMap(page);
+  await expect(view(page, "Place")).toHaveAttribute("aria-pressed", "true");
+  await expect(label(page, "Haran")).toBeVisible();
+  await expect(label(page, "Ur of the Chaldees")).toHaveCount(0);
+  await view(page, "Neighbours").click();
+  await expect(label(page, "Ur of the Chaldees")).toBeVisible();
+  await expect(map(page).locator(".map-place.selected")).toHaveText("Haran");
+  await expect(label(page, "Canaan")).toHaveCount(0);
+
+  // A click selects, as a click on a node does: the panel, the address, and the scene follow, and
+  // the map shows Ur's own Neighbours, Haran among them.
+  await label(page, "Ur of the Chaldees").click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Ur of the Chaldees");
+  await expect.poll(() => new URL(page.url()).search).toContain("sel=place:ur_1189");
+  await selectedIs(page, "place:ur_1189");
+  await expect(map(page).locator(".map-place.selected")).toHaveText("Ur of the Chaldees");
+  await expect(view(page, "Neighbours")).toHaveAttribute("aria-pressed", "true");
+
+  await label(page, "Haran").dblclick();
+  await focusIs(page, "place:haran_527");
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Haran");
+
+  // The view is kept for the session, after a reload too.
+  await page.reload();
+  await focusIs(page, "place:haran_527");
+  await openMap(page);
+  await expect(view(page, "Neighbours")).toHaveAttribute("aria-pressed", "true");
+  await expect(label(page, "Ur of the Chaldees")).toBeVisible();
+});
+
+test("two Places at one point both show and each can be selected; after a pan, Recentre map and a new selection frame the map again", async ({ page }) => {
+  await thirdParty(page, "abort");
+  // Fixture: Bethlehem's Ring 1 Places, Judea and Jerusalem, share one point.
+  await page.goto("/?focus=place:bethlehem_218");
+  await focusIs(page, "place:bethlehem_218");
+  await openMap(page);
+  await view(page, "Neighbours").click();
+  await expect(label(page, "Judea")).toBeVisible();
+  await expect(label(page, "Jerusalem")).toBeVisible();
+
+  await map(page).scrollIntoViewIfNeeded();
+  const framed = await selectedDot(page);
+  const box = (await map(page).boundingBox())!;
+  const pan = async () => {
+    await page.mouse.move(box.x + 30, box.y + box.height - 30);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 90, box.y + box.height - 60, { steps: 8 });
+    await page.mouse.up();
+    await expect.poll(async () => (await selectedDot(page)).x - framed.x).toBeGreaterThan(30);
+  };
+  await pan();
+  await panel(page).getByRole("button", { name: "Recentre map" }).click();
+  await expect.poll(async () => Math.abs((await selectedDot(page)).x - framed.x)).toBeLessThan(2);
+
+  // The second name at the shared point selects; Jerusalem's Neighbours are Judea, at its own point,
+  // and Bethlehem. Selecting Bethlehem again frames the map as before the pan.
+  await pan();
+  await label(page, "Jerusalem").click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Jerusalem");
+  await label(page, "Bethlehem").click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Bethlehem");
+  await expect.poll(async () => Math.abs((await selectedDot(page)).x - framed.x)).toBeLessThan(2);
+  // The first name at the shared point selects too.
+  await label(page, "Judea").click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Judea");
 });
