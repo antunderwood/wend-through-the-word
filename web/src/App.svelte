@@ -715,16 +715,19 @@
       transition: none;
     }
   }
-  /* The row at the top of the Details tab: the view picker, then the icons at the end. */
+  /* The row at the top of the Details tab: the view picker, then the icons at the end. It is one
+     row at 320 px whatever the font: were the words wider, the view names would wrap in their
+     buttons, not push an icon onto a second row and the Selected Node's actions off the sheet. */
   .controls.row {
     position: static;
     transform: none;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 6px;
     padding: 4px 0;
   }
   .controls.row .views {
+    min-width: 0;
     margin-right: auto;
   }
   .icon {
@@ -745,7 +748,7 @@
     min-width: 44px;
   }
   :global(html[data-phone]) .views button {
-    padding: 4px 8px;
+    padding: 4px 6px;
   }
   :global(html[data-phone]) .hint {
     display: flex;
