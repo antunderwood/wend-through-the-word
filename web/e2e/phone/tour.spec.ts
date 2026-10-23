@@ -194,6 +194,11 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
     await box.tap();
     await box.fill("Peter, the rock.");
   },
+  // Show map is in the Details tab, ringed and left shut; a Place selected ends the step.
+  async (page) => {
+    await bar(page).getByRole("button", { name: "Jesus Christ" }).tap();
+    await details(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Bethlehem/ }).tap();
+  },
 ];
 
 for (const [size, view] of [

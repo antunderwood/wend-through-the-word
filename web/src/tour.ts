@@ -4,6 +4,7 @@
 import type { Data } from "./data";
 import { typeOf, type Action, type Id, type State, type View } from "./model";
 import type { Notes } from "./session";
+import { TILES } from "./tiles";
 
 // What a step can see and do. The reads are live: a step reads them after its own actions.
 export type TourPage = {
@@ -44,7 +45,8 @@ export const TOUR_START = "43001001";
 const JESUS = "person:jesus_905",
   GOD = "person:god_1324",
   PETER = "person:peter_2745",
-  MIRACLES = "theme:miracles";
+  MIRACLES = "theme:miracles",
+  BETHLEHEM = "place:bethlehem_218";
 
 // The components mark each target with data-tour; a name in the scene carries its node ID.
 const one = (s: string) => document.querySelector(s);
@@ -179,6 +181,14 @@ export const STEPS: Step[] = [
       if (!onPath(p.model).includes(p.model.selected)) p.apply({ type: "select", id: p.model.focus });
       p.note(p.model.selected, "Written in the tour.");
     },
+  },
+  {
+    // Show map is pointed out, not pressed, so the tour asks nothing of the tile host (#88).
+    title: "A Place on a map",
+    text: (p) => `Show map, below a Place's facts, puts it on a map. Its tiles come from ${TILES.name}, which sees your address, so it opens only when you press it; the tour leaves it shut. ${Click(p)} Jesus Christ in the Your Path bar, then Bethlehem, where he was born, in his Places.`,
+    target: () => tour("show-map"),
+    check: (p) => typeOf(p.model.selected) === "place",
+    act: (p) => p.apply({ type: "select", id: BETHLEHEM }),
   },
 ];
 

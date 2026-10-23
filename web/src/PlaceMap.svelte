@@ -102,7 +102,7 @@
 </script>
 
 <div class="place-map">
-  <button aria-expanded={open} onclick={press}>{open ? "Hide map" : "Show map"}</button>
+  <button data-tour="show-map" aria-expanded={open} onclick={press}>{open ? "Hide map" : "Show map"}</button>
   {#if asking}
     <p class="notice">
       The map's tiles come from {TILES.name}, which sees your address and the area you view.
