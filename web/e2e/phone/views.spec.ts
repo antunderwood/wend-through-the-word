@@ -10,12 +10,14 @@ test("a phone offers the tilted plane and the free orbit only", async ({ page })
   await sceneReady(page);
   await expect(picker(page).getByRole("radio")).toHaveText(["Tilted plane", "Free orbit"]);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
-  // The keys step over the stacked discs. (A key, not a tap: until the bottom sheet, #76, moves the
-  // footer, it lies over the picker on a phone.)
+  // The picker is at the top of the Details tab (decision 183). The keys step over the stacked discs.
+  await expect(page.getByRole("tabpanel", { name: "Details" }).getByRole("radiogroup", { name: "View" })).toBeVisible();
   await picker(page).getByRole("radio", { name: "Tilted plane" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(picker(page).getByRole("radio", { name: "Free orbit" })).toBeChecked();
   expect(await page.evaluate(() => localStorage.getItem("wend.view"))).toBe("C");
+  await picker(page).getByRole("radio", { name: "Tilted plane" }).tap();
+  await expect(picker(page).getByRole("radio", { name: "Tilted plane" })).toBeChecked();
 });
 
 test("a link with the stacked discs opens in the tilted plane, and the address keeps them", async ({ page }) => {

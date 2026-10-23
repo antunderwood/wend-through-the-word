@@ -103,28 +103,37 @@
     right: 8px;
     width: auto;
   }
+  /* At the side, the box and the icon are left of the sheet. */
+  :global(html[data-side]) .search {
+    right: calc(var(--sheet-covered) + var(--edge));
+  }
+  :global(html[data-side]) .open {
+    right: var(--sheet-covered);
+  }
   /* On a phone the type chips are one row that scrolls sideways, and every chip and result is
      large enough to tap. */
   :global(html[data-phone]) .chips {
     flex-wrap: nowrap;
     overflow-x: auto;
   }
-  :global(html[data-phone]) button {
+  :global(html[data-phone]) .search button {
     flex: none;
     min-height: 44px;
   }
-  /* The search button: at the end of the Your Path bar's row, and as tall as the bar. */
+  /* The search icon: the end of the slim top bar, and as tall as it. */
   .open {
     position: fixed;
-    top: var(--edge);
-    right: var(--edge);
-    width: var(--search-button);
-    height: var(--search-button);
+    top: 0;
+    right: 0;
+    width: var(--bar);
+    height: var(--bar);
+    padding: 0;
     display: grid;
     place-items: center;
     background: rgba(20, 23, 34, 0.92);
     border: 1px solid #262a3c;
-    border-radius: 8px;
+    border-width: 0 0 1px 1px;
+    border-radius: 0;
   }
   .open svg {
     fill: none;

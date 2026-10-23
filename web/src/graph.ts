@@ -172,15 +172,16 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   let names: Name[] = [],
     crowded = true; // names need placing again
 
-  // Pixels at the bottom of the scene covered by a panel (the phone's bottom sheet): the picture
-  // moves up by half of them, so its centre sits in the space above the panel.
-  let covered = 0;
+  // Pixels at the bottom or the right of the scene covered by a panel (the phone's sheet): the picture
+  // moves up or left by half of them, so its centre sits in the space above or left of the panel.
+  let covered = 0,
+    coveredSide: "bottom" | "right" = "bottom";
   function resize() {
     const { clientWidth: w, clientHeight: h } = host;
     renderer.setSize(w, h);
     labels.setSize(w, h);
     camera.aspect = w / h;
-    if (covered) camera.setViewOffset(w, h, 0, covered / 2, w, h);
+    if (covered) camera.setViewOffset(w, h, coveredSide === "right" ? covered / 2 : 0, coveredSide === "bottom" ? covered / 2 : 0, w, h);
     else camera.clearViewOffset();
     camera.updateProjectionMatrix();
     crowded = true;
@@ -639,9 +640,10 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     setMotion(on: boolean) {
       motion = on;
     },
-    // The scene's bottom px are covered: its centre moves into the space above them.
-    setOffset(px: number) {
+    // The scene's bottom (or right) px are covered: its centre moves into the space above (or left of) them.
+    setOffset(px: number, side: "bottom" | "right" = "bottom") {
       covered = px;
+      coveredSide = side;
       resize();
     },
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),

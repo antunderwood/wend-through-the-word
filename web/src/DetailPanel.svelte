@@ -25,6 +25,7 @@
     noWebGL,
     collapsed,
     reading,
+    controls,
     filtersAndLinks,
   }: {
     data: Data;
@@ -42,6 +43,7 @@
     noWebGL: boolean;
     collapsed: boolean;
     reading: boolean;
+    controls?: Snippet; // before the Selected Node: on a phone, the view picker, Filters, and Copy link
     filtersAndLinks?: Snippet; // after the lists: on a phone, the filters and the page's own links
   } = $props();
 
@@ -58,8 +60,8 @@
   const paged = <T,>(key: string, rows: T[]) => rows.slice(0, pages[key] ?? PAGE);
 
   const selected = $derived(model.selected);
-  // A phone, or a phone on its side: the Selected Node's section is too short to hold its actions.
-  const compact = $derived(screen.phone || screen.short);
+  // A phone, upright or on its side: the Selected Node's section is too short to hold its actions.
+  const compact = $derived(screen.phone);
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
 
@@ -143,6 +145,7 @@
       {screen.coarse ? "a tap selects, a double tap makes the Focus." : "a click selects, a double click makes the Focus."}
     </p>
   {/if}
+  {@render controls?.()}
   <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
   <section class="selected" bind:this={selectedBox}>
     <!-- The name, the type line, and the Relationship line have fixed heights, so the shared Verses
@@ -349,7 +352,9 @@
     }
   }
   /* On a phone the panel fills the Details tab of the bottom sheet, which places it. */
+  /* A target scrolled into view (by the tour) lands below the actions held at its top. */
   :global(html[data-phone]) .panel {
+    scroll-padding-top: 64px;
     position: static;
     width: auto;
     height: 100%;

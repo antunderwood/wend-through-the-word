@@ -3,8 +3,10 @@ import { focusIs } from "../scene";
 import { drag } from "../touch";
 import { STEPS } from "../../src/tour";
 
-// The tour on a phone (docs/specs/mobile.md): the same steps as on a desktop (e2e/tour.spec.ts),
-// with its box clear of the step's target and of the open bottom sheet.
+// The tour on a phone (docs/specs/mobile.md): the same steps as on a desktop (e2e/tour.spec.ts).
+// Before each step the tour sets the sheet as the step's target needs and scrolls the target into
+// view (decision 185): a name in the scene closes the sheet, a target in the sheet opens it at its
+// tab, and the box covers neither the target nor the sheet. Upright and on its side.
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
   HAGAR = "person:hagar_1348",
@@ -20,6 +22,11 @@ const details = (page: Page) => sheet(page).getByRole("tabpanel", { name: "Detai
 const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
 // On a phone the help link ends the Details tab.
 const help = (page: Page) => details(page).getByRole("button", { name: "Help: take the tour" });
+
+const UPRIGHT = { width: 390, height: 844 },
+  OWNER_UPRIGHT = { width: 325, height: 700 },
+  SIDEWAYS = { width: 844, height: 390 },
+  OWNER_SIDEWAYS = { width: 760, height: 330 };
 
 test.use({ reducedMotion: "reduce" });
 // Each test walks up to every step, each a tap or two that waits for the scene or the sheet: on
@@ -40,66 +47,98 @@ async function reader(page: Page, view: string) {
   await page.goto(`/?sel=${HAGAR}&pins=${NAHOR}&hide=place`);
   await focusIs(page, SARAH);
 }
-// What the tour must leave as it was: the address, Your Path, the Selected Node, the sheet's tab,
-// and everything kept in this browser.
+// What the tour must leave as it was: the address, Your Path, the Selected Node, the sheet open or
+// closed and its tab, and everything kept in this browser.
 const state = async (page: Page) => ({
   address: new URL(page.url()).search,
   path: await bar(page).getByRole("listitem").allTextContents(),
   selected: await page.getByRole("complementary", { name: "Selected Node", includeHidden: true }).getByRole("heading", { level: 2, includeHidden: true }).textContent(),
+  open: await sheet(page).getByRole("button", { name: /the sheet$/ }).getAttribute("aria-expanded"),
   tab: await sheet(page).getByRole("tab", { selected: true }).textContent(),
   kept: await page.evaluate(() => ({ ...localStorage })),
   history: await page.evaluate(() => history.length),
 });
-// The tour box overlaps neither the ring around the step's target nor the open sheet, and it is on
-// screen; so is the ring.
-async function uncovered(page: Page) {
-  await expect(ring(page)).toBeVisible();
-  await expect(sheet(page).getByRole("button", { name: "Close the sheet" })).toBeVisible();
-  const apart = (a: { x: number; y: number; width: number; height: number }, b: typeof a) =>
-    a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y;
-  await expect
-    .poll(async () => {
-      const [box, target, under] = [(await tour(page).boundingBox())!, (await ring(page).boundingBox())!, (await sheet(page).boundingBox())!];
-      return apart(box, target) && apart(box, under) && box.x >= 0 && box.y >= 0 && box.x + box.width <= 390;
-    })
-    .toBe(true);
-}
 
-for (const view of ["A", "C"] as const) {
-  test(`Do it for me passes every step and the reader's state comes back, in view ${view}`, async ({ page }) => {
-    await reader(page, view);
-    const sent: string[] = [];
-    page.on("request", (r) => (r.method() !== "GET" || !new URL(r.url()).pathname.startsWith("/data/")) && sent.push(`${r.method()} ${r.url()}`));
+// The step's target, the element the ring is drawn round, is on screen and nothing lies over it
+// (its middle, or its first row when it is a long list); a name in the scene has the sheet closed,
+// a target in the sheet has it open; and the box is on screen, clear of the target and the sheet.
+// The problems found, none when the step is shown as it should be.
+const problems = (page: Page) =>
+  page.evaluate(() => {
+    const ring = document.querySelector(".tour-target") as HTMLElement;
+    if (ring.hidden) return "no ring";
+    const at = ring.getBoundingClientRect(),
+      box = document.querySelector('[role="dialog"][aria-label="Tour"]')!.getBoundingClientRect();
+    const sheetEl = document.querySelector('[data-tour="sheet"]')!,
+      sheet = sheetEl.getBoundingClientRect();
+    const open = sheetEl.querySelector('[aria-controls="sheet-body"]')!.getAttribute("aria-expanded") === "true";
+    const near = (a: number, b: number) => Math.abs(a - b) <= 1.5;
+    const target = [...document.querySelectorAll("[data-tour], [data-node]")].find((e) => {
+      const r = e.getBoundingClientRect();
+      return r.width > 0 && near(r.left - 5, at.left) && near(r.top - 5, at.top) && Math.abs(at.width - r.width - 10) <= 5;
+    });
+    if (!target) return "no target under the ring";
+    const r = target.getBoundingClientRect();
+    const x = r.left + r.width / 2,
+      y = r.top + Math.min(r.height / 2, 20);
+    const apart = (a: DOMRect, b: DOMRect) => a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top;
+    const found: string[] = [];
+    const name = target.getAttribute("data-tour") ?? target.getAttribute("data-node");
+    if (x < 0 || x > innerWidth || y < 0 || y > innerHeight) found.push(`${name} off screen`);
+    else if (!target.contains(document.elementFromPoint(x, y))) found.push(`${name} covered by ${document.elementFromPoint(x, y)?.outerHTML.slice(0, 60)}`);
+    if (target.closest('[data-tour="scene"]') && open) found.push(`${name}: the sheet is open`);
+    if (sheetEl.contains(target) && !open) found.push(`${name}: the sheet is closed`);
+    if (!apart(box, at)) found.push(`the box is over ${name}`);
+    if (!apart(box, sheet)) found.push("the box is over the sheet");
+    if (box.left < 0 || box.top < 0 || box.right > innerWidth || box.bottom > innerHeight) found.push("the box is off screen");
+    return found.join("; ");
+  });
+const shown = (page: Page) => expect.poll(() => problems(page)).toBe("");
 
-    const before = await state(page);
-    await help(page).tap();
-    for (let n = 1; n <= STEPS.length; n++) {
-      await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
-      await uncovered(page);
-      await tour(page).getByRole("button", { name: "Do it for me" }).tap();
-    }
-    await expect(tour(page)).toContainText("Done");
-    // Nothing kept in this browser while it ran: the sheet's tab and the note included.
-    expect((await state(page)).kept).toEqual(before.kept);
-    await tour(page).getByRole("button", { name: "Finish", exact: true }).tap();
-    await expect(tour(page)).toBeHidden();
-    await focusIs(page, SARAH);
-    // Read opened the Reader tab in the tour; the Details tab comes back.
-    expect(await state(page)).toEqual(before);
-    expect(sent).toEqual([]);
+for (const [size, view] of [
+  [UPRIGHT, "A"],
+  [UPRIGHT, "C"],
+  [OWNER_UPRIGHT, "A"],
+  [SIDEWAYS, "C"],
+  [OWNER_SIDEWAYS, "A"],
+] as const) {
+  test.describe(`${size.width} x ${size.height}`, () => {
+    test.use({ viewport: size });
+
+    test(`Do it for me passes every step, each shown in full, and the reader's state comes back, in view ${view}`, async ({ page }) => {
+      await reader(page, view);
+      const sent: string[] = [];
+      page.on("request", (r) => (r.method() !== "GET" || !new URL(r.url()).pathname.startsWith("/data/")) && sent.push(`${r.method()} ${r.url()}`));
+
+      const before = await state(page);
+      await help(page).tap();
+      for (let n = 1; n <= STEPS.length; n++) {
+        await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
+        await shown(page);
+        await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+      }
+      await expect(tour(page)).toContainText("Done");
+      // Nothing kept in this browser while it ran: the sheet's tab and the note included.
+      expect((await state(page)).kept).toEqual(before.kept);
+      await tour(page).getByRole("button", { name: "Finish", exact: true }).tap();
+      await expect(tour(page)).toBeHidden();
+      await focusIs(page, SARAH);
+      // The tour closed the sheet and opened the Reader tab; the open sheet and Details come back.
+      expect(await state(page)).toEqual(before);
+      expect(sent).toEqual([]);
+    });
   });
 }
 
-// A point on the scene that nothing lies over: the tour box and the controls float above it.
+// A point on the scene's own canvas that nothing lies over: not a name, the tour box, or a control.
 async function bare(page: Page) {
-  const s = (await scene(page).boundingBox())!,
-    top = (await sheet(page).boundingBox())!.y;
+  const s = (await scene(page).boundingBox())!;
   const point = await page.evaluate(
     ([x0, y0, x1, y1]) => {
       for (let y = y0 + 20; y < y1 - 20; y += 20)
-        for (let x = x0 + 20; x < x1 - 20; x += 20) if (document.elementFromPoint(x, y)?.closest('[data-tour="scene"]')) return { x, y };
+        for (let x = x0 + 20; x < x1 - 20; x += 20) if (document.elementFromPoint(x, y)?.matches('[data-tour="scene"] canvas')) return { x, y };
     },
-    [s.x, s.y, s.x + s.width, top],
+    [s.x, s.y, s.x + s.width, s.y + s.height],
   );
   expect(point).toBeDefined();
   return point!;
@@ -109,7 +148,7 @@ const search = async (page: Page, name: string) => {
   await page.getByRole("searchbox", { name: "Search" }).fill(name);
   await page.getByRole("list", { name: "Search results" }).getByRole("button").first().tap();
 };
-// The reader's own action for each step, by touch.
+// The reader's own action for each step, by touch, on what the tour shows.
 const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
   async (page) => {
     const from = await bare(page);
@@ -122,6 +161,7 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
   (page) => details(page).getByRole("button", { name: "27 more" }).tap(),
   (page) => details(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ }).tap(),
   (page) => search(page, "Simon Peter"),
+  // A tap on Jesus Christ in Your Path makes Pin the target, and the tour opens the sheet at it.
   async (page) => {
     await bar(page).getByRole("button", { name: "Jesus Christ" }).tap();
     await details(page).getByRole("button", { name: "Pin", exact: true }).tap();
@@ -138,21 +178,29 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
   },
 ];
 
-for (const view of ["A", "C"] as const) {
-  test(`the reader's own touch actions pass every step and a kept note stays, in view ${view}`, async ({ page }) => {
-    await reader(page, view);
-    const before = await state(page);
-    await help(page).tap();
-    for (const [i, act] of BY_TOUCH.entries()) {
-      await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
-      await uncovered(page);
-      await act(page);
-    }
-    await expect(tour(page)).toContainText("Done");
-    await tour(page).getByRole("button", { name: "Finish and keep my note" }).tap();
-    await focusIs(page, SARAH);
-    const notes = JSON.stringify({ [ABRAHAM]: "My own note.", [PETER]: "Peter, the rock." });
-    expect(await state(page)).toEqual({ ...before, kept: { ...before.kept, "wend.notes": notes } });
+for (const [size, view] of [
+  [UPRIGHT, "A"],
+  [UPRIGHT, "C"],
+  [OWNER_SIDEWAYS, "A"],
+] as const) {
+  test.describe(`${size.width} x ${size.height}`, () => {
+    test.use({ viewport: size });
+
+    test(`the reader's own touch actions pass every step and a kept note stays, in view ${view}`, async ({ page }) => {
+      await reader(page, view);
+      const before = await state(page);
+      await help(page).tap();
+      for (const [i, act] of BY_TOUCH.entries()) {
+        await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
+        await shown(page);
+        await act(page);
+      }
+      await expect(tour(page)).toContainText("Done");
+      await tour(page).getByRole("button", { name: "Finish and keep my note" }).tap();
+      await focusIs(page, SARAH);
+      const notes = JSON.stringify({ [ABRAHAM]: "My own note.", [PETER]: "Peter, the rock." });
+      expect(await state(page)).toEqual({ ...before, kept: { ...before.kept, "wend.notes": notes } });
+    });
   });
 }
 
@@ -174,37 +222,35 @@ test("the camera step names drag and pinch, the search step points at the search
     await tour(page).getByRole("button", { name: "Do it for me" }).tap();
   }
   await expect(tour(page)).toContainText(`Step 5 of ${STEPS.length}`);
+  await shown(page);
   await sheet(page).getByRole("tab", { name: "Reader" }).tap();
   await tour(page).getByRole("button", { name: "Do it for me" }).tap();
   await expect(tour(page)).toContainText(`Step 6 of ${STEPS.length}`);
   await expect(sheet(page).getByRole("tab", { name: "Details" })).toHaveAttribute("aria-selected", "true");
-  await uncovered(page);
+  await shown(page);
 });
 
-test.describe("a short phone", () => {
-  // 375 x 560: above the open sheet no spot clear of the Focus's name has room for the box.
-  test.use({ viewport: { width: 375, height: 560 } });
-
-  test("where no spot fits, the box covers as little of the target as it can, and stays above the sheet", async ({ page }) => {
-    await reader(page, "A");
-    await help(page).tap();
-    await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
-    await expect(ring(page)).toBeVisible();
-    // On a phone the box is the screen's width, so only its height on the screen matters: of the
-    // places between the top of the screen and the sheet (8 px margins), the top one and the bottom
-    // one cover least of the target, and here neither is clear of it.
-    await expect
-      .poll(async () => {
-        const [box, target, under] = [(await tour(page).boundingBox())!, (await ring(page).boundingBox())!, (await sheet(page).boundingBox())!];
-        const across = (top: number) => Math.max(0, Math.min(top + box.height, target.y + target.height) - Math.max(top, target.y));
-        const least = Math.min(across(8), across(under.y - 8 - box.height));
-        return { above: box.y >= 8 && box.y + box.height <= under.y - 8, cover: across(box.y) <= least + 1, unavoidable: least > 0 };
-      })
-      .toEqual({ above: true, cover: true, unavoidable: true });
-  });
+test("a step in the sheet scrolls its target into view, below the actions held at the top", async ({ page }) => {
+  await reader(page, "A");
+  await help(page).tap();
+  for (let n = 1; n <= 4; n++) {
+    await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
+    await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  }
+  // The reader scrolls the Details tab back to its top, far above Jesus Christ's Themes.
+  await expect(tour(page)).toContainText(`Step 5 of ${STEPS.length}`);
+  await shown(page);
+  await details(page).locator("#panel").evaluate((p) => p.scrollTo(0, 0));
+  const themes = details(page).getByRole("list", { name: /^Theme/ });
+  await expect(themes).not.toBeInViewport();
+  // The next step points at them: the tour scrolls them into view.
+  await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  await expect(tour(page)).toContainText(`Step 6 of ${STEPS.length}`);
+  await shown(page);
+  await expect(themes).toBeInViewport();
 });
 
-test("a tour taken from the offer on the Reader tab gives the Reader tab back when it ends", async ({ page }) => {
+test("a tour taken from the offer on a closed sheet's Reader tab gives both back when it ends", async ({ page }) => {
   // A browser not yet offered the tour, whose sheet was left on its Reader tab.
   await page.addInitScript(() => {
     localStorage.removeItem("wend.tourOffered");
@@ -213,6 +259,7 @@ test("a tour taken from the offer on the Reader tab gives the Reader tab back wh
   await page.goto("/");
   await focusIs(page, ABRAHAM);
   await expect(sheet(page).getByRole("tab", { name: "Reader" })).toHaveAttribute("aria-selected", "true");
+  await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
   await expect(tour(page)).toContainText("studying Jesus Christ");
   await tour(page).getByRole("button", { name: "Take the tour" }).tap();
   for (let n = 1; n <= 4; n++) {
@@ -222,9 +269,10 @@ test("a tour taken from the offer on the Reader tab gives the Reader tab back wh
   // Jesus Christ's Themes are in the Details tab, which the tour opens.
   await expect(tour(page)).toContainText(`Step 5 of ${STEPS.length}`);
   await expect(sheet(page).getByRole("tab", { name: "Details" })).toHaveAttribute("aria-selected", "true");
-  await uncovered(page);
+  await shown(page);
   await tour(page).getByRole("button", { name: "End tour" }).tap();
   await focusIs(page, ABRAHAM);
-  await expect(sheet(page).getByRole("tab", { name: "Reader" })).toHaveAttribute("aria-selected", "true");
+  await expect(sheet(page).getByRole("button", { name: "Open the sheet" })).toBeVisible();
+  await expect(sheet(page).getByRole("tab", { name: "Reader", includeHidden: true })).toHaveAttribute("aria-selected", "true");
   expect(await page.evaluate(() => localStorage.getItem("wend.sheetTab"))).toBe("reader");
 });

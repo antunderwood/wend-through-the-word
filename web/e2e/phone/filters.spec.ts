@@ -32,13 +32,13 @@ test("the filters in the Details tab hide a node type and change the Vote Limit,
   await expect.poll(() => new URL(page.url()).searchParams.get("votes")).toBe("5");
 });
 
-test("the Filters button above the sheet opens the sheet at the filters", async ({ page }) => {
+test("the Filters button at the top of the Details tab scrolls the tab to the filters", async ({ page }) => {
   await open(page);
   const sheet = page.getByRole("region", { name: "Sheet" });
-  await sheet.getByRole("button", { name: "Close the sheet" }).tap();
-  await expect(details(page)).not.toBeInViewport();
-  await page.getByRole("button", { name: "Filters" }).tap();
-  await expect(details(page).getByRole("group", { name: "Filters" }).getByRole("checkbox", { name: "Themes" })).toBeInViewport();
+  const themes = details(page).getByRole("group", { name: "Filters" }).getByRole("checkbox", { name: "Themes" });
+  await expect(themes).not.toBeInViewport();
+  await details(page).getByRole("button", { name: "Filters" }).tap();
+  await expect(themes).toBeInViewport();
   // The sheet stays where it opens, at the bottom of the screen.
   const box = (await sheet.boundingBox())!;
   expect(box.y + box.height).toBeCloseTo(844, 0);

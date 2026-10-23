@@ -79,8 +79,9 @@ test("the search button is large enough to tap and does not cover Your Path", as
   await open(page);
   const button = (await page.getByRole("button", { name: "Search" }).boundingBox())!;
   const bar = (await page.getByRole("navigation", { name: "Your Path" }).boundingBox())!;
-  expect(button.height).toBeGreaterThanOrEqual(44);
-  expect(button.width).toBeGreaterThanOrEqual(44);
+  // The slim top bar's icon (decision 183).
+  expect(button.height).toBeGreaterThanOrEqual(40);
+  expect(button.width).toBeGreaterThanOrEqual(40);
   expect(button.x + button.width).toBeLessThanOrEqual(390);
   expect(bar.x + bar.width).toBeLessThanOrEqual(button.x);
 });
