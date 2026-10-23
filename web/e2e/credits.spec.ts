@@ -17,10 +17,14 @@ test("the footer link opens the About and credits page, which lists every source
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("About and credits");
   await expect(page.getByText(credits.modified)).toBeVisible();
   await expect(page.getByRole("link", { name: "curated tables" })).toHaveAttribute("href", credits.curated_tables);
-  const items = page.getByRole("listitem");
+  const items = page.getByRole("list", { name: "Sources" }).getByRole("listitem");
   await expect(items).toHaveCount(credits.sources.length);
   for (const [i, s] of (credits.sources as Source[]).entries()) {
     await expect(items.nth(i).getByRole("link", { name: s.name })).toHaveAttribute("href", s.link);
     await expect(items.nth(i)).toContainText(s.licence);
   }
+  // The map's tile provider and library (#84).
+  const map = page.getByRole("list", { name: "Map" });
+  await expect(map.getByRole("link", { name: "OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+  await expect(map.getByRole("listitem").filter({ hasText: "Leaflet" })).toContainText("BSD 2-Clause");
 });

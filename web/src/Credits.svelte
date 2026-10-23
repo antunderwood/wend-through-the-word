@@ -2,6 +2,7 @@
   // The credits page (decision 132): every source in credits.json with its credit, licence, and
   // link, and the modification notice the CC BY-SA licence asks for (PRD 5 rule 6). No WebGL.
   import { fetchJSON, readCredits } from "./data";
+  import { MAP_LIBRARY, TILES } from "./tiles";
 
   const load = () => readCredits(fetchJSON, "/data");
   let loading = $state(load());
@@ -14,8 +15,8 @@
     <p>The data (version {version}) is released under <a href={credits.licence_link}>{credits.licence}</a>.</p>
     <p>{credits.modified}</p>
     <p><a href={credits.curated_tables}>The curated tables</a></p>
-    <h2>Sources</h2>
-    <ul>
+    <h2 id="sources">Sources</h2>
+    <ul aria-labelledby="sources">
       {#each credits.sources as s (s.name)}
         <li>
           <a href={s.link}>{s.name}</a>
@@ -28,6 +29,20 @@
   {:catch e}
     <p role="alert">Could not load the credits: {e.message} <button onclick={() => (loading = load())}>Retry</button></p>
   {/await}
+  <!-- The map's tiles load from the provider only when a reader opens the map (decision 189). -->
+  <h2 id="map">Map</h2>
+  <ul aria-labelledby="map">
+    <li>
+      <a href={TILES.link}>{TILES.name}</a>
+      <p>Map tiles, loaded only when a reader opens the map. Map data &copy; OpenStreetMap contributors.</p>
+      <p class="muted">Licence: {TILES.licence}</p>
+    </li>
+    <li>
+      <a href={MAP_LIBRARY.link}>{MAP_LIBRARY.name}</a>
+      <p>The library that draws the map.</p>
+      <p class="muted">Licence: {MAP_LIBRARY.licence}</p>
+    </li>
+  </ul>
 </main>
 
 <style>
