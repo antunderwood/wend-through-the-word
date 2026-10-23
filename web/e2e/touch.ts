@@ -5,14 +5,15 @@ import type { Page } from "@playwright/test";
 // page's touch-action rules and the browser's own zoom and scroll apply to them.
 type Point = { x: number; y: number };
 
-// whileDown runs after the last move, before the fingers lift.
+// A step with one more finger than the step before puts that finger down. whileDown runs after the
+// last move, before the fingers lift.
 async function touches(page: Page, steps: Point[][], stepMs = 16, whileDown?: () => Promise<unknown>) {
   const cdp = await page.context().newCDPSession(page);
   const points = (ps: Point[]) => ps.map((p, id) => ({ x: p.x, y: p.y, id }));
   await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: points(steps[0]) });
-  for (const ps of steps.slice(1)) {
+  for (const [i, ps] of steps.slice(1).entries()) {
     await page.waitForTimeout(stepMs);
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: points(ps) });
+    await cdp.send("Input.dispatchTouchEvent", { type: ps.length > steps[i].length ? "touchStart" : "touchMove", touchPoints: points(ps) });
   }
   await whileDown?.();
   await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
@@ -25,10 +26,10 @@ const path = (from: Point, to: Point, n = 10) => Array.from({ length: n + 1 }, (
 // One finger from one point to another; whileDown runs before it lifts.
 export const drag = (page: Page, from: Point, to: Point, whileDown?: () => Promise<unknown>) => touches(page, path(from, to).map((p) => [p]), 16, whileDown);
 
-// Two fingers: one rests at anchor, the other moves from gap above it to apart above it. Wider
-// zooms in, narrower zooms out.
+// Two fingers: the first rests at anchor, then the second comes down gap above it and moves to apart
+// above it. Wider zooms in, narrower zooms out.
 export const pinch = (page: Page, anchor: Point, gap: number, apart: number) =>
-  touches(page, path({ x: anchor.x, y: anchor.y - gap }, { x: anchor.x, y: anchor.y - apart }).map((p) => [anchor, p]));
+  touches(page, [[anchor], ...path({ x: anchor.x, y: anchor.y - gap }, { x: anchor.x, y: anchor.y - apart }).map((p) => [anchor, p])]);
 
 // Two taps on one point within the double tap time. The four touches are sent at once, so a
 // machine slowed by software WebGL cannot spread them past it.
