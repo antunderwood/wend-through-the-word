@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, themesOnScreen } from "../scene";
+import { focusIs, openOnAbraham, themesOnScreen } from "../scene";
 
 const ABRAHAM = "person:abraham_58";
 const details = (page: Page) => page.getByRole("tabpanel", { name: "Details" });
@@ -8,7 +8,7 @@ test.use({ reducedMotion: "reduce" });
 
 async function open(page: Page) {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
 }
 
@@ -23,7 +23,7 @@ test("the filters in the Details tab hide a node type and change the Vote Limit,
   expect(await themesOnScreen(page)).toBeGreaterThan(0);
   await filters.getByRole("checkbox", { name: "Themes" }).tap();
   await expect.poll(() => themesOnScreen(page)).toBe(0);
-  await expect.poll(() => new URL(page.url()).search).toBe("?hide=theme");
+  await expect.poll(() => new URL(page.url()).search).toBe("?focus=person:abraham_58&hide=theme");
 
   await expect(filters).toContainText("Votes: how many OpenBible.info readers found this link helpful. It shows popularity, not scholarly strength.");
   await expect(filters).toContainText("With an Entity as the Focus, the slider only changes Ring 2.");

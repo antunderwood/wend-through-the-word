@@ -2,12 +2,12 @@
 // docs/specs/reading-and-sharing.md and must stay stable, so shared links keep working.
 import { initialState, MAX_PINS, TYPES, typeOf, type Id, type NodeType, type State, type View } from "./model";
 
-export const START = "person:abraham_58";
+export const START = "person:jesus_905"; // decision 186
 const DEFAULT = initialState(START);
 
 export type Asked = Partial<Omit<State, "filters">> & { filters?: Partial<State["filters"]>; view?: View };
 
-// Defaults are left out, so Abraham with default settings is "". IDs keep their colons and commas;
+// Defaults are left out, so Jesus Christ with default settings is "". IDs keep their colons and commas;
 // a Verse is written as osis(id) gives it, "Gen.22.2" (decision 149). A shared link (`share`) always
 // names the Focus, as the bare address restores the reader's own session (decisions 133 and 134).
 export function write(s: State, view: View, osis: (id: Id) => string, share = false): string {
@@ -27,7 +27,7 @@ export function write(s: State, view: View, osis: (id: Id) => string, share = fa
 // exists(id) says whether a node exists in this build (for a Verse, it may read the chapter); books
 // are the OSIS codes of its books; verseKey(text) is the Verse Key a verse reference names (the
 // search box's parsing). Anything not recognised is left out and named in the notice; a missing
-// Focus is the caller's to fill (Abraham).
+// Focus is the caller's to fill (Jesus Christ).
 export async function read(
   search: string,
   exists: (id: Id) => Promise<boolean>,

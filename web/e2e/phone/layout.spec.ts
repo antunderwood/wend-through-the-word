@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { box, covered, overlaps } from "../boxes";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 
 // A phone upright (decision 183): one slim top bar, Your Path and the search icon; the view picker,
 // Filters, and Copy link a row at the top of the Details tab; a notice that shows briefly and fades;
@@ -22,7 +22,7 @@ for (const size of [
     test.use({ viewport: size });
 
     test("the top bar is one slim row of Your Path and the search icon", async ({ page }) => {
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       const path = await box("Your Path", bar(page)),
         search = await box("Search", page.getByRole("button", { name: "Search" }));
@@ -39,7 +39,7 @@ for (const size of [
 
     test("the scene has everything between the top bar and the sheet, open or closed", async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       const top = (await bar(page).boundingBox())!;
       const below = top.y + top.height;
@@ -53,7 +53,7 @@ for (const size of [
     });
 
     test("the view picker, Filters, and Copy link are one row at the top of the Details tab, each large enough to tap", async ({ page }) => {
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       const controls = [
         details(page).getByRole("radio", { name: "Tilted plane" }),
@@ -75,7 +75,7 @@ for (const size of [
     });
 
     test("a notice shows above the sheet, clear of the hint, then fades", async ({ page }) => {
-      await page.goto("/");
+      await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
       await details(page).getByRole("button", { name: "Copy link" }).tap();
       await expect(notice(page)).toHaveText("Link copied.");
@@ -102,7 +102,7 @@ for (const size of [
 
 test("on a phone the tour, the credits, and the data version are at the end of the Details tab", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   const credits = details(page).getByRole("link", { name: "About and credits" });
   await credits.scrollIntoViewIfNeeded();
@@ -114,7 +114,7 @@ test("on a phone the tour, the credits, and the data version are at the end of t
 });
 
 test("on a touch screen the first-use hint says tap and double tap", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await expect(page.getByText("A tap selects a node.")).toContainText("A tap selects a node. A double tap, Make Focus, or search moves the Focus.");
 });

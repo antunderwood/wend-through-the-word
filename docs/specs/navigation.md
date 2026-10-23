@@ -32,7 +32,7 @@ Two small build changes support it: a weight on each Mention and Filed Under, so
 
 ### Reader: starting
 
-1. As a reader, I want the page to open on a sensible first Focus (Abraham), so that I see a graph before I know what to search for.
+1. As a reader, I want the page to open on a sensible first Focus (Jesus Christ, decision 186; Abraham before it), so that I see a graph before I know what to search for.
 2. As a reader, I want the first view to load in under 3 seconds on a home network, so that I do not give up waiting.
 3. As a reader, I want to see a short hint about click and double click, so that I learn how to move without a manual.
 4. As a reader, I want to dismiss the hint and not see it again in this browser, so that it does not get in my way once learned.

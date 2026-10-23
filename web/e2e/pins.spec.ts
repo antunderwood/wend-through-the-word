@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "./scene";
+import { focusIs, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   ISAAC = "person:isaac_616";
@@ -9,7 +9,7 @@ const panel = (page: Page) => page.getByRole("complementary", { name: "Selected 
 test.use({ reducedMotion: "reduce" });
 
 test("a pinned node stays in the scene when the Focus changes, and the panel lists the Verses shared with it", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await panel(page).getByRole("button", { name: "Pin", exact: true }).click();
   await expect(page.getByRole("status")).toHaveText("Pinned Abraham.");

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, type OnScreen } from "./scene";
+import { focusIs, nodes, openOnAbraham, type OnScreen } from "./scene";
 import { doubleTap, drag, pageMoved, pinch } from "./touch";
 
 // The touch specs both touch projects run (e2e/phone and e2e/tablet): a tap selects, a double tap
@@ -43,7 +43,7 @@ export function touchSpecs() {
   test.use({ reducedMotion: "reduce" });
 
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await openOnAbraham(page);
     await focusIs(page, ABRAHAM);
   });
 
@@ -72,7 +72,7 @@ export function touchSpecs() {
   });
 
   test("the camera stops when the finger lifts, in the free orbit too", async ({ page }) => {
-    await page.goto("/?view=C");
+    await openOnAbraham(page, "/?view=C");
     await focusIs(page, ABRAHAM);
     const target = await tappable(page),
       box = await sceneBox(page);

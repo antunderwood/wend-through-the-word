@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { doubleClickLabel, focusIs } from "./scene";
+import { doubleClickLabel, focusIs, openOnAbraham } from "./scene";
 
 const SARAH = "person:sarah_2473",
   HAGAR = "person:hagar_1348";
@@ -7,7 +7,7 @@ const SARAH = "person:sarah_2473",
 test.use({ reducedMotion: "reduce" });
 
 test("the Your Path bar shows the Focus then Your Path newest first, and can be cleared and restored", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
   const bar = page.getByRole("navigation", { name: "Your Path" });
   const items = bar.getByRole("listitem");

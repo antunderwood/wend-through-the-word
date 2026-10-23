@@ -45,6 +45,7 @@ test("the credits page fits the phone with nothing to scroll sideways", async ({
     expect(b.x, name).toBeGreaterThanOrEqual(0);
     expect(b.x + b.width, name).toBeLessThanOrEqual(390);
   }
+  // Nothing is kept in this browser, so the graph opens on the first Focus (decision 186).
   await page.getByRole("link", { name: "Back to the graph" }).tap();
-  await focusIs(page, "person:abraham_58");
+  await focusIs(page, "person:jesus_905");
 });

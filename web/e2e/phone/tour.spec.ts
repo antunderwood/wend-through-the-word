@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs } from "../scene";
+import { focusIs, openOnAbraham } from "../scene";
 import { drag } from "../touch";
 import { STEPS } from "../../src/tour";
 
@@ -278,7 +278,7 @@ test("a tour taken from the offer on a closed sheet's Reader tab gives both back
     localStorage.removeItem("wend.tourOffered");
     localStorage.setItem("wend.sheetTab", "reader");
   });
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   await expect(sheet(page).getByRole("tab", { name: "Reader" })).toHaveAttribute("aria-selected", "true");
   await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
