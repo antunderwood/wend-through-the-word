@@ -59,6 +59,8 @@ def write(b):
         # Trim only cross-references: Votes and cosine scores are not compared (decision 93).
         fit(b, path, sidecar, [ring2[key] for key in ring1])
         write_json(path, sidecar)
+    # An Entity whose Verses a correction moved elsewhere has no Verse and no neighbour: not shipped.
+    b.entities = {i: e for i, e in b.entities.items() if e["verses"] or e["neighbours"]}
     for entity in b.entities.values():
         kind, name = entity["id"].split(":", 1)
         write_json(version / "entity" / kind / f"{name}.json", entity)
