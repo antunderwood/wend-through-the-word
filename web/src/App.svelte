@@ -277,6 +277,7 @@
     read: openReader,
     note: (id, text) => setNotes(withNote(notes, id, text)),
     nodeRect: (id) => graph?.nodeRect(id) ?? null,
+    panTo: (id, x, y, zoomOut) => graph?.panTo(id, x, y, zoomOut),
   };
   // A whole new state: its Focus, kin, and pins load before it is shown.
   async function show(next: State) {

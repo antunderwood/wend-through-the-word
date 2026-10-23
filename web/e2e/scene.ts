@@ -5,7 +5,7 @@ import type { Page } from "@playwright/test";
 export type OnScreen = { id: string; role: string; x: number; y: number };
 declare global {
   interface Window {
-    wendGraph?: { testNodes(): OnScreen[]; nodeRect(id: string): DOMRect | null };
+    wendGraph?: { testNodes(): OnScreen[]; nodeRect(id: string): DOMRect | null; panTo(id: string, x: number, y: number, zoomOut?: number): void; setView(v: string): void };
     wendApply?: (a: import("../src/model").Action) => void;
   }
 }

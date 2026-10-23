@@ -1,10 +1,10 @@
 <script lang="ts">
   // The tour box: the offer on a first visit, then one step at a time, then the end. A ring marks the
-  // step's target and the box never covers it (decision 155). Props only; App saves and restores the
-  // reader's state.
+  // step's target and the box never covers it, nor the node the step asks for (decisions 155 and 187).
+  // Props only; App saves and restores the reader's state.
   import { untrack } from "svelte";
   import { screen } from "./screen.svelte";
-  import { STEPS, type At, type TourPage } from "./tour";
+  import { makeRoom, spotFor, STEPS, type At, type TourPage } from "./tour";
 
   let { offer, page, onstart, onend }: { offer: boolean; page: TourPage; onstart: () => void; onend: (keep: boolean) => void } = $props();
   let i = $state(0);
@@ -47,17 +47,28 @@
     return !!tab;
   }
 
-  // What the ring goes round and the box keeps clear of: the target's box, and on a phone, for a
-  // name in the scene, its node's disc too, which is what the reader taps.
-  function marked(el: Element) {
-    const r = el.getBoundingClientRect(),
-      id = el.getAttribute("data-node"),
-      d = screen.phone && id && el.closest('[data-tour="scene"]') ? page.nodeRect(id) : null;
-    if (!d) return r;
-    const left = Math.min(r.left, d.left),
+  // A node in the scene as the reader sees it: its disc, which is what the reader taps, and its name
+  // when shown (a crowded name is hidden, decision 124). Null when the node is not drawn.
+  function nodeBox(id: string) {
+    const d = page.nodeRect(id),
+      name = document.querySelector(`[data-tour="scene"] [data-node="${id}"]`);
+    if (!d || !name?.checkVisibility({ visibilityProperty: true })) return d;
+    const r = name.getBoundingClientRect(),
+      left = Math.min(r.left, d.left),
       top = Math.min(r.top, d.top);
     return new DOMRect(left, top, Math.max(r.right, d.right) - left, Math.max(r.bottom, d.bottom) - top);
   }
+  // What the ring goes round and the box keeps clear of: the target's box, or for a name in the
+  // scene, its node (decision 187).
+  function marked(el: Element) {
+    const id = el.getAttribute("data-node");
+    return (id && el.closest('[data-tour="scene"]') && nodeBox(id)) || el.getBoundingClientRect();
+  }
+
+  // The step's node as last placed, to tell when the scene has settled, and whether the camera has
+  // zoomed out for it in this step: once at most.
+  let last: DOMRect | null = null,
+    zoomed: unknown;
 
   function place(el: Element | null | undefined) {
     if (el && el !== target && arrange(el)) return;
@@ -79,23 +90,46 @@
     const sheet = document.querySelector('[data-tour="sheet"]')?.getBoundingClientRect(),
       floor = sheet && !screen.side ? sheet.top : innerHeight,
       wall = sheet && screen.side ? sheet.left : innerWidth;
-    // Below, above, left of, or right of the target, whichever fits; on a phone also at the edges of
-    // the space the sheet leaves, if clear of the target. Where none fits, the spot moved onto the
-    // screen that covers least of the target. With no target, the bottom left corner.
+    const area = { left: 8, top: 8, right: wall - 8, bottom: floor - 8 },
+      size = { w, h };
+    // The step's node, when drawn where the reader can reach it: in the scene, in the space the sheet
+    // leaves. The box keeps clear of it as well as of the target (decision 187).
+    const id = offer ? undefined : step?.node?.(page),
+      s = document.querySelector('[data-tour="scene"]')!.getBoundingClientRect(),
+      scene = { left: Math.max(s.left, area.left), top: Math.max(s.top, area.top), right: Math.min(s.right, area.right), bottom: Math.min(s.bottom, area.bottom) },
+      n = id ? nodeBox(id) : null,
+      [nx, ny] = n ? [n.left + n.width / 2, n.top + n.height / 2] : [NaN, NaN],
+      node = n && nx > scene.left && nx < scene.right && ny > scene.top && ny < scene.bottom ? n : null,
+      others = r && seen && !(node && el?.getAttribute("data-node") === id) ? [r] : [],
+      keep = node ? [node, ...others] : others;
+    const settled = !!node && !!last && ["left", "top", "right", "bottom"].every((k) => Math.abs(node[k as "left"] - last![k as "left"]) < 0.5);
+    last = node;
+    if (seen) Object.assign(ring.style, { left: `${r.left - 5}px`, top: `${r.top - 5}px`, width: `${r.width + 10}px`, height: `${r.height + 10}px` });
+    // The first place clear of the target and the node: beside either, then at the edges. With none,
+    // once the scene has settled and the reader is not moving the camera, the box takes the place
+    // that leaves the largest room in the scene and the camera pans the node into it, zooming out a
+    // little (once a step) when the node does not fit. Until then, or with no node, the place that
+    // covers least of them. With no target, the bottom left corner.
     let [x, y] = [Math.min(16, wall - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
-    if (seen) {
-      Object.assign(ring.style, { left: `${r.left - 5}px`, top: `${r.top - 5}px`, width: `${r.width + 10}px`, height: `${r.height + 10}px` });
-      const cx = Math.max(8, Math.min(wall - w - 8, r.left)),
-        cy = Math.max(8, Math.min(floor - h - 8, r.top));
-      const spots = [[cx, r.bottom + m], [cx, r.top - m - h], [r.left - m - w, cy], [r.right + m, cy]];
-      if (sheet) spots.push([cx, floor - h - 8], [cx, 8], [8, cy], [wall - w - 8, cy]);
-      const clear = ([a, b]: number[]) => a + w + m <= r.left || r.right + m <= a || b + h + m <= r.top || r.bottom + m <= b;
-      const fits = ([a, b]: number[]) => a >= 8 && b >= 8 && a + w <= wall - 8 && b + h <= floor - 8;
-      const onto = ([a, b]: number[]) => [Math.max(8, Math.min(wall - w - 8, a)), Math.max(8, Math.min(floor - h - 8, b))];
-      const covered = ([a, b]: number[]) =>
-        Math.max(0, Math.min(a + w, r.right) - Math.max(a, r.left)) * Math.max(0, Math.min(b + h, r.bottom) - Math.max(b, r.top));
-      const fallback = [...spots, [x, y]].map(onto).reduce((best, s) => (covered(s) < covered(best) ? s : best));
-      [x, y] = spots.find((s) => fits(s) && clear(s)) ?? fallback;
+    if (keep.length) {
+      const spot = spotFor(size, keep, area, m),
+        made = !spot && node && settled && !down ? makeRoom(size, node, others, area, scene, m) : undefined;
+      if (spot) [x, y] = spot;
+      else if (made) {
+        const { room } = made,
+          d = page.nodeRect(id!)!,
+          small = node!.width + 2 * m > room.right - room.left || node!.height + 2 * m > room.bottom - room.top;
+        const zoomOut = small && zoomed !== step ? 1.25 : 1;
+        if (small) zoomed = step;
+        page.panTo(id!, d.left + d.width / 2 + (room.left + room.right) / 2 - nx, d.top + d.height / 2 + (room.top + room.bottom) / 2 - ny, zoomOut);
+        [x, y] = made.spot;
+      } else {
+        const onto = ([a, b]: number[]) => [Math.max(area.left, Math.min(area.right - w, a)), Math.max(area.top, Math.min(area.bottom - h, b))];
+        const covered = ([a, b]: number[]) =>
+          keep.reduce((sum, k) => sum + Math.max(0, Math.min(a + w, k.right) - Math.max(a, k.left)) * Math.max(0, Math.min(b + h, k.bottom) - Math.max(b, k.top)), 0);
+        const tried = keep.flatMap((k) => [[k.left, k.bottom + m], [k.left, k.top - m - h], [k.left - m - w, k.top], [k.right + m, k.top]]);
+        [x, y] = [...tried, [x, y]].map(onto).reduce((best, s) => (covered(s) < covered(best) ? s : best));
+      }
     }
     box.style.left = `${x}px`;
     box.style.top = `${y}px`;
