@@ -54,10 +54,14 @@ test("search left open closes when the window widens past the phone layout and n
   const box = page.getByRole("searchbox", { name: "Search" });
   await page.getByRole("button", { name: "Search" }).tap();
   await expect(box).toBeFocused();
-  // The desktop layout always shows the box; back on a phone it is a button again.
+  // The desktop layout always shows the box; back on a phone it is a button again. The open box is
+  // visible in both layouts, so wait for the layout itself before narrowing again.
+  const html = page.locator("html");
   await page.setViewportSize({ width: 900, height: 844 });
+  await expect(html).not.toHaveAttribute("data-phone");
   await expect(box).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(html).toHaveAttribute("data-phone");
   await expect(page.getByRole("button", { name: "Search" })).toBeVisible();
   await expect(box).toBeHidden();
 });
