@@ -19,6 +19,8 @@ export type TourPage = {
   pin(id: Id): Promise<void>;
   read(): void;
   note(id: Id, text: string): void;
+  // A drawn node's disc on the page, or null.
+  nodeRect(id: Id): DOMRect | null;
 };
 // at: the model and notes when the step began, and whether the camera has moved since.
 export type At = { model: State; notes: Notes; moved: boolean };

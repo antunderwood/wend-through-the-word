@@ -5,7 +5,8 @@ import type { Page } from "@playwright/test";
 // page's touch-action rules and the browser's own zoom and scroll apply to them.
 type Point = { x: number; y: number };
 
-async function touches(page: Page, steps: Point[][], stepMs = 16) {
+// whileDown runs after the last move, before the fingers lift.
+async function touches(page: Page, steps: Point[][], stepMs = 16, whileDown?: () => Promise<unknown>) {
   const cdp = await page.context().newCDPSession(page);
   const points = (ps: Point[]) => ps.map((p, id) => ({ x: p.x, y: p.y, id }));
   await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: points(steps[0]) });
@@ -13,6 +14,7 @@ async function touches(page: Page, steps: Point[][], stepMs = 16) {
     await page.waitForTimeout(stepMs);
     await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: points(ps) });
   }
+  await whileDown?.();
   await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await cdp.detach();
 }
@@ -20,8 +22,8 @@ async function touches(page: Page, steps: Point[][], stepMs = 16) {
 const lerp = (a: Point, b: Point, k: number) => ({ x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k });
 const path = (from: Point, to: Point, n = 10) => Array.from({ length: n + 1 }, (_, i) => lerp(from, to, i / n));
 
-// One finger from one point to another.
-export const drag = (page: Page, from: Point, to: Point) => touches(page, path(from, to).map((p) => [p]));
+// One finger from one point to another; whileDown runs before it lifts.
+export const drag = (page: Page, from: Point, to: Point, whileDown?: () => Promise<unknown>) => touches(page, path(from, to).map((p) => [p]), 16, whileDown);
 
 // Two fingers: one rests at anchor, the other moves from gap above it to apart above it. Wider
 // zooms in, narrower zooms out.

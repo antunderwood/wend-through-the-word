@@ -35,6 +35,8 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
+  // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
+  let sheetFull = $state(false);
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
   // scene's centre sits in the space above it, or left of it.
   let sheetCovered = $state(0);
@@ -243,12 +245,13 @@
   // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
   // runs. While it runs nothing is kept in this browser and the address is replaced, not pushed; when
   // it ends, the reader's state comes back (on a phone the sheet's tab too) and a note written in it
-  // goes unless the reader keeps it. On a phone the sheet, open or closed, comes back too (decision 185).
+  // goes unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back
+  // too (decision 185).
   const TOUR_KEY = "wend.tourOffered";
   let tour = $state<"offer" | "on">();
   const touring = $derived(tour === "on");
   let tours = $state(0); // each start draws a new tour box
-  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean } | undefined;
+  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean } | undefined;
   const tourPage: TourPage = {
     get data() {
       return data!;
@@ -273,6 +276,7 @@
     pin,
     read: openReader,
     note: (id, text) => setNotes(withNote(notes, id, text)),
+    nodeRect: (id) => graph?.nodeRect(id) ?? null,
   };
   // A whole new state: its Focus, kin, and pins load before it is shown.
   async function show(next: State) {
@@ -285,11 +289,12 @@
   async function startTour() {
     store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
-    if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed };
+    if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed, full: sheetFull };
     tour = "on";
     tours++;
     reading = undefined;
     collapsed = false;
+    sheetFull = false;
     await show(initialState(TOUR_START));
   }
   async function endTour(keep: boolean) {
@@ -299,6 +304,7 @@
       reading = saved!.reading;
       sheetTab = saved!.tab;
       collapsed = saved!.collapsed;
+      sheetFull = saved!.full;
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
@@ -462,6 +468,7 @@
       ]}
       bind:tab={() => sheetTab, chooseTab}
       bind:collapsed
+      bind:full={sheetFull}
       bind:covered={sheetCovered}
       side={screen.side}
     />
@@ -685,7 +692,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 6px;
-    padding: 8px 0;
+    padding: 4px 0;
   }
   .controls.row .views {
     margin-right: auto;
