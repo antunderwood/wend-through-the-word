@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, openOnAbraham } from "./scene";
 import { STEPS } from "../src/tour";
+import { TILES } from "../src/tiles";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -111,12 +112,22 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   (page) => bar(page).getByRole("button", { name: "Undo clear" }).click(),
   (page) => panel(page).getByRole("button", { name: "Read", exact: true }).click(),
   (page) => panel(page).getByRole("textbox", { name: /^Note on Simon Peter/ }).fill("Peter, the rock."),
+  // The ring is on Show map, which the tour leaves shut; a Place selected ends the step.
+  async (page) => {
+    const [r, b] = [(await page.locator(".tour-target").boundingBox())!, (await panel(page).getByRole("button", { name: "Show map" }).boundingBox())!];
+    expect([r.x + 5, r.y + 5]).toEqual([b.x, b.y]);
+    await bar(page).getByRole("button", { name: "Jesus Christ" }).click();
+    await panel(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Bethlehem/ }).click();
+  },
 ];
 
 for (const view of ["A"] as const) {
   test(`the reader's own actions pass every step and a kept note stays, in view ${view}`, async ({ page }) => {
     await reader(page, view);
     const before = await state(page);
+    // The tour asks nothing of the map's tile host (#88).
+    const tiles: string[] = [];
+    page.on("request", (r) => new URL(r.url()).hostname === new URL(TILES.url).hostname && tiles.push(r.url()));
     await help(page).click();
     for (const [i, act] of BY_MOUSE.entries()) {
       await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
@@ -128,6 +139,7 @@ for (const view of ["A"] as const) {
     await focusIs(page, SARAH);
     const notes = JSON.stringify({ [ABRAHAM]: "My own note.", [PETER]: "Peter, the rock." });
     expect(await state(page)).toEqual({ ...before, kept: { ...before.kept, "wend.notes": notes } });
+    expect(tiles).toEqual([]);
   });
 }
 
@@ -163,6 +175,10 @@ test("the whole tour with the keyboard only", async ({ page }) => {
     async () => {
       await panel(page).getByRole("textbox", { name: /^Note on/ }).focus();
       await page.keyboard.type("Typed.");
+    },
+    async () => {
+      await enter(bar(page).getByRole("button", { name: "Jesus Christ" }));
+      await enter(panel(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Bethlehem/ }));
     },
   ];
   await enter(help(page));
