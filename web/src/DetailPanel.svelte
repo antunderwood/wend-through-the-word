@@ -25,7 +25,7 @@
     noWebGL,
     collapsed,
     reading,
-    end,
+    filtersAndLinks,
   }: {
     data: Data;
     model: State;
@@ -42,7 +42,7 @@
     noWebGL: boolean;
     collapsed: boolean;
     reading: boolean;
-    end?: Snippet; // after the lists: on a phone, the filters and the page's own links
+    filtersAndLinks?: Snippet; // after the lists: on a phone, the filters and the page's own links
   } = $props();
 
   // The nodes whose Neighbours, and whose Verses shared with the Focus, the panel lists. A click in
@@ -261,7 +261,7 @@
     <!-- A Verse outside the build has no lists; the note above says why. -->
     {#if !data.outside(neighboursOf)}{@render failed("the Neighbours", e)}{/if}
   {/await}
-  {@render end?.()}
+  {@render filtersAndLinks?.()}
 </aside>
 
 <!-- What the reader can do with the Selected Node. On a phone, upright or on its side, they are one

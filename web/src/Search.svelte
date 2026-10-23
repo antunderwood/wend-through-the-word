@@ -116,10 +116,10 @@
   /* The search button: at the end of the Your Path bar's row, and as tall as the bar. */
   .open {
     position: fixed;
-    top: 8px;
-    right: 8px;
-    width: 54px;
-    height: 54px;
+    top: var(--edge);
+    right: var(--edge);
+    width: var(--search-button);
+    height: var(--search-button);
     display: grid;
     place-items: center;
     background: rgba(20, 23, 34, 0.92);

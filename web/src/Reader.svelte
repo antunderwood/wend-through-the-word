@@ -76,13 +76,13 @@
             ondblclick: () => onfocus(v.key),
           }}
           {#if screen.phone}
-            <button class="verse whole" class:sel={v.key === selected} class:linked={inScene(v.key)} data-key={v.key} {...target}>
-              <span class="number">{n}</span>
+            <button class="verse whole" class:sel={v.key === selected} data-key={v.key} {...target}>
+              <span class="number" class:linked={inScene(v.key)} class:current={v.key === selected}>{n}</span>
               {v.text}
             </button>
           {:else}
             <span class="verse" class:sel={v.key === selected} data-key={v.key}>
-              <button class:linked={inScene(v.key)} {...target}>{n}</button>
+              <button class="number" class:linked={inScene(v.key)} class:current={v.key === selected} {...target}>{n}</button>
               {v.text}
             </span>
           {/if}
@@ -142,26 +142,29 @@
   .verse.sel {
     background: rgba(255, 210, 122, 0.16);
   }
-  .verse button {
-    padding: 0 2px;
-    border: 0;
-    background: none;
+  /* A verse's number: the button on a desktop, the start of the verse's button on a phone. */
+  .number {
     color: #9aa0b4;
     font: 600 12px/1 system-ui, sans-serif;
     vertical-align: super;
   }
-  /* A verse number keeps its line's height wherever the reader is mounted, even in a place that
-     makes its buttons taller to tap. */
-  .reader .verse button {
-    min-height: 0;
-  }
   /* In the scene: a brighter number, underlined with dots. */
-  .verse button.linked {
+  .number.linked {
     color: #d4d8e8;
     text-decoration: underline dotted;
   }
-  .verse button[aria-current="true"] {
+  .number.current {
     color: #ffd27a;
+  }
+  .verse button.number {
+    padding: 0 2px;
+    border: 0;
+    background: none;
+  }
+  /* A verse number keeps its line's height wherever the reader is mounted, even in a place that
+     makes its buttons taller to tap. */
+  .reader .verse button.number {
+    min-height: 0;
   }
   /* On a phone a verse is a button the width of the text: its number, then its words. */
   .verse.whole {
@@ -173,18 +176,6 @@
     background: none;
     font: inherit;
     text-align: left;
-  }
-  .verse.whole .number {
-    color: #9aa0b4;
-    font: 600 12px/1 system-ui, sans-serif;
-    vertical-align: super;
-  }
-  .verse.whole.linked .number {
-    color: #d4d8e8;
-    text-decoration: underline dotted;
-  }
-  .verse.whole[aria-current="true"] .number {
-    color: #ffd27a;
   }
   .muted {
     color: #9aa0b4;

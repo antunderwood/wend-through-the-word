@@ -31,7 +31,10 @@
     // A target in a hidden tab of the bottom sheet opens that tab, as a tap on the tab would; the
     // target is placed once the tab shows. A tab the reader opens later is left open.
     const tab = el !== target && el?.closest("[role=tabpanel][hidden]");
-    if (tab) return document.getElementById(tab.getAttribute("aria-labelledby")!)?.click();
+    if (tab) {
+      document.getElementById(tab.getAttribute("aria-labelledby")!)?.click();
+      return;
+    }
     // A target in the panel is scrolled into its view once; scene names are never scrolled. Any other
     // target brings the panel back to its top, where the Selected Node is.
     if (el !== target && el?.closest("#panel")) el.scrollIntoView({ block: "nearest" });
@@ -44,7 +47,7 @@
       h = box.offsetHeight,
       m = 14;
     // On a phone the box stays above the bottom sheet, open or closed.
-    const sheet = document.querySelector('[aria-label="Sheet"]'),
+    const sheet = document.querySelector('[data-tour="sheet"]'),
       floor = sheet ? sheet.getBoundingClientRect().top : innerHeight;
     // Below, above, left of, or right of the target, whichever fits; on a phone also just above the
     // sheet or at the top of the screen, if clear of the target. Where none fits (a short screen), the
