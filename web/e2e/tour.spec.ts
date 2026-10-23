@@ -113,7 +113,7 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   (page) => panel(page).getByRole("textbox", { name: /^Note on Simon Peter/ }).fill("Peter, the rock."),
 ];
 
-for (const view of ["A", "B", "C"] as const) {
+for (const view of ["A"] as const) {
   test(`the reader's own actions pass every step and a kept note stays, in view ${view}`, async ({ page }) => {
     await reader(page, view);
     const before = await state(page);

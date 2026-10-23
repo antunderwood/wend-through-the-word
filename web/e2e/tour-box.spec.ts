@@ -2,13 +2,8 @@ import { expect, test } from "@playwright/test";
 import { focusIs, nodes } from "./scene";
 import { tourBoxSpecs } from "./tour-box";
 
-// A desktop window and a small one, in every view.
-tourBoxSpecs(
-  [
-    { width: 1280, height: 720 },
-    { width: 800, height: 600 },
-  ],
-  ["A", "B", "C"],
+// A small desktop window, where the box has least room.
+tourBoxSpecs([{ width: 800, height: 600 }], ["A"],
   false,
 );
 

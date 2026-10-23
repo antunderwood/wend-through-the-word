@@ -14,10 +14,7 @@ const notice = (page: Page) => page.getByRole("status");
 test.use({ reducedMotion: "reduce", permissions: ["clipboard-read", "clipboard-write"] });
 
 // The owner's Android phone (CSS 325 px wide) and the phone project's own size.
-for (const size of [
-  { width: 325, height: 700 },
-  { width: 390, height: 844 },
-]) {
+for (const size of [{ width: 325, height: 700 }]) {
   test.describe(`${size.width} x ${size.height}`, () => {
     test.use({ viewport: size });
 

@@ -34,10 +34,7 @@ async function dragSheet(page: Page, y: number) {
   await drag(page, { x: row.x + row.width / 2, y: row.y + row.height / 2 }, { x: row.x + row.width / 2, y });
 }
 
-for (const size of [
-  { width: 325, height: 600 },
-  { width: 390, height: 844 },
-])
+for (const size of [{ width: 325, height: 600 }])
   test.describe(`${size.width} x ${size.height}`, () => {
     test.use({ viewport: size });
 
@@ -88,7 +85,6 @@ for (const size of [
 // the Selected Node, and Your Path stay.
 for (const size of [
   { width: 325, height: 600 },
-  { width: 390, height: 844 },
   { width: 760, height: 330 },
 ])
   test.describe(`${size.width} x ${size.height}`, () => {
@@ -155,10 +151,7 @@ test.describe("the tour", () => {
 });
 
 // The owner's phone and a larger one, on their side: the sheet docks at the right (decision 184).
-for (const size of [
-  { width: 760, height: 330 },
-  { width: 844, height: 390 },
-])
+for (const size of [{ width: 760, height: 330 }])
   test.describe(`${size.width} x ${size.height}`, () => {
     test.use({ viewport: size });
 

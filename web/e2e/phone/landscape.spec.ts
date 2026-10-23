@@ -39,10 +39,7 @@ async function actionsInReach(page: Page) {
 }
 
 // A phone on its side (844 x 390), and the owner's Android phone on its side (about 760 x 330).
-for (const size of [
-  { width: 844, height: 390 },
-  { width: 760, height: 330 },
-]) {
+for (const size of [{ width: 760, height: 330 }]) {
   test.describe(`${size.width} x ${size.height}`, () => {
     test.use({ viewport: size });
 

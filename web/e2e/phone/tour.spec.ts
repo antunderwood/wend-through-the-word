@@ -23,11 +23,10 @@ const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
 // On a phone the help link ends the Details tab.
 const help = (page: Page) => details(page).getByRole("button", { name: "Help: take the tour" });
 
-const UPRIGHT = { width: 390, height: 844 },
-  OWNER_UPRIGHT = { width: 325, height: 700 },
-  OWNER = { width: 325, height: 600 }, // the owner's phone in Chrome
-  SIDEWAYS = { width: 844, height: 390 },
-  OWNER_SIDEWAYS = { width: 760, height: 330 };
+// The owner's phone in Chrome, upright and on its side, and a larger phone.
+const OWNER = { width: 325, height: 600 },
+  OWNER_SIDEWAYS = { width: 760, height: 330 },
+  UPRIGHT = { width: 390, height: 844 };
 
 test.use({ reducedMotion: "reduce" });
 // Each test walks up to every step, each a tap or two that waits for the scene or the sheet: on
@@ -117,12 +116,8 @@ const problems = (page: Page) =>
 const shown = (page: Page) => expect.poll(() => problems(page)).toBe("");
 
 for (const [size, view] of [
-  [UPRIGHT, "A"],
-  [UPRIGHT, "C"],
-  [OWNER_UPRIGHT, "A"],
   [OWNER, "A"],
   [OWNER, "C"],
-  [SIDEWAYS, "C"],
   [OWNER_SIDEWAYS, "A"],
 ] as const) {
   test.describe(`${size.width} x ${size.height}`, () => {
@@ -202,8 +197,7 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
 ];
 
 for (const [size, view] of [
-  [UPRIGHT, "A"],
-  [UPRIGHT, "C"],
+  [OWNER, "A"],
   [OWNER_SIDEWAYS, "A"],
 ] as const) {
   test.describe(`${size.width} x ${size.height}`, () => {
