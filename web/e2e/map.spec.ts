@@ -61,7 +61,7 @@ test("a shared link to a Place asks nothing of the tile host until Show map, and
   await expect(map(page).getByText("Bethlehem", { exact: true })).toBeVisible();
 });
 
-test("a Place with no point and a Node that is not a Place say so, and ask nothing of the tile host", async ({ page }) => {
+test("a Place with no point says so and asks nothing of the tile host; a Node that is not a Place then shows the Focus's Neighbours", async ({ page }) => {
   const asked = await thirdParty(page, "abort");
   // Fixture: Kadesh's OpenStreetMap point was dropped, with nothing in its place.
   await page.goto("/?focus=place:kadesh_661");
@@ -69,10 +69,12 @@ test("a Place with no point and a Node that is not a Place say so, and ask nothi
   await panel(page).getByRole("button", { name: "Show map" }).click();
   await panel(page).getByRole("button", { name: "Continue" }).click();
   await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
-
-  await panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button").first().click();
-  await expect(panel(page).getByText("No Place to show.")).toBeVisible();
   expect(asked).toEqual([]);
+
+  // Your Path has one Place, so a Theme selected shows the Focus's Neighbours (#86); "No Place to
+  // show." is in map-journey.spec.ts.
+  await panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button").first().click();
+  await expect(panel(page).getByText("The Focus, Kadesh, and its Neighbours.")).toBeVisible();
 });
 
 test("Neighbours shows the selected Place's Ring 1 Places that have points; a click on a dot selects it and a double click makes it the Focus", async ({ page }) => {

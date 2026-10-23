@@ -7,8 +7,8 @@ import "leaflet/dist/leaflet.css";
 import type { Id } from "./model";
 import { TILES } from "./tiles";
 
-// role: the Selected Place, drawn larger and ringed, or one of its Neighbours.
-export type MapPlace = { id: Id; name: string; lat: number; lon: number; role: "selected" | "neighbour" };
+// role: the Selected Place, drawn larger and ringed, one of its Neighbours, or a stop on the Journey.
+export type MapPlace = { id: Id; name: string; lat: number; lon: number; role: "selected" | "neighbour" | "stop" };
 export type PlaceMap = ReturnType<typeof createMap>;
 // What a dot does: a click selects its Place, a double click makes it the Focus.
 export type MapActions = { select: (id: Id) => void; makeFocus: (id: Id) => void };
@@ -30,6 +30,8 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   const map = L.map(host);
   L.tileLayer(TILES.url, { attribution: TILES.attribution, maxZoom: TILES.maxZoom }).addTo(map);
   const dots = L.layerGroup().addTo(map);
+  // The Journey's line, under the dots; a click passes through it to the map.
+  const line = L.polyline([], { className: "journey-line", color: colour, weight: 3, opacity: 0.8, interactive: false });
 
   // n: how many Places drawn before this one share its point. The first has the dot; each name
   // after it goes one line lower, so no name hides another.
@@ -92,6 +94,11 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
         dot(p, n).addTo(dots);
       }
       if (follow) frame();
+    },
+    // Joins these Places with the line, in this order; none clears it.
+    join(places: MapPlace[]) {
+      if (!places.length) return void line.remove();
+      line.setLatLngs(places.map((p) => [p.lat, p.lon])).addTo(map);
     },
     // Frames the map on what it shows again, and follows it again.
     recentre() {
