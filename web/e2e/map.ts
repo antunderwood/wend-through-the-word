@@ -27,12 +27,15 @@ export async function openMap(within: Locator, touch = false) {
 export const selectedDot = async (map: Locator) => (await map.locator(".map-place.selected .dot").boundingBox())!;
 
 // Drags the map with the mouse, 60 px right and 30 px up, and waits until the Selected Place's dot
-// has moved with it.
+// has moved with it. The mouse is held still before it lets go, so the map does not drift on with
+// motion: the library's drift, for a drag still moving in its last 50 ms, starts a frame later, which
+// on software WebGL can be after the caller has taken the map for still.
 export async function pan(page: Page, map: Locator) {
   const [dot, box] = [await selectedDot(map), (await map.boundingBox())!];
   await page.mouse.move(box.x + 30, box.y + box.height - 30);
   await page.mouse.down();
   await page.mouse.move(box.x + 90, box.y + box.height - 60, { steps: 8 });
+  await page.waitForTimeout(100);
   await page.mouse.up();
   await expect.poll(async () => (await selectedDot(map)).x - dot.x).toBeGreaterThan(30);
 }

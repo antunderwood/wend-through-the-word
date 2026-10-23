@@ -33,6 +33,9 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   // On a touch screen a pinch zooms, and the zoom buttons would cover much of a map as short as
   // the side sheet's.
   const map = L.map(host, { zoomControl: !coarse, zoomAnimation: !still, fadeAnimation: !still, markerZoomAnimation: !still, inertia: !still });
+  // The attribution is the tile provider's alone (decision 197): with the library's own "Leaflet"
+  // before it, it takes two lines in a wide font and covers the foot of a short map.
+  map.attributionControl.setPrefix(false);
   L.tileLayer(TILES.url, { attribution: TILES.attribution, maxZoom: TILES.maxZoom }).addTo(map);
   const dots = L.layerGroup().addTo(map);
   const markers = new Map<Id, L.Marker>();
