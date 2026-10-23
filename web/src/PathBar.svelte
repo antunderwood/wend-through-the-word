@@ -73,4 +73,27 @@
     border-radius: 4px;
     background: #262a3c;
   }
+  /* On a phone the bar is the slim top bar, one row with the search icon at its end (decision 183):
+     the steps scroll sideways and Clear or Undo clear stays at the end, and the steps are as tall as
+     the bar lets them be. */
+  :global(html[data-phone]) .path {
+    top: 0;
+    left: 0;
+    right: var(--bar); /* the search icon */
+    height: var(--bar);
+    box-sizing: border-box;
+    padding: 0 4px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+  /* At the side, left of the sheet and the search icon. */
+  :global(html[data-side]) .path {
+    right: calc(var(--sheet-covered) + var(--bar));
+  }
+  :global(html[data-phone]) ol {
+    min-width: 0;
+  }
+  :global(html[data-phone]) button {
+    min-height: 34px;
+  }
 </style>

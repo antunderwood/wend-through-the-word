@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { focusIs, nodes } from "./scene";
+import { focusIs, nodes, openOnAbraham } from "./scene";
 
 test("a data file that fails twice shows a message and a retry, and the scene stays", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
   // Gen 25's chapter file is first needed when Gen 25:5 becomes the Focus.
   await page.route("**/chapter/Gen/25.json", (r) => r.abort());
@@ -19,7 +19,7 @@ test("a data file that fails twice shows a message and a retry, and the scene st
 });
 
 test("a deploy while the page is open: the next move switches to the new data version and says so", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
   const old = (await page.getByRole("contentinfo").textContent())!.match(/Data version (\S+)/)![1];
   // The deploy (decision 159): the old version's files are gone, and index.json names test2,
@@ -38,7 +38,7 @@ test("a deploy while the page is open: the next move switches to the new data ve
 test("a Verse outside the build is never fetched: Make Focus and Pin are refused, and the panel says why", async ({ page }) => {
   const asked: string[] = [];
   page.on("request", (r) => asked.push(r.url()));
-  await page.goto("/");
+  await openOnAbraham(page);
   await page.getByRole("searchbox", { name: "Search" }).fill("Gen 16:1");
   await page.getByRole("searchbox", { name: "Search" }).press("Enter");
   await focusIs(page, "01016001");
@@ -65,7 +65,7 @@ test("a Verse outside the build is never fetched: Make Focus and Pin are refused
 });
 
 test("a panel list that fails twice shows a message and a retry", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
   // Ur's file is first needed when Ur is selected: for its Neighbours and the Verses it shares with Abraham.
   await page.route("**/entity/place/ur_1189.json", (r) => r.abort());
@@ -83,7 +83,7 @@ test("a panel list that fails twice shows a message and a retry", async ({ page 
 
 test("a failed first load shows a message and a retry in place of the scene", async ({ page }) => {
   await page.route("**/search-index.json", (r) => r.abort());
-  await page.goto("/");
+  await openOnAbraham(page);
   const alert = page.getByRole("alert");
   await expect(alert).toContainText("Could not load the data");
 

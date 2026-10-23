@@ -21,7 +21,7 @@ export function withNote(notes: Notes, id: Id, text: string): Notes {
 }
 
 // The state the page opens on: Your Path and the Focus kept in this browser, less any node this build
-// no longer has, else Abraham. The address wins when it names a Focus, and the kept Focus then joins
+// no longer has, else Jesus Christ. The address wins when it names a Focus, and the kept Focus then joins
 // Your Path, as on any move; the address also gives the selection, pins, filters, and notice.
 export function restore(asked: Asked, kept: KeptPath | null, known: (id: Id) => boolean, label: (id: Id) => string): State {
   let s: State = { ...initialState(kept && known(kept.focus) ? kept.focus : START), path: kept?.path.filter(known) ?? [] };

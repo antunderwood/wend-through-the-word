@@ -5,7 +5,8 @@ import { initialState, type State, type View } from "../src/model";
 import { readExport } from "./fixture";
 
 const data = await createData(readExport, "");
-const ISAAC = "person:isaac_616";
+const ISAAC = "person:isaac_616",
+  ABRAHAM = "person:abraham_58";
 // Fixture: Genesis, Matthew, and 3 John are built.
 const read = (search: string) => readAddress(search, data.exists, data.builtBooks.map((b) => b.osis), data.verseKey);
 const write = (s: State, view: View, share = false) => writeAddress(s, view, data.osis, share);
@@ -14,7 +15,7 @@ describe("the page address", async () => {
   const shared: State = {
     ...initialState(ISAAC),
     selected: "01025001",
-    pins: [START, "place:beer-lahai-roi_167", "64001004"],
+    pins: [ABRAHAM, "place:beer-lahai-roi_167", "64001004"],
     filters: { ...initialState(ISAAC).filters, minVotes: 5, hidden: ["event", "theme"], books: ["Gen", "3John"] },
   };
 
@@ -37,15 +38,15 @@ describe("the page address", async () => {
     expect(write(initialState("01016001"), "A")).toBe("?focus=Gen.16.1");
   });
 
-  it("leaves defaults out, so Abraham with default settings is the bare address", async () => {
+  it("leaves defaults out, so Jesus Christ with default settings is the bare address", async () => {
     expect(write(initialState(START), "A")).toBe("");
     expect(await read("")).toEqual({});
     // The Selected Node is left out when it is the Focus.
     expect(write(initialState(ISAAC), "A")).toBe("?focus=person:isaac_616");
   });
 
-  it("names the Focus in a shared link, even Abraham with default settings", () => {
-    expect(write(initialState(START), "A", true)).toBe("?focus=person:abraham_58");
+  it("names the Focus in a shared link, even Jesus Christ with default settings", () => {
+    expect(write(initialState(START), "A", true)).toBe("?focus=person:jesus_905");
     expect(write(shared, "B", true)).toBe(write(shared, "B"));
   });
 

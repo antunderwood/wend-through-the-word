@@ -1,6 +1,12 @@
+<script lang="ts" module>
+  // The filter panel's element ID, for the Filters button that opens it.
+  export const FILTERS_ID = "filters";
+</script>
+
 <script lang="ts">
   // The filter panel (PRD 10.1 item 5), a popover opened from the Filters button: node types, the
-  // Vote Limit, the book filter (decision 130), and animation.
+  // Vote Limit, the book filter (decision 130), and animation. On a phone it is inline, a section of
+  // the Details tab instead (decision 115).
   import { typeColour as colour } from "./graph";
   import { TYPES, TYPE_PLURAL, type NodeType, type State } from "./model";
 
@@ -12,6 +18,7 @@
     motion,
     set,
     setMotion,
+    inline = false,
   }: {
     filters: Filters;
     entityFocus: boolean;
@@ -19,6 +26,7 @@
     motion: boolean;
     set: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
     setMotion: (on: boolean) => void;
+    inline?: boolean;
   } = $props();
 
   const show = (t: NodeType, on: boolean) => set("hidden", on ? filters.hidden.filter((x) => x !== t) : [...filters.hidden, t]);
@@ -27,7 +35,8 @@
   const choose = (v: string) => set("books", v === "all" || v === "build" ? v : [v]);
 </script>
 
-<div id="filters" class="filters" popover role="dialog" aria-label="Filters">
+<div id={FILTERS_ID} class="filters" class:inline popover={inline ? undefined : ""} role={inline ? "group" : "dialog"} aria-label="Filters">
+  {#if inline}<h3>Filters</h3>{/if}
   <fieldset>
     <legend>Show</legend>
     {#each TYPES as t (t)}
@@ -111,5 +120,34 @@
   }
   .muted {
     margin: 4px 0 0;
+  }
+  /* In the Details tab: a section of the panel, its rows large enough to tap. */
+  .filters.inline {
+    width: auto;
+    padding: 0;
+    transform: none;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+  h3 {
+    margin: 14px 0 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9aa0b4;
+  }
+  .inline label,
+  .inline select {
+    min-height: 44px;
+  }
+  .inline fieldset label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .inline .row {
+    margin: 0;
   }
 </style>

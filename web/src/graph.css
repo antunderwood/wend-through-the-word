@@ -38,6 +38,17 @@
   line-clamp: 3;
   overflow: hidden;
 }
+/* On a phone the Focus label drops its first line (a Dictionary Entry's or a Verse's quote), so
+   it does not cover Ring 1; the panel shows it (docs/specs/mobile.md, owner). */
+html[data-phone] .nl.focus .quote {
+  display: none;
+}
+/* With only its name, the Focus label is as wide as the name, so it takes no more of the scene than
+   it shows (the tour's ring and box, and the names it would crowd out). */
+html[data-phone] .nl.focus {
+  width: max-content;
+  max-width: 240px;
+}
 .nl.overflow {
   color: #9aa0b4;
   font-style: italic;

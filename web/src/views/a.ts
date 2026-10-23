@@ -11,6 +11,7 @@ export const viewA: ViewModule = {
     controls.enableRotate = false;
     controls.screenSpacePanning = false; // pan along the ground plane
     controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
+    controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN }; // a finger drags as the mouse does
     controls.minDistance = 20;
     controls.maxDistance = 250; // the nearest names are past the label fade at the farthest zoom
   },

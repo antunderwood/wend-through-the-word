@@ -7,12 +7,13 @@ import { readExport } from "./fixture";
 const data = await createData(readExport, "");
 const ISAAC = "person:isaac_616",
   SARAH = "person:sarah_2473",
-  HAGAR = "person:hagar_1348";
+  HAGAR = "person:hagar_1348",
+  JESUS = "person:jesus_905";
 const open = (asked: Parameters<typeof restore>[0], kept: Parameters<typeof restore>[1]) => restore(asked, kept, data.known, data.label);
 
 describe("the page opens on", () => {
-  it("Abraham, when nothing is kept and the address names no Focus", () => {
-    expect(open({}, null)).toMatchObject({ focus: START, selected: START, path: [] });
+  it("Jesus Christ, when nothing is kept and the address names no Focus (decision 186)", () => {
+    expect(open({}, null)).toMatchObject({ focus: JESUS, selected: JESUS, path: [] });
   });
 
   it("the Focus kept in this browser, with its Path, when the address names no Focus", () => {

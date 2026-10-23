@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openOnAbraham } from "./scene";
 
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" }).getByRole("button");
@@ -7,7 +8,7 @@ const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" }).
 test.use({ launchOptions: { args: ["--disable-webgl", "--disable-webgl2"] } });
 
 test("the page says so and the panel alone walks the journey", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await expect(page.getByText("This browser has no WebGL")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
   const box = (await panel(page).boundingBox())!;
@@ -36,7 +37,7 @@ test("the page says so and the panel alone walks the journey", async ({ page }) 
 });
 
 test("the search box, hint, reader panel, panel, notice, and buttons do not overlap", async ({ page }) => {
-  await page.goto("/");
+  await openOnAbraham(page);
   await panel(page).getByRole("button", { name: "Read", exact: true }).click();
   const reader = page.getByRole("region", { name: "Reader" });
   await expect(reader.getByRole("heading", { name: "Genesis 11" })).toBeVisible();
