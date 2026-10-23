@@ -174,21 +174,28 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
 
   // Pixels at the bottom or the right of the scene covered by a panel (the phone's sheet): the picture
   // moves up or left by half of them, so its centre sits in the space above or left of the panel.
-  // shift: px the picture is panned by on the page (panTo), until the camera goes back to the view's start.
+  // shift: px the picture is panned by on the page (panTo), until panBack, a sheet change, Recentre,
+  // or the camera going back to the view's start. zoomedOut: how far panTo moved the camera back.
+  // offset: the px the picture is moved by as drawn, which eases to where these put it.
   let covered = 0,
     coveredSide: "bottom" | "right" = "bottom",
-    shift = { x: 0, y: 0 };
+    shift = { x: 0, y: 0 },
+    zoomedOut = 1;
+  const offsetFor = () => ({ x: (coveredSide === "right" ? covered / 2 : 0) - shift.x, y: (coveredSide === "bottom" ? covered / 2 : 0) - shift.y });
+  let offset = offsetFor();
+  function setViewOffset() {
+    const { clientWidth: w, clientHeight: h } = host;
+    if (offset.x || offset.y) camera.setViewOffset(w, h, offset.x, offset.y, w, h);
+    else camera.clearViewOffset();
+    camera.updateProjectionMatrix();
+    crowded = true;
+  }
   function resize() {
     const { clientWidth: w, clientHeight: h } = host;
     renderer.setSize(w, h);
     labels.setSize(w, h);
     camera.aspect = w / h;
-    const x = (coveredSide === "right" ? covered / 2 : 0) - shift.x,
-      y = (coveredSide === "bottom" ? covered / 2 : 0) - shift.y;
-    if (x || y) camera.setViewOffset(w, h, x, y, w, h);
-    else camera.clearViewOffset();
-    camera.updateProjectionMatrix();
-    crowded = true;
+    setViewOffset();
   }
   resize();
   // The page's panels change the scene's size as well as the window.
@@ -212,6 +219,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     view.setup(camera, controls);
+    home = camera.position.clone();
     controls.autoRotate = look.spin;
     camera.position.add(centre);
     controls.target.add(centre);
@@ -220,12 +228,16 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     deco = view.decorate();
     deco.position.copy(centre);
     scene3.add(deco);
-    if (shift.x || shift.y) {
-      shift = { x: 0, y: 0 };
-      resize();
-    }
+    glide = null;
+    shift = { x: 0, y: 0 };
+    zoomedOut = 1;
+    offset = offsetFor();
+    setViewOffset();
   }
-  let centre = new THREE.Vector3(); // where the Focus sits in the world
+  let centre = new THREE.Vector3(), // where the Focus sits in the world
+    home = new THREE.Vector3(); // the view's start: the camera's place from the centre
+  // The camera easing to a place, and the picture's offset with it (glideTo).
+  let glide: { t0: number; camera: THREE.Vector3[]; target: THREE.Vector3[]; offset: { x: number; y: number }[] } | null = null;
   useView(view);
 
   function empty(group: THREE.Group) {
@@ -283,10 +295,42 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       deco: [centre, next],
       old,
     };
-    if (!motion || matchMedia("(prefers-reduced-motion: reduce)").matches) step(Infinity);
-    else step(move.t0);
+    step(still() ? Infinity : move.t0);
   }
+  const still = () => !motion || matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+  // The camera eases to a place (its position and target), and the picture's offset to where the
+  // sheet and the pans now put it (decision 188). At once under reduced motion, with animation off,
+  // or when asked; a finger or the mouse on the scene ends it where it was going.
+  function glideTo(position: THREE.Vector3, target: THREE.Vector3, atOnce = false) {
+    step(Infinity); // a Focus move ends first
+    // What is left of a damped drag is spent first, so it does not carry the camera on afterwards.
+    const damping = controls.enableDamping;
+    controls.enableDamping = false;
+    controls.update();
+    controls.enableDamping = damping;
+    glide = { t0: performance.now(), camera: [camera.position.clone(), position], target: [controls.target.clone(), target], offset: [offset, offsetFor()] };
+    glideStep(atOnce || still() ? Infinity : glide.t0);
+  }
+  function glideStep(now: number) {
+    if (!glide) return;
+    const k = ease(Math.min(1, (now - glide.t0) / MOVE_MS)),
+      [a, b] = glide.offset;
+    camera.position.lerpVectors(glide.camera[0], glide.camera[1], k);
+    controls.target.lerpVectors(glide.target[0], glide.target[1], k);
+    offset = { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k };
+    setViewOffset();
+    follow();
+    if (k === 1) glide = null;
+  }
+  // Where the camera is going: the end of its glide, or where it is.
+  const aim = () => (glide ? { camera: glide.camera[1], target: glide.target[1] } : { camera: camera.position, target: controls.target });
+  // The Focus in the middle of the free scene, from the same angle and distance.
+  function centreFocus(atOnce = false) {
+    const { camera: c, target: t } = aim();
+    glideTo(c.clone().sub(t).add(centre), centre.clone(), atOnce);
+  }
   function step(now: number) {
     if (!move) return;
     const k = ease(Math.min(1, (now - move.t0) / MOVE_MS));
@@ -558,6 +602,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     // while still moving, where a mouse stops first, and the damped camera glided on for seconds.
     // A mouse keeps the damping.
     controls.enableDamping = e.pointerType !== "touch";
+    glideStep(Infinity); // the camera is where it was going before the reader moves it
     down.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (down.size > 1) pinched = true;
   };
@@ -608,6 +653,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
   el.addEventListener("pointercancel", (e) => down.delete(e.pointerId));
   el.addEventListener("pointermove", onMove);
   el.addEventListener("pointerleave", onLeave);
+  el.addEventListener("wheel", () => glideStep(Infinity), { passive: true });
 
   // Frames drawn per second, reported once a second.
   let frames = 0,
@@ -621,6 +667,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       since = now;
     }
     step(now);
+    glideStep(now);
     controls.update();
     renderer.render(scene3, camera);
     labels.render(scene3, camera);
@@ -670,26 +717,54 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     setMotion(on: boolean) {
       motion = on;
     },
-    // The scene's bottom (or right) px are covered: its centre moves into the space above (or left of) them.
+    // The scene's bottom (or right) px are covered: its centre moves into the space above (or left of)
+    // them, and the camera eases so the Focus is in the middle of that space, undoing any pan (decision
+    // 188). The first offset, before which nothing was covered, applies at once.
     setOffset(px: number, side: "bottom" | "right" = "bottom") {
+      if (px === covered && side === coveredSide) return;
+      const first = !covered;
       covered = px;
       coveredSide = side;
-      resize();
+      shift = { x: 0, y: 0 };
+      centreFocus(first);
     },
     nodeRect,
     // Pans the picture so a drawn node's disc centre lies at (x, y) on the page, after moving the
     // camera back by zoomOut times its distance (1 keeps the zoom; never past the view's farthest).
-    // The orbit keeps its centre; the pan lasts until the camera goes back to the view's start.
+    // The orbit keeps its centre; the pan lasts until panBack, a change of the sheet, or Recentre.
     panTo(id: Id, x: number, y: number, zoomOut = 1) {
       if (!sprites.has(id)) return;
+      glideStep(Infinity);
       if (zoomOut !== 1) {
-        const d = camera.position.distanceTo(controls.target);
-        camera.position.sub(controls.target).setLength(Math.min(d * zoomOut, controls.maxDistance)).add(controls.target);
+        const d = camera.position.distanceTo(controls.target),
+          to = Math.min(d * zoomOut, controls.maxDistance);
+        camera.position.sub(controls.target).setLength(to).add(controls.target);
+        zoomedOut *= to / d;
       }
       const r = nodeRect(id)!;
       shift = { x: shift.x + x - (r.left + r.width / 2), y: shift.y + y - (r.top + r.height / 2) };
-      resize();
+      offset = offsetFor();
+      setViewOffset();
       follow();
+    },
+    // Eases back the pans panTo made, and its zoom (decision 188): the tour undoes its pan for a step
+    // when the step ends. The reader's own moves stay.
+    panBack() {
+      if (!shift.x && !shift.y && zoomedOut === 1) return;
+      step(Infinity);
+      const { camera: c, target: t } = aim(),
+        back = c.clone().sub(t);
+      back.setLength(Math.max(back.length() / zoomedOut, controls.minDistance));
+      shift = { x: 0, y: 0 };
+      zoomedOut = 1;
+      glideTo(back.add(t), t.clone());
+    },
+    // The camera eases back to the view's start round the Focus, in the middle of the free scene,
+    // undoing every pan, zoom, and turn (the Recentre button, decision 188).
+    recentre() {
+      shift = { x: 0, y: 0 };
+      zoomedOut = 1;
+      glideTo(home.clone().add(centre), centre.clone());
     },
     onNodeClick: (f: (id: Id) => void) => handlers.click.push(f),
     onNodeDoubleClick: (f: (id: Id) => void) => handlers.double.push(f),

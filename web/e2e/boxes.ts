@@ -8,15 +8,17 @@ const overlap = (a: Box, b: Box) => a.x < b.x + b.width && b.x < a.x + a.width &
 export const overlaps = (boxes: Box[]) => boxes.flatMap((a, i) => boxes.slice(i + 1).filter((b) => overlap(a, b)).map((b) => `${a.name} and ${b.name}`));
 
 // The points of a rectangle, 12 px apart, where something other than the scene lies on top: none
-// when the scene has the whole rectangle to itself. Names in the scene are the scene's own.
+// when the scene has the whole rectangle to itself. Names in the scene and its Recentre button in a
+// corner (decision 188) are the scene's own.
 export const covered = (page: Page, r: { x: number; y: number; width: number; height: number }) =>
   page.evaluate(({ x, y, width, height }) => {
     const scene = document.querySelector('[role="application"]')!,
+      recentre = document.querySelector('[data-tour="recentre"]'),
       found: string[] = [];
     for (let py = Math.ceil(y) + 2; py < y + height - 2; py += 12)
       for (let px = Math.ceil(x) + 2; px < x + width - 2; px += 12) {
         const e = document.elementFromPoint(px, py);
-        if (!e || !scene.contains(e)) found.push(`${px},${py}: ${e?.tagName ?? "nothing"} ${e?.getAttribute("aria-label") ?? e?.className ?? ""}`);
+        if (!e || !(scene.contains(e) || recentre?.contains(e))) found.push(`${px},${py}: ${e?.tagName ?? "nothing"} ${e?.getAttribute("aria-label") ?? e?.className ?? ""}`);
       }
     return found.slice(0, 8);
   }, r);
