@@ -308,11 +308,14 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
       d.append(p);
     }
     // A finger on a name works as on the scene: the canvas takes the touch, so a drag or a pinch
-    // that starts on a name moves the camera, and a tap is picked there.
+    // that starts on a name moves the camera, and a tap is picked there. The canvas captures the
+    // finger, so it hears the finger lift: a touch belongs to the element it began on, and a lift
+    // the canvas missed counted every later tap as part of a pinch.
     d.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
       if (e.pointerType !== "touch") return;
       onName = n.id;
+      el.setPointerCapture(e.pointerId);
       el.dispatchEvent(new PointerEvent(e.type, e));
     });
     // A disc under the pointer wins over the label lying across it.

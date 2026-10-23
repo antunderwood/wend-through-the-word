@@ -12,11 +12,11 @@ export const selectedIs = (page: Page, id: string) => expect(page.locator(".labe
 // The scene's box on the page.
 export const sceneBox = async (page: Page) => (await page.getByRole("application").boundingBox())!;
 
-// The Ring 1 node a finger can tap with least doubt: its disc lies in the scene, uncovered by the
-// panels and controls over it (the phone's top bar and sheet, the hint), and it is the one
-// farthest from any other drawn node. A touch is moved to a button within reach of the finger, so
-// nothing but the scene may lie within 16 px of the disc's centre.
-export async function tappable(page: Page): Promise<OnScreen> {
+// The Ring 1 node (or the node `which` picks) a finger can tap with least doubt: its disc lies in
+// the scene, uncovered by the panels and controls over it (the phone's top bar and sheet, the hint),
+// and it is the one farthest from any other drawn node. A touch is moved to a button within reach
+// of the finger, so nothing but the scene may lie within 16 px of the disc's centre.
+export async function tappable(page: Page, which = (n: OnScreen) => n.role === "ring1"): Promise<OnScreen> {
   const all = await nodes(page),
     box = await sceneBox(page);
   const inside = (n: OnScreen) => n.x > box.x + 4 && n.x < box.x + box.width - 4 && n.y > box.y + 4 && n.y < box.y + box.height - 4;
@@ -34,9 +34,22 @@ export async function tappable(page: Page): Promise<OnScreen> {
     all,
   );
   const room = (n: OnScreen) => Math.min(...all.filter((m) => m !== n).map((m) => far(m, n)));
-  const ring1 = all.filter((n, i) => n.role === "ring1" && inside(n) && uncovered[i]).sort((a, b) => room(b) - room(a));
-  expect(ring1.length).toBeGreaterThan(0);
-  return ring1[0];
+  const picked = all.filter((n, i) => which(n) && inside(n) && uncovered[i]).sort((a, b) => room(b) - room(a));
+  expect(picked.length).toBeGreaterThan(0);
+  return picked[0];
+}
+
+// A pinch out whose first finger rests on the bare scene below the Focus's name and whose second
+// comes down on that name.
+export async function pinchFromName(page: Page) {
+  const name = (await page.locator(".labels .nl.focus").boundingBox())!;
+  const on = { x: name.x + name.width / 2, y: name.y + 8 };
+  const below = await page.evaluate(
+    ({ x, y }) => [40, 50, 60, 70, 80, 90, 100].find((dy) => document.elementFromPoint(x, y + dy) instanceof HTMLCanvasElement),
+    on,
+  );
+  expect(below).toBeDefined();
+  await pinch(page, { x: on.x, y: on.y + below! }, below!, 20);
 }
 
 export function touchSpecs() {
@@ -98,5 +111,15 @@ export function touchSpecs() {
     await pinch(page, anchor, 40, 240);
     await expect.poll(spread).toBeGreaterThan(before * 1.2);
     expect(await pageMoved(page)).toEqual({ scale: 1, x: 0, y: 0 });
+  });
+
+  // A name takes the first finger of a touch only: the second finger of a pinch that began on a
+  // name lifted unseen by the scene, which took every later tap for the end of a pinch. A pin sent
+  // the owner there: its ring lies off a phone's screen, so a pinch brings it in, among more names.
+  test("a tap selects after a pinch whose second finger began on a name", async ({ page }) => {
+    await pinchFromName(page);
+    const target = await tappable(page);
+    await page.touchscreen.tap(target.x, target.y);
+    await selectedIs(page, target.id);
   });
 }
