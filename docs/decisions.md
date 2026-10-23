@@ -364,3 +364,5 @@ Numbers start at 56, because ticket #4 records decision 55.
 - Treat the 51 points as an "insubstantial" extract. Rejected: it depends on guidance we have not checked, and it does not cover the geometry.
 
 **Note.** The readme states that OpenStreetMap data is ODbL 1.0. It does not state which fields hold OpenStreetMap data; that mapping is our reading (corrected 2026-10-19, see `docs/licences.md`, section 4). This is not legal advice.
+
+196. **The map dims its tiles for the dark theme (owner, story 25).** One CSS filter (brightness 0.7, saturation 0.8) on the tile layer only; dots, names, and the line sit in other layers and keep full colour. Reason: the provider serves bright tiles, which glare in a dark panel, especially on a phone at night. Cost: place names on the tiles are a little harder to read. The tiles are still the provider's, only shown darker.
