@@ -1,8 +1,10 @@
 <script lang="ts" generics="Id extends string">
   // The bottom sheet of the phone layout (decision 115): a handle on its top edge opens and closes
   // it, and the panels it holds are its tabs. A tab is one more entry in tabs; each tab's body stays
-  // mounted while another tab shows, so it keeps its place. covered is the height in px it covers at
-  // the bottom of the screen, open or closed.
+  // mounted while another tab shows, so it keeps its place. On a screen wider than it is tall (side)
+  // it is a full-height side panel on the right instead, its handle at the start of the tab row
+  // (decision 184). covered is the px it covers at the bottom of the screen, or at the right when at
+  // the side, open or closed.
   import { tick, type Snippet } from "svelte";
 
   type Tab = { id: Id; name: string; body: Snippet };
@@ -11,17 +13,21 @@
     tab = $bindable(tabs[0].id),
     collapsed = $bindable(false),
     covered = $bindable(0),
-  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; covered?: number } = $props();
+    side = false,
+  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; covered?: number; side?: boolean } = $props();
 
   let sheet: HTMLElement;
-  // Closed, the handle shows with the top border; the styles' --sheet-handle is its height.
-  let height = $state(0);
+  // Closed, the handle shows with the border; the styles' --sheet-handle is its height (its width at
+  // the side).
+  let height = $state(0),
+    width = $state(0);
   $effect(() => {
-    covered = collapsed ? parseFloat(getComputedStyle(sheet).getPropertyValue("--sheet-handle")) + 1 : height;
+    covered = collapsed ? parseFloat(getComputedStyle(sheet).getPropertyValue("--sheet-handle")) + 1 : side ? width : height;
   });
 
   // The on-screen keyboard lies over the bottom of the page and shrinks the visual viewport, not the
-  // page. The sheet sits above it (--keyboard is its height), and a field being typed in stays in view.
+  // page. The sheet sits above it (--keyboard is its height), and a field being typed in stays in view,
+  // its end (where the typing is) foremost when the sheet is too short for all of it.
   $effect(() => {
     const vv = visualViewport;
     if (!vv) return;
@@ -30,7 +36,7 @@
       root.style.setProperty("--keyboard", `${Math.max(0, innerHeight - vv.height - vv.offsetTop)}px`);
       requestAnimationFrame(() => {
         const typing = document.activeElement;
-        if (typing && sheet.contains(typing) && typing.matches("input, textarea")) typing.scrollIntoView({ block: "nearest" });
+        if (typing && sheet.contains(typing) && typing.matches("input, textarea")) typing.scrollIntoView({ block: "end" });
       });
     };
     vv.addEventListener("resize", follow);
@@ -54,7 +60,7 @@
   }
 </script>
 
-<section class="sheet" class:collapsed aria-label="Sheet" data-tour="sheet" bind:offsetHeight={height} bind:this={sheet}>
+<section class="sheet" class:collapsed class:side aria-label="Sheet" data-tour="sheet" bind:offsetHeight={height} bind:offsetWidth={width} bind:this={sheet}>
   <button class="handle" aria-controls="sheet-body" aria-expanded={!collapsed} aria-label={collapsed ? "Open the sheet" : "Close the sheet"} onclick={() => (collapsed = !collapsed)}>
     <span class="grip"></span>
   </button>
@@ -81,6 +87,17 @@
   :global(html:has(.sheet.collapsed)) {
     --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px)); /* and the top border */
   }
+  /* At the side: the whole height, about 40% of the width (at least 320 px, for the row of controls
+     at the top of the Details tab), and what floats at the right of the screen sits left of
+     --sheet-covered. */
+  :global(html[data-side]:has(.sheet)) {
+    --sheet: calc(100dvh - var(--keyboard, 0px));
+    --sheet-width: max(40vw, 320px);
+    --sheet-covered: var(--sheet-width);
+  }
+  :global(html[data-side]:has(.sheet.collapsed)) {
+    --sheet-covered: calc(var(--sheet-handle) + 1px); /* and the left border */
+  }
   .sheet {
     position: fixed;
     left: 0;
@@ -97,6 +114,41 @@
   }
   .sheet.collapsed {
     transform: translateY(calc(100% - var(--sheet-handle) - 1px)); /* and the top border */
+  }
+  /* At the side the handle starts the row of tabs, and the open tab is below them. Closed, only the
+     handle's column shows at the right edge. */
+  .sheet.side {
+    top: 0;
+    left: auto;
+    width: var(--sheet-width);
+    height: auto;
+    display: grid;
+    grid-template: auto 1fr / var(--sheet-handle) 1fr;
+    border-top: 0;
+    border-left: 1px solid #262a3c;
+    border-radius: 14px 0 0 14px;
+  }
+  .sheet.side .body {
+    display: contents;
+  }
+  .sheet.side .tabs {
+    padding-left: 0;
+  }
+  .sheet.side .tabpanel {
+    grid-column: 1 / -1;
+  }
+  .sheet.side.collapsed {
+    transform: translateX(calc(100% - var(--sheet-handle) - 1px)); /* and the left border */
+  }
+  .sheet.side.collapsed .tabpanel {
+    visibility: hidden;
+  }
+  .sheet.side .handle {
+    border-bottom: 1px solid #262a3c;
+  }
+  .sheet.side .grip {
+    width: 4px;
+    height: 24px;
   }
   @media (prefers-reduced-motion: reduce) {
     .sheet {

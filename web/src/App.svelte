@@ -35,17 +35,28 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // The height in px the bottom sheet covers on a phone, open or closed: the scene's centre sits above it.
+  // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
+  // scene's centre sits in the space above it, or left of it.
   let sheetCovered = $state(0);
-  $effect(() => graph?.setOffset(screen.phone ? sheetCovered : 0));
+  $effect(() => graph?.setOffset(screen.phone ? sheetCovered : 0, screen.side ? "right" : "bottom"));
   // Without WebGL there is no scene on a phone: the sheet takes the screen below where the scene
   // would start and the column of controls, with a gap above, below, and between them.
   let dockHeight = $state(0);
   $effect(() => {
     document.documentElement.style.setProperty(
       "--sheet",
-      noWebGL && screen.phone ? `calc(100dvh - var(--keyboard, 0px) - var(--phone-scene-top) - ${dockHeight}px - 3 * var(--edge))` : "",
+      noWebGL && screen.phone && !screen.side ? `calc(100dvh - var(--keyboard, 0px) - var(--bar) - ${dockHeight}px - 2 * var(--edge))` : "",
     );
+  });
+  // On a phone a notice shows for a few seconds, then fades (decision 183); the words stay for a
+  // screen reader. A desktop keeps it. (The derived changes only with the words, not with every model.)
+  const notice = $derived(model.notice);
+  let noticeShown = $state(false);
+  $effect(() => {
+    if (!notice) return;
+    noticeShown = true;
+    const t = setTimeout(() => (noticeShown = false), 3000);
+    return () => clearTimeout(t);
   });
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
@@ -232,12 +243,12 @@
   // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
   // runs. While it runs nothing is kept in this browser and the address is replaced, not pushed; when
   // it ends, the reader's state comes back (on a phone the sheet's tab too) and a note written in it
-  // goes unless the reader keeps it.
+  // goes unless the reader keeps it. On a phone the sheet, open or closed, comes back too (decision 185).
   const TOUR_KEY = "wend.tourOffered";
   let tour = $state<"offer" | "on">();
   const touring = $derived(tour === "on");
   let tours = $state(0); // each start draws a new tour box
-  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab } | undefined;
+  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean } | undefined;
   const tourPage: TourPage = {
     get data() {
       return data!;
@@ -274,7 +285,7 @@
   async function startTour() {
     store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
-    if (!touring) saved = { model, reading, notes, tab: sheetTab };
+    if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed };
     tour = "on";
     tours++;
     reading = undefined;
@@ -287,6 +298,7 @@
       else notes = saved!.notes;
       reading = saved!.reading;
       sheetTab = saved!.tab;
+      collapsed = saved!.collapsed;
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
@@ -405,8 +417,13 @@
       {noWebGL}
       {collapsed}
       reading={!!reading}
+      controls={screen.phone ? phoneControls : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
     />
+  {/snippet}
+  <!-- On a phone the view picker, Filters, and Copy link are a row at the top of the Details tab. -->
+  {#snippet phoneControls()}
+    <div class="controls row">{@render controls()}</div>
   {/snippet}
   <!-- On a phone the filter panel and the footer end the Details tab, after the lists. -->
   {#snippet filtersAndLinks()}
@@ -446,6 +463,7 @@
       bind:tab={() => sheetTab, chooseTab}
       bind:collapsed
       bind:covered={sheetCovered}
+      side={screen.side}
     />
   {:else}
     <!-- The chevron points the way the panel will move. -->
@@ -480,26 +498,34 @@
     </p>
   {/if}
   {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
-  <p class="notice" role="status">{model.notice}</p>
-  <div class="controls">
-    {#if !noWebGL}
-      <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-        {#each offered as key (key)}
-          <button role="radio" aria-checked={viewShown === key} tabindex={viewShown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-        {/each}
-      </div>
-    {/if}
-    {#if onScreen && data}
-      {#if screen.phone}
-        <button class="pill" onclick={showFilters}>Filters</button>
-      {:else}
-        <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
-        {@render filters(false)}
-      {/if}
+  <p class="notice" class:faded={!noticeShown || !model.notice} role="status">{model.notice}</p>
+  {#if !screen.phone}<div class="controls">{@render controls()}</div>{/if}
+</div>
+{#snippet controls()}
+  {#if !noWebGL}
+    <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+      {#each offered as key (key)}
+        <button role="radio" aria-checked={viewShown === key} tabindex={viewShown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+      {/each}
+    </div>
+  {/if}
+  {#if onScreen && data}
+    <!-- On a phone Filters and Copy link are icons with the same accessible names, so the row fits
+         a 320 px screen. -->
+    {#if screen.phone}
+      <button class="pill icon" aria-label="Filters" title="Filters" onclick={showFilters}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
+      </button>
+      <button class="pill icon" aria-label="Copy link" title="Copy link" onclick={copyLink}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></svg>
+      </button>
+    {:else}
+      <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
+      {@render filters(false)}
       <button class="pill" onclick={copyLink}>Copy link</button>
     {/if}
-  </div>
-</div>
+  {/if}
+{/snippet}
 <!-- On a phone the footer is the end of the Details tab. -->
 {#if !screen.phone}<footer>{@render about()}</footer>{/if}
 {#snippet about()}
@@ -522,12 +548,11 @@
   :global(html[data-phone] :is(input, textarea, select)) {
     font-size: 16px;
   }
-  /* Sizes the phone layout's parts share: the gap at the screen's edges, the search button's side
-     (as tall as the Your Path bar beside it), and the top of the scene, below them. */
+  /* Sizes the phone layout's parts share: the gap at the screen's edges, and the height of the slim
+     top bar of Your Path and the search icon (decision 183), above the scene. */
   :global(html) {
     --edge: 8px;
-    --search-button: 54px;
-    --phone-scene-top: 64px;
+    --bar: 40px;
   }
   /* Below the top strip of the search box and the Your Path bar, like the panel. */
   .stage {
@@ -544,7 +569,7 @@
   /* On a phone the scene is the whole width below the Your Path bar; the bottom sheet lies over it,
      and the camera's view offset keeps the centre above the sheet. */
   :global(html[data-phone]) .stage {
-    top: var(--phone-scene-top);
+    top: var(--bar);
     left: 0;
     right: 0;
   }
@@ -614,29 +639,67 @@
   .dock {
     display: contents;
   }
-  /* On a phone, and on a phone on its side, the hint, the notes, and the controls are one column,
-     the controls last; the column itself lets a touch through to the scene. */
-  :global(:is(html[data-phone], html[data-short])) .dock {
+  /* On a phone the hint, the notes, and the notice are one column above the bottom sheet, or left of
+     it at the side; the column itself lets a touch through to the scene, and so does the notice. */
+  :global(html[data-phone]) .dock {
     position: fixed;
+    left: var(--edge);
+    right: var(--edge);
+    bottom: calc(var(--sheet-covered) + var(--edge));
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
     pointer-events: none;
   }
-  :global(:is(html[data-phone], html[data-short])) .dock > * {
+  :global(html[data-side]) .dock {
+    right: calc(var(--sheet-covered) + var(--edge));
+    bottom: var(--edge);
+  }
+  :global(html[data-phone]) .dock > * {
     position: static;
     transform: none;
     pointer-events: auto;
   }
-  /* On a phone the column is above the bottom sheet. */
-  :global(html[data-phone]) .dock {
-    left: var(--edge);
-    right: var(--edge);
-    bottom: calc(var(--sheet-covered) + var(--edge));
+  :global(html[data-phone]) .notice {
+    pointer-events: none;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(20, 23, 34, 0.92);
+    color: #c8cde0;
+    transition: opacity 0.5s;
   }
-  :global(html[data-phone]) .controls {
-    align-self: center;
+  /* Faded, it stays in the page for a screen reader, and lets a touch through. */
+  :global(html[data-phone]) .notice.faded {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .notice {
+      transition: none;
+    }
+  }
+  /* The row at the top of the Details tab: the view picker, then the icons at the end. */
+  .controls.row {
+    position: static;
+    transform: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+  }
+  .controls.row .views {
+    margin-right: auto;
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    padding: 0;
+  }
+  .icon svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
   }
   /* Large enough to tap. */
   :global(html[data-phone]) .controls button,
@@ -644,31 +707,8 @@
     min-height: 44px;
     min-width: 44px;
   }
-  /* A phone on its side has the desktop layout on a short screen: the column is in the bottom left
-     corner of the scene, clear of the panel and above the footer, and the reader drawer takes the
-     panel's place. */
-  :global(html[data-short]:not([data-phone])) .dock {
-    left: 16px;
-    right: 356px; /* the panel's width and a gap */
-    bottom: 36px; /* above the footer */
-  }
-  :global(html[data-short]:not([data-phone]):has(.panel.collapsed)) .dock {
-    right: 16px;
-  }
-  :global(html[data-short]:not([data-phone])) .drawer {
-    top: 56px;
-    left: auto;
-    right: 0;
-    bottom: 0;
-    width: 340px;
-    border-radius: 0;
-    background: rgb(20, 23, 34); /* opaque over the panel */
-  }
-  :global(html[data-short]:not([data-phone])) .stage.reading {
-    left: 0;
-  }
   :global(html[data-phone]) .views button {
-    padding: 4px 10px;
+    padding: 4px 8px;
   }
   :global(html[data-phone]) .hint {
     display: flex;

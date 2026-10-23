@@ -91,13 +91,15 @@ test("Your Path is one row that scrolls sideways, with Clear at its end, and a t
   const bar = page.getByRole("navigation", { name: "Your Path" });
   const steps = bar.getByRole("listitem");
   await expect(steps).toHaveCount(7);
-  // One row across the screen, every step 44 px tall; the steps run on past its edge, and Clear stays in view.
+  // One row across the screen, the slim top bar (decision 183), every step nearly as tall as the
+  // bar; the steps run on past its edge, and Clear stays in view.
   const box = (await bar.boundingBox())!;
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(390);
+  expect(box.height).toBeLessThanOrEqual(44);
   for (const step of await steps.all()) {
     const b = (await step.boundingBox())!;
-    expect(b.height).toBeGreaterThanOrEqual(44);
+    expect(b.height).toBeGreaterThanOrEqual(34);
     expect(b.y + b.height).toBeLessThanOrEqual(box.y + box.height);
   }
   const list = bar.getByRole("list");

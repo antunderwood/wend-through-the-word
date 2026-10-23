@@ -41,8 +41,8 @@ test("with the keyboard up the sheet sits above it, and the note being typed sta
     return b.y + b.height;
   }).toBeLessThanOrEqual(844 - KEYBOARD + 1);
   await expect.poll(() => aboveKeyboard(page, note(page))).toBe(true);
-  // The controls above the sheet stay on screen.
-  await expect(page.getByRole("button", { name: "Copy link" })).toBeInViewport({ ratio: 1 });
+  // The top bar stays on screen.
+  await expect(page.getByRole("button", { name: "Search" })).toBeInViewport({ ratio: 1 });
   await page.keyboard.type("Called out of Ur.");
   await expect(note(page)).toHaveValue("Called out of Ur.");
 

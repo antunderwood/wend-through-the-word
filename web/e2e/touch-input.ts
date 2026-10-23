@@ -13,7 +13,7 @@ export const selectedIs = (page: Page, id: string) => expect(page.locator(".labe
 export const sceneBox = async (page: Page) => (await page.getByRole("application").boundingBox())!;
 
 // The Ring 1 node a finger can tap with least doubt: its disc lies in the scene, uncovered by the
-// panels and controls over it (the phone's bottom sheet, the buttons above it), and it is the one
+// panels and controls over it (the phone's top bar and sheet, the hint), and it is the one
 // farthest from any other drawn node. A touch is moved to a button within reach of the finger, so
 // nothing but the scene may lie within 16 px of the disc's centre.
 export async function tappable(page: Page): Promise<OnScreen> {

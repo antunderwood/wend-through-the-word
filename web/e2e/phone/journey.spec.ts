@@ -80,8 +80,10 @@ test("the student journey by touch, and its shared link opened on another phone"
   await expect.poll(() => new URL(page.url()).searchParams.get("sel")).toBeTruthy();
   const verse = (await other.getAttribute("aria-label"))!;
 
-  // Copy link, then open it on another phone, which has never seen this journey.
-  await page.getByRole("button", { name: "Copy link" }).tap();
+  // Copy link, at the top of the Details tab, then open the link on another phone, which has never
+  // seen this journey.
+  await sheet(page).getByRole("tab", { name: "Details" }).tap();
+  await details(page).getByRole("button", { name: "Copy link" }).tap();
   await expect(page.getByRole("status")).toHaveText("Link copied.");
   const link = await page.evaluate(() => navigator.clipboard.readText());
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = test.info().project.use;
