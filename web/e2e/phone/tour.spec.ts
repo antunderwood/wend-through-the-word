@@ -77,11 +77,12 @@ const problems = (page: Page) =>
     const open = sheetEl.querySelector('[aria-controls="sheet-body"]')!.getAttribute("aria-expanded") === "true";
     const scene = document.querySelector('[data-tour="scene"]')!;
     const disc = (e: Element) => (scene.contains(e) && e.getAttribute("data-node") ? window.wendGraph!.nodeRect(e.getAttribute("data-node")!) : null);
-    // The element's box, with its node's disc for a name in the scene.
+    // The element's box; for a name in the scene, its node's disc and the name when shown.
     const marked = (e: Element) => {
-      const r = e.getBoundingClientRect(),
-        d = disc(e);
-      if (!d) return r;
+      const d = disc(e);
+      if (!d) return e.getBoundingClientRect();
+      if (!e.checkVisibility({ visibilityProperty: true })) return d;
+      const r = e.getBoundingClientRect();
       const left = Math.min(r.left, d.left),
         top = Math.min(r.top, d.top);
       return new DOMRect(left, top, Math.max(r.right, d.right) - left, Math.max(r.bottom, d.bottom) - top);

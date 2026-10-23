@@ -21,6 +21,8 @@ export type TourPage = {
   note(id: Id, text: string): void;
   // A drawn node's disc on the page, or null.
   nodeRect(id: Id): DOMRect | null;
+  // Pans the scene so a drawn node's disc centre lies at (x, y) on the page, zoomed out by zoomOut.
+  panTo(id: Id, x: number, y: number, zoomOut: number): void;
 };
 // at: the model and notes when the step began, and whether the camera has moved since.
 export type At = { model: State; notes: Notes; moved: boolean };
@@ -28,6 +30,9 @@ export type Step = {
   title: string;
   text: (p: TourPage) => string;
   target: (p: TourPage) => Element | null | undefined;
+  // The node in the scene the step asks the reader to tap, wherever its ring is: the box keeps clear
+  // of its disc and name too (decision 187).
+  node?: (p: TourPage) => Id;
   check: (p: TourPage, at: At) => boolean;
   act: (p: TourPage) => unknown;
 };
@@ -66,6 +71,7 @@ export const STEPS: Step[] = [
     title: "Move the camera",
     text: (p) => `The tour starts at John 1:1 with an empty Your Path and no pins. Your own Path, pins, and notes are set aside and come back when the tour ends. ${CAMERA[p.view]} and ${p.coarse ? "" : "scroll or "}pinch to zoom. Try it on the scene.`,
     target: (p) => label(p.model.focus),
+    node: (p) => p.model.focus,
     check: (_, at) => at.moved,
     act: () => one('[data-tour="scene"] canvas')!.dispatchEvent(new WheelEvent("wheel", { deltaY: -240, bubbles: true, cancelable: true, clientX: innerWidth / 2, clientY: innerHeight / 2 })),
   },
@@ -80,6 +86,7 @@ export const STEPS: Step[] = [
     title: "Select God",
     text: (p) => `Ring 1 holds his closest Neighbours of each type, and the words on the lines say how each relates to him. ${Click(p)} God to select him: the scene stays and the panel shows God.`,
     target: () => label(GOD),
+    node: () => GOD,
     check: (p) => p.model.selected === GOD,
     act: (p) => p.apply({ type: "select", id: GOD }),
   },
@@ -87,6 +94,7 @@ export const STEPS: Step[] = [
     title: "Back to Jesus Christ",
     text: (p) => `Select Jesus Christ again: ${click(p)} him in the scene or in the Your Path bar at the top. The panel lists his Neighbours.`,
     target: () => label(JESUS),
+    node: () => JESUS,
     check: (p) => p.model.selected === JESUS,
     act: (p) => p.apply({ type: "select", id: JESUS }),
   },
@@ -114,13 +122,15 @@ export const STEPS: Step[] = [
     title: "Make Simon Peter the Focus",
     text: (p) => `Double ${click(p)} Simon Peter in the scene, or select him and press Make Focus, or search for him. The scene moves to him.`,
     target: (p) => (p.model.selected === PETER && tour("make-focus")) || shown(label(PETER)) || tour("search"),
+    node: () => PETER,
     check: (p) => p.model.focus === PETER,
     act: (p) => p.makeFocus(PETER),
   },
   {
     title: "Pin Jesus Christ",
-    text: (p) => `Jesus Christ joined Your Path, the bar at the top. ${Click(p)} him there to select him, then press Pin in the panel.`,
+    text: (p) => `Jesus Christ joined Your Path, the bar at the top. ${Click(p)} him in the scene or in the Your Path bar to select him, then press Pin in the panel.`,
     target: (p) => (p.model.selected === JESUS && tour("pin")) || tour(`path-${JESUS}`),
+    node: () => JESUS,
     check: (p) => p.model.pins.includes(JESUS),
     act: async (p) => {
       p.apply({ type: "select", id: JESUS });
@@ -169,3 +179,50 @@ export const STEPS: Step[] = [
     },
   },
 ];
+
+// Where the tour box goes (decision 187). Rectangles on the page; a DOMRect is one.
+export type Rect = { left: number; top: number; right: number; bottom: number };
+type Size = { w: number; h: number };
+const apart = (a: Rect, b: Rect, m: number) => a.right + m <= b.left || b.right + m <= a.left || a.bottom + m <= b.top || b.bottom + m <= a.top;
+const at = ([x, y]: number[], { w, h }: Size): Rect => ({ left: x, top: y, right: x + w, bottom: y + h });
+// The places tried for the box's top left corner, in order: below, above, left of, and right of each
+// rectangle kept clear, then the edges of the area beside them, then its corners.
+function spots({ w, h }: Size, keep: Rect[], a: Rect, m: number) {
+  const near = keep.map((r) => [Math.max(a.left, Math.min(a.right - w, r.left)), Math.max(a.top, Math.min(a.bottom - h, r.top)), r] as const);
+  return [
+    ...near.flatMap(([cx, cy, r]) => [[cx, r.bottom + m], [cx, r.top - m - h], [r.left - m - w, cy], [r.right + m, cy]]),
+    ...near.flatMap(([cx, cy]) => [[cx, a.bottom - h], [cx, a.top], [a.left, cy], [a.right - w, cy]]),
+    [a.left, a.bottom - h], [a.left, a.top], [a.right - w, a.top], [a.right - w, a.bottom - h],
+  ];
+}
+const fits = (s: number[], size: Size, a: Rect) => {
+  const r = at(s, size);
+  return r.left >= a.left && r.top >= a.top && r.right <= a.right && r.bottom <= a.bottom;
+};
+
+// The first place in the area for a box of this size at least m from every rectangle kept clear, or
+// undefined when there is none.
+export function spotFor(size: Size, keep: Rect[], area: Rect, m: number) {
+  return spots(size, keep, area, m).find((s) => fits(s, size, area) && keep.every((r) => apart(at(s, size), r, m)));
+}
+
+// When no place keeps clear of the step's node: a place for the box clear of the other rectangles
+// kept clear, and the largest room the box leaves in the scene, beside it, for the node to be panned
+// into; undefined when the box cannot keep clear of the others.
+export function makeRoom(size: Size, node: Rect, others: Rect[], area: Rect, scene: Rect, m: number) {
+  let best: { spot: number[]; room: Rect } | undefined;
+  const size2 = (r: Rect) => Math.max(0, r.right - r.left) * Math.max(0, r.bottom - r.top);
+  for (const s of spots(size, [node, ...others], area, m)) {
+    const b = at(s, size);
+    if (!fits(s, size, area) || !others.every((r) => apart(b, r, m))) continue;
+    const rooms: Rect[] = [
+      { ...scene, bottom: Math.min(scene.bottom, b.top - m) },
+      { ...scene, top: Math.max(scene.top, b.bottom + m) },
+      { ...scene, right: Math.min(scene.right, b.left - m) },
+      { ...scene, left: Math.max(scene.left, b.right + m) },
+    ];
+    const room = rooms.reduce((x, y) => (size2(y) > size2(x) ? y : x));
+    if (!best || size2(room) > size2(best.room)) best = { spot: s, room };
+  }
+  return best;
+}
