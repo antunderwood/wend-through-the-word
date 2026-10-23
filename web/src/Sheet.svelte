@@ -1,27 +1,27 @@
-<script lang="ts">
+<script lang="ts" generics="Id extends string">
   // The bottom sheet of the phone layout (decision 115): a handle on its top edge opens and closes
   // it, and the panels it holds are its tabs. A tab is one more entry in tabs; each tab's body stays
-  // mounted while another tab shows, so it keeps its place. shown is the height it takes at the
-  // bottom of the screen, open or closed.
-  import type { Snippet } from "svelte";
+  // mounted while another tab shows, so it keeps its place. covered is the height in px it covers at
+  // the bottom of the screen, open or closed.
+  import { tick, type Snippet } from "svelte";
 
-  type Tab = { id: string; name: string; body: Snippet };
+  type Tab = { id: Id; name: string; body: Snippet };
   let {
     tabs,
     tab = $bindable(tabs[0].id),
     collapsed = $bindable(false),
-    shown = $bindable(0),
-  }: { tabs: Tab[]; tab?: string; collapsed?: boolean; shown?: number } = $props();
+    covered = $bindable(0),
+  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; covered?: number } = $props();
 
-  let height = $state(0),
-    handle = $state(0);
+  let sheet: HTMLElement;
+  // Closed, the handle shows with the top border; the styles' --sheet-handle is its height.
+  let height = $state(0);
   $effect(() => {
-    shown = collapsed ? handle + 1 : height; // and the top border
+    covered = collapsed ? parseFloat(getComputedStyle(sheet).getPropertyValue("--sheet-handle")) + 1 : height;
   });
 
   // The on-screen keyboard lies over the bottom of the page and shrinks the visual viewport, not the
   // page. The sheet sits above it (--keyboard is its height), and a field being typed in stays in view.
-  let sheet: HTMLElement;
   $effect(() => {
     const vv = visualViewport;
     if (!vv) return;
@@ -39,14 +39,27 @@
       root.style.removeProperty("--keyboard");
     };
   });
+
+  // Left and Right step through the tabs, round from the last to the first, and Home and End go to
+  // the first and the last; the tab moved to opens and takes the keyboard, as in an ARIA tab list.
+  async function stepTab(e: KeyboardEvent) {
+    const i = tabs.findIndex((t) => t.id === tab),
+      n = tabs.length;
+    const to = { ArrowLeft: i - 1 + n, ArrowRight: i + 1, Home: 0, End: n - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    tab = tabs[to % n].id;
+    await tick();
+    (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-selected="true"]')!.focus();
+  }
 </script>
 
-<section class="sheet" class:collapsed aria-label="Sheet" bind:offsetHeight={height} bind:this={sheet}>
-  <button class="handle" aria-controls="sheet-body" aria-expanded={!collapsed} aria-label={collapsed ? "Open the sheet" : "Close the sheet"} onclick={() => (collapsed = !collapsed)} bind:clientHeight={handle}>
+<section class="sheet" class:collapsed aria-label="Sheet" data-tour="sheet" bind:offsetHeight={height} bind:this={sheet}>
+  <button class="handle" aria-controls="sheet-body" aria-expanded={!collapsed} aria-label={collapsed ? "Open the sheet" : "Close the sheet"} onclick={() => (collapsed = !collapsed)}>
     <span class="grip"></span>
   </button>
   <div id="sheet-body" class="body">
-    <div class="tabs" role="tablist" aria-label="Sheet">
+    <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab}>
       {#each tabs as t (t.id)}
         <button role="tab" id="tab-{t.id}" aria-controls="tabpanel-{t.id}" aria-selected={tab === t.id} tabindex={tab === t.id ? 0 : -1} onclick={() => (tab = t.id)}>{t.name}</button>
       {/each}
@@ -59,16 +72,16 @@
 
 <style>
   /* 46% of the height (the navigation prototype's finding); closed, only the handle shows. What
-     floats at the bottom of the screen sits above --sheet-shown, which counts the keyboard. */
+     floats at the bottom of the screen sits above --sheet-covered, which counts the keyboard. */
   :global(html:has(.sheet)) {
     --sheet: min(46dvh, 100dvh - var(--keyboard, 0px) - 160px); /* with the keyboard up, room above for the controls */
-    --sheet-shown: calc(var(--sheet) + var(--keyboard, 0px));
+    --sheet-handle: 44px;
+    --sheet-covered: calc(var(--sheet) + var(--keyboard, 0px));
   }
   :global(html:has(.sheet.collapsed)) {
-    --sheet-shown: calc(45px + var(--keyboard, 0px)); /* the handle and the top border */
+    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px)); /* and the top border */
   }
   .sheet {
-    --handle: 44px;
     position: fixed;
     left: 0;
     right: 0;
@@ -83,7 +96,7 @@
     transition: transform 0.2s;
   }
   .sheet.collapsed {
-    transform: translateY(calc(100% - var(--handle) - 1px)); /* and the top border */
+    transform: translateY(calc(100% - var(--sheet-handle) - 1px)); /* and the top border */
   }
   @media (prefers-reduced-motion: reduce) {
     .sheet {
@@ -92,7 +105,7 @@
   }
   .handle {
     flex: none;
-    height: var(--handle);
+    height: var(--sheet-handle);
     border: 0;
     background: none;
     cursor: pointer;

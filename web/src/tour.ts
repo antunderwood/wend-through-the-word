@@ -10,7 +10,7 @@ export type TourPage = {
   readonly data: Data;
   readonly model: State;
   readonly view: View;
-  // A coarse pointer (touch) has no wheel to scroll.
+  // A coarse pointer (touch) taps instead of clicking, and has no wheel to scroll.
   readonly coarse: boolean;
   readonly reading: Id | undefined;
   readonly notes: Notes;
@@ -55,6 +55,9 @@ const CAMERA: Record<View, string> = {
   B: "In the stacked discs, drag to spin the scene around its centre",
   C: "In the free orbit, drag to turn the scene any way",
 };
+// A touch screen taps where a mouse clicks (decision 182).
+const click = (p: TourPage) => (p.coarse ? "tap" : "click");
+const Click = (p: TourPage) => (p.coarse ? "Tap" : "Click");
 
 export const STEPS: Step[] = [
   {
@@ -73,14 +76,14 @@ export const STEPS: Step[] = [
   },
   {
     title: "Select God",
-    text: () => "Ring 1 holds his closest Neighbours of each type, and the words on the lines say how each relates to him. Click God to select him: the scene stays and the panel shows God.",
+    text: (p) => `Ring 1 holds his closest Neighbours of each type, and the words on the lines say how each relates to him. ${Click(p)} God to select him: the scene stays and the panel shows God.`,
     target: () => label(GOD),
     check: (p) => p.model.selected === GOD,
     act: (p) => p.apply({ type: "select", id: GOD }),
   },
   {
     title: "Back to Jesus Christ",
-    text: () => "Select Jesus Christ again: click him in the scene or in the Your Path bar at the top. The panel lists his Neighbours.",
+    text: (p) => `Select Jesus Christ again: ${click(p)} him in the scene or in the Your Path bar at the top. The panel lists his Neighbours.`,
     target: () => label(JESUS),
     check: (p) => p.model.selected === JESUS,
     act: (p) => p.apply({ type: "select", id: JESUS }),
@@ -107,14 +110,14 @@ export const STEPS: Step[] = [
   },
   {
     title: "Make Simon Peter the Focus",
-    text: () => "Double click Simon Peter in the scene, or select him and press Make Focus, or search for him. The scene moves to him.",
+    text: (p) => `Double ${click(p)} Simon Peter in the scene, or select him and press Make Focus, or search for him. The scene moves to him.`,
     target: (p) => (p.model.selected === PETER && tour("make-focus")) || shown(label(PETER)) || tour("search"),
     check: (p) => p.model.focus === PETER,
     act: (p) => p.makeFocus(PETER),
   },
   {
     title: "Pin Jesus Christ",
-    text: () => "Jesus Christ joined Your Path, the bar at the top. Click him there to select him, then press Pin in the panel.",
+    text: (p) => `Jesus Christ joined Your Path, the bar at the top. ${Click(p)} him there to select him, then press Pin in the panel.`,
     target: (p) => (p.model.selected === JESUS && tour("pin")) || tour(`path-${JESUS}`),
     check: (p) => p.model.pins.includes(JESUS),
     act: async (p) => {
@@ -148,7 +151,7 @@ export const STEPS: Step[] = [
   },
   {
     title: "Read",
-    text: () => "Press Read in the panel. The reader panel opens at the Selected Node's first Verse; a click on a Verse there selects it.",
+    text: (p) => `Press Read in the panel. The reader panel opens at the Selected Node's first Verse; a ${click(p)} on a Verse there selects it.`,
     target: () => tour("read"),
     check: (p) => !!p.reading,
     act: (p) => p.read(),

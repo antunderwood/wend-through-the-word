@@ -110,6 +110,33 @@ test("Your Path is one row that scrolls sideways, with Clear at its end, and a t
   expect(await list.evaluate((l) => l.scrollLeft)).toBeGreaterThan(0);
 });
 
+test("the arrow keys, Home, and End move between the sheet's tabs, as in a tab list", async ({ page }) => {
+  await open(page);
+  const tabs = page.getByRole("region", { name: "Sheet" }).getByRole("tablist", { name: "Sheet" });
+  const details = tabs.getByRole("tab", { name: "Details" }),
+    reader = tabs.getByRole("tab", { name: "Reader" });
+  // The open tab has the keyboard and is the only tab in the Tab order.
+  const at = async (open: typeof details, closed: typeof details) => {
+    await expect(open).toBeFocused();
+    await expect(open).toHaveAttribute("aria-selected", "true");
+    await expect(open).toHaveAttribute("tabindex", "0");
+    await expect(closed).toHaveAttribute("aria-selected", "false");
+    await expect(closed).toHaveAttribute("tabindex", "-1");
+  };
+  await details.focus();
+  await page.keyboard.press("ArrowRight");
+  await at(reader, details);
+  await page.keyboard.press("ArrowRight"); // round to the first
+  await at(details, reader);
+  await page.keyboard.press("ArrowLeft"); // round to the last
+  await at(reader, details);
+  await page.keyboard.press("Home");
+  await at(details, reader);
+  await page.keyboard.press("End");
+  await at(reader, details);
+  expect(await page.evaluate(() => localStorage.getItem("wend.sheetTab"))).toBe("reader");
+});
+
 test("a double tap on a list row makes it the Focus, and the row does not move between the taps", async ({ page }) => {
   await open(page);
   const details = page.getByRole("tabpanel", { name: "Details" });

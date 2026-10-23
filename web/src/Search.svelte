@@ -31,6 +31,11 @@
     if (e.key === "Enter" && hits[0]) choose(hits[0].id);
     else if (e.key === "Escape") opened = false;
   }
+  // A box left open closes when the layout crosses the phone breakpoint, either way.
+  $effect(() => {
+    void screen.phone;
+    opened = false;
+  });
   // A tap anywhere outside the open box closes it.
   function outside(e: PointerEvent) {
     if (opened && !box?.contains(e.target as Node)) opened = false;
@@ -98,10 +103,6 @@
     right: 8px;
     width: auto;
   }
-  /* A phone browser zooms in on a text field whose text is under 16 px. */
-  :global(html[data-phone]) input {
-    font-size: 16px;
-  }
   /* On a phone the type chips are one row that scrolls sideways, and every chip and result is
      large enough to tap. */
   :global(html[data-phone]) .chips {
@@ -115,10 +116,10 @@
   /* The search button: at the end of the Your Path bar's row, and as tall as the bar. */
   .open {
     position: fixed;
-    top: 8px;
-    right: 8px;
-    width: 54px;
-    height: 54px;
+    top: var(--edge);
+    right: var(--edge);
+    width: var(--search-button);
+    height: var(--search-button);
     display: grid;
     place-items: center;
     background: rgba(20, 23, 34, 0.92);

@@ -116,9 +116,9 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
     await drag(page, from, { x: from.x + 60, y: from.y });
   },
   (page) => search(page, "Jesus Christ"),
-  // After a drag the camera glides to a stop over seconds, so a name is tapped where it is, still or not.
-  (page) => scene(page).locator(`[data-node="${GOD}"]`).tap({ force: true }),
-  (page) => scene(page).locator(`[data-node="${JESUS}"]`).tap({ force: true }),
+  // The camera stopped when the finger lifted, so a name holds still to be tapped.
+  (page) => scene(page).locator(`[data-node="${GOD}"]`).tap(),
+  (page) => scene(page).locator(`[data-node="${JESUS}"]`).tap(),
   (page) => details(page).getByRole("button", { name: "27 more" }).tap(),
   (page) => details(page).getByRole("list", { name: /^Theme/ }).getByRole("button", { name: /^Miracles/ }).tap(),
   (page) => search(page, "Simon Peter"),
@@ -156,7 +156,7 @@ for (const view of ["A", "C"] as const) {
   });
 }
 
-test("the camera step names drag and pinch, the search step points at the search button, and a step in the sheet opens its tab", async ({ page }) => {
+test("the camera step names drag and pinch, the search step points at the search button, a step says tap, and a step in the sheet opens its tab", async ({ page }) => {
   await reader(page, "A");
   await help(page).tap();
   await expect(tour(page)).toContainText("In the tilted plane, drag to pan and pinch to zoom.");
@@ -168,13 +168,40 @@ test("the camera step names drag and pinch, the search step points at the search
   expect((await ring(page).boundingBox())!.y).toBeCloseTo(button.y - 5, 0);
 
   // The reader moves to the Reader tab; the step whose target is in Details opens it again.
-  for (let n = 2; n <= 4; n++) await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  for (let n = 2; n <= 4; n++) {
+    // A touch screen taps where a mouse clicks (decision 182).
+    if (n === 3) await expect(tour(page)).toContainText("Tap God to select him");
+    await tour(page).getByRole("button", { name: "Do it for me" }).tap();
+  }
   await expect(tour(page)).toContainText(`Step 5 of ${STEPS.length}`);
   await sheet(page).getByRole("tab", { name: "Reader" }).tap();
   await tour(page).getByRole("button", { name: "Do it for me" }).tap();
   await expect(tour(page)).toContainText(`Step 6 of ${STEPS.length}`);
   await expect(sheet(page).getByRole("tab", { name: "Details" })).toHaveAttribute("aria-selected", "true");
   await uncovered(page);
+});
+
+test.describe("a short phone", () => {
+  // 375 x 560: above the open sheet no spot clear of the Focus's name has room for the box.
+  test.use({ viewport: { width: 375, height: 560 } });
+
+  test("where no spot fits, the box covers as little of the target as it can, and stays above the sheet", async ({ page }) => {
+    await reader(page, "A");
+    await help(page).tap();
+    await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+    await expect(ring(page)).toBeVisible();
+    // On a phone the box is the screen's width, so only its height on the screen matters: of the
+    // places between the top of the screen and the sheet (8 px margins), the top one and the bottom
+    // one cover least of the target, and here neither is clear of it.
+    await expect
+      .poll(async () => {
+        const [box, target, under] = [(await tour(page).boundingBox())!, (await ring(page).boundingBox())!, (await sheet(page).boundingBox())!];
+        const across = (top: number) => Math.max(0, Math.min(top + box.height, target.y + target.height) - Math.max(top, target.y));
+        const least = Math.min(across(8), across(under.y - 8 - box.height));
+        return { above: box.y >= 8 && box.y + box.height <= under.y - 8, cover: across(box.y) <= least + 1, unavoidable: least > 0 };
+      })
+      .toEqual({ above: true, cover: true, unavoidable: true });
+  });
 });
 
 test("a tour taken from the offer on the Reader tab gives the Reader tab back when it ends", async ({ page }) => {

@@ -542,6 +542,10 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     tapped = false, // hovered by a tap, not a mouse
     hovered: THREE.Sprite | null = null;
   const onDown = (e: PointerEvent) => {
+    // A finger moves the camera without damping, so it stops when the finger lifts; a finger lifts
+    // while still moving, where a mouse stops first, and the damped camera glided on for seconds.
+    // A mouse keeps the damping.
+    controls.enableDamping = e.pointerType !== "touch";
     down.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (down.size > 1) pinched = true;
   };

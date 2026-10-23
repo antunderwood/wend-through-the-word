@@ -4,7 +4,7 @@
   import CorrectionDialog from "./CorrectionDialog.svelte";
   import { createData, fetchJSON, type Data } from "./data";
   import DetailPanel from "./DetailPanel.svelte";
-  import Filters from "./Filters.svelte";
+  import Filters, { FILTERS_ID } from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
@@ -35,22 +35,26 @@
   let hint = $state(!stored(HINT_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // The height the bottom sheet takes on a phone, open or closed: the scene's centre sits above it.
-  let sheetShown = $state(0);
-  $effect(() => graph?.setOffset(screen.phone ? sheetShown : 0));
-  // Without WebGL there is no scene on a phone: the sheet takes the screen between the Your Path bar
-  // and the column of controls above it.
+  // The height in px the bottom sheet covers on a phone, open or closed: the scene's centre sits above it.
+  let sheetCovered = $state(0);
+  $effect(() => graph?.setOffset(screen.phone ? sheetCovered : 0));
+  // Without WebGL there is no scene on a phone: the sheet takes the screen below where the scene
+  // would start and the column of controls, with a gap above, below, and between them.
   let dockHeight = $state(0);
   $effect(() => {
-    document.documentElement.style.setProperty("--sheet", noWebGL && screen.phone ? `calc(100dvh - var(--keyboard, 0px) - ${72 + dockHeight + 16}px)` : "");
+    document.documentElement.style.setProperty(
+      "--sheet",
+      noWebGL && screen.phone ? `calc(100dvh - var(--keyboard, 0px) - var(--phone-scene-top) - ${dockHeight}px - 3 * var(--edge))` : "",
+    );
   });
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
   // The bottom sheet's open tab on a phone, kept in this browser (docs/specs/mobile.md).
+  type SheetTab = "details" | "reader";
   const TAB_STORE = "wend.sheetTab";
-  let sheetTab = $state(stored(TAB_STORE) === "reader" ? "reader" : "details");
-  function chooseTab(t: string) {
+  let sheetTab = $state<SheetTab>(stored(TAB_STORE) === "reader" ? "reader" : "details");
+  function chooseTab(t: SheetTab) {
     sheetTab = t;
     if (!touring) store(TAB_STORE, t);
   }
@@ -60,7 +64,7 @@
   // A phone offers the tilted plane and the free orbit only. A kept or shared B shows as A there,
   // and stays B in this browser and the address, so a desktop still gets it (docs/specs/mobile.md).
   const offered = $derived(screen.phone ? VIEW_KEYS.filter((v) => v !== "B") : VIEW_KEYS);
-  const shown = $derived(offered.includes(view) ? view : "A");
+  const viewShown = $derived(offered.includes(view) ? view : "A");
   // Animation turned off in the filter panel is kept in this browser (PRD 10.2 rule 6).
   const MOTION_STORE = "wend.motion";
   let motion = $state(stored(MOTION_STORE) !== "off");
@@ -78,7 +82,7 @@
   }
   // The Focus Model state is untouched: only the view changes, also when the width crosses the breakpoint.
   $effect(() => {
-    const v = shown; // read first: the effect follows it even before the scene exists
+    const v = viewShown; // read first: the effect follows it even before the scene exists
     graph?.setView(v);
   });
 
@@ -87,7 +91,7 @@
     const dir = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
     if (!dir) return;
     e.preventDefault();
-    choose(offered[(offered.indexOf(shown) + dir + offered.length) % offered.length]);
+    choose(offered[(offered.indexOf(viewShown) + dir + offered.length) % offered.length]);
     await tick();
     (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-checked="true"]')!.focus();
   }
@@ -233,7 +237,7 @@
   let tour = $state<"offer" | "on">();
   const touring = $derived(tour === "on");
   let tours = $state(0); // each start draws a new tour box
-  let saved: { model: State; reading?: Id; notes: Notes; tab: string } | undefined;
+  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab } | undefined;
   const tourPage: TourPage = {
     get data() {
       return data!;
@@ -242,7 +246,7 @@
       return model;
     },
     get view() {
-      return shown;
+      return viewShown;
     },
     get coarse() {
       return screen.coarse;
@@ -313,15 +317,16 @@
       noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
       return;
     }
-    graph.setView(shown);
+    graph.setView(viewShown);
     graph.setMotion(motion);
     graph.onNodeClick((id) => apply({ type: "select", id }));
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
     graph.render(onScreen, model.selected);
     if (!stored(TOUR_KEY)) tour = "offer";
-    // The browser tests read node positions; only their build (vite build --mode e2e) has the hook.
-    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph });
+    // The browser tests read node positions and set what no control sets, such as a low node limit;
+    // only their build (vite build --mode e2e) has the hooks.
+    if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph, wendApply: apply });
   }
 
   onMount(() => {
@@ -356,7 +361,7 @@
     collapsed = false;
     chooseTab("details");
     await tick();
-    document.getElementById("filters")!.scrollIntoView({ block: "start" });
+    document.getElementById(FILTERS_ID)!.scrollIntoView({ block: "start" });
   }
 
   async function copyLink() {
@@ -400,11 +405,11 @@
       {noWebGL}
       {collapsed}
       reading={!!reading}
-      end={screen.phone ? phoneEnd : undefined}
+      filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
     />
   {/snippet}
   <!-- On a phone the filter panel and the footer end the Details tab, after the lists. -->
-  {#snippet phoneEnd()}
+  {#snippet filtersAndLinks()}
     {@render filters(true)}
     <footer class="about">{@render about()}</footer>
   {/snippet}
@@ -440,7 +445,7 @@
       ]}
       bind:tab={() => sheetTab, chooseTab}
       bind:collapsed
-      bind:shown={sheetShown}
+      bind:covered={sheetCovered}
     />
   {:else}
     <!-- The chevron points the way the panel will move. -->
@@ -480,7 +485,7 @@
     {#if !noWebGL}
       <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
         {#each offered as key (key)}
-          <button role="radio" aria-checked={shown === key} tabindex={shown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+          <button role="radio" aria-checked={viewShown === key} tabindex={viewShown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
         {/each}
       </div>
     {/if}
@@ -488,7 +493,7 @@
       {#if screen.phone}
         <button class="pill" onclick={showFilters}>Filters</button>
       {:else}
-        <button class="pill" popovertarget="filters">Filters</button>
+        <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
         {@render filters(false)}
       {/if}
       <button class="pill" onclick={copyLink}>Copy link</button>
@@ -512,6 +517,18 @@
     color: #e6e8f0;
     font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
+  /* A phone browser zooms in on a field whose text is under 16 px, so on a phone every field is
+     16 px (decision 182); pinch zoom of the page stays available. */
+  :global(html[data-phone] :is(input, textarea, select)) {
+    font-size: 16px;
+  }
+  /* Sizes the phone layout's parts share: the gap at the screen's edges, the search button's side
+     (as tall as the Your Path bar beside it), and the top of the scene, below them. */
+  :global(html) {
+    --edge: 8px;
+    --search-button: 54px;
+    --phone-scene-top: 64px;
+  }
   /* Below the top strip of the search box and the Your Path bar, like the panel. */
   .stage {
     position: fixed;
@@ -527,7 +544,7 @@
   /* On a phone the scene is the whole width below the Your Path bar; the bottom sheet lies over it,
      and the camera's view offset keeps the centre above the sheet. */
   :global(html[data-phone]) .stage {
-    top: 64px;
+    top: var(--phone-scene-top);
     left: 0;
     right: 0;
   }
@@ -597,23 +614,26 @@
   .dock {
     display: contents;
   }
-  /* On a phone the hint, the notes, and the controls are one column above the bottom sheet, the
-     controls last; the column itself lets a touch through to the scene. */
-  :global(html[data-phone]) .dock {
+  /* On a phone, and on a phone on its side, the hint, the notes, and the controls are one column,
+     the controls last; the column itself lets a touch through to the scene. */
+  :global(:is(html[data-phone], html[data-short])) .dock {
     position: fixed;
-    left: 8px;
-    right: 8px;
-    bottom: calc(var(--sheet-shown) + 8px);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
     pointer-events: none;
   }
-  :global(html[data-phone]) .dock > * {
+  :global(:is(html[data-phone], html[data-short])) .dock > * {
     position: static;
     transform: none;
     pointer-events: auto;
+  }
+  /* On a phone the column is above the bottom sheet. */
+  :global(html[data-phone]) .dock {
+    left: var(--edge);
+    right: var(--edge);
+    bottom: calc(var(--sheet-covered) + var(--edge));
   }
   :global(html[data-phone]) .controls {
     align-self: center;
@@ -624,27 +644,16 @@
     min-height: 44px;
     min-width: 44px;
   }
-  /* A phone on its side has the desktop layout on a short screen: the hint, the notes, and the
-     controls are one column in the bottom left corner of the scene, clear of the panel and above the
-     footer, and the reader drawer takes the panel's place. */
+  /* A phone on its side has the desktop layout on a short screen: the column is in the bottom left
+     corner of the scene, clear of the panel and above the footer, and the reader drawer takes the
+     panel's place. */
   :global(html[data-short]:not([data-phone])) .dock {
-    position: fixed;
     left: 16px;
     right: 356px; /* the panel's width and a gap */
     bottom: 36px; /* above the footer */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    pointer-events: none;
   }
   :global(html[data-short]:not([data-phone]):has(.panel.collapsed)) .dock {
     right: 16px;
-  }
-  :global(html[data-short]:not([data-phone])) .dock > * {
-    position: static;
-    transform: none;
-    pointer-events: auto;
   }
   :global(html[data-short]:not([data-phone])) .drawer {
     top: 56px;

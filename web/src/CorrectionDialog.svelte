@@ -35,8 +35,11 @@
 
 <style>
   .warning {
-    max-width: min(360px, 100vw - 74px); /* within a phone's width, with its margins, padding, and border */
-    padding: 16px 20px;
+    --margin: 16px; /* from each side of a phone's screen */
+    --pad: 20px;
+    /* Within a phone's width, with its margins, padding, and 1 px border on each side. */
+    max-width: min(360px, 100vw - 2 * (var(--margin) + var(--pad) + 1px));
+    padding: 16px var(--pad);
     background: #161a28;
     color: inherit;
     border: 1px solid #3a4060;

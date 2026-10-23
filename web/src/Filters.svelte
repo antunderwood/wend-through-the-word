@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  // The filter panel's element ID, for the Filters button that opens it.
+  export const FILTERS_ID = "filters";
+</script>
+
 <script lang="ts">
   // The filter panel (PRD 10.1 item 5), a popover opened from the Filters button: node types, the
   // Vote Limit, the book filter (decision 130), and animation. On a phone it is inline, a section of
@@ -30,7 +35,7 @@
   const choose = (v: string) => set("books", v === "all" || v === "build" ? v : [v]);
 </script>
 
-<div id="filters" class="filters" class:inline popover={inline ? undefined : ""} role={inline ? "group" : "dialog"} aria-label="Filters">
+<div id={FILTERS_ID} class="filters" class:inline popover={inline ? undefined : ""} role={inline ? "group" : "dialog"} aria-label="Filters">
   {#if inline}<h3>Filters</h3>{/if}
   <fieldset>
     <legend>Show</legend>
