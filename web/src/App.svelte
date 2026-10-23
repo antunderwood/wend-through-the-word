@@ -278,6 +278,7 @@
     note: (id, text) => setNotes(withNote(notes, id, text)),
     nodeRect: (id) => graph?.nodeRect(id) ?? null,
     panTo: (id, x, y, zoomOut) => graph?.panTo(id, x, y, zoomOut),
+    panBack: () => graph?.panBack(),
   };
   // A whole new state: its Focus, kin, and pins load before it is shown.
   async function show(next: State) {
@@ -405,6 +406,12 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- The scene takes the space between the open panels. -->
 <div class="stage" data-tour="scene" class:reading={reading && !screen.phone} class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<!-- In the scene's top left corner on every screen: the camera goes back to the Focus (decision 188). -->
+{#if graph}
+  <button class="recentre icon" class:reading={reading && !screen.phone} data-tour="recentre" aria-label="Recentre" title="Recentre" onclick={() => graph?.recentre()}>
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="6" /><path d="M12 2v5M12 17v5M2 12h5M17 12h5" /></svg>
+  </button>
+{/if}
 {#if onScreen && data}
   <Search {data} onchoose={makeFocus} />
   {#snippet details()}
@@ -583,6 +590,28 @@
   }
   .stage :global(canvas) {
     display: block;
+  }
+  /* The scene's top left corner: on a desktop below the search box, level with the top of the reader
+     drawer and right of it when it is open, clear of the hint, the controls, and the notes. */
+  .recentre {
+    position: fixed;
+    top: 132px;
+    left: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+  }
+  .recentre.reading {
+    left: 428px; /* the scene's left (412) and a gap */
+  }
+  /* Large enough to tap. */
+  :global(html[data-coarse]) .recentre {
+    width: 44px;
+    height: 44px;
+  }
+  :global(html[data-phone]) .recentre {
+    top: calc(var(--bar) + var(--edge));
+    left: var(--edge);
   }
   .controls {
     position: fixed;

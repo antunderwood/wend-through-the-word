@@ -23,6 +23,8 @@ export type TourPage = {
   nodeRect(id: Id): DOMRect | null;
   // Pans the scene so a drawn node's disc centre lies at (x, y) on the page, zoomed out by zoomOut.
   panTo(id: Id, x: number, y: number, zoomOut: number): void;
+  // Eases back the pans and zoom panTo made, when a step or the tour ends (decision 188).
+  panBack(): void;
 };
 // at: the model and notes when the step began, and whether the camera has moved since.
 export type At = { model: State; notes: Notes; moved: boolean };
@@ -183,7 +185,7 @@ export const STEPS: Step[] = [
 // Where the tour box goes (decision 187). Rectangles on the page; a DOMRect is one.
 export type Rect = { left: number; top: number; right: number; bottom: number };
 type Size = { w: number; h: number };
-const apart = (a: Rect, b: Rect, m: number) => a.right + m <= b.left || b.right + m <= a.left || a.bottom + m <= b.top || b.bottom + m <= a.top;
+export const apart = (a: Rect, b: Rect, m: number) => a.right + m <= b.left || b.right + m <= a.left || a.bottom + m <= b.top || b.bottom + m <= a.top;
 const at = ([x, y]: number[], { w, h }: Size): Rect => ({ left: x, top: y, right: x + w, bottom: y + h });
 // The places tried for the box's top left corner, in order: below, above, left of, and right of each
 // rectangle kept clear, then the edges of the area beside them, then its corners.

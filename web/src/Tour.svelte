@@ -4,7 +4,7 @@
   // Props only; App saves and restores the reader's state.
   import { untrack } from "svelte";
   import { screen } from "./screen.svelte";
-  import { makeRoom, spotFor, STEPS, type At, type TourPage } from "./tour";
+  import { apart, makeRoom, spotFor, STEPS, type At, type TourPage } from "./tour";
 
   let { offer, page, onstart, onend }: { offer: boolean; page: TourPage; onstart: () => void; onend: (keep: boolean) => void } = $props();
   let i = $state(0);
@@ -15,11 +15,13 @@
   let target: Element | null | undefined;
 
   // Each frame: the step's check, then the ring and the box follow its target, as panels redraw and
-  // names in the scene move.
+  // names in the scene move. A pan the camera made for a step is undone when the step ends, or the
+  // tour (decision 188).
   $effect(() => {
     let raf = requestAnimationFrame(function frame() {
       raf = requestAnimationFrame(frame);
       if (!offer && step?.check(page, at)) {
+        page.panBack();
         i++;
         at = begin();
       }
@@ -100,7 +102,10 @@
       n = id ? nodeBox(id) : null,
       [nx, ny] = n ? [n.left + n.width / 2, n.top + n.height / 2] : [NaN, NaN],
       node = n && nx > scene.left && nx < scene.right && ny > scene.top && ny < scene.bottom ? n : null,
-      others = r && seen && !(node && el?.getAttribute("data-node") === id) ? [r] : [],
+      // The Recentre button is never covered either (decision 188).
+      recentre = document.querySelector('[data-tour="recentre"]')?.getBoundingClientRect(),
+      button = recentre?.width ? [recentre] : [],
+      others = [...(r && seen && !(node && el?.getAttribute("data-node") === id) ? [r] : []), ...button],
       keep = node ? [node, ...others] : others;
     const settled = !!node && !!last && ["left", "top", "right", "bottom"].every((k) => Math.abs(node[k as "left"] - last![k as "left"]) < 0.5);
     last = node;
@@ -109,9 +114,10 @@
     // once the scene has settled and the reader is not moving the camera, the box takes the place
     // that leaves the largest room in the scene and the camera pans the node into it, zooming out a
     // little (once a step) when the node does not fit. Until then, or with no node, the place that
-    // covers least of them. With no target, the bottom left corner.
+    // covers least of them. With no target, the bottom left corner, unless the Recentre button is there.
     let [x, y] = [Math.min(16, wall - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
-    if (keep.length) {
+    const clearOfButton = ([a, b]: number[]) => button.every((k) => apart({ left: a, top: b, right: a + w, bottom: b + h }, k, m));
+    if (keep.length > button.length || !clearOfButton([x, y])) {
       const spot = spotFor(size, keep, area, m),
         made = !spot && node && settled && !down ? makeRoom(size, node, others, area, scene, m) : undefined;
       if (spot) [x, y] = spot;
@@ -127,8 +133,10 @@
         const onto = ([a, b]: number[]) => [Math.max(area.left, Math.min(area.right - w, a)), Math.max(area.top, Math.min(area.bottom - h, b))];
         const covered = ([a, b]: number[]) =>
           keep.reduce((sum, k) => sum + Math.max(0, Math.min(a + w, k.right) - Math.max(a, k.left)) * Math.max(0, Math.min(b + h, k.bottom) - Math.max(b, k.top)), 0);
-        const tried = keep.flatMap((k) => [[k.left, k.bottom + m], [k.left, k.top - m - h], [k.left - m - w, k.top], [k.right + m, k.top]]);
-        [x, y] = [...tried, [x, y]].map(onto).reduce((best, s) => (covered(s) < covered(best) ? s : best));
+        const tried = keep.flatMap((k) => [[k.left, k.bottom + m], [k.left, k.top - m - h], [k.left - m - w, k.top], [k.right + m, k.top]]).concat([[x, y]]).map(onto);
+        // A place clear of the Recentre button first, when there is one.
+        const clear = tried.filter(clearOfButton);
+        [x, y] = (clear.length ? clear : tried).reduce((best, s) => (covered(s) < covered(best) ? s : best));
       }
     }
     box.style.left = `${x}px`;
@@ -139,6 +147,11 @@
   // pointerdown, so a click on one is not a drag.
   let down: { x: number; y: number } | undefined;
   const onScene = (e: Event) => !!(e.target as Element).closest?.('[data-tour="scene"]');
+
+  function end(keep: boolean) {
+    page.panBack();
+    onend(keep);
+  }
 </script>
 
 <svelte:window
@@ -163,14 +176,14 @@
       <p>{step.text(page)}</p>
     </div>
     <button onclick={() => step.act(page)}>Do it for me</button>
-    <button onclick={() => onend(false)}>End tour</button>
+    <button onclick={() => end(false)}>End tour</button>
   {:else}
     <div aria-live="polite">
       <h2>Done</h2>
       <p>That is the student journey. Your Focus, Your Path, pins, and filters now go back as they were, and the note you wrote is removed unless you keep it. "Help: take the tour" at the bottom runs it again.</p>
     </div>
-    <button onclick={() => onend(false)}>Finish</button>
-    <button onclick={() => onend(true)}>Finish and keep my note</button>
+    <button onclick={() => end(false)}>Finish</button>
+    <button onclick={() => end(true)}>Finish and keep my note</button>
   {/if}
 </div>
 
