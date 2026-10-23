@@ -4,7 +4,7 @@
   // Props only; App saves and restores the reader's state.
   import { untrack } from "svelte";
   import { screen } from "./screen.svelte";
-  import { apart, makeRoom, spotFor, STEPS, type At, type TourPage } from "./tour";
+  import { apart, makeRoom, spotFor, STEPS, tallest, type At, type TourPage } from "./tour";
 
   let { offer, page, onstart, onend }: { offer: boolean; page: TourPage; onstart: () => void; onend: (keep: boolean) => void } = $props();
   let i = $state(0);
@@ -86,26 +86,34 @@
     const seen = r && r.width > 0 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
     ring.hidden = !seen;
     const w = box.offsetWidth,
-      h = box.offsetHeight,
       m = 14;
     // On a phone the box stays above the bottom sheet, or left of it at the side, open or closed.
     const sheet = document.querySelector('[data-tour="sheet"]')?.getBoundingClientRect(),
       floor = sheet && !screen.side ? sheet.top : innerHeight,
       wall = sheet && screen.side ? sheet.left : innerWidth;
-    const area = { left: 8, top: 8, right: wall - 8, bottom: floor - 8 },
+    const area = { left: 8, top: 8, right: wall - 8, bottom: floor - 8 };
+    // The Recentre button is never covered (decision 188), nor on a phone the open search panel,
+    // whose results the reader taps. The box is never taller than the room clear of them, its text
+    // scrolling when the room is short (a short screen, or wide letters).
+    const recentre = document.querySelector('[data-tour="recentre"]')?.getBoundingClientRect(),
+      search = screen.phone ? document.querySelector('div[data-tour="search"]')?.getBoundingClientRect() : undefined,
+      fixed = [recentre, search].filter((k): k is DOMRect => !!k?.width);
+    box.style.maxHeight = `${Math.max(120, tallest(w, fixed, area, m))}px`;
+    const h = box.offsetHeight,
       size = { w, h };
     // The step's node, when drawn where the reader can reach it: in the scene, in the space the sheet
-    // leaves. The box keeps clear of it as well as of the target (decision 187).
+    // leaves. The box keeps clear of it as well as of the target (decision 187). On a phone the hint
+    // and the notes lie over the bottom of the scene: a node under them is panned out (reach).
     const id = offer ? undefined : step?.node?.(page),
       s = document.querySelector('[data-tour="scene"]')!.getBoundingClientRect(),
       scene = { left: Math.max(s.left, area.left), top: Math.max(s.top, area.top), right: Math.min(s.right, area.right), bottom: Math.min(s.bottom, area.bottom) },
+      dock = screen.phone ? document.querySelector('[data-tour="dock"]')?.getBoundingClientRect() : undefined,
+      reach = dock?.height ? { ...scene, bottom: Math.min(scene.bottom, dock.top - m) } : scene,
       n = id ? nodeBox(id) : null,
       [nx, ny] = n ? [n.left + n.width / 2, n.top + n.height / 2] : [NaN, NaN],
       node = n && nx > scene.left && nx < scene.right && ny > scene.top && ny < scene.bottom ? n : null,
-      // The Recentre button is never covered either (decision 188).
-      recentre = document.querySelector('[data-tour="recentre"]')?.getBoundingClientRect(),
-      button = recentre?.width ? [recentre] : [],
-      others = [...(r && seen && !(node && el?.getAttribute("data-node") === id) ? [r] : []), ...button],
+      under = !!node && ny > reach.bottom,
+      others = [...(r && seen && !(node && el?.getAttribute("data-node") === id) ? [r] : []), ...fixed],
       keep = node ? [node, ...others] : others;
     const settled = !!node && !!last && ["left", "top", "right", "bottom"].every((k) => Math.abs(node[k as "left"] - last![k as "left"]) < 0.5);
     last = node;
@@ -114,12 +122,13 @@
     // once the scene has settled and the reader is not moving the camera, the box takes the place
     // that leaves the largest room in the scene and the camera pans the node into it, zooming out a
     // little (once a step) when the node does not fit. Until then, or with no node, the place that
-    // covers least of them. With no target, the bottom left corner, unless the Recentre button is there.
+    // covers least of them. With no target, the bottom left corner, unless the Recentre button or the
+    // search panel is there.
     let [x, y] = [Math.min(16, wall - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
-    const clearOfButton = ([a, b]: number[]) => button.every((k) => apart({ left: a, top: b, right: a + w, bottom: b + h }, k, m));
-    if (keep.length > button.length || !clearOfButton([x, y])) {
-      const spot = spotFor(size, keep, area, m),
-        made = !spot && node && settled && !down ? makeRoom(size, node, others, area, scene, m) : undefined;
+    const clearOfFixed = ([a, b]: number[]) => fixed.every((k) => apart({ left: a, top: b, right: a + w, bottom: b + h }, k, m));
+    if (keep.length > fixed.length || !clearOfFixed([x, y])) {
+      const spot = under ? undefined : spotFor(size, keep, area, m),
+        made = !spot && node && settled && !down ? makeRoom(size, node, others, area, reach, m) : undefined;
       if (spot) [x, y] = spot;
       else if (made) {
         const { room } = made,
@@ -134,8 +143,8 @@
         const covered = ([a, b]: number[]) =>
           keep.reduce((sum, k) => sum + Math.max(0, Math.min(a + w, k.right) - Math.max(a, k.left)) * Math.max(0, Math.min(b + h, k.bottom) - Math.max(b, k.top)), 0);
         const tried = keep.flatMap((k) => [[k.left, k.bottom + m], [k.left, k.top - m - h], [k.left - m - w, k.top], [k.right + m, k.top]]).concat([[x, y]]).map(onto);
-        // A place clear of the Recentre button first, when there is one.
-        const clear = tried.filter(clearOfButton);
+        // A place clear of the Recentre button and search first, when there is one.
+        const clear = tried.filter(clearOfFixed);
         [x, y] = (clear.length ? clear : tried).reduce((best, s) => (covered(s) < covered(best) ? s : best));
       }
     }
@@ -164,26 +173,35 @@
 />
 <div class="tour-target" hidden bind:this={ring}></div>
 <div class="tour" role="dialog" aria-label="Tour" bind:this={box}>
+  <!-- The words, which scroll when the box is held shorter than they need, then the buttons. -->
   {#if offer}
-    <h2>Welcome</h2>
-    <p>New here? A short tour walks you through studying Jesus Christ: search, select, move the Focus, pin, read, and take notes. Each step waits for you, or does it for you.</p>
-    <button onclick={onstart}>Take the tour</button>
-    <button onclick={() => onend(false)}>Skip</button>
+    <div class="words">
+      <h2>Welcome</h2>
+      <p>New here? A short tour walks you through studying Jesus Christ: search, select, move the Focus, pin, read, and take notes. Each step waits for you, or does it for you.</p>
+    </div>
+    <div>
+      <button onclick={onstart}>Take the tour</button>
+      <button onclick={() => onend(false)}>Skip</button>
+    </div>
   {:else if step}
-    <div aria-live="polite">
+    <div class="words" aria-live="polite">
       <p class="muted">Step {i + 1} of {STEPS.length}</p>
       <h2>{step.title}</h2>
       <p>{step.text(page)}</p>
     </div>
-    <button onclick={() => step.act(page)}>Do it for me</button>
-    <button onclick={() => end(false)}>End tour</button>
+    <div>
+      <button onclick={() => step.act(page)}>Do it for me</button>
+      <button onclick={() => end(false)}>End tour</button>
+    </div>
   {:else}
-    <div aria-live="polite">
+    <div class="words" aria-live="polite">
       <h2>Done</h2>
       <p>That is the student journey. Your Focus, Your Path, pins, and filters now go back as they were, and the note you wrote is removed unless you keep it. "Help: take the tour" at the bottom runs it again.</p>
     </div>
-    <button onclick={() => end(false)}>Finish</button>
-    <button onclick={() => end(true)}>Finish and keep my note</button>
+    <div>
+      <button onclick={() => end(false)}>Finish</button>
+      <button onclick={() => end(true)}>Finish and keep my note</button>
+    </div>
   {/if}
 </div>
 
@@ -208,6 +226,12 @@
     border-radius: 8px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
     font-size: 13px;
+    display: flex;
+    flex-direction: column;
+  }
+  .words {
+    min-height: 0;
+    overflow-y: auto;
   }
   /* On a phone the box is as wide as the screen, so it is short enough to fit above the sheet. */
   :global(html[data-phone]) .tour {

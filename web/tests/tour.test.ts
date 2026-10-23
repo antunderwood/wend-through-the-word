@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeRoom, spotFor, STEPS, type TourPage } from "../src/tour";
+import { makeRoom, spotFor, STEPS, tallest, type TourPage } from "../src/tour";
 
 // Where the box goes (decision 187), on a 325 x 600 phone: the area the box may use is the screen
 // less 8 px at each edge, and the scene starts below the 40 px top bar.
@@ -38,6 +38,28 @@ describe("the tour box keeps clear of the step's node and target", () => {
       chip = rect(10, 10, 110, 34);
     // The chip is at the top, so the box goes just below it and the room is below the box.
     expect(makeRoom(BOX, rect(140, 150, 190, 250), [chip], short, scene, 14)).toEqual({ spot: [8, 48], room: rect(8, 262, 317, 400) });
+  });
+});
+
+// The Recentre button below the top bar, and the search panel open over the top of the scene.
+const RECENTRE = rect(8, 48, 52, 92);
+
+describe("the tour box is never taller than the room clear of the Recentre button and an open search", () => {
+  it("as wide as an upright phone with the sheet open, it fits the band below the button", () => {
+    // The area ends 8 px above the sheet at 324; the band starts 14 px below the button.
+    expect(tallest(309, [RECENTRE], rect(8, 8, 317, 316), 14)).toBe(316 - 106);
+  });
+
+  it("left of the side sheet, it goes beside the button and keeps the whole height", () => {
+    expect(tallest(280, [RECENTRE], rect(8, 8, 432, 322), 14)).toBe(322 - 8);
+  });
+
+  it("with search open over the top of the scene, it fits the band below the search panel", () => {
+    expect(tallest(280, [RECENTRE, rect(8, 8, 432, 160)], rect(8, 8, 432, 322), 14)).toBe(322 - 174);
+  });
+
+  it("with nothing to keep clear of, it has the whole area", () => {
+    expect(tallest(300, [], rect(8, 8, 1272, 712), 14)).toBe(704);
   });
 });
 

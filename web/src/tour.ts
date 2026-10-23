@@ -211,6 +211,22 @@ export function spotFor(size: Size, keep: Rect[], area: Rect, m: number) {
 // When no place keeps clear of the step's node: a place for the box clear of the other rectangles
 // kept clear, and the largest room the box leaves in the scene, beside it, for the node to be panned
 // into; undefined when the box cannot keep clear of the others.
+// The tallest the box can be, w px wide, in the area and m px clear of each fixed rectangle (the
+// Recentre button, an open search panel): beside them, or in a band above, between, or below them.
+// A box taller than its text needs is no taller for it; a shorter one scrolls its text.
+export function tallest(w: number, fixed: Rect[], a: Rect, m: number) {
+  const xs = [a.left, a.right - w, ...fixed.flatMap((f) => [f.right + m, f.left - m - w])].filter((x) => x >= a.left && x + w <= a.right);
+  const tops = [a.top, ...fixed.map((f) => f.bottom + m)];
+  let best = 0;
+  for (const x of xs) {
+    const across = fixed.filter((f) => f.left < x + w + m && x < f.right + m);
+    for (const t of tops) {
+      if (across.some((f) => f.top - m < t && t < f.bottom + m)) continue;
+      best = Math.max(best, Math.min(a.bottom, ...across.filter((f) => f.top - m >= t).map((f) => f.top - m)) - t);
+    }
+  }
+  return best;
+}
 export function makeRoom(size: Size, node: Rect, others: Rect[], area: Rect, scene: Rect, m: number) {
   let best: { spot: number[]; room: Rect } | undefined;
   const size2 = (r: Rect) => Math.max(0, r.right - r.left) * Math.max(0, r.bottom - r.top);
