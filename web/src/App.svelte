@@ -504,7 +504,7 @@
 {/if}
 <!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
      elsewhere each keeps its own place. -->
-<div class="dock" bind:offsetHeight={dockHeight}>
+<div class="dock" data-tour="dock" bind:offsetHeight={dockHeight}>
   {#if hint}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
