@@ -7,7 +7,7 @@ import { focusIs } from "./scene";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const map = (page: Page) => panel(page).getByRole("region", { name: "Map" });
 const openMap = (page: Page) => open(panel(page));
-const view = (page: Page, name: "Place" | "Neighbours" | "Journey") => panel(page).getByRole("group", { name: "Map view" }).getByRole("button", { name });
+const view = (page: Page, name: "Location" | "Neighbours" | "Journey") => panel(page).getByRole("group", { name: "Map view" }).getByRole("button", { name });
 const label = (page: Page, name: string) => map(page).getByText(name, { exact: true });
 const pathBar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
 
@@ -51,7 +51,7 @@ test("Journey joins Your Path's Places that have points in Path order, says what
   await view(page, "Journey").click();
   for (const name of ["Ur of the Chaldees", "Haran", "Egypt"]) await expect(label(page, name)).toBeVisible();
   await expect(label(page, "Canaan")).toHaveCount(0);
-  await expect(panel(page).getByText("Skipped 1 Person and 1 Place with no point on Your Path.")).toBeVisible();
+  await expect(panel(page).getByText("Skipped 1 Person and 1 Location with no point on Your Path.")).toBeVisible();
   await joins(page, ["Ur of the Chaldees", "Haran", "Egypt"]);
 
   // The Selected Place is ringed among the stops; a click on another selects it, and Journey stays.
@@ -78,7 +78,7 @@ test("Journey under two Places says so; a Selected Node that is not a Place show
   await openOn(page, ["place:haran_527"], "person:abraham_58");
   await openMap(page);
   // One Place on Your Path and a Focus that is not a Place: nothing to draw, and no switch.
-  await expect(panel(page).getByText("No Place to show.")).toBeVisible();
+  await expect(panel(page).getByText("No Location to show.")).toBeVisible();
   await expect(panel(page).getByRole("group", { name: "Map view" })).toHaveCount(0);
 
   // Haran the Focus: Your Path is Abraham then Haran, one Place, so Journey has nothing to draw.
@@ -86,7 +86,7 @@ test("Journey under two Places says so; a Selected Node that is not a Place show
   await panel(page).getByRole("button", { name: "Make Focus" }).click();
   await focusIs(page, "place:haran_527");
   await view(page, "Journey").click();
-  await expect(panel(page).getByText("Fewer than two Places on Your Path have points, so there is no Journey to draw.")).toBeVisible();
+  await expect(panel(page).getByText("Fewer than two Locations on Your Path have points, so there is no Journey to draw.")).toBeVisible();
   await expect(map(page)).toHaveCount(0);
 
   // Abraham selected: the Focus, Haran, with its Neighbours.

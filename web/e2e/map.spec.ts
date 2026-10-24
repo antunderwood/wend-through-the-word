@@ -8,7 +8,7 @@ import { selectedIs } from "./touch-input";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const map = (page: Page) => panel(page).getByRole("region", { name: "Map" });
 const openMap = (page: Page) => open(panel(page));
-const view = (page: Page, name: "Place" | "Neighbours") => panel(page).getByRole("group", { name: "Map view" }).getByRole("button", { name });
+const view = (page: Page, name: "Location" | "Neighbours") => panel(page).getByRole("group", { name: "Map view" }).getByRole("button", { name });
 const label = (page: Page, name: string) => map(page).getByText(name, { exact: true });
 
 test.use({ reducedMotion: "reduce" });
@@ -70,10 +70,10 @@ test("a Place with no point says so and asks nothing of the tile host; a Node th
   await page.goto("/?focus=place:kadesh_661");
   await focusIs(page, "place:kadesh_661");
   await openMap(page);
-  await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
+  await expect(panel(page).getByText(/^No point for this Location\./)).toBeVisible();
   expect(asked).toEqual([]);
 
-  // Your Path has one Place, so a Theme selected shows the Focus's Neighbours (#86); "No Place to
+  // Your Path has one Place, so a Theme selected shows the Focus's Neighbours (#86); "No Location to
   // show." is in map-journey.spec.ts.
   await panel(page).getByRole("list", { name: /^Theme/ }).getByRole("button").first().click();
   await expect(panel(page).getByText("The Focus, Kadesh, and its Neighbours.")).toBeVisible();
@@ -85,7 +85,7 @@ test("Neighbours shows the selected Place's Ring 1 Places that have points; a cl
   await page.goto("/?focus=place:haran_527");
   await focusIs(page, "place:haran_527");
   await openMap(page);
-  await expect(view(page, "Place")).toHaveAttribute("aria-pressed", "true");
+  await expect(view(page, "Location")).toHaveAttribute("aria-pressed", "true");
   await expect(label(page, "Haran")).toBeVisible();
   await expect(label(page, "Ur of the Chaldees")).toHaveCount(0);
   await view(page, "Neighbours").click();
@@ -115,7 +115,7 @@ test("Neighbours shows the selected Place's Ring 1 Places that have points; a cl
 
   // A selection made elsewhere within the double click time drops a click waiting on a dot.
   await label(page, "Ur of the Chaldees").click();
-  await panel(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Canaan/ }).click();
+  await panel(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Canaan/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Canaan");
   await page.waitForTimeout(500);
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Canaan");
@@ -137,7 +137,7 @@ test("the open map is a block of its own below the Selected Node's section, and 
   // Neighbours; then a Place with no point); the lists stay where they were, so the second click of
   // a double click lands where the first did.
   const people = panel(page).getByRole("list", { name: /^Person/ });
-  const places = panel(page).getByRole("list", { name: /^Place/ });
+  const places = panel(page).getByRole("list", { name: /^Location/ });
   // Where each list lies in the panel, however far the panel is scrolled.
   const at = async () => [await people.evaluate((e: HTMLElement) => e.offsetTop), await places.evaluate((e: HTMLElement) => e.offsetTop)];
   const before = await at();
@@ -145,7 +145,7 @@ test("the open map is a block of its own below the Selected Node's section, and 
   await expect(panel(page).getByText("The Focus, Haran, and its Neighbours.")).toBeVisible();
   expect(await at()).toEqual(before);
   await places.getByRole("button", { name: /^Canaan/ }).click();
-  await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
+  await expect(panel(page).getByText(/^No point for this Location\./)).toBeVisible();
   expect(await at()).toEqual(before);
 });
 
@@ -166,7 +166,7 @@ test("Tab reaches the view switch, every dot, and Recentre map; Enter on a dot s
     await page.keyboard.press("Tab");
     reached.push(await page.evaluate(() => document.activeElement!.textContent!.trim()));
   }
-  expect(reached).toEqual(expect.arrayContaining(["Recentre map", "Place", "Neighbours", "Haran", "Ur of the Chaldees"]));
+  expect(reached).toEqual(expect.arrayContaining(["Recentre map", "Location", "Neighbours", "Haran", "Ur of the Chaldees"]));
 
   // Enter selects, and the keyboard stays on the dot. Its lack of the pointer's wait for a second click
   // is not timed: a runner under software WebGL takes longer than that wait to show anything.

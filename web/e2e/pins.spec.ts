@@ -22,7 +22,7 @@ test("a pinned node stays in the scene when the Focus changes, and the panel lis
   await expect(page.locator(".labels .nl.shared")).toHaveText(["Jacob (Israel)", "Gerar", "Beer-lahai-roi", "Genealogy of Jesus", "Blessing"]);
 
   // Fixture: Gerar shares Gen 26:1, 26:6 and 26:20 with Isaac, and Gen 26:1 with Abraham.
-  await panel(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Gerar/ }).click();
+  await panel(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Gerar/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gerar");
   await expect(panel(page).getByRole("list", { name: "Together in 3 verses" }).getByRole("listitem")).toHaveCount(3);
   const withAbraham = panel(page).getByRole("list", { name: "Together with Abraham in 1 verse" }).getByRole("listitem");

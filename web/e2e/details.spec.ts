@@ -121,10 +121,12 @@ test("the Dictionary Entry is named as Easton's, folded after its first paragrap
   await expect(entry).not.toContainText("Abram now, with a large household");
 });
 
-test("an Event shows its year as approx., Jones chronology; a Place its coordinates and their source", async ({ page }) => {
+test("an Event shows its year as approx., Jones chronology; a Place, typed Location, its coordinates and their source", async ({ page }) => {
   await focusOn(page, "Birth of Arphaxad", /^Birth of Arphaxad/, "event:45");
   await expect(facts(page).getByRole("listitem")).toHaveText(["Event Year 2346 BC (approx., Jones chronology) Suggest a correction"]);
   await focusOn(page, "Gerar", /^Gerar/, "place:gerar_459");
+  // The type line names a Place as a Location (decision 200); the ID keeps place.
+  await expect(panel(page).getByText("Location", { exact: true })).toHaveAttribute("title", "Location, from Theographic, CC BY-SA 4.0");
   await expect(facts(page).getByRole("listitem")).toHaveText(["Other names Valley of Gerar Suggest a correction", "Coordinates 31.3821° N, 34.6065° E Suggest a correction"]);
   await expect(facts(page).getByRole("listitem").nth(1)).toHaveAttribute("title", "OpenBible.info Bible Geocoding Data, CC BY 4.0");
 });

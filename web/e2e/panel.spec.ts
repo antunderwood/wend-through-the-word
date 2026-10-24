@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, openOnAbraham } from "./scene";
+import { doubleClickLabel, focusIs, nodes, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
@@ -43,6 +43,17 @@ test("an Overflow Node opens its type's full list and never changes the scene", 
   await page.mouse.dblclick(overflow.x, overflow.y);
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+31 themes");
   expect(await nodes(page)).toEqual(before);
+});
+
+// Decision 200: a Place is shown to the reader as a Location, in the singular and the plural.
+test("a Place's list is headed Location and its Overflow Node counts locations", async ({ page }) => {
+  await expect(typeList(page, "Location (6)").getByRole("listitem")).toHaveCount(6);
+  // Fixture: Isaac has one Place behind the Overflow Node.
+  await doubleClickLabel(page, "Isaac", "person:isaac_616");
+  const overflow = (await nodes(page)).find((n) => n.id === "overflow:place")!;
+  await page.mouse.click(overflow.x, overflow.y);
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+1 locations");
+  await expect(panel(page).getByRole("heading", { name: /^Location \(\d+\)$/ })).toBeVisible();
 });
 
 test("a list click selects, a double click makes the Focus", async ({ page }) => {
