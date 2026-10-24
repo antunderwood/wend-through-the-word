@@ -38,8 +38,13 @@ jobs:
         with: { node-version: 24, cache: npm, cache-dependency-path: web/package-lock.json }
       - run: npm ci
         working-directory: web
+      # The map's Esri access token is built into the page (decision 199). Without it the page would
+      # fall back to OpenStreetMap's tile server, so a missing secret fails the deploy instead.
       - name: Stage the site
-        run: node web/stage.ts "$DATA" "$SITE"
+        run: |
+          [ -n "$VITE_ESRI_TOKEN" ] || { echo "The ESRI_TOKEN secret is empty or missing: set it with gh secret set ESRI_TOKEN (docs/runbook.md)."; exit 1; }
+          node web/stage.ts "$DATA" "$SITE"
+        env: { VITE_ESRI_TOKEN: "${{ secrets.ESRI_TOKEN }}" }
       - name: The staged page has no test hooks
         run: "! grep -rq wendGraph \"$SITE\""
       - name: Check the staged site

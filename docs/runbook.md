@@ -20,7 +20,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    cd web && npm ci && npm run dev
    ```
 
-   Open the address it prints (http://localhost:5173) and try the changes. To try the production build of the page instead, run `npm run build && npm run preview` (http://localhost:4173). To try a branch's export without touching `out/`, build it to another folder and start the server with `WEND_DATA=<that folder>/data npm run dev`.
+   Open the address it prints (http://localhost:5173) and try the changes. To try the production build of the page instead, run `npm run build && npm run preview` (http://localhost:4173). To try a branch's export without touching `out/`, build it to another folder and start the server with `WEND_DATA=<that folder>/data npm run dev`. The map uses Esri's tiles only when the page is built with the access token (decision 199); to try them locally, put the line `VITE_ESRI_TOKEN=<token>` in `web/.env.local` (gitignored, never committed), else the map falls back to OpenStreetMap's tiles. The live token only works from the site's address (its referrer restriction), so on localhost Esri refuses its tiles and the map shows the dots on the plain background; to see real tiles locally, use a second API key credential whose referrers include `http://localhost:*` and keep its token only in `web/.env.local`.
 4. Try the release first. The dry run checks everything and makes the zip, but pushes and creates nothing:
 
    ```
@@ -76,6 +76,8 @@ Once a week, in the Cloudflare dashboard:
 1. Workers and Pages, then `wend-through-the-word`, then Metrics: requests and errors for the last 7 days. The site has no Worker script, so its requests are static asset requests, which are free and unlimited.
 2. The account's Workers and Pages overview: Workers requests for each day. The free limit is 100,000 a day; act when a day passes 50,000 (half the limit).
 3. D1 and KV: none in version 1. If phase 2 adds them, check their daily reads and writes against half of each limit too.
+4. In the ArcGIS Location Platform dashboard, My dashboard, Usage, Developer credentials, the site's API key credentials: the basemap tiles used in the current billing cycle. The free allowance is 2 million tiles; Esri's pages read for decision 199 do not say over what period it resets, so take it as the billing cycle the dashboard shows and act when it passes 1 million (half). The account has no payment card and the owner set a usage alert or cap, so going over the allowance should stop the tiles (the map then shows its dots on the plain background) rather than charge. Requests no reader could account for may mean the token is used elsewhere despite its referrer restriction: rotate it (see "The map's Esri token").
+5. Once a month, the Streets style's data sources: compare `copyrightText` in its metadata (`https://static-map-tiles-api.arcgis.com/arcgis/rest/services/static-basemap-tiles-service/v1/arcgis/streets/static?f=json`, with the token as a `token` parameter, run in a terminal, never pasted into a file in the repository) with `ESRI_SOURCES` in `web/src/tiles.ts`, and update the file if they differ (Esri asks for the names to be checked often).
 
 Acting means: find the cause (a crawler, a loop, a Worker added by mistake) and tell the owner before the limit is reached; the Workers Paid plan is the owner's decision (PRD 8.5 rule 11).
 
@@ -87,6 +89,15 @@ The deploy uses the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_AC
 2. Store it without echoing it: `gh secret set CLOUDFLARE_API_TOKEN` and paste the token at the prompt.
 3. Check it works by deploying the current tag again: `gh workflow run deploy.yml -f tag=<current tag>`.
 4. When that run passes, delete the old token in the dashboard.
+
+## The map's Esri token
+
+The page is built with an access token (an API key) from the owner's ArcGIS Location Platform API key credentials, from the repository secret `ESRI_TOKEN` (decision 199). The token is in the page's JavaScript, so anyone can read it; its protection is the credentials' referrer restriction, `https://wendtheword.flying-ant.uk/*`, so Esri serves tiles only to pages on the site, and the usage alert or cap on the account. The Deploy workflow fails at "Stage the site" if the secret is empty, so a missing token never ships the OpenStreetMap fallback. CI builds its test page with the dummy token `ci-dummy`, never a real one.
+
+1. Set it up (the owner, once): in the API key credentials, give only the location services privilege for basemaps, set the referrer to `https://wendtheword.flying-ant.uk/*`, and choose an expiration date. A change to the referrers, the privileges, or the expiration date invalidates every key the credentials made, so generate the API key after the last change and copy it at once: Esri shows its value only then.
+2. Set the secret (the owner, in a terminal; never paste the token into a chat or a file in the repository): `gh secret set ESRI_TOKEN` and paste the token at the prompt. Deploy the current tag again (`gh workflow run deploy.yml -f tag=<current tag>`) and check that the live map shows tiles.
+3. To rotate it, before its expiration date or if its usage passes what the site explains: in the credentials, Settings, Application, "Generate a secondary API key" with a new expiration date (the first key stays valid meanwhile), set it as in step 2, deploy the current tag again, and when that run passes and the live map shows tiles, invalidate the first key. If the token may have leaked, invalidate it at once instead and generate a new one; the live map shows no tiles until the next deploy. Update `web/.env.local` too if you test locally with it.
+4. Note each key's expiration date in the owner's calendar, a few weeks before it; the map shows no tiles once the key in the page has expired.
 
 ## Updating the deploy workflow's actions
 

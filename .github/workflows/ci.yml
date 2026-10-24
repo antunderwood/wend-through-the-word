@@ -33,8 +33,12 @@ jobs:
         working-directory: web
       - run: npx playwright install --with-deps --only-shell chromium
         working-directory: web
+      # The e2e page is built with a dummy Esri token, so CI tests Esri's tiles layout and attribution
+      # (decision 199). The specs that open the map answer every request to another host themselves
+      # (thirdParty in web/e2e/map.ts), so none reaches Esri.
       - run: npx playwright test
         working-directory: web
+        env: { VITE_ESRI_TOKEN: ci-dummy }
       - uses: actions/upload-artifact@v7
         if: failure()
         with: { name: playwright-traces, path: web/test-results }

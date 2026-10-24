@@ -246,9 +246,9 @@
     background: #1b1f2d;
     font: inherit;
   }
-  /* The tiles dimmed for the page's dark theme (story 25); the dots, names, and line keep their colour. */
+  /* The tiles are not dimmed (decision 196): the owner chose Esri's as they are. */
   .map :global(.leaflet-tile-pane) {
-    filter: brightness(0.7) saturate(0.8);
+    filter: none;
   }
   .map :global(.map-place) {
     overflow: visible;
@@ -290,9 +290,42 @@
     color: #e8eaf2;
     font-size: 13px;
   }
+  /* The attribution is one line at 12 px, the library's own size and the least Esri recommends: on
+     two lines it covers the Selected Place's tap area in the side sheet's map (decision 197). The
+     corner spans the map, so Esri's sources are cut to its width, and their button shows them all
+     (decision 199). */
+  .map :global(.leaflet-bottom.leaflet-right) {
+    left: 0;
+  }
   .map :global(.leaflet-control-attribution) {
+    max-width: 100%;
+    box-sizing: border-box;
     background: rgba(13, 15, 23, 0.8);
     color: #c8cde0;
+    font-size: 12px;
+  }
+  .map :global(.leaflet-control-attribution:has(.sources)) {
+    display: flex;
+    gap: 0.3em;
+    white-space: nowrap;
+  }
+  /* One line high even in the phone's sheet, whose buttons are otherwise 44 px tall: a taller
+     button would cover the foot of the map as two lines do. */
+  .map :global(.leaflet-control-attribution .sources) {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .map :global(.leaflet-control-attribution.open .sources) {
+    white-space: normal;
   }
   .map :global(.leaflet-control-attribution a) {
     color: #ffd27a;

@@ -36,7 +36,20 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   // The attribution is the tile provider's alone (decision 197): with the library's own "Leaflet"
   // before it, it takes two lines in a wide font and covers the foot of a short map.
   map.attributionControl.setPrefix(false);
-  L.tileLayer(TILES.url, { attribution: TILES.attribution, maxZoom: TILES.maxZoom }).addTo(map);
+  L.tileLayer(TILES.url, {
+    attribution: TILES.attribution,
+    maxZoom: TILES.maxZoom,
+    tileSize: TILES.tileSize ?? 256,
+    zoomOffset: TILES.zoomOffset ?? 0,
+    minZoom: TILES.minZoom ?? 0,
+  }).addTo(map);
+  // The attribution is one line, cut short; its button shows the whole text and hides it again
+  // (decision 199: Esri asks for a way to see every source where they do not fit).
+  const credit = map.attributionControl.getContainer()!;
+  credit.addEventListener("click", (e) => {
+    const sources = (e.target as Element).closest("button.sources");
+    if (sources) sources.setAttribute("aria-expanded", String(credit.classList.toggle("open")));
+  });
   const dots = L.layerGroup().addTo(map);
   const markers = new Map<Id, L.Marker>();
   // The Journey's line, under the dots; a click passes through it to the map.

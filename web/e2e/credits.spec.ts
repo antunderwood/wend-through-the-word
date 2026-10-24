@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { BUILT_TILES } from "./map";
 
 type Source = { name: string; licence: string; link: string };
 
@@ -23,8 +24,14 @@ test("the footer link opens the About and credits page, which lists every source
     await expect(items.nth(i).getByRole("link", { name: s.name })).toHaveAttribute("href", s.link);
     await expect(items.nth(i)).toContainText(s.licence);
   }
-  // The map's tile provider and library (#84).
+  // The map's tile provider, as built (decision 199), and library (#84). OpenStreetMap is credited
+  // by either provider.
   const map = page.getByRole("list", { name: "Map" });
-  await expect(map.getByRole("link", { name: "OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+  for (const [i, c] of BUILT_TILES.credits.entries()) {
+    await expect(map.getByRole("listitem").nth(i).getByRole("link", { name: c.name, exact: true })).toHaveAttribute("href", c.link);
+    await expect(map.getByRole("listitem").nth(i)).toContainText(c.licence);
+    if (c.licenceLink) await expect(map.getByRole("link", { name: c.licence })).toHaveAttribute("href", c.licenceLink);
+  }
+  await expect(map.getByRole("link", { name: "OpenStreetMap", exact: true })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
   await expect(map.getByRole("listitem").filter({ hasText: "Leaflet" })).toContainText("BSD 2-Clause");
 });

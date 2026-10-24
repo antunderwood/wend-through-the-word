@@ -29,14 +29,16 @@
   {:catch e}
     <p role="alert">Could not load the credits: {e.message} <button onclick={() => (loading = load())}>Retry</button></p>
   {/await}
-  <!-- The map's tiles load from the provider only when a reader opens the map (decision 189). -->
+  <!-- The map's tiles load from the provider only when a reader opens the map (decisions 189, 199). -->
   <h2 id="map">Map</h2>
   <ul aria-labelledby="map">
-    <li>
-      <a href={TILES.link}>{TILES.name}</a>
-      <p>Map tiles, loaded only when a reader opens the map. {TILES.credit}</p>
-      <p class="muted">Licence: {TILES.licence}</p>
-    </li>
+    {#each TILES.credits as c (c.name)}
+      <li>
+        <a href={c.link}>{c.name}</a>
+        <p>{c.credit}</p>
+        <p class="muted">Licence: {#if c.licenceLink}<a href={c.licenceLink}>{c.licence}</a>{:else}{c.licence}{/if}</p>
+      </li>
+    {/each}
     <li>
       <a href={MAP_LIBRARY.link}>{MAP_LIBRARY.name}</a>
       <p>The library that draws the map.</p>

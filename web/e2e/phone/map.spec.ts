@@ -1,5 +1,5 @@
 import { expect, test, type Locator } from "@playwright/test";
-import { openMap, selectedDot, thirdParty } from "../map";
+import { attribution, lines, openMap, providerLink, selectedDot, thirdParty } from "../map";
 import { focusIs } from "../scene";
 import { doubleTap, drag } from "../touch";
 import { selectedIs } from "../touch-input";
@@ -20,7 +20,7 @@ test("with every tile request aborted, Show map in the Details tab still shows t
   const map = details.getByRole("region", { name: "Map" });
   await expect(map.getByText("Bethlehem", { exact: true })).toBeVisible();
   await expect(map.locator(".dot")).toBeVisible();
-  await expect(map.getByRole("link", { name: "OpenStreetMap" })).toBeVisible();
+  await expect(providerLink(map)).toBeVisible();
   await expect.poll(() => asked.length).toBeGreaterThan(0);
 });
 
@@ -87,6 +87,9 @@ for (const [size, full] of [
       await scrollBy((await details.getByRole("button", { name: "Hide map" }).boundingBox())!.y - held - 8);
       await expect(map).toBeInViewport({ ratio: 1 });
       await expect(name).toBeInViewport({ ratio: 1 });
+      // The attribution is one line, so it leaves the Selected Place's tap area clear (decision 197).
+      await expect(providerLink(map)).toBeVisible();
+      expect(await lines(attribution(map))).toBe(1);
 
       // A dot and a name are each at least 44 px to tap: a finger 21 px off their middle still lands on them.
       for (const target of [map.locator(".dot"), name]) {
