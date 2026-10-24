@@ -13,6 +13,8 @@
   import { screen } from "./screen.svelte";
   import Search from "./Search.svelte";
   import Sheet from "./Sheet.svelte";
+  import Splash from "./Splash.svelte";
+  import { SPLASH_KEY } from "./splash";
   import Tour from "./Tour.svelte";
   import { TOUR_START, type TourPage } from "./tour";
   import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
@@ -33,6 +35,9 @@
   let failure = $state<{ message: string; retry: () => void }>();
   let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
+  // The splash on a first visit in this browser (decision 202); the hint and the tour's offer wait
+  // until it closes.
+  let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
@@ -206,9 +211,9 @@
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
-  // node on Your Path (PRD 10.4). Keys in the search box, a button, or the view picker are theirs.
+  // node on Your Path (PRD 10.4). Keys in the search box, a button, the view picker, or the splash are theirs.
   function sceneKey(e: KeyboardEvent) {
-    if ((e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !onScreen) return;
+    if (splash || (e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !onScreen) return;
     const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
     if (dir) {
       const ring = onScreen.nodes.filter((n) => n.ring1).sort((a, b) => a.ring1!.sector - b.ring1!.sector || a.ring1!.pos - b.ring1!.pos);
@@ -240,6 +245,14 @@
   function dismissHint() {
     hint = false;
     store(HINT_KEY, "1");
+  }
+
+  // The app behind it already shows its Focus (the address's, else Jesus Christ): closing only
+  // remembers it and hands focus to the graph.
+  function closeSplash() {
+    splash = false;
+    store(SPLASH_KEY, "1");
+    host.focus();
   }
 
   // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
@@ -492,7 +505,7 @@
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
   <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
-  {#if tour}
+  {#if tour === "on" || (tour && !splash)}
     {#key tours}<Tour offer={tour === "offer"} page={tourPage} onstart={startTour} onend={endTour} />{/key}
   {/if}
 {/if}
@@ -505,7 +518,7 @@
 <!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
      elsewhere each keeps its own place. -->
 <div class="dock" data-tour="dock" bind:offsetHeight={dockHeight}>
-  {#if hint}
+  {#if hint && !splash}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
       {#if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}
@@ -547,6 +560,7 @@
   {#if onScreen && !noWebGL}<button class="link" onclick={startTour}>Help: take the tour</button><span class="muted">. </span>{/if}
   <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {version}{/if}</span>
 {/snippet}
+{#if splash}<Splash onclose={closeSplash} />{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>

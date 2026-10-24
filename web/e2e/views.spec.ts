@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { nodes, openOnAbraham } from "./scene";
+import { start } from "./splash";
 
 const ABRAHAM = "person:abraham_58";
 const sceneReady = (page: Page) => page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
@@ -54,6 +55,7 @@ test("blocked storage falls back to the tilted plane without an error", async ({
     }),
   );
   await page.goto("/");
+  await start(page).click(); // with nothing kept, the splash shows on each visit (decision 202)
   await sceneReady(page);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
   await picker(page).getByRole("radio", { name: "Stacked discs" }).click();

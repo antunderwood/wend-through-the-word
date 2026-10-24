@@ -201,6 +201,8 @@ test.describe("a first visit", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test("the tour is offered until answered, a skip is remembered, and the footer restarts it", async ({ page }) => {
+    // The splash, which the offer waits for, is splash.spec.ts's; this browser has seen it.
+    await page.addInitScript(() => localStorage.setItem("wend.splashSeen", "1"));
     // The first Focus is Jesus Christ (decision 186), whom the tour studies.
     await page.goto("/");
     await focusIs(page, JESUS);
