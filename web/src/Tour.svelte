@@ -1,12 +1,12 @@
 <script lang="ts">
-  // The tour box: the offer on a first visit, then one step at a time, then the end. A ring marks the
-  // step's target and the box never covers it, nor the node the step asks for (decisions 155 and 187).
-  // Props only; App saves and restores the reader's state.
+  // The tour box: one step at a time, then the end (the splash invites the reader, decision 203). A
+  // ring marks the step's target and the box never covers it, nor the node the step asks for
+  // (decisions 155 and 187). Props only; App saves and restores the reader's state.
   import { untrack } from "svelte";
   import { screen } from "./screen.svelte";
   import { apart, makeRoom, spotFor, STEPS, tallest, type At, type TourPage } from "./tour";
 
-  let { offer, page, onstart, onend }: { offer: boolean; page: TourPage; onstart: () => void; onend: (keep: boolean) => void } = $props();
+  let { page, onend }: { page: TourPage; onend: (keep: boolean) => void } = $props();
   let i = $state(0);
   const step = $derived(STEPS[i]); // none at the end
   let box: HTMLElement, ring: HTMLElement;
@@ -20,12 +20,12 @@
   $effect(() => {
     let raf = requestAnimationFrame(function frame() {
       raf = requestAnimationFrame(frame);
-      if (!offer && step?.check(page, at)) {
+      if (step?.check(page, at)) {
         page.panBack();
         i++;
         at = begin();
       }
-      place(offer ? null : step?.target(page));
+      place(step?.target(page));
     });
     return () => cancelAnimationFrame(raf);
   });
@@ -105,7 +105,7 @@
     // The step's node, when drawn where the reader can reach it: in the scene, in the space the sheet
     // leaves. The box keeps clear of it as well as of the target (decision 187). On a phone the hint
     // and the notes lie over the bottom of the scene: a node under them is panned out (reach).
-    const id = offer ? undefined : step?.node?.(page),
+    const id = step?.node?.(page),
       s = document.querySelector('[data-tour="scene"]')!.getBoundingClientRect(),
       scene = { left: Math.max(s.left, area.left), top: Math.max(s.top, area.top), right: Math.min(s.right, area.right), bottom: Math.min(s.bottom, area.bottom) },
       dock = screen.phone ? document.querySelector('[data-tour="dock"]')?.getBoundingClientRect() : undefined,
@@ -186,16 +186,7 @@
 <div class="tour-target" hidden bind:this={ring}></div>
 <div class="tour" role="dialog" aria-label="Tour" bind:this={box} onclickcapture={guard}>
   <!-- The words, which scroll when the box is held shorter than they need, then the buttons. -->
-  {#if offer}
-    <div class="words">
-      <h2>Welcome</h2>
-      <p>New here? A short tour walks you through studying Jesus Christ: search, select, move the Focus, pin, read, and take notes. Each step waits for you, or does it for you.</p>
-    </div>
-    <div>
-      <button onclick={onstart}>Take the tour</button>
-      <button onclick={() => onend(false)}>Skip</button>
-    </div>
-  {:else if step}
+  {#if step}
     <div class="words" aria-live="polite">
       <p class="muted">Step {i + 1} of {STEPS.length}</p>
       <h2>{step.title}</h2>

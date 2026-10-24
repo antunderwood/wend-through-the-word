@@ -1,11 +1,36 @@
 import { expect, test, type Page } from "@playwright/test";
 import { openOnAbraham } from "./scene";
+import { firstVisit, holdData, splash, start, takeTour } from "./splash";
 
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" }).getByRole("button");
+const fallback = (page: Page) => page.getByText("This browser has no WebGL");
 
 // With these flags Chromium cannot create a WebGL context, as on a device without WebGL.
 test.use({ launchOptions: { args: ["--disable-webgl", "--disable-webgl2"] } });
+
+test("on a first visit the splash shows, has no tour to take, and Start exploring leaves the panel alone", async ({ page }) => {
+  await firstVisit(page);
+  await page.goto("/");
+  // The tour needs the scene, as the footer's link does: once the page finds no WebGL, no button for it.
+  await expect(fallback(page)).toBeVisible();
+  await expect(takeTour(page)).toBeHidden();
+  await start(page).click();
+  await expect(splash(page)).toBeHidden();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Jesus Christ");
+});
+
+test("Take the tour, pressed before the page finds no WebGL, ends at the page's own message and the hint", async ({ page }) => {
+  const release = await holdData(page);
+  await firstVisit(page);
+  await page.goto("/");
+  await takeTour(page).click();
+  await expect(splash(page)).toBeHidden();
+  release();
+  await expect(fallback(page)).toBeVisible();
+  await expect(page.getByText("A click selects a node")).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Tour" })).toHaveCount(0);
+});
 
 test("the page says so and the panel alone walks the journey", async ({ page }) => {
   await openOnAbraham(page);

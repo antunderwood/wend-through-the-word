@@ -6,7 +6,8 @@
   // remembered flag, moves focus to the graph when it closes, and starts the tour (decision 203);
   // without WebGL it passes no ontour, so there is no Take the tour.
   import { onMount } from "svelte";
-  import { SPLASH } from "./splash";
+  import { typeColour } from "./colours";
+  import { ICON, SPLASH } from "./splash";
 
   let { onclose, ontour }: { onclose: () => void; ontour?: () => void } = $props();
   let dialog: HTMLDialogElement;
@@ -28,7 +29,8 @@
   }
 
   // Escape closes it wherever focus is (after a tap on the backdrop, on the inert page). The browser
-  // lets Tab leave a modal dialog for its own toolbar; here Tab wraps round its buttons.
+  // lets Tab leave a modal dialog for its own toolbar; here Tab wraps round its buttons. With none
+  // focused (after a tap on the backdrop), Tab goes to the first and Shift+Tab to the last.
   function key(e: KeyboardEvent) {
     if (e.key === "Escape") {
       e.preventDefault();
@@ -37,27 +39,23 @@
     if (e.key !== "Tab") return;
     e.preventDefault();
     const buttons = [...dialog.querySelectorAll("button")],
+      n = buttons.length,
       at = buttons.indexOf(document.activeElement as HTMLButtonElement);
-    buttons[(Math.max(at, 0) + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+    buttons[at < 0 ? (e.shiftKey ? n - 1 : 0) : (at + (e.shiftKey ? -1 : 1) + n) % n].focus();
   }
 
-  // The icon's Neighbours (web/public/icon.svg), in the type colours the graph draws them in.
-  const NEIGHBOURS = [
-    [32, 12, "#6cc4a1"],
-    [51, 25.8, "#e6b85c"],
-    [43.8, 48.2, "#b48ee0"],
-    [20.2, 48.2, "#e0869b"],
-    [13, 25.8, "#a9b1c6"],
-  ] as const;
+  // The site icon's graph (splash.ts), in the type colours the graph draws its nodes in.
+  const [fx, fy, ft] = ICON.focus;
 </script>
 
 <svelte:window onkeydown={key} />
 <dialog class="splash" bind:this={dialog} aria-labelledby="splash-title" aria-describedby="splash-text" onclose={close}>
-  <!-- The idea at a glance: a Focus and its Neighbours, joined by lines. The description carries its meaning. -->
+  <!-- The idea at a glance: a Focus and its Neighbours, joined by lines. The description carries its
+       meaning. -->
   <svg viewBox="5 4 54 52" aria-hidden="true">
-    {#each NEIGHBOURS as [x, y]}<path d="M32 32L{x} {y}" />{/each}
-    {#each NEIGHBOURS as [x, y, fill], i}<circle cx={x} cy={y} r="6" {fill} style:--i={i + 1} />{/each}
-    <circle cx="32" cy="32" r="9" fill="#6fa8dc" style:--i={0} />
+    {#each ICON.neighbours as [x, y]}<path d="M{fx} {fy}L{x} {y}" />{/each}
+    {#each ICON.neighbours as [x, y, type], i}<circle cx={x} cy={y} r="6" fill={typeColour(type)} style:--i={i + 1} />{/each}
+    <circle cx={fx} cy={fy} r="9" fill={typeColour(ft)} style:--i={0} />
   </svg>
   <div class="words">
     <h2 id="splash-title">{SPLASH.title}</h2>

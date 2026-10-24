@@ -35,11 +35,9 @@
   let failure = $state<{ message: string; retry: () => void }>();
   let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
-  // The splash on a first visit in this browser (decision 202), and again from the Welcome link; the
-  // hint waits until it closes, and while a tour runs. Shown on this visit, it is the tour's offer
-  // (decision 203).
-  const splashFirst = !stored(SPLASH_KEY);
-  let splash = $state(splashFirst);
+  // The splash on a first visit in this browser (decision 202), and again from the Welcome link
+  // (decision 203); the hint waits until it closes, and while a tour is asked for or runs.
+  let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
@@ -213,7 +211,8 @@
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
-  // node on Your Path (PRD 10.4). Keys in the search box, a button, the view picker, or the splash are theirs.
+  // node on Your Path (PRD 10.4). Keys in the search box, a button, the view picker, or the splash
+  // are theirs.
   function sceneKey(e: KeyboardEvent) {
     if (splash || (e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !onScreen) return;
     const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
@@ -250,29 +249,27 @@
   }
 
   // The app behind it already shows its Focus (the address's, else Jesus Christ): closing only
-  // remembers it, and that the tour was offered, and hands focus to the graph.
+  // remembers it, and hands focus to the graph. Over a tour (Welcome) the flag is already kept, and
+  // nothing is written while a tour runs.
   function closeSplash() {
     splash = false;
-    store(SPLASH_KEY, "1");
-    store(TOUR_KEY, "1");
+    if (!touring) store(SPLASH_KEY, "1");
     host.focus();
   }
   // Take the tour on the splash starts it as the footer's link does; pressed before the graph is
-  // drawn, once it is.
-  let tourAsked = false;
+  // drawn, once it is, or never when the page finds no WebGL. Asked for, the hint waits.
+  let tourAsked = $state(false);
   function takeTour() {
+    tourAsked = true;
     if (graph) startTour();
-    else tourAsked = true;
   }
 
-  // The first-run tour (decisions 155 and 203): offered in this browser until taken or skipped (by
-  // the splash, or by the tour box when the splash was seen without it), "on" while it runs. While
-  // it runs nothing is kept in this browser and the address is replaced, not pushed; when it ends, the reader's state comes back (on a phone the sheet's tab too) and a note written in it
-  // goes unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back
-  // too (decision 185).
-  const TOUR_KEY = "wend.tourOffered";
-  let tour = $state<"offer" | "on">();
-  const touring = $derived(tour === "on");
+  // The first-run tour (decisions 155 and 203), started from the splash or the footer's link. While
+  // it runs nothing is kept in this browser and the address is replaced, not pushed; when it ends,
+  // the reader's state comes back (on a phone the sheet's tab too) and a note written in it goes
+  // unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back too
+  // (decision 185).
+  let touring = $state(false);
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean } | undefined;
   const tourPage: TourPage = {
@@ -312,10 +309,10 @@
   }
   // The tour box appears with the tour's start state, loaded first.
   async function startTour() {
-    store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
     if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed, full: sheetFull };
-    tour = "on";
+    touring = true;
+    tourAsked = false;
     tours++;
     reading = undefined;
     collapsed = false;
@@ -333,8 +330,7 @@
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
-    store(TOUR_KEY, "1");
-    tour = undefined;
+    touring = false;
   }
 
   // The page opens on the address (decision 128) and the session kept in this browser (decision 133).
@@ -358,6 +354,7 @@
       graph = createGraph(host, data.label, data.quote);
     } catch {
       noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
+      tourAsked = false; // and there is no tour, as there is no footer link for one
       return;
     }
     graph.setView(viewShown);
@@ -367,7 +364,6 @@
     graph.onHover(showTip);
     graph.render(onScreen, model.selected);
     if (tourAsked) startTour();
-    else if (!splashFirst && !stored(TOUR_KEY)) tour = "offer";
     // The browser tests read node positions and set what no control sets, such as a low node limit;
     // only their build (vite build --mode e2e) has the hooks.
     if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph, wendApply: apply });
@@ -516,8 +512,8 @@
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
   <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
-  {#if tour === "on" || (tour && !splash)}
-    {#key tours}<Tour offer={tour === "offer"} page={tourPage} onstart={startTour} onend={endTour} />{/key}
+  {#if touring}
+    {#key tours}<Tour page={tourPage} onend={endTour} />{/key}
   {/if}
 {/if}
 {#if failure}
@@ -529,7 +525,7 @@
 <!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
      elsewhere each keeps its own place. -->
 <div class="dock" data-tour="dock" bind:offsetHeight={dockHeight}>
-  {#if hint && !splash && !touring}
+  {#if hint && !splash && !tourAsked && !touring}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
       {#if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}

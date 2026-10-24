@@ -10,21 +10,9 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:4173",
     trace: "retain-on-failure",
-    // Every test starts in a browser that was already offered the first-run tour and has seen the
-    // splash (decision 202); tour.spec.ts clears the first, the splash specs (e2e/splash.ts) the
-    // second. A spec that blocks storage sees the splash, as a reader would.
-    storageState: {
-      cookies: [],
-      origins: [
-        {
-          origin: "http://localhost:4173",
-          localStorage: [
-            { name: "wend.tourOffered", value: "1" },
-            { name: "wend.splashSeen", value: "1" },
-          ],
-        },
-      ],
-    },
+    // Every test starts in a browser that has seen the splash (decision 202); the splash specs clear
+    // it (firstVisit in e2e/splash.ts). A spec that blocks storage sees the splash, as a reader would.
+    storageState: { cookies: [], origins: [{ origin: "http://localhost:4173", localStorage: [{ name: "wend.splashSeen", value: "1" }] }] },
   },
   webServer: {
     command: "npx vite build --mode e2e && npx vite preview --port 4173 --strictPort",

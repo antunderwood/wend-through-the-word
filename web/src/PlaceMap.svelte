@@ -6,7 +6,7 @@
   // Journey along Your Path (#86). The map is a block of its own below the Selected Node's section,
   // of one height whatever it shows (#87).
   import type { Data } from "./data";
-  import { typeColour } from "./graph";
+  import { typeColour } from "./colours";
   import type { MapActions, MapPlace, PlaceMap } from "./map";
   import { topK, TYPE_NAME, typePlural, TYPES, typeOf, type Id, type State } from "./model";
   import { store, stored } from "./storage";
