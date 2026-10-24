@@ -31,23 +31,23 @@ CREDITS = {
     },
     "geo": {
         "name": "OpenBible.info Bible Geocoding Data",
-        "credit": "Place locations from OpenBible.info.",
+        "credit": "Coordinates of Locations from OpenBible.info.",
         "link": "https://github.com/openbibleinfo/Bible-Geocoding-Data",
     },
     # Lookups for Places whose OpenBible point is dropped (licences.md 3.6 to 3.8).
     "pleiades": {
         "name": "Pleiades",
-        "credit": "Place locations from Pleiades: A Gazetteer of Past Places, by its contributors.",
+        "credit": "Coordinates of Locations from Pleiades: A Gazetteer of Past Places, by its contributors.",
         "link": "https://pleiades.stoa.org/",
     },
     "wikidata": {
         "name": "Wikidata",
-        "credit": "Place locations from Wikidata.",
+        "credit": "Coordinates of Locations from Wikidata.",
         "link": "https://www.wikidata.org/",
     },
     "geonames": {
         "name": "GeoNames",
-        "credit": "Place locations from GeoNames.",
+        "credit": "Coordinates of Locations from GeoNames.",
         "link": "https://www.geonames.org/",
     },
     "tipnr": {

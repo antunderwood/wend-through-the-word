@@ -68,7 +68,7 @@
   const focus = $derived(model.focus);
 
   // On a desktop window everything below the header is one column, so a selection changes what lies
-  // above a list and the header's own height (decision 200). The list item (or the map block) a
+  // above a list and the header's own height (decision 201). The list item (or the map block) a
   // selection was made in is held where it was on screen, by scrolling the panel each time anything
   // in it changes, until the panel is scrolled some other way; so the second click of a double click
   // lands where the first did. When the panel cannot scroll back far enough (it is at its top), a
@@ -227,7 +227,7 @@
   {@render controls?.()}
   <!-- On a phone, a section of fixed height, so the Neighbour lists below never move between the two
        taps of a double tap. On a desktop window it draws no box of its own: its header stays at the
-       top of the panel and the rest scrolls behind it, one column with the lists (decision 200). -->
+       top of the panel and the rest scrolls behind it, one column with the lists (decision 201). -->
   <section class="selected" bind:this={selectedBox}>
     <!-- The name, the type line, the Relationship line when there is one, and on a desktop window the
          buttons; a long text is cut, and whole in its title. -->
@@ -308,7 +308,7 @@
   <!-- The map's own block, below the Selected Node's section (on a phone, below its actions), so the
        map can be taller than the section allows. It keeps one height whatever it shows, so the lists
        below never move between the two clicks of a double click; on a desktop window a selection
-       made on the map holds the block where it was (decision 200). -->
+       made on the map holds the block where it was (decision 201). -->
   <div bind:this={mapBox}>
     <PlaceMap
       {data}
@@ -435,7 +435,7 @@
     background: rgba(20, 23, 34, 0.92);
     border-left: 1px solid #262a3c;
     transition: transform 0.2s;
-    overflow-anchor: none; /* the panel holds a clicked item itself (decision 200), in every browser */
+    overflow-anchor: none; /* the panel holds a clicked item itself (decision 201), in every browser */
   }
   /* Below the search box and the hint, and right of the reader drawer when it is open. */
   .panel.full {
@@ -472,7 +472,7 @@
     color: #ffd27a;
   }
   /* On a desktop window the section draws no box: its header is held at the top of the panel, opaque
-     and the panel's full width, and the rest scrolls behind it with the lists (decision 200). */
+     and the panel's full width, and the rest scrolls behind it with the lists (decision 201). */
   .selected {
     display: contents;
   }

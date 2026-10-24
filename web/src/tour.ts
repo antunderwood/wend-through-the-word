@@ -2,7 +2,7 @@
 // prototype/navigation. Each step is data: what it points at, what it asks, a check that the reader
 // did it, and a "Do it for me" that uses the page's own actions or its own buttons.
 import type { Data } from "./data";
-import { typeOf, type Action, type Id, type State, type View } from "./model";
+import { TYPE_NAME, typeOf, type Action, type Id, type State, type View } from "./model";
 import type { Notes } from "./session";
 import { TILES } from "./tiles";
 
@@ -184,8 +184,8 @@ export const STEPS: Step[] = [
   },
   {
     // Show map is pointed out, not pressed, so the tour asks nothing of the tile host (#88).
-    title: "A Place on a map",
-    text: (p) => `Show map, in the panel below the Selected Node's section, puts a Place on a map. Its tiles come from ${TILES.name}, which sees your address, so it opens only when you press it; the tour leaves it shut. ${Click(p)} Jesus Christ in the Your Path bar, then Bethlehem, where he was born, in his Places.`,
+    title: `A ${TYPE_NAME.place} on a map`,
+    text: (p) => `Show map, in the panel below the Selected Node's section, puts a ${TYPE_NAME.place} on a map. Its tiles come from ${TILES.name}, which sees your address, so it opens only when you press it; the tour leaves it shut. ${Click(p)} Jesus Christ in the Your Path bar, then Bethlehem, where he was born, in his ${TYPE_NAME.place}s.`,
     target: () => tour("show-map"),
     check: (p) => typeOf(p.model.selected) === "place",
     act: (p) => p.apply({ type: "select", id: BETHLEHEM }),

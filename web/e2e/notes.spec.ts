@@ -4,7 +4,8 @@ import { doubleClickLabel, focusIs, openOnAbraham } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
-  ISAAC = "person:isaac_616";
+  ISAAC = "person:isaac_616",
+  GERAR = "place:gerar_459";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" });
 const note = (page: Page, name: string) => panel(page).getByRole("textbox", { name: `Note on ${name}` });
@@ -35,6 +36,14 @@ test("a note survives a reload, and the download holds it with a link back", asy
   expect(text).toMatch(/^# Journey notes, /);
   expect(text).toContain(`## 1. Abraham\n\n*Person*, [open as the Focus](${origin}/?focus=${ABRAHAM})\n\nCalled out of Ur.\n`);
   expect(text).toContain(`## 2. Isaac\n\n*Person*, [open as the Focus](${origin}/?focus=${ISAAC})\n\nThe son of the promise.\n`);
+});
+
+test("the download names a Place's type Location and keeps its place: address", async ({ page }) => {
+  await openOnAbraham(page, `/?focus=${GERAR}`);
+  await focusIs(page, GERAR);
+  const [file] = await Promise.all([page.waitForEvent("download"), panel(page).getByRole("button", { name: "Download notes" }).click()]);
+  const text = await readFile((await file.path())!, "utf8");
+  expect(text).toContain(`## 2. Gerar\n\n*Location*, [open as the Focus](${new URL(page.url()).origin}/?focus=${GERAR})\n`);
 });
 
 test("an address naming a Focus wins over the one kept in this browser", async ({ page }) => {

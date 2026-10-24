@@ -37,6 +37,8 @@ test.describe("with reduced motion", () => {
     await expect(panel(page).getByRole("list", { name: /^Theme/ })).toHaveCount(0);
     await page.getByRole("button", { name: "Filters" }).click();
     await expect(filters(page).getByRole("checkbox", { name: "Themes" })).not.toBeChecked();
+    // Places are filtered as Locations (decision 200).
+    await expect(filters(page).getByRole("checkbox", { name: "Locations" })).toBeChecked();
   });
 });
 

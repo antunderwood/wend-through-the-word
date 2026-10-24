@@ -3,9 +3,11 @@
 
 export const TYPES = ["person", "place", "event", "group", "theme", "verse"] as const;
 export type NodeType = (typeof TYPES)[number];
+// The label table: the name and plural the reader sees for each type, wherever one is printed. A
+// Place is shown as a Location, as the L on its disc says (decision 200); the type stays place.
 export const TYPE_NAME: Record<NodeType, string> = {
   person: "Person",
-  place: "Place",
+  place: "Location",
   event: "Event",
   group: "People Group",
   theme: "Theme",
@@ -13,7 +15,7 @@ export const TYPE_NAME: Record<NodeType, string> = {
 };
 export const TYPE_PLURAL: Record<NodeType, string> = {
   person: "people",
-  place: "places",
+  place: "locations",
   event: "events",
   group: "people groups",
   theme: "themes",

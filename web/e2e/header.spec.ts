@@ -3,7 +3,7 @@ import { focusIs, openOnAbraham } from "./scene";
 
 // The Selected Node's header on a desktop window: the name, the type line, the Relationship line only
 // when there is one, and the six buttons stay at the top of the panel, and everything else scrolls
-// behind it as one column (decision 200).
+// behind it as one column (decision 201).
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
 const BUTTONS = ["Make Focus", "Pin", "Prev", "Next", "Read", "Suggest a correction"];
 const button = (page: Page, name: string) => panel(page).getByRole("button", { name, exact: true });
