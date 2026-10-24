@@ -94,9 +94,14 @@ test("Neighbours shows the selected Place's Ring 1 Places that have points; a cl
   await expect(label(page, "Canaan")).toHaveCount(0);
 
   // A click selects, as a click on a node does: the panel, the address, and the scene follow, and
-  // the map shows Ur's own Neighbours, Haran among them.
+  // the map shows Ur's own Neighbours, Haran among them. The map stays where it was on screen,
+  // though the header and the details above it change (decision 200).
+  await label(page, "Ur of the Chaldees").scrollIntoViewIfNeeded();
+  const mapAt = (await map(page).boundingBox())!.y;
   await label(page, "Ur of the Chaldees").click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Ur of the Chaldees");
+  await expect(panel(page).getByRole("list", { name: "Facts" })).toContainText("Coordinates");
+  expect((await map(page).boundingBox())!.y).toBe(mapAt);
   await expect.poll(() => new URL(page.url()).search).toContain("sel=place:ur_1189");
   await selectedIs(page, "place:ur_1189");
   await expect(map(page).locator(".map-place.selected")).toHaveText("Ur of the Chaldees");
@@ -121,32 +126,34 @@ test("Neighbours shows the selected Place's Ring 1 Places that have points; a cl
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Canaan");
 });
 
-test("the open map is a block of its own below the Selected Node's section, and the lists below keep their place whatever it shows", async ({ page }) => {
+test("the open map is a block of its own below the Selected Node's details, and the lists below keep their place whatever it shows", async ({ page }) => {
   await thirdParty(page);
   // Fixture: Haran has a point; Terah is a Person; Canaan is a Place with none.
   await page.goto("/?focus=place:haran_527");
   await focusIs(page, "place:haran_527");
   await openMap(page);
   await expect(label(page, "Haran")).toBeVisible();
-  const section = (await panel(page).locator("section.selected").boundingBox())!;
+  const facts = (await panel(page).getByRole("list", { name: "Facts" }).boundingBox())!;
   const m = (await map(page).boundingBox())!;
-  expect(m.y).toBeGreaterThanOrEqual(section.y + section.height);
+  expect(m.y).toBeGreaterThanOrEqual(facts.y + facts.height);
   expect(m.height).toBeGreaterThanOrEqual(280);
 
   // A click in a list changes what the block shows (a Person: no switch and the Focus's
-  // Neighbours; then a Place with no point); the lists stay where they were, so the second click of
-  // a double click lands where the first did.
+  // Neighbours; then a Place with no point), and what lies above it; the lists stay where they were
+  // on screen, so the second click of a double click lands where the first did.
   const people = panel(page).getByRole("list", { name: /^Person/ });
   const places = panel(page).getByRole("list", { name: /^Place/ });
-  // Where each list lies in the panel, however far the panel is scrolled.
-  const at = async () => [await people.evaluate((e: HTMLElement) => e.offsetTop), await places.evaluate((e: HTMLElement) => e.offsetTop)];
-  const before = await at();
-  await people.getByRole("button", { name: /^Terah/ }).click();
-  await expect(panel(page).getByText("The Focus, Haran, and its Neighbours.")).toBeVisible();
-  expect(await at()).toEqual(before);
-  await places.getByRole("button", { name: /^Canaan/ }).click();
-  await expect(panel(page).getByText(/^No point for this Place\./)).toBeVisible();
-  expect(await at()).toEqual(before);
+  const at = async () => [(await people.boundingBox())!.y, (await places.boundingBox())!.y];
+  for (const [item, shows] of [
+    [people.getByRole("button", { name: /^Terah/ }), panel(page).getByText("The Focus, Haran, and its Neighbours.")],
+    [places.getByRole("button", { name: /^Canaan/ }), panel(page).getByText(/^No point for this Place\./)],
+  ]) {
+    await item.scrollIntoViewIfNeeded();
+    const before = await at();
+    await item.click();
+    await expect(shows).toBeVisible();
+    expect(await at()).toEqual(before);
+  }
 });
 
 test("Tab reaches the view switch, every dot, and Recentre map; Enter on a dot selects at once; a text list names the Places shown; reduced motion re-frames in one step", async ({ page }) => {

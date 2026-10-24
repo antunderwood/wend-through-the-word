@@ -89,7 +89,7 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   const shared = await y(verse);
   await verse.click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
-  // The one Relationship line keeps the full words the lists drop (decision 142), at its fixed height.
+  // The one Relationship line keeps the full words the lists drop (decision 142).
   const line = panel(page).locator(".relationship");
   await expect(line).toHaveAttribute("title", /^Relationship: named in this verse\./);
   await expect(line).toContainText("Relationship: named in this verse");
@@ -187,6 +187,7 @@ test("a list row's correction link shows on hover, on keyboard focus, or for the
   await expect.poll(shown).toBe("0");
   const line = (await isaac.boundingBox())!.height;
   expect(line).toBeLessThan(30);
+  await isaac.scrollIntoViewIfNeeded(); // where the hover below finds it
   const below = (await next.boundingBox())!.y;
   await isaac.hover();
   await expect.poll(shown).toBe("1");

@@ -100,27 +100,3 @@ test("the panel, open or collapsed, leaves the Your Path bar fully usable", asyn
   await bar.getByRole("button", { name: "Undo clear" }).click();
   await expect(bar.getByRole("listitem")).toHaveText(["Sarah", "Abraham"]);
 });
-
-test("the top section fades at its bottom edge while more of it is below (decision 148)", async ({ page }) => {
-  const top = panel(page).locator("section.selected");
-  const fade = () => top.evaluate((e) => getComputedStyle(e).getPropertyValue("--fade"));
-  // Fixture: Abraham's details run past the section's fixed height.
-  await expect.poll(fade).toBe("24px");
-  // It stays until the last of the section is in view, then goes.
-  await top.evaluate((e) => e.scrollTo(0, e.scrollHeight - e.clientHeight - 30));
-  await expect.poll(fade).toBe("24px");
-  await top.evaluate((e) => e.scrollTo(0, e.scrollHeight));
-  await expect.poll(fade).toBe("0px");
-  await top.evaluate((e) => e.scrollTo(0, 0));
-  await expect.poll(fade).toBe("24px");
-  // A control focused with the keyboard is never under the fade.
-  await panel(page).getByRole("button", { name: "Pin" }).focus();
-  await page.keyboard.press("Tab");
-  await expect(panel(page).getByRole("button", { name: "Prev" })).toBeFocused();
-  await expect.poll(fade).toBe("0px");
-  // A section that fits has no fade: on a tall window a Theme's details do.
-  await page.setViewportSize({ width: 1280, height: 1200 });
-  await page.goto("/?focus=theme:adultery");
-  await focusIs(page, "theme:adultery");
-  await expect.poll(fade).toBe("0px");
-});

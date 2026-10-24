@@ -55,6 +55,7 @@
   let keep: "neighbours" | "verses" | undefined;
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   let selectedBox = $state<HTMLElement>();
+  let headHeight = $state(0);
   // Long lists show 100 rows at a time (decision 165): rows shown per list, by a key naming the list.
   const PAGE = 100;
   let pages = $state<Record<string, number>>({});
@@ -65,6 +66,72 @@
   const compact = $derived(screen.phone);
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
+
+  // On a desktop window everything below the header is one column, so a selection changes what lies
+  // above a list and the header's own height (decision 200). The list item (or the map block) a
+  // selection was made in is held where it was on screen, by scrolling the panel each time anything
+  // in it changes, until the panel is scrolled some other way; so the second click of a double click
+  // lands where the first did. When the panel cannot scroll back far enough (it is at its top), a
+  // space under the header makes up the rest; it goes once it is scrolled out of sight.
+  let panelBox = $state<HTMLElement>();
+  let room = $state<HTMLElement>();
+  let mapBox = $state<HTMLElement>();
+  let held: { el: Element; top: number } | undefined;
+  let holding = false; // the selection under way was made in the column
+  let scrolled = 0; // where the panel's own scrolling left it
+  function hold(el: Element) {
+    if (compact) return;
+    held = { el, top: el.getBoundingClientRect().top };
+    holding = true;
+  }
+  const release = () => (held = undefined);
+  function keepHeld() {
+    if (!held || !panelBox || !room) return;
+    if (!held.el.isConnected) return release();
+    const off = () => held!.el.getBoundingClientRect().top - held!.top,
+      space = () => room!.getBoundingClientRect().height;
+    let drift = off();
+    if (Math.abs(drift) < 0.05) return;
+    // Where the panel would scroll to, counting the space as scrolling above the top.
+    const to = panelBox.scrollTop - space() + drift;
+    room.style.height = `${Math.max(0, -to)}px`;
+    panelBox.scrollTop = Math.max(0, to);
+    // The panel scrolls by whole pixels: the space takes up the fraction left.
+    drift = off();
+    if (drift > space()) {
+      panelBox.scrollTop += 1;
+      drift = off();
+    }
+    room.style.height = `${Math.max(0, space() - drift)}px`;
+    scrolled = panelBox.scrollTop;
+  }
+  // A press or a key anywhere else in the panel ends it too: what that changes (Show map, Read more)
+  // moves what lies below, as without a hold.
+  const pressed = (e: Event) => held && !held.el.contains(e.target as Node) && release();
+  $effect(() => {
+    const panel = panelBox;
+    if (!panel || compact) return;
+    const seen = new MutationObserver(keepHeld);
+    seen.observe(panel, { subtree: true, childList: true, characterData: true, attributes: true });
+    panel.addEventListener("pointerdown", pressed);
+    panel.addEventListener("keydown", pressed);
+    return () => {
+      seen.disconnect();
+      panel.removeEventListener("pointerdown", pressed);
+      panel.removeEventListener("keydown", pressed);
+    };
+  });
+  function onscroll() {
+    if (compact || !panelBox || !room) return;
+    if (Math.abs(panelBox.scrollTop - scrolled) > 1) release();
+    // The space, once scrolled out of sight behind the header, goes without moving anything.
+    const space = room.getBoundingClientRect().height;
+    if (space && !held && panelBox.scrollTop >= space) {
+      room.style.height = "0px";
+      panelBox.scrollTop -= space;
+    }
+    scrolled = panelBox.scrollTop;
+  }
 
   // A new selection or Focus: the lists follow it, unless the click came from that list. (Read
   // through the deriveds, which change only with their value; model changes on every action.)
@@ -77,11 +144,22 @@
         versesOf = next;
         selectedBox?.scrollTo(0, 0); // read from the name down, not from where a long entry was left
       }
+      // On a desktop window a selection made outside the column, or a new Focus, also reads from
+      // the name down; one made in the column holds where it was clicked.
+      if (!compact && !holding) {
+        release();
+        if (room) room.style.height = "0px";
+        panelBox?.scrollTo(0, 0);
+      }
       keep = undefined;
+      holding = false;
     });
   });
-  function pick(id: Id, from: "neighbours" | "verses") {
-    if (id !== model.selected) keep = from;
+  function pick(id: Id, from: "neighbours" | "verses", el: Element) {
+    if (id !== model.selected) {
+      keep = from;
+      hold(el);
+    }
     apply({ type: "select", id });
   }
 
@@ -139,7 +217,7 @@
   });
 </script>
 
-<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node">
+<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight}px`} bind:this={panelBox} {onscroll}>
   {#if noWebGL}
     <p class="fallback">
       This browser has no WebGL, so the graph is not drawn. The lists below work alone:
@@ -147,27 +225,31 @@
     </p>
   {/if}
   {@render controls?.()}
-  <!-- Fixed height, so the Neighbour lists below never move between the two clicks of a double click. -->
+  <!-- On a phone, a section of fixed height, so the Neighbour lists below never move between the two
+       taps of a double tap. On a desktop window it draws no box of its own: its header stays at the
+       top of the panel and the rest scrolls behind it, one column with the lists (decision 200). -->
   <section class="selected" bind:this={selectedBox}>
-    <!-- The name, the type line, and the Relationship line have fixed heights, so the shared Verses
-         below never move between the two clicks of a double click; a long text is cut, and whole
-         in its title. -->
-    <h2 class="line" title={label(selected)}>{label(selected)}</h2>
-    {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
-    {#if verseText}
-      {#await verseText then t}<p class="verse-full">{t}</p>{/await}
-    {/if}
-    <!-- Each item (type, Relationship, fact, linked Verse) has its source and licence in its hover
-         title only; the credits page lists them all (decision 139). A Verse's own text has no
-         shared list below it to hold in place, so an empty line is not kept for it. -->
-    <p class="relationship" hidden={!link && !!verseText} title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
-      <!-- The one Relationship line keeps the full words; the lists drop the fixed ones (decision 142). -->
-      {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
-          {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
-        {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
-    </p>
+    <!-- The name, the type line, the Relationship line when there is one, and on a desktop window the
+         buttons; a long text is cut, and whole in its title. -->
+    <div class="head" bind:offsetHeight={headHeight}>
+      <h2 class="line" title={label(selected)}>{label(selected)}</h2>
+      {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
+      {#if compact}{@render verse()}{/if}
+      <!-- Each item (type, Relationship, fact, linked Verse) has its source and licence in its hover
+           title only; the credits page lists them all (decision 139). On a phone the line keeps its
+           height when empty, so the shared Verses below it never move between two taps, except
+           under a Verse's own text, which has no shared list below it to hold in place. -->
+      <p class="relationship" hidden={!link && (!compact || !!verseText)} title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
+        <!-- The one Relationship line keeps the full words; the lists drop the fixed ones (decision 142). -->
+        {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
+            {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
+          {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
+      </p>
+      {#if !compact}<div class="buttons">{@render actions()}</div>{/if}
+    </div>
+    {#if !compact}<div class="room" bind:this={room}></div>{/if}
+    {#if !compact}{@render verse()}{/if}
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
-    {#if !compact}{@render actions()}{/if}
     {#await sharing then lists}
       {#each lists as { with: o, verses }, i (o)}
         {#if verses.length}
@@ -223,10 +305,21 @@
     {/await}
   </section>
   {#if compact}<div class="actions">{@render actions()}</div>{/if}
-  <!-- The map's own block, below the fixed section (and on a phone its actions), so the map can be
-       taller than the section allows. It keeps one height whatever it shows, so the lists below
-       never move between the two clicks of a double click. -->
-  <PlaceMap {data} {model} select={(id) => apply({ type: "select", id })} {makeFocus} />
+  <!-- The map's own block, below the Selected Node's section (on a phone, below its actions), so the
+       map can be taller than the section allows. It keeps one height whatever it shows, so the lists
+       below never move between the two clicks of a double click; on a desktop window a selection
+       made on the map holds the block where it was (decision 200). -->
+  <div bind:this={mapBox}>
+    <PlaceMap
+      {data}
+      {model}
+      select={(id) => {
+        if (id !== model.selected) hold(mapBox!);
+        apply({ type: "select", id });
+      }}
+      {makeFocus}
+    />
+  </div>
   {#await listing then list}
     <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
          in its title and a correction link after it; a link between two Entities is a
@@ -297,7 +390,7 @@
 {/snippet}
 <!-- A click selects and a double click makes the Focus, as in the scene. -->
 {#snippet item(id: Id, words: string, from: "neighbours" | "verses")}
-  <button class="item" class:sel={id === selected} onclick={() => pick(id, from)} ondblclick={() => makeFocus(id)}>
+  <button class="item" class:sel={id === selected} onclick={(e) => pick(id, from, e.currentTarget)} ondblclick={() => makeFocus(id)}>
     {data.label(id, false)}
     {#if words}<span class="muted">{words}</span>{/if}
   </button>
@@ -312,6 +405,11 @@
 <!-- A small link that opens the correction form for one item. -->
 {#snippet fix(what: string, kind: CorrectionRequest["kind"], nodeIds: Id[], currentValue: string)}
   <button class="fix" aria-label="Suggest a correction to {what}" title="Suggest a correction" onclick={() => suggest(kind, nodeIds, currentValue)}>Suggest a correction</button>
+{/snippet}
+{#snippet verse()}
+  {#if verseText}
+    {#await verseText then t}<p class="verse-full">{t}</p>{/await}
+  {/if}
 {/snippet}
 {#snippet typeLine(source?: string)}
   <p class="muted line" title={source ? `${selectedType}, from ${source}` : selectedType}>{selectedType}</p>
@@ -337,6 +435,7 @@
     background: rgba(20, 23, 34, 0.92);
     border-left: 1px solid #262a3c;
     transition: transform 0.2s;
+    overflow-anchor: none; /* the panel holds a clicked item itself (decision 200), in every browser */
   }
   /* Below the search box and the hint, and right of the reader drawer when it is open. */
   .panel.full {
@@ -367,13 +466,41 @@
     background: none;
     border: 0;
     transform: none;
+    overflow-anchor: auto;
   }
   .fallback {
     color: #ffd27a;
   }
-  /* A soft fade at the bottom edge while more of the section is below (decision 148). The scroll
-     timeline sets its height, and is inactive when nothing overflows, leaving it at 0. The second
-     mask layer keeps the bottom border. A control focused with the keyboard is never faded. */
+  /* On a desktop window the section draws no box: its header is held at the top of the panel, opaque
+     and the panel's full width, and the rest scrolls behind it with the lists (decision 200). */
+  .selected {
+    display: contents;
+  }
+  .head {
+    position: sticky;
+    top: -12px; /* the panel's top edge, above its padding */
+    z-index: 1;
+    margin: -12px -16px 0;
+    padding: 12px 16px 6px;
+    background: #131621; /* the panel's colour over the page, without its transparency */
+    border-bottom: 1px solid #262a3c;
+  }
+  :global(html[data-phone]) .head {
+    display: contents;
+  }
+  /* A control focused, or a target scrolled into view, lands below the header (--head, its height on
+     a desktop window). A margin on everything in the column, not a padding on the panel, so the
+     header's own buttons, always in view, never scroll the panel when focused. */
+  .panel :global(*) {
+    scroll-margin-top: var(--head, 0px);
+  }
+  .head,
+  .head :global(*) {
+    scroll-margin-top: 0;
+  }
+  /* A soft fade at the bottom edge of the phone's section while more of it is below (decision 148).
+     The scroll timeline sets its height, and is inactive when nothing overflows, leaving it at 0. The
+     second mask layer keeps the bottom border. A control focused with the keyboard is never faded. */
   @property --fade {
     syntax: "<length>";
     inherits: false;
@@ -387,8 +514,10 @@
       --fade: 0px;
     }
   }
-  .selected {
-    height: 40%;
+  /* 40% of the sheet, fixed for the double tap (decision 171). */
+  :global(html[data-phone]) .selected {
+    display: block;
+    height: calc(var(--sheet) * 0.4);
     overflow-y: auto;
     border-bottom: 1px solid #262a3c;
     mask:
@@ -398,12 +527,8 @@
     animation-timeline: scroll(self);
     animation-range: calc(100% - 24px) 100%; /* it shrinks over the last 24px of scrolling */
   }
-  .selected:has(:focus-visible) {
+  :global(html[data-phone]) .selected:has(:focus-visible) {
     animation: none;
-  }
-  /* 40% of the sheet on a phone, fixed for the same reason (decision 171). */
-  :global(html[data-phone]) .selected {
-    height: calc(var(--sheet) * 0.4);
   }
   /* On a phone the actions are one row of fixed height between the section and the lists, held at
      the top of the panel while the lists scroll under it; the lists below never move between two taps. */
@@ -465,11 +590,13 @@
     margin: 0 0 8px 4px;
     opacity: 0.85;
   }
-  /* A long Verse scrolls in its own box, so the buttons below it stay in reach. */
   .verse-full {
+    margin: 6px 0;
+  }
+  /* On a phone a long Verse scrolls in its own box, so the shared Verses below it stay in reach. */
+  :global(html[data-phone]) .verse-full {
     max-height: 11.6em;
     overflow-y: auto;
-    margin: 6px 0;
   }
   .more {
     margin: 4px 0;
@@ -491,15 +618,11 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  /* Three lines whether or not there is a Relationship: two for the words, then its correction
-     link. */
-  .relationship {
-    height: 4.35em;
-    overflow: hidden;
-  }
-  /* On a phone the correction link below the words is 44 px tall. */
+  /* At most two lines for the words, then the correction link. On a phone the line keeps that height
+     with or without a Relationship, and the correction link is 44 px tall. */
   :global(html[data-phone]) .relationship {
     height: calc(2.9em + 44px);
+    overflow: hidden;
   }
   .words {
     display: -webkit-box;
