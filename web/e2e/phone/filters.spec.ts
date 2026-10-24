@@ -43,3 +43,33 @@ test("the Filters button at the top of the Details tab scrolls the tab to the fi
   const box = (await sheet.boundingBox())!;
   expect(box.y + box.height).toBeCloseTo(844, 0);
 });
+
+test("a long list in the Details tab has a filter box that fits the screen and narrows the list", async ({ page }) => {
+  await open(page);
+  const box = details(page).getByRole("searchbox", { name: "Filter Person" });
+  await box.scrollIntoViewIfNeeded();
+  const at = (await box.boundingBox())!;
+  expect(at.x).toBeGreaterThanOrEqual(0);
+  expect(at.x + at.width).toBeLessThanOrEqual(390);
+  await box.fill("Isaac");
+  await expect(details(page).getByRole("list", { name: /^Person \(\d+ of 24\)$/ })).toContainText("Isaac");
+  await details(page).getByRole("button", { name: "Clear filter Person" }).tap();
+  await expect(box).toHaveValue("");
+});
+
+test("the filter box sits inside the Details section, Escape clears it, and focusing it does not move the section", async ({ page }) => {
+  await open(page);
+  const sheet = page.getByRole("region", { name: "Sheet" });
+  const box = details(page).getByRole("searchbox", { name: "Filter Person" });
+  await box.scrollIntoViewIfNeeded();
+  const s = (await sheet.boundingBox())!;
+  const at = (await box.boundingBox())!;
+  expect(at.y).toBeGreaterThanOrEqual(s.y);
+  expect(at.y + at.height).toBeLessThanOrEqual(s.y + s.height);
+  await box.tap();
+  await box.fill("Isaac");
+  expect((await sheet.boundingBox())!).toEqual(s);
+  await box.press("Escape");
+  await expect(box).toHaveValue("");
+  await expect(details(page).getByRole("heading", { name: "Person (24)" })).toBeVisible();
+});

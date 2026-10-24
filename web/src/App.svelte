@@ -35,8 +35,8 @@
   let failure = $state<{ message: string; retry: () => void }>();
   let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
-  // The splash on a first visit in this browser (decision 202), and again from the Welcome link
-  // (decision 203); the hint waits until it closes, and while a tour is asked for or runs.
+  // The splash on a first visit in this browser (decision 203), and again from the Welcome link
+  // (decision 204); the hint waits until it closes, and while a tour is asked for or runs.
   let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
@@ -264,7 +264,7 @@
     if (graph) startTour();
   }
 
-  // The first-run tour (decisions 155 and 203), started from the splash or the footer's link. While
+  // The first-run tour (decisions 155 and 204), started from the splash or the footer's link. While
   // it runs nothing is kept in this browser and the address is replaced, not pushed; when it ends,
   // the reader's state comes back (on a phone the sheet's tab too) and a note written in it goes
   // unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back too
@@ -564,7 +564,7 @@
 <!-- On a phone the footer is the end of the Details tab. -->
 {#if !screen.phone}<footer>{@render about()}</footer>{/if}
 {#snippet about()}
-  <!-- The splash again (decision 203); a tour running stays under it. -->
+  <!-- The splash again (decision 204); a tour running stays under it. -->
   <button class="link" onclick={() => (splash = true)}>Welcome</button><span class="muted">. </span>
   {#if onScreen && !noWebGL}<button class="link" onclick={startTour}>Help: take the tour</button><span class="muted">. </span>{/if}
   <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {version}{/if}</span>

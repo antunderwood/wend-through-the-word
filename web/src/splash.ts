@@ -1,4 +1,4 @@
-// The splash's words (decision 202), apart from its layout in Splash.svelte. The description is the
+// The splash's words (decision 203), apart from its layout in Splash.svelte. The description is the
 // page's own, in index.html's description, which link previews show.
 import type { NodeType } from "./model";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  // The tour box: one step at a time, then the end (the splash invites the reader, decision 203). A
+  // The tour box: one step at a time, then the end (the splash invites the reader, decision 204). A
   // ring marks the step's target and the box never covers it, nor the node the step asks for
   // (decisions 155 and 187). Props only; App saves and restores the reader's state.
   import { untrack } from "svelte";

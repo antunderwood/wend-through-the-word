@@ -27,6 +27,10 @@ export const typePlural = (t: NodeType) => TYPE_PLURAL[t][0].toUpperCase() + TYP
 // An Overflow Node's text: "+42 locations", "+1 location".
 export const overflowText = (count: number, t: NodeType) => `+${count} ${count === 1 ? TYPE_NAME[t].toLowerCase() : TYPE_PLURAL[t]}`;
 
+// A name or query as the panel's list filter compares it: trimmed, without accents, in lower case
+// (decision 202).
+export const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().trim();
+
 // Entity IDs are "type:slug", Verse IDs are bare 8 digit Verse Keys, Overflow Nodes are "overflow:type".
 export type Id = string;
 export const typeOf = (id: Id): NodeType | "overflow" =>

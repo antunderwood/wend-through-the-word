@@ -1,9 +1,9 @@
 <script lang="ts">
-  // The splash on a first visit (decision 202): a modal dialog over the app, named by its title, with
+  // The splash on a first visit (decision 203): a modal dialog over the app, named by its title, with
   // the site icon's graph drawn large and the page's description. It opens from the page's own code,
   // so it shows while the data loads behind it. The browser's modal dialog makes the app behind it
   // inert and takes focus to the first button; a tap outside does nothing. Props only; App keeps the
-  // remembered flag, moves focus to the graph when it closes, and starts the tour (decision 203);
+  // remembered flag, moves focus to the graph when it closes, and starts the tour (decision 204);
   // without WebGL it passes no ontour, so there is no Take the tour.
   import { onMount } from "svelte";
   import { typeColour } from "./colours";

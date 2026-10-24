@@ -103,7 +103,7 @@ test("the page works when browser storage is blocked", async ({ page }) => {
   // Nothing can be kept, so the address names Abraham.
   await page.goto(`/?focus=${ABRAHAM}`);
   await firstFrameWith(page, ABRAHAM);
-  await start(page).click(); // with nothing kept, the splash shows on each visit (decision 202)
+  await start(page).click(); // with nothing kept, the splash shows on each visit (decision 203)
   await page.getByRole("button", { name: "Dismiss hint" }).click();
   await expect(page.getByText("A click selects a node")).toBeHidden();
 });

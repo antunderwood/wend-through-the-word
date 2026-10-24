@@ -109,7 +109,7 @@ Every node that has been the Focus in this browser, until the reader clears it, 
 _Avoid_: Trail (the earlier name), breadcrumb (as a separate concept), history
 
 **Splash**:
-The screen over the app on a first visit in a browser: the title, the site icon's graph drawn large, the page's description, and two buttons, Start exploring and Take the tour. Shown once per browser; the Welcome link shows it again (decisions 202 and 203).
+The screen over the app on a first visit in a browser: the title, the site icon's graph drawn large, the page's description, and two buttons, Start exploring and Take the tour. Shown once per browser; the Welcome link shows it again (decisions 203 and 204).
 _Avoid_: Welcome screen, intro, modal
 
 **Welcome**:

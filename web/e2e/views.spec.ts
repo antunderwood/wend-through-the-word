@@ -55,7 +55,7 @@ test("blocked storage falls back to the tilted plane without an error", async ({
     }),
   );
   await page.goto("/");
-  await start(page).click(); // with nothing kept, the splash shows on each visit (decision 202)
+  await start(page).click(); // with nothing kept, the splash shows on each visit (decision 203)
   await sceneReady(page);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
   await picker(page).getByRole("radio", { name: "Stacked discs" }).click();

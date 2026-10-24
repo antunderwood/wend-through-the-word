@@ -6,7 +6,7 @@
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
   import PlaceMap from "./PlaceMap.svelte";
-  import { passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import { fold, passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import { screen } from "./screen.svelte";
   import type { Notes } from "./session";
 
@@ -61,6 +61,10 @@
   const PAGE = 100;
   let pages = $state<Record<string, number>>({});
   const paged = <T,>(key: string, rows: T[]) => rows.slice(0, pages[key] ?? PAGE);
+  // A long list's filter box (decision 202): the query per list, by the same "owner|type" key as
+  // `opened`. Dropped when the lists' owner or the Focus changes; not in the address.
+  let queries = $state<Record<string, string>>({});
+  let queriedFocus = untrack(() => model.focus);
 
   const selected = $derived(model.selected);
   // A phone, upright or on its side: the Selected Node's section is too short to hold its actions.
@@ -167,6 +171,10 @@
     const next = selected;
     void focus;
     untrack(() => {
+      if (keep !== "neighbours" || focus !== queriedFocus) {
+        queries = {};
+        queriedFocus = focus;
+      }
       if (keep !== "neighbours") neighboursOf = next;
       if (keep !== "verses") {
         versesOf = next;
@@ -359,26 +367,66 @@
       {@const key = `${neighboursOf}|${t}`}
       {@const pageKey = `${list.r.id}|${key}`}
       {@const k = model.filters.k}
+      {@const query = all.length > k ? fold(queries[key] ?? "") : ""}
+      {@const rows = query ? all.filter((l) => fold(data.label(l.id, false)).includes(query)) : all}
       {#if all.length}
-        <h3 id="list-{t}">{TYPE_NAME[t]} ({all.length})</h3>
-        <ol aria-labelledby="list-{t}" data-tour="list-{t}">
-          {#each list.whole || opened[key] ? paged(pageKey, all) : all.slice(0, k) as l (l.id)}
-            {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
-            {@const shown = relationWords(list.r.type, l, data.genderOf, plainName(list.r.id)).text}
-            {@const kin = isEntity(list.r.id) && isEntity(l.id)}
-            <li title={credit(l.edges)}>
-              {@render item(l.id, shown, "neighbours")}
-              {@render fix(
-                `the link to ${data.label(l.id)}`,
-                kin ? "relationship" : "verse",
-                [list.r.id, l.id],
-                kin ? `${plainName(l.id)}: ${words}` : `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`,
-              )}
-            </li>
-          {/each}
-        </ol>
-        {#if list.whole || opened[key]}{@render more(pageKey, all.length)}{/if}
-        {#if !list.whole && all.length > k}
+        <h3 id="list-{t}">{TYPE_NAME[t]} ({query ? `${rows.length} of ` : ""}{all.length})</h3>
+        <!-- A list longer than the top K cut has a box that searches all of it, and lists every match
+             as an opened list does (decision 202). -->
+        {#if all.length > k}
+          <div class="filter">
+            <input
+              type="search"
+              aria-label="Filter {TYPE_NAME[t]}"
+              autocomplete="off"
+              value={queries[key] ?? ""}
+              oninput={(e) => {
+                queries[key] = e.currentTarget.value;
+                pages[pageKey] = PAGE;
+              }}
+              onkeydown={(e) => {
+                if (e.key === "Escape" && queries[key]) {
+                  queries[key] = "";
+                  pages[pageKey] = PAGE;
+                }
+              }}
+            />
+            {#if query}
+              <button
+                class="clear"
+                aria-label="Clear filter {TYPE_NAME[t]}"
+                onclick={(e) => {
+                  queries[key] = "";
+                  pages[pageKey] = PAGE;
+                  e.currentTarget.parentElement!.querySelector("input")!.focus();
+                }}>Clear</button
+              >
+            {/if}
+            <span class="live" aria-live="polite">{query ? `${rows.length} of ${all.length} match` : ""}</span>
+          </div>
+        {/if}
+        {#if !rows.length}
+          <p class="muted">No match</p>
+        {:else}
+          <ol aria-labelledby="list-{t}" data-tour="list-{t}">
+            {#each query || list.whole || opened[key] ? paged(pageKey, rows) : all.slice(0, k) as l (l.id)}
+              {@const words = relation(l, data.genderOf, plainName(list.r.id)).text}
+              {@const shown = relationWords(list.r.type, l, data.genderOf, plainName(list.r.id)).text}
+              {@const kin = isEntity(list.r.id) && isEntity(l.id)}
+              <li title={credit(l.edges)}>
+                {@render item(l.id, shown, "neighbours")}
+                {@render fix(
+                  `the link to ${data.label(l.id)}`,
+                  kin ? "relationship" : "verse",
+                  [list.r.id, l.id],
+                  kin ? `${plainName(l.id)}: ${words}` : `${plainName(list.r.id)}: ${words} (${data.label(l.id)})`,
+                )}
+              </li>
+            {/each}
+          </ol>
+        {/if}
+        {#if query || list.whole || opened[key]}{@render more(pageKey, rows.length)}{/if}
+        {#if !query && !list.whole && all.length > k}
           <button class="more" data-tour="more-{t}" aria-expanded={!!opened[key]} onclick={() => (opened[key] = !opened[key])}>
             <span aria-hidden="true">{opened[key] ? "▾" : "▸"}</span>
             {opened[key] ? `Show ${linked ? "first" : "top"} ${k}` : `${all.length - k} more`}
@@ -626,6 +674,52 @@
   :global(html[data-phone]) .verse-full {
     max-height: 11.6em;
     overflow-y: auto;
+  }
+  /* A short filtered list leaves the column shorter than the panel, so a selection that grows what lies
+     above it could not be held where it was clicked (decision 201); a screen of room below lets it.
+     The Clear button is shown exactly while a list has an active query (a non-blank query in a box
+     that is shown), so it is the test. */
+  :global(html:not([data-phone])) .panel:has(.filter .clear) {
+    padding-bottom: 100vh;
+  }
+  /* A long list's filter box: the clear button sits in its right end; the count for screen readers
+     is out of sight. */
+  .filter {
+    position: relative;
+    margin: 2px 0 6px;
+  }
+  .filter input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 3px 56px 3px 8px;
+    border: 1px solid #262a3c;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    font: inherit;
+  }
+  .filter input::-webkit-search-cancel-button {
+    display: none; /* the Clear button is the one control, in every browser */
+  }
+  .filter .clear {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  .live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  :global(html[data-phone]) .filter input {
+    font-size: 16px; /* under 16px iOS zooms the page when the box is focused */
   }
   .more {
     margin: 4px 0;
