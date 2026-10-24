@@ -3,11 +3,12 @@
   // the site icon's graph drawn large and the page's description. It opens from the page's own code,
   // so it shows while the data loads behind it. The browser's modal dialog makes the app behind it
   // inert and takes focus to the first button; a tap outside does nothing. Props only; App keeps the
-  // remembered flag and moves focus to the graph when it closes.
+  // remembered flag, moves focus to the graph when it closes, and starts the tour (decision 203);
+  // without WebGL it passes no ontour, so there is no Take the tour.
   import { onMount } from "svelte";
   import { SPLASH } from "./splash";
 
-  let { onclose }: { onclose: () => void } = $props();
+  let { onclose, ontour }: { onclose: () => void; ontour?: () => void } = $props();
   let dialog: HTMLDialogElement;
   onMount(() => dialog.showModal());
 
@@ -20,6 +21,10 @@
     closed = true;
     dialog.close();
     onclose();
+  }
+  function tour() {
+    close();
+    ontour!();
   }
 
   // Escape closes it wherever focus is (after a tap on the backdrop, on the inert page). The browser
@@ -57,9 +62,11 @@
   <div class="words">
     <h2 id="splash-title">{SPLASH.title}</h2>
     <p id="splash-text">{SPLASH.description}</p>
-    <!-- One row of buttons: Start exploring first, so it takes focus when the splash opens. -->
+    <!-- One row of buttons, wrapped when narrow: Start exploring first, so it takes focus when the
+         splash opens. -->
     <div class="buttons">
       <button onclick={close}>{SPLASH.start}</button>
+      {#if ontour}<button onclick={tour}>{SPLASH.tour}</button>{/if}
     </div>
   </div>
 </dialog>

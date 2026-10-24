@@ -1,12 +1,14 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs } from "./scene";
-import { firstVisit, fits, splash, start } from "./splash";
+import { firstVisit, fits, splash, start, takeTour } from "./splash";
+import { STEPS } from "../src/tour";
 
 // The splash on a first visit (#98): a dialog named by its title, over the app, until Start
 // exploring or Escape; then the app's own Focus (decision 186).
 const JESUS = "person:jesus_905",
   ABRAHAM = "person:abraham_58";
 const hint = (page: Page) => page.getByText("A click selects a node");
+const tour = (page: Page) => page.getByRole("dialog", { name: "Tour" });
 const inSplash = (page: Page) => splash(page).evaluate((d) => d.contains(document.activeElement));
 // Whether each of the graphic's six discs has an animation (not under reduced motion).
 const animations = (page: Page) => splash(page).locator("circle").evaluateAll((cs) => cs.map((c) => getComputedStyle(c).animationName !== "none"));
@@ -66,6 +68,50 @@ test("a shared link shows the splash first; a tap outside leaves it, Escape clos
   // At once: a reload straight after Escape is a second visit.
   await page.reload();
   await focusIs(page, ABRAHAM);
+  await expect(splash(page)).toBeHidden();
+});
+
+test("Take the tour, pressed before the data, starts the tour at step 1 with no hint over it; the splash is the offer", async ({ page }) => {
+  // A browser with nothing kept: not yet offered the tour either.
+  await page.addInitScript(() => sessionStorage.getItem("splash.spec") || localStorage.removeItem("wend.tourOffered"));
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/data/**", async (route) => (await held, route.continue()));
+  await firstVisit(page);
+  await page.goto("/");
+  await takeTour(page).click();
+  await expect(splash(page)).toBeHidden();
+  release();
+  await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+  await expect(hint(page)).toBeHidden();
+  await tour(page).getByRole("button", { name: "End tour" }).click();
+  await expect(tour(page)).toBeHidden();
+  await expect(hint(page)).toBeVisible();
+  // A second visit: neither the splash nor the tour's offer.
+  await page.reload();
+  await focusIs(page, JESUS);
+  await expect(hint(page)).toBeVisible();
+  await expect(splash(page)).toBeHidden();
+  await expect(tour(page)).toBeHidden();
+});
+
+test("Welcome shows the splash again, over a tour that goes on after it, and the flag stays", async ({ page }) => {
+  const footer = page.getByRole("contentinfo");
+  await page.goto("/");
+  await focusIs(page, JESUS);
+  await footer.getByRole("button", { name: "Help: take the tour" }).click();
+  await tour(page).getByRole("button", { name: "Do it for me" }).click();
+  await expect(tour(page)).toContainText(`Step 2 of ${STEPS.length}`);
+  await footer.getByRole("button", { name: "Welcome" }).click();
+  await expect(splash(page)).toBeVisible();
+  await expect(start(page)).toBeFocused();
+  await expect(takeTour(page)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(splash(page)).toBeHidden();
+  await expect(tour(page)).toContainText(`Step 2 of ${STEPS.length}`);
+  await tour(page).getByRole("button", { name: "End tour" }).click();
+  await page.reload();
+  await focusIs(page, JESUS);
   await expect(splash(page)).toBeHidden();
 });
 

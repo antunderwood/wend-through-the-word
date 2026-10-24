@@ -5,6 +5,7 @@ import { expect, type Page } from "@playwright/test";
 // reload is a second visit.
 export const splash = (page: Page) => page.getByRole("dialog", { name: "Wend Through the Word" });
 export const start = (page: Page) => splash(page).getByRole("button", { name: "Start exploring" });
+export const takeTour = (page: Page) => splash(page).getByRole("button", { name: "Take the tour" });
 
 export async function firstVisit(page: Page) {
   await page.addInitScript(() => {
