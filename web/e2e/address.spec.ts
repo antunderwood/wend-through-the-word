@@ -20,7 +20,7 @@ test("a shared address opens on its Focus and view; selecting and pinning update
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
   const entries = await historyLength(page);
 
-  await panel(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Gerar/ }).click();
+  await panel(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Gerar/ }).click();
   await expect.poll(() => search(page)).toBe("?focus=person:isaac_616&sel=place:gerar_459&view=B");
   await panel(page).getByRole("button", { name: "Pin", exact: true }).click();
   await expect.poll(() => search(page)).toBe("?focus=person:isaac_616&sel=place:gerar_459&pins=place:gerar_459&view=B");

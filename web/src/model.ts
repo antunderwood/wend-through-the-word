@@ -3,9 +3,11 @@
 
 export const TYPES = ["person", "place", "event", "group", "theme", "verse"] as const;
 export type NodeType = (typeof TYPES)[number];
+// The label table: the name and plural the reader sees for each type, wherever one is printed. A
+// Place is shown as a Location, as the L on its disc says (decision 200); the type stays place.
 export const TYPE_NAME: Record<NodeType, string> = {
   person: "Person",
-  place: "Place",
+  place: "Location",
   event: "Event",
   group: "People Group",
   theme: "Theme",
@@ -13,12 +15,17 @@ export const TYPE_NAME: Record<NodeType, string> = {
 };
 export const TYPE_PLURAL: Record<NodeType, string> = {
   person: "people",
-  place: "places",
+  place: "locations",
   event: "events",
   group: "people groups",
   theme: "themes",
   verse: "verses",
 };
+// The plural at the start of a label or as a type's own name in a sentence ("Locations", "People
+// groups"), as the filters show it.
+export const typePlural = (t: NodeType) => TYPE_PLURAL[t][0].toUpperCase() + TYPE_PLURAL[t].slice(1);
+// An Overflow Node's text: "+42 locations", "+1 location".
+export const overflowText = (count: number, t: NodeType) => `+${count} ${count === 1 ? TYPE_NAME[t].toLowerCase() : TYPE_PLURAL[t]}`;
 
 // Entity IDs are "type:slug", Verse IDs are bare 8 digit Verse Keys, Overflow Nodes are "overflow:type".
 export type Id = string;

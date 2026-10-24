@@ -8,7 +8,7 @@
   import type { Data } from "./data";
   import { typeColour } from "./graph";
   import type { MapActions, MapPlace, PlaceMap } from "./map";
-  import { topK, TYPE_NAME, TYPES, typeOf, type Id, type State } from "./model";
+  import { topK, TYPE_NAME, typePlural, TYPES, typeOf, type Id, type State } from "./model";
   import { store, stored } from "./storage";
   import { TILES } from "./tiles";
 
@@ -38,7 +38,8 @@
     toggle?.focus();
   }
 
-  // The view, kept for the session (sessionStorage); where storage is blocked, for the page.
+  // The view, kept for the session (sessionStorage); where storage is blocked, for the page. The
+  // Place view keeps its stored name and shows the reader's label, Location (decision 200).
   const VIEWS = ["Place", "Neighbours", "Journey"] as const;
   type View = (typeof VIEWS)[number];
   const VIEW = "wend.mapView";
@@ -89,11 +90,11 @@
       return pt ? [{ id: x, name: data.label(x), role: x === id ? ("selected" as const) : ("stop" as const), ...pt }] : [];
     });
     const key = `${id}|Journey|${p.join()}`;
-    if (places.length < 2) return { key, own: true, places: [], note: "Fewer than two Places on Your Path have points, so there is no Journey to draw." };
+    if (places.length < 2) return { key, own: true, places: [], note: `Fewer than two ${typePlural("place")} on Your Path have points, so there is no Journey to draw.` };
     const drawn = new Set(places.map((x) => x.id));
     const counts = TYPES.map((t) => {
       const n = p.filter((x) => typeOf(x) === t && !drawn.has(x)).length;
-      const name = t === "place" ? `Place${n > 1 ? "s" : ""} with no point` : `${TYPE_NAME[t]}${n > 1 ? "s" : ""}`;
+      const name = `${n > 1 ? typePlural(t) : TYPE_NAME[t]}${t === "place" ? " with no point" : ""}`;
       return n ? `${n} ${name}` : "";
     }).filter(Boolean);
     const list = counts.length > 1 ? `${counts.slice(0, -1).join(", ")} and ${counts.at(-1)}` : counts[0];
@@ -110,7 +111,7 @@
       const n = await places(focus, "Neighbours", f);
       if (n.places.length) return { ...n, key: `${id}|${n.key}`, own: true, note: `The Focus, ${data.label(focus)}, and its Neighbours.` };
     }
-    return { key: `${id}|none`, own: true, places: [], note: "No Place to show." };
+    return { key: `${id}|none`, own: true, places: [], note: `No ${TYPE_NAME.place} to show.` };
   }
 
   // The map is made when its box first shows, and removed with it.
@@ -157,10 +158,10 @@
         <div class="bar">
           <!-- A Selected Node that is not a Place gets #83's default view, with no switch. -->
           {#if isPlace}<div role="group" aria-label="Map view">
-              {#each VIEWS as v (v)}<button aria-pressed={view === v} onclick={() => choose(v)}>{v}</button>{/each}
+              {#each VIEWS as v (v)}<button aria-pressed={view === v} onclick={() => choose(v)}>{v === "Place" ? TYPE_NAME.place : v}</button>{/each}
             </div>{/if}
         </div>
-        {#if !shown.own}<p class="muted">No point for this Place. Its sources give none, or none this site can use.</p>{/if}
+        {#if !shown.own}<p class="muted">No point for this {TYPE_NAME.place}. Its sources give none, or none this site can use.</p>{/if}
         {#if shown.note}<p class="muted">{shown.note}</p>{/if}
         {#if shown.places.length}
           <!-- The text list names the Places drawn, for a screen reader. -->

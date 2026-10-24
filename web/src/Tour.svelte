@@ -77,7 +77,8 @@
     // A target in the panel is scrolled into its view once; scene names are never scrolled. Any other
     // target brings the panel back to its top, where the Selected Node is. A target taller than half
     // the panel (a long list) is scrolled to its start, as "nearest" would leave it where it is when
-    // it overflows both edges; the panel's scroll padding keeps it below the actions held at its top.
+    // it overflows both edges; the panel's scroll padding (on a phone) or its column's scroll margin
+    // (decision 201) keeps it below the actions or the header held at its top.
     const panel = el && el !== target && el.closest("#panel");
     if (panel) el.scrollIntoView({ block: el.getBoundingClientRect().height > panel.clientHeight / 2 ? "start" : "nearest" });
     else if (el !== target) document.getElementById("panel")?.scrollTo(0, 0);

@@ -24,6 +24,9 @@ test("the footer link opens the About and credits page, which lists every source
     await expect(items.nth(i).getByRole("link", { name: s.name })).toHaveAttribute("href", s.link);
     await expect(items.nth(i)).toContainText(s.licence);
   }
+  // The points' credits call a Place a Location (decision 200); Pleiades keeps its own title.
+  await expect(page.getByRole("list", { name: "Sources" })).toContainText("Coordinates of Locations from OpenBible.info.");
+  await expect(page.getByRole("list", { name: "Sources" })).not.toContainText(/\bPlace\b/);
   // The map's tile provider, as built (decision 199), and library (#84). OpenStreetMap is credited
   // by either provider.
   const map = page.getByRole("list", { name: "Map" });

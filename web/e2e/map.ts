@@ -40,18 +40,35 @@ export const attribution = (map: Locator) => map.locator(".leaflet-control-attri
 export const lines = (credit: Locator) => credit.evaluate((e) => Math.round(e.clientHeight / parseFloat(getComputedStyle(e).lineHeight)));
 export const providerLink = (map: Locator) => attribution(map).getByRole("link", { name: BUILT_TILES.credits[0].name, exact: true });
 
+// How far an element has moved on screen since the next press began, read in the page as the press
+// lands. A click on a dot can be retried (while the dots are drawn again, the map is what lies under
+// the point), and Playwright scrolls the dot into view again before each try, so a position read
+// before the click can be stale by the time the reader's press would land.
+export async function movedSincePress(el: Locator) {
+  type Pressed = Window & { topAtPress?: number };
+  await el.evaluate((e) =>
+    document.addEventListener("pointerdown", () => ((window as Pressed).topAtPress = e.getBoundingClientRect().top), { capture: true, once: true }),
+  );
+  return () => el.evaluate((e) => e.getBoundingClientRect().top - (window as Pressed).topAtPress!);
+}
+
 // Where on the page the Selected Place's dot is.
 export const selectedDot = async (map: Locator) => (await map.locator(".map-place.selected .dot").boundingBox())!;
 
 // Drags the map with the mouse, 60 px right and 30 px up, and waits until the Selected Place's dot
 // has moved with it. The mouse is held still before it lets go, so the map does not drift on with
 // motion: the library's drift, for a drag still moving in its last 50 ms, starts a frame later, which
-// on software WebGL can be after the caller has taken the map for still.
+// on software WebGL can be after the caller has taken the map for still. The drag starts near the
+// foot of the part of the map in the window: the map can run past the window's foot (a click that
+// Playwright retried scrolls the panel), and a press below the window reaches nothing. The press must
+// land on the map itself, not on a control over it.
 export async function pan(page: Page, map: Locator) {
   const [dot, box] = [await selectedDot(map), (await map.boundingBox())!];
-  await page.mouse.move(box.x + 30, box.y + box.height - 30);
+  const from = { x: box.x + 30, y: Math.min(box.y + box.height, page.viewportSize()!.height) - 30 };
+  expect(await map.evaluate((m, p) => m.contains(document.elementFromPoint(p.x, p.y)) && !document.elementFromPoint(p.x, p.y)!.closest(".leaflet-control"), from)).toBe(true);
+  await page.mouse.move(from.x, from.y);
   await page.mouse.down();
-  await page.mouse.move(box.x + 90, box.y + box.height - 60, { steps: 8 });
+  await page.mouse.move(from.x + 60, from.y - 30, { steps: 8 });
   await page.waitForTimeout(100);
   await page.mouse.up();
   await expect.poll(async () => (await selectedDot(map)).x - dot.x).toBeGreaterThan(30);

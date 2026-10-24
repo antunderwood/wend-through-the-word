@@ -29,6 +29,10 @@ _Avoid_: Summary, description
 Any node that is not a Verse: a Person, a Place, an Event, a People Group, or a Theme. Theographic decides what counts as one Person, Place, Event, or People Group.
 _Avoid_: Item, thing, object
 
+**Place**:
+A named location in the Bible, such as Bethlehem, as Theographic gives it; its ID starts `place:`. The reader sees a Place labelled "Location" (plural "locations"), to match the L on its disc in the graph: in the panel, search, the filters, the map, the tour, the notes download, and the credits (decision 200). "Place" stays the term here, in the code, the data, and the address.
+_Avoid_: Location (except as the label the reader sees)
+
 **People Group**:
 A named collective of people, such as the Israelites.
 _Avoid_: Group (ambiguous with Overflow Node)
@@ -90,7 +94,7 @@ The top Neighbours of the Focus, by weight, for each node type.
 Up to three of the heaviest Neighbours of each Ring 1 node that pass the current filters, shown faint and unlabelled.
 
 **Overflow Node**:
-A single node standing for the remaining Neighbours of one type that did not fit in Ring 1, such as "+42 places". Opening it lists those Neighbours; it never adds them to the scene.
+A single node standing for the remaining Neighbours of one type that did not fit in Ring 1, such as "+42 locations". Opening it lists those Neighbours; it never adds them to the scene.
 _Avoid_: Group, cluster
 
 **Pinned Node**:

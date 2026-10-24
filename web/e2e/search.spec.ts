@@ -32,7 +32,9 @@ test("Enter picks the first result, within the chosen type", async ({ page }) =>
   const box = page.getByRole("searchbox", { name: "Search" });
   // Fixture: Canaan is a Person and a Place; the Person comes first with no type chosen.
   await box.fill("Canaan");
-  await page.getByRole("group", { name: "Filter by type" }).getByRole("button", { name: "Place" }).click();
+  await page.getByRole("group", { name: "Filter by type" }).getByRole("button", { name: "Location" }).click();
+  // A Place's result names its type Location (decision 200).
+  await expect(page.getByRole("list", { name: "Search results" }).getByRole("button").first()).toHaveText(/^Canaan.*Location$/);
   await box.press("Enter");
   await expect.poll(() => focusOf(page)).toBe("place:canaan_272");
   await expect(page.getByRole("list", { name: "Search results" })).toBeHidden();

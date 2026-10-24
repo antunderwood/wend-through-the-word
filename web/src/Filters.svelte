@@ -8,7 +8,7 @@
   // Vote Limit, the book filter (decision 130), and animation. On a phone it is inline, a section of
   // the Details tab instead (decision 115).
   import { typeColour as colour } from "./graph";
-  import { TYPES, TYPE_PLURAL, type NodeType, type State } from "./model";
+  import { TYPES, typePlural, type NodeType, type State } from "./model";
 
   type Filters = State["filters"];
   let {
@@ -42,7 +42,7 @@
     {#each TYPES as t (t)}
       <label style="--c: {colour(t)}">
         <input type="checkbox" checked={!filters.hidden.includes(t)} onchange={(e) => show(t, e.currentTarget.checked)} />
-        {TYPE_PLURAL[t][0].toUpperCase() + TYPE_PLURAL[t].slice(1)}
+        {typePlural(t)}
       </label>
     {/each}
   </fieldset>
