@@ -46,13 +46,14 @@ test("an Overflow Node opens its type's full list and never changes the scene", 
 });
 
 // Decision 200: a Place is shown to the reader as a Location, in the singular and the plural.
-test("a Place's list is headed Location and its Overflow Node counts locations", async ({ page }) => {
+test("a Place's list is headed Location and its Overflow Node counts locations, one in the singular", async ({ page }) => {
   await expect(typeList(page, "Location (6)").getByRole("listitem")).toHaveCount(6);
   // Fixture: Isaac has one Place behind the Overflow Node.
   await doubleClickLabel(page, "Isaac", "person:isaac_616");
   const overflow = (await nodes(page)).find((n) => n.id === "overflow:place")!;
   await page.mouse.click(overflow.x, overflow.y);
-  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+1 locations");
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("+1 location");
+  await expect(page.locator(".labels").getByText("+1 location", { exact: true })).toBeVisible();
   await expect(panel(page).getByRole("heading", { name: /^Location \(\d+\)$/ })).toBeVisible();
 });
 

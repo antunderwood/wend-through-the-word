@@ -8,7 +8,7 @@
   import type { Data } from "./data";
   import { typeColour } from "./graph";
   import type { MapActions, MapPlace, PlaceMap } from "./map";
-  import { topK, TYPE_NAME, TYPES, typeOf, type Id, type State } from "./model";
+  import { topK, TYPE_NAME, typePlural, TYPES, typeOf, type Id, type State } from "./model";
   import { store, stored } from "./storage";
   import { TILES } from "./tiles";
 
@@ -90,11 +90,11 @@
       return pt ? [{ id: x, name: data.label(x), role: x === id ? ("selected" as const) : ("stop" as const), ...pt }] : [];
     });
     const key = `${id}|Journey|${p.join()}`;
-    if (places.length < 2) return { key, own: true, places: [], note: `Fewer than two ${TYPE_NAME.place}s on Your Path have points, so there is no Journey to draw.` };
+    if (places.length < 2) return { key, own: true, places: [], note: `Fewer than two ${typePlural("place")} on Your Path have points, so there is no Journey to draw.` };
     const drawn = new Set(places.map((x) => x.id));
     const counts = TYPES.map((t) => {
       const n = p.filter((x) => typeOf(x) === t && !drawn.has(x)).length;
-      const name = `${TYPE_NAME[t]}${n > 1 ? "s" : ""}${t === "place" ? " with no point" : ""}`;
+      const name = `${n > 1 ? typePlural(t) : TYPE_NAME[t]}${t === "place" ? " with no point" : ""}`;
       return n ? `${n} ${name}` : "";
     }).filter(Boolean);
     const list = counts.length > 1 ? `${counts.slice(0, -1).join(", ")} and ${counts.at(-1)}` : counts[0];

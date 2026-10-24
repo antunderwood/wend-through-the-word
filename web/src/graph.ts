@@ -4,7 +4,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
-import { TYPE_PLURAL, type Id, type NodeType, type Role, type Scene, type SceneEdge, type SceneNode, type View } from "./model";
+import { overflowText, type Id, type NodeType, type Role, type Scene, type SceneEdge, type SceneNode, type View } from "./model";
 import { viewA } from "./views/a";
 import { viewB } from "./views/b";
 import { viewC } from "./views/c";
@@ -351,7 +351,7 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     const d = document.createElement("div");
     d.className = `nl ${n.role}${n.shared ? " shared" : ""}${n.id === selected ? " selected" : ""}`;
     d.dataset.node = n.id;
-    d.textContent = n.role === "overflow" ? `+${n.count} ${TYPE_PLURAL[n.type]}` : label(n.id);
+    d.textContent = n.role === "overflow" ? overflowText(n.count!, n.type) : label(n.id);
     // The Focus shows its first line; a Verse always shows its quote (PRD 10.4 node look 5).
     const q = n.role === "focus" || n.type === "verse" ? quote(n.id) : "";
     if (q) {

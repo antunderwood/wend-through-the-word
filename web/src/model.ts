@@ -21,6 +21,11 @@ export const TYPE_PLURAL: Record<NodeType, string> = {
   theme: "themes",
   verse: "verses",
 };
+// The plural at the start of a label or as a type's own name in a sentence ("Locations", "People
+// groups"), as the filters show it.
+export const typePlural = (t: NodeType) => TYPE_PLURAL[t][0].toUpperCase() + TYPE_PLURAL[t].slice(1);
+// An Overflow Node's text: "+42 locations", "+1 location".
+export const overflowText = (count: number, t: NodeType) => `+${count} ${count === 1 ? TYPE_NAME[t].toLowerCase() : TYPE_PLURAL[t]}`;
 
 // Entity IDs are "type:slug", Verse IDs are bare 8 digit Verse Keys, Overflow Nodes are "overflow:type".
 export type Id = string;

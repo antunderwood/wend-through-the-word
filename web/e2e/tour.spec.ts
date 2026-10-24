@@ -116,8 +116,10 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
   async (page) => {
     const [r, b] = [(await page.locator(".tour-target").boundingBox())!, (await panel(page).getByRole("button", { name: "Show map" }).boundingBox())!];
     expect([r.x + 5, r.y + 5]).toEqual([b.x, b.y]);
-    // The step calls a Place a Location (decision 200).
+    // The step calls a Place a Location (decision 200), and the map's block lies below the Selected
+    // Node's details (decision 201).
     await expect(tour(page)).toContainText("A Location on a map");
+    await expect(tour(page)).toContainText("Show map, in the panel below the Selected Node's details,");
     await expect(tour(page)).not.toContainText(/\bPlaces?\b/);
     await bar(page).getByRole("button", { name: "Jesus Christ" }).click();
     await panel(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Bethlehem/ }).click();

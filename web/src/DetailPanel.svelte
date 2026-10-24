@@ -56,6 +56,7 @@
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   let selectedBox = $state<HTMLElement>();
   let headHeight = $state(0);
+  const RING = 2; // the focus ring's width, outside a control (focus.css)
   // Long lists show 100 rows at a time (decision 165): rows shown per list, by a key naming the list.
   const PAGE = 100;
   let pages = $state<Record<string, number>>({});
@@ -70,66 +71,93 @@
   // On a desktop window everything below the header is one column, so a selection changes what lies
   // above a list and the header's own height (decision 201). The list item (or the map block) a
   // selection was made in is held where it was on screen, by scrolling the panel each time anything
-  // in it changes, until the panel is scrolled some other way; so the second click of a double click
-  // lands where the first did. When the panel cannot scroll back far enough (it is at its top), a
-  // space under the header makes up the rest; it goes once it is scrolled out of sight.
+  // in it changes, until the panel is scrolled some other way, a press lands elsewhere, or the window
+  // is resized; so the second click of a double click lands where the first did. When the panel
+  // cannot scroll back far enough (it is at its top), a spacer under the header makes up the rest; it
+  // goes when the hold ends.
   let panelBox = $state<HTMLElement>();
-  let room = $state<HTMLElement>();
+  let spacer = $state<HTMLElement>();
   let mapBox = $state<HTMLElement>();
-  let held: { el: Element; top: number } | undefined;
-  let holding = false; // the selection under way was made in the column
+  let held: { el: Element; top: number } | undefined; // the item held, and where it was on screen
+  let fromColumn = false; // the selection under way was made in the column
   let scrolled = 0; // where the panel's own scrolling left it
   function hold(el: Element) {
     if (compact) return;
     held = { el, top: el.getBoundingClientRect().top };
-    holding = true;
+    fromColumn = true;
   }
-  const release = () => (held = undefined);
+  // The spacer goes. Scrolled back by its height, what lies below it stays where it was; at the
+  // panel's top the panel cannot scroll back, so the column closes up by the rest. A fraction of a
+  // pixel stays: it is no gap, and taking it out would move the column by that fraction.
+  function closeSpacer() {
+    if (!spacer || !panelBox) return;
+    const space = parseFloat(spacer.style.height) || 0, // its own style, so a wheel forces no layout
+      whole = Math.floor(space);
+    if (!whole) return;
+    spacer.style.height = `${space - whole}px`;
+    panelBox.scrollTop -= Math.min(panelBox.scrollTop, whole);
+    scrolled = panelBox.scrollTop;
+  }
+  function release() {
+    held = undefined;
+    closeSpacer();
+  }
   function keepHeld() {
-    if (!held || !panelBox || !room) return;
+    if (!held || !panelBox || !spacer) return;
     if (!held.el.isConnected) return release();
     const off = () => held!.el.getBoundingClientRect().top - held!.top,
-      space = () => room!.getBoundingClientRect().height;
+      space = () => spacer!.getBoundingClientRect().height;
     let drift = off();
     if (Math.abs(drift) < 0.05) return;
-    // Where the panel would scroll to, counting the space as scrolling above the top.
+    // Where the panel would scroll to, counting the spacer as scrolling above the top.
     const to = panelBox.scrollTop - space() + drift;
-    room.style.height = `${Math.max(0, -to)}px`;
+    spacer.style.height = `${Math.max(0, -to)}px`;
     panelBox.scrollTop = Math.max(0, to);
-    // The panel scrolls by whole pixels: the space takes up the fraction left.
+    // The panel scrolls by whole pixels: the spacer takes up the fraction left.
     drift = off();
     if (drift > space()) {
       panelBox.scrollTop += 1;
       drift = off();
     }
-    room.style.height = `${Math.max(0, space() - drift)}px`;
+    spacer.style.height = `${Math.max(0, space() - drift)}px`;
     scrolled = panelBox.scrollTop;
   }
-  // A press or a key anywhere else in the panel ends it too: what that changes (Show map, Read more)
-  // moves what lies below, as without a hold.
-  const pressed = (e: Event) => held && !held.el.contains(e.target as Node) && release();
+  // A press, a key, or a wheel anywhere else in the panel ends the hold: what it changes (Show map,
+  // Read more) moves what lies below, as without a hold. In the map any press ends it (a pan, a zoom,
+  // a dot), as the click on a dot that made the selection is over before the selection comes
+  // (map.ts waits the double click time). After a pointer's press the spacer goes once the click is
+  // over, so the press lands where it began, unless that click started a new hold, which keeps it.
+  const releaseOnOtherPress = (e: Event) => {
+    if (held && held.el !== mapBox && held.el.contains(e.target as Node)) return; // the second click of a double click
+    held = undefined;
+    if (e.type !== "pointerdown") return closeSpacer();
+    addEventListener("pointerup", () => setTimeout(() => held || closeSpacer()), { once: true });
+  };
   $effect(() => {
     const panel = panelBox;
     if (!panel || compact) return;
-    const seen = new MutationObserver(keepHeld);
-    seen.observe(panel, { subtree: true, childList: true, characterData: true, attributes: true });
-    panel.addEventListener("pointerdown", pressed);
-    panel.addEventListener("keydown", pressed);
+    // Leaflet moves the map's tiles and dots in every frame of a pan or a zoom, and the map block
+    // keeps one height (decision 194), so its attributes are not watched; nor are attributes that
+    // never move anything.
+    const observer = new MutationObserver((records) => {
+      if (held && records.some((r) => r.type !== "attributes" || !mapBox?.contains(r.target))) keepHeld();
+    });
+    observer.observe(panel, { subtree: true, childList: true, characterData: true, attributeFilter: ["class", "style", "hidden"] });
+    // In the capture phase: the map stops its own presses, keys, and wheels on their way up.
+    const events = ["pointerdown", "keydown", "wheel"];
+    for (const e of events) panel.addEventListener(e, releaseOnOtherPress, { capture: true, passive: true });
+    // A resize moves what is held, so a later change must not scroll it back where it was.
+    addEventListener("resize", release);
     return () => {
-      seen.disconnect();
-      panel.removeEventListener("pointerdown", pressed);
-      panel.removeEventListener("keydown", pressed);
+      observer.disconnect();
+      for (const e of events) panel.removeEventListener(e, releaseOnOtherPress, { capture: true });
+      removeEventListener("resize", release);
+      release(); // and when the layout becomes the phone's
     };
   });
   function onscroll() {
-    if (compact || !panelBox || !room) return;
+    if (compact || !panelBox) return;
     if (Math.abs(panelBox.scrollTop - scrolled) > 1) release();
-    // The space, once scrolled out of sight behind the header, goes without moving anything.
-    const space = room.getBoundingClientRect().height;
-    if (space && !held && panelBox.scrollTop >= space) {
-      room.style.height = "0px";
-      panelBox.scrollTop -= space;
-    }
     scrolled = panelBox.scrollTop;
   }
 
@@ -146,13 +174,13 @@
       }
       // On a desktop window a selection made outside the column, or a new Focus, also reads from
       // the name down; one made in the column holds where it was clicked.
-      if (!compact && !holding) {
-        release();
-        if (room) room.style.height = "0px";
+      if (!compact && !fromColumn) {
+        held = undefined;
+        if (spacer) spacer.style.height = "0px";
         panelBox?.scrollTo(0, 0);
       }
       keep = undefined;
-      holding = false;
+      fromColumn = false;
     });
   });
   function pick(id: Id, from: "neighbours" | "verses", el: Element) {
@@ -217,7 +245,7 @@
   });
 </script>
 
-<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight}px`} bind:this={panelBox} {onscroll}>
+<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight + RING}px`} bind:this={panelBox} {onscroll}>
   {#if noWebGL}
     <p class="fallback">
       This browser has no WebGL, so the graph is not drawn. The lists below work alone:
@@ -247,7 +275,7 @@
       </p>
       {#if !compact}<div class="buttons">{@render actions()}</div>{/if}
     </div>
-    {#if !compact}<div class="room" bind:this={room}></div>{/if}
+    {#if !compact}<div class="spacer" bind:this={spacer}></div>{/if}
     {#if !compact}{@render verse()}{/if}
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
     {#await sharing then lists}
@@ -488,9 +516,10 @@
   :global(html[data-phone]) .head {
     display: contents;
   }
-  /* A control focused, or a target scrolled into view, lands below the header (--head, its height on
-     a desktop window). A margin on everything in the column, not a padding on the panel, so the
-     header's own buttons, always in view, never scroll the panel when focused. */
+  /* A control focused, or a target scrolled into view, lands below the header, its focus ring too
+     (--head, on a desktop window the header's height and the ring's 2 px drawn outside a control,
+     focus.css). A margin on everything in the column, not a padding on the panel, so the header's
+     own buttons, always in view, never scroll the panel when focused. */
   .panel :global(*) {
     scroll-margin-top: var(--head, 0px);
   }

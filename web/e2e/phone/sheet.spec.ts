@@ -233,6 +233,26 @@ test.describe("on the owner's phone", () => {
     expect(handle.y).toBeCloseTo(tabs.y, 0);
     expect(handle.height).toBeGreaterThanOrEqual(44);
   });
+
+  test("the Selected Node's section fades at its foot while more of it is below, and not when it all fits (decision 148)", async ({ page }) => {
+    await open(page);
+    const sheet = page.getByRole("region", { name: "Sheet" });
+    const details = sheet.getByRole("tabpanel", { name: "Details" });
+    const section = details.getByRole("heading", { level: 2 }).locator("xpath=ancestor::section[1]");
+    const fade = () => section.evaluate((s) => ({ overflows: s.scrollHeight > s.clientHeight, fade: getComputedStyle(s).getPropertyValue("--fade") }));
+    // Abraham's section, 40% of the half sheet, holds a little of his details.
+    await expect.poll(fade).toEqual({ overflows: true, fade: "24px" });
+    // The full sheet's section is taller, and a People Group's few lines fit in it.
+    const b = (await sheet.getByRole("button", { name: "Close the sheet" }).boundingBox())!;
+    await drag(page, { x: b.x + b.width / 2, y: b.y + b.height / 2 }, { x: b.x + b.width / 2, y: b.y + b.height / 2 - 200 });
+    await expect.poll(async () => OWNER.height - (await sheet.boundingBox())!.y).toBeCloseTo(FULL, 0);
+    const group = details.getByRole("list", { name: /^People Group/ }).getByRole("button").first();
+    const name = (await group.textContent())!.trim();
+    await group.tap();
+    await expect(details.getByRole("heading", { level: 2 })).toHaveText(name);
+    // The timeline follows the new content a frame later.
+    await expect.poll(fade).toEqual({ overflows: false, fade: "0px" });
+  });
 });
 
 // The sheet's three heights on the owner's phone: closed to its row (the tabs and the handle, and

@@ -9,7 +9,7 @@
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
   import { notesMarkdown } from "./notes";
-  import { afterClear, hiddenNote, initialState, reduce, scene, typeOf, TYPE_NAME, TYPE_PLURAL, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
+  import { afterClear, hiddenNote, initialState, overflowText, reduce, scene, typeOf, TYPE_NAME, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import { screen } from "./screen.svelte";
   import Search from "./Search.svelte";
   import Sheet from "./Sheet.svelte";
@@ -111,7 +111,7 @@
 
   const label = (id: Id) =>
     typeOf(id) === "overflow"
-      ? `+${onScreen?.nodes.find((n) => n.id === id)?.count} ${TYPE_PLURAL[id.slice("overflow:".length) as NodeType]}`
+      ? overflowText(onScreen?.nodes.find((n) => n.id === id)?.count ?? 0, id.slice("overflow:".length) as NodeType)
       : data!.label(id);
 
   // The page address to share (Copy link, the notes download, a correction): it names the Focus.
