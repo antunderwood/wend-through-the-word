@@ -253,7 +253,7 @@
   });
 </script>
 
-<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading class:filtering={Object.values(queries).some(Boolean)} aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight + RING}px`} bind:this={panelBox} {onscroll}>
+<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight + RING}px`} bind:this={panelBox} {onscroll}>
   {#if noWebGL}
     <p class="fallback">
       This browser has no WebGL, so the graph is not drawn. The lists below work alone:
@@ -391,7 +391,7 @@
                 }
               }}
             />
-            {#if queries[key]}
+            {#if query}
               <button
                 class="clear"
                 aria-label="Clear filter {TYPE_NAME[t]}"
@@ -676,8 +676,10 @@
     overflow-y: auto;
   }
   /* A short filtered list leaves the column shorter than the panel, so a selection that grows what lies
-     above it could not be held where it was clicked (decision 201); a screen of room below lets it. */
-  :global(html:not([data-phone])) .panel.filtering {
+     above it could not be held where it was clicked (decision 201); a screen of room below lets it.
+     The Clear button is shown exactly while a list has an active query (a non-blank query in a box
+     that is shown), so it is the test. */
+  :global(html:not([data-phone])) .panel:has(.filter .clear) {
     padding-bottom: 100vh;
   }
   /* A long list's filter box: the clear button sits in its right end; the count for screen readers

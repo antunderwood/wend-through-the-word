@@ -153,3 +153,33 @@ test("the count is in a polite live region that follows the query, and Tab goes 
   await filterBox(page, "Person").press("Escape");
   await expect(live).toHaveText("");
 });
+
+// The panel has room below its column only while a list has an active query (decision 202): a
+// non-blank query in a box that is shown.
+const room = (page: Page) => panel(page).evaluate((p) => parseFloat(getComputedStyle(p).paddingBottom) >= window.innerHeight - 1);
+
+test("a query whose box has gone leaves no room below the panel and no Clear button", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}`);
+  await focusIs(page, JUDAH);
+  expect(await room(page)).toBe(false);
+  await filterBox(page, "Person").fill("Ziza");
+  await expect.poll(() => room(page)).toBe(true);
+
+  // Turning People off in Filters takes the list, and the box with it, off the panel: the query stays
+  // in the panel's state but is not active.
+  await page.getByRole("button", { name: "Filters" }).click();
+  await page.getByRole("dialog", { name: "Filters" }).getByRole("checkbox", { name: "People", exact: true }).uncheck();
+  await expect(filterBox(page, "Person")).toHaveCount(0);
+  await expect(panel(page).getByRole("button", { name: "Clear filter Person" })).toHaveCount(0);
+  await expect.poll(() => room(page)).toBe(false);
+});
+
+test("a blank query is no query: no Clear button, no room, and the list stays collapsed", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill(" ");
+  await expect(panel(page).getByRole("button", { name: "Clear filter Person" })).toHaveCount(0);
+  await expect(panel(page).getByRole("button", { name: "121 more" })).toBeVisible();
+  await expect(panel(page).getByRole("list", { name: "Person (127)" }).getByRole("listitem")).toHaveCount(6);
+  expect(await room(page)).toBe(false);
+});
