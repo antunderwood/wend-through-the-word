@@ -131,3 +131,25 @@ test("two lists filter independently, a click keeps the query, and the address d
   await expect(panel(page).getByRole("heading", { level: 2 })).toContainText("Isaac");
   await expect(filterBox(page, "Person")).toHaveValue("Isaac");
 });
+
+test("the count is in a polite live region that follows the query, and Tab goes from the box to the list", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  const live = panel(page).locator('[aria-live="polite"]');
+  await expect(live).toHaveText("");
+  await filterBox(page, "Person").fill("Ziza");
+  await expect(live).toHaveText("1 of 127 match");
+  await filterBox(page, "Person").fill("Zerubbabel");
+  await expect(live).toHaveText("1 of 127 match");
+  await filterBox(page, "Person").fill("qqqq");
+  await expect(live).toHaveText("0 of 127 match");
+  await filterBox(page, "Person").fill("Ziza");
+  // Box, then Clear, then the list's first row.
+  await filterBox(page, "Person").focus();
+  await page.keyboard.press("Tab");
+  await expect(panel(page).getByRole("button", { name: "Clear filter Person" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel(page).getByRole("list", { name: "Person (1 of 127)" }).getByRole("button").first()).toBeFocused();
+  await filterBox(page, "Person").press("Escape");
+  await expect(live).toHaveText("");
+});
