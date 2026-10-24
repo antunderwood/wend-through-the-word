@@ -178,7 +178,7 @@ test("the Selected Node's actions stay in view while its section or the lists sc
   await open(page);
   await actionsInReach(page);
   // Abraham's section holds his journey note and his Dictionary Entry: far more than it shows.
-  const section = page.getByRole("tabpanel", { name: "Details" }).getByRole("heading", { level: 2, name: "Abraham" }).locator("xpath=..");
+  const section = page.getByRole("tabpanel", { name: "Details" }).getByRole("heading", { level: 2, name: "Abraham" }).locator("xpath=ancestor::section[1]");
   expect(await section.evaluate((s) => s.scrollHeight > s.clientHeight + 100)).toBe(true);
   await section.evaluate((s) => s.scrollTo(0, s.scrollHeight));
   await actionsInReach(page);

@@ -40,6 +40,18 @@ export const attribution = (map: Locator) => map.locator(".leaflet-control-attri
 export const lines = (credit: Locator) => credit.evaluate((e) => Math.round(e.clientHeight / parseFloat(getComputedStyle(e).lineHeight)));
 export const providerLink = (map: Locator) => attribution(map).getByRole("link", { name: BUILT_TILES.credits[0].name, exact: true });
 
+// How far an element has moved on screen since the next press began, read in the page as the press
+// lands. A click on a dot can be retried (while the dots are drawn again, the map is what lies under
+// the point), and Playwright scrolls the dot into view again before each try, so a position read
+// before the click can be stale by the time the reader's press would land.
+export async function movedSincePress(el: Locator) {
+  type Pressed = Window & { topAtPress?: number };
+  await el.evaluate((e) =>
+    document.addEventListener("pointerdown", () => ((window as Pressed).topAtPress = e.getBoundingClientRect().top), { capture: true, once: true }),
+  );
+  return () => el.evaluate((e) => e.getBoundingClientRect().top - (window as Pressed).topAtPress!);
+}
+
 // Where on the page the Selected Place's dot is.
 export const selectedDot = async (map: Locator) => (await map.locator(".map-place.selected .dot").boundingBox())!;
 

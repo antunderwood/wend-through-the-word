@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { openMap, pan, thirdParty } from "./map";
+import { movedSincePress, openMap, pan, thirdParty } from "./map";
 import { focusIs, openOnAbraham } from "./scene";
 
 // The Selected Node's header on a desktop window: the name, the type line, the Relationship line only
@@ -221,12 +221,12 @@ test.describe("at 1440 x 900, on the map", () => {
     const map = panel(page).getByRole("region", { name: "Map" });
     const ur = map.getByText("Ur of the Chaldees", { exact: true });
     await ur.scrollIntoViewIfNeeded();
-    const at = (await box(map)).y;
+    const moved = await movedSincePress(map);
     await ur.click();
     await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Ur of the Chaldees");
     const together = panel(page).getByRole("heading", { name: /^Together with Abraham/ });
     await expect(together).toBeVisible();
-    expect((await box(map)).y).toBe(at);
+    expect(await moved()).toBe(0);
     // A pan ends the hold: a list gone from above the map (an unpin, from outside the panel) then
     // moves the map up, as without a hold, and the panel does not scroll.
     await pan(page, map);

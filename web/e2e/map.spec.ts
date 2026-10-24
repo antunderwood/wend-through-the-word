@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { attribution, BUILT_TILES, lines, onTileHost, openMap as open, pan, providerLink, selectedDot, thirdParty } from "./map";
+import { attribution, BUILT_TILES, lines, movedSincePress, onTileHost, openMap as open, pan, providerLink, selectedDot, thirdParty } from "./map";
 import { focusIs } from "./scene";
 import { selectedIs } from "./touch-input";
 
@@ -97,11 +97,11 @@ test("Neighbours shows the selected Place's Ring 1 Places that have points; a cl
   // the map shows Ur's own Neighbours, Haran among them. The map stays where it was on screen,
   // though the header and the details above it change (decision 201).
   await label(page, "Ur of the Chaldees").scrollIntoViewIfNeeded();
-  const mapAt = (await map(page).boundingBox())!.y;
+  const moved = await movedSincePress(map(page));
   await label(page, "Ur of the Chaldees").click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Ur of the Chaldees");
   await expect(panel(page).getByRole("list", { name: "Facts" })).toContainText("Coordinates");
-  expect((await map(page).boundingBox())!.y).toBe(mapAt);
+  expect(await moved()).toBe(0);
   await expect.poll(() => new URL(page.url()).search).toContain("sel=place:ur_1189");
   await selectedIs(page, "place:ur_1189");
   await expect(map(page).locator(".map-place.selected")).toHaveText("Ur of the Chaldees");
