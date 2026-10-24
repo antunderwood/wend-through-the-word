@@ -58,12 +58,17 @@ export const selectedDot = async (map: Locator) => (await map.locator(".map-plac
 // Drags the map with the mouse, 60 px right and 30 px up, and waits until the Selected Place's dot
 // has moved with it. The mouse is held still before it lets go, so the map does not drift on with
 // motion: the library's drift, for a drag still moving in its last 50 ms, starts a frame later, which
-// on software WebGL can be after the caller has taken the map for still.
+// on software WebGL can be after the caller has taken the map for still. The drag starts near the
+// foot of the part of the map in the window: the map can run past the window's foot (a click that
+// Playwright retried scrolls the panel), and a press below the window reaches nothing. The press must
+// land on the map itself, not on a control over it.
 export async function pan(page: Page, map: Locator) {
   const [dot, box] = [await selectedDot(map), (await map.boundingBox())!];
-  await page.mouse.move(box.x + 30, box.y + box.height - 30);
+  const from = { x: box.x + 30, y: Math.min(box.y + box.height, page.viewportSize()!.height) - 30 };
+  expect(await map.evaluate((m, p) => m.contains(document.elementFromPoint(p.x, p.y)) && !document.elementFromPoint(p.x, p.y)!.closest(".leaflet-control"), from)).toBe(true);
+  await page.mouse.move(from.x, from.y);
   await page.mouse.down();
-  await page.mouse.move(box.x + 90, box.y + box.height - 60, { steps: 8 });
+  await page.mouse.move(from.x + 60, from.y - 30, { steps: 8 });
   await page.waitForTimeout(100);
   await page.mouse.up();
   await expect.poll(async () => (await selectedDot(map)).x - dot.x).toBeGreaterThan(30);
