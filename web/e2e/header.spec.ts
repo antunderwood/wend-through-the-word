@@ -75,6 +75,20 @@ for (const size of [
       await page.mouse.dblclick(at.x, at.y);
       await focusIs(page, "person:sarah_2473");
     });
+
+    // Filtered rows are unfiltered rows (decision 202): the first click holds the list.
+    test("the first click on a filtered row holds the list as an unfiltered row's does, and the second makes it the Focus", async ({ page }) => {
+      await panel(page).getByRole("searchbox", { name: "Filter Person" }).fill("sarah");
+      const filtered = panel(page).getByRole("list", { name: "Person (1 of 24)" });
+      const row = filtered.getByRole("button", { name: /^Sarah/ });
+      await expect(row).toBeVisible();
+      // The box adds room below the column (decision 202), so the row is brought to mid-panel first.
+      await row.evaluate((e) => e.scrollIntoView({ block: "center" }));
+      const at = await firstClickHolds(page, row);
+      await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Sarah");
+      await page.mouse.dblclick(at.x, at.y);
+      await focusIs(page, "person:sarah_2473");
+    });
   });
 }
 

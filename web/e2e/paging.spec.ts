@@ -38,3 +38,148 @@ test("an Overflow Node's list pages by 100, and the keyboard reaches Show more",
   await page.keyboard.press("Enter");
   await expect(rows).toHaveCount(127);
 });
+
+// The filter box on a long list (#101): the whole list is searched, not the rows shown.
+const filterBox = (page: Page, type: string) => panel(page).getByRole("searchbox", { name: `Filter ${type}` });
+
+test("a long list has a filter box that finds a row past the first 100, and a short list has none", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  await expect(filterBox(page, "Person")).toBeVisible();
+  await filterBox(page, "Person").fill("Ziza");
+  const matches = panel(page).getByRole("list", { name: "Person (1 of 127)" }).getByRole("listitem");
+  await expect(matches).toHaveCount(1);
+  await expect(matches.first()).toContainText("Ziza");
+  // Judah's one Verse is a short list.
+  await expect(panel(page).getByRole("searchbox")).toHaveCount(1);
+});
+
+test("a query ignores case and accents, and the keyboard reaches the box from the list", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill("  ZÉRUBBABEL ");
+  await expect(panel(page).getByRole("list", { name: "Person (1 of 127)" })).toContainText("Zerubbabel");
+  await filterBox(page, "Person").fill("");
+  await people(page).getByRole("listitem").first().getByRole("button").first().focus();
+  await page.keyboard.press("Shift+Tab");
+  await expect(filterBox(page, "Person")).toBeFocused();
+});
+
+test("a query matching more than 100 rows pages by 100", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill("a");
+  const matches = panel(page).getByRole("list", { name: /^Person \(\d+ of 127\)$/ }).getByRole("listitem");
+  await expect(matches).toHaveCount(100);
+  await panel(page).getByRole("button", { name: /^Show \d+ more \(100 of \d+\)$/ }).click();
+  await expect(panel(page).getByRole("button", { name: /^Show \d+ more/ })).toHaveCount(0);
+  expect(await matches.count()).toBeGreaterThan(100);
+});
+
+test("a query finds a row behind \"N more\" without opening the list, and clearing restores the closed list", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill("Ziza");
+  await expect(panel(page).getByRole("list", { name: "Person (1 of 127)" })).toContainText("Ziza");
+  await expect(panel(page).getByRole("button", { name: "121 more" })).toHaveCount(0);
+  await panel(page).getByRole("button", { name: "Clear filter Person" }).click();
+  await expect(people(page).getByRole("listitem")).toHaveCount(6);
+  await expect(panel(page).getByRole("button", { name: "121 more" })).toBeVisible();
+});
+
+test("no match says so and keeps the box, and the clear button and Escape restore the list", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill("qqqq");
+  await expect(panel(page).getByText("No match")).toBeVisible();
+  await expect(panel(page).getByRole("heading", { name: "Person (0 of 127)" })).toBeVisible();
+  await panel(page).getByRole("button", { name: "Clear filter Person" }).click();
+  await expect(panel(page).getByText("No match")).toHaveCount(0);
+  await expect(people(page).getByRole("listitem")).toHaveCount(100);
+  await filterBox(page, "Person").fill("qqqq");
+  await filterBox(page, "Person").press("Escape");
+  await expect(filterBox(page, "Person")).toHaveValue("");
+  await expect(people(page).getByRole("listitem")).toHaveCount(100);
+});
+
+test("a double click on a filtered row makes the Focus, and the new Focus has no query", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill("Ziza");
+  await panel(page).getByRole("list", { name: "Person (1 of 127)" }).getByRole("button", { name: /^Ziza/ }).dblclick();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toContainText("Ziza");
+  await expect(page).toHaveURL(/focus=person:ziza/);
+  await expect(page.getByRole("button", { name: "Make Focus" })).toBeDisabled();
+  for (const box of await panel(page).getByRole("searchbox").all()) await expect(box).toHaveValue("");
+});
+
+test("two lists filter independently, a click keeps the query, and the address does not carry it", async ({ page }) => {
+  await page.goto("/?focus=person:abraham_58");
+  await panel(page).getByRole("heading", { name: "Theme (37)" }).waitFor();
+  await filterBox(page, "Person").fill("Isaac");
+  await expect(panel(page).getByRole("list", { name: /^Person \(\d+ of 24\)$/ })).toContainText("Isaac");
+  // The other list, and a short list, are untouched.
+  await expect(panel(page).getByRole("heading", { name: "Theme (37)" })).toBeVisible();
+  await expect(filterBox(page, "Theme")).toHaveValue("");
+  await expect(panel(page).getByRole("searchbox", { name: "Filter Location" })).toHaveCount(0);
+  await filterBox(page, "Theme").fill("zzzz");
+  await expect(panel(page).getByRole("heading", { name: "Theme (0 of 37)" })).toBeVisible();
+  await expect(filterBox(page, "Person")).toHaveValue("Isaac");
+  expect(new URL(page.url()).search).toBe("?focus=person:abraham_58");
+  // A click on a filtered row selects it and keeps the lists as they are.
+  await panel(page).getByRole("list", { name: /^Person \(/ }).getByRole("button", { name: /^Isaac/ }).click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toContainText("Isaac");
+  await expect(filterBox(page, "Person")).toHaveValue("Isaac");
+});
+
+test("the count is in a polite live region that follows the query, and Tab goes from the box to the list", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}&sel=overflow:person`);
+  await focusIs(page, JUDAH);
+  const live = panel(page).locator('[aria-live="polite"]');
+  await expect(live).toHaveText("");
+  await filterBox(page, "Person").fill("Ziza");
+  await expect(live).toHaveText("1 of 127 match");
+  await filterBox(page, "Person").fill("Zerubbabel");
+  await expect(live).toHaveText("1 of 127 match");
+  await filterBox(page, "Person").fill("qqqq");
+  await expect(live).toHaveText("0 of 127 match");
+  await filterBox(page, "Person").fill("Ziza");
+  // Box, then Clear, then the list's first row.
+  await filterBox(page, "Person").focus();
+  await page.keyboard.press("Tab");
+  await expect(panel(page).getByRole("button", { name: "Clear filter Person" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel(page).getByRole("list", { name: "Person (1 of 127)" }).getByRole("button").first()).toBeFocused();
+  await filterBox(page, "Person").press("Escape");
+  await expect(live).toHaveText("");
+});
+
+// The panel has room below its column only while a list has an active query (decision 202): a
+// non-blank query in a box that is shown.
+const room = (page: Page) => panel(page).evaluate((p) => parseFloat(getComputedStyle(p).paddingBottom) >= window.innerHeight - 1);
+
+test("a query whose box has gone leaves no room below the panel and no Clear button", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}`);
+  await focusIs(page, JUDAH);
+  expect(await room(page)).toBe(false);
+  await filterBox(page, "Person").fill("Ziza");
+  await expect.poll(() => room(page)).toBe(true);
+
+  // Turning People off in Filters takes the list, and the box with it, off the panel: the query stays
+  // in the panel's state but is not active.
+  await page.getByRole("button", { name: "Filters" }).click();
+  await page.getByRole("dialog", { name: "Filters" }).getByRole("checkbox", { name: "People", exact: true }).uncheck();
+  await expect(filterBox(page, "Person")).toHaveCount(0);
+  await expect(panel(page).getByRole("button", { name: "Clear filter Person" })).toHaveCount(0);
+  await expect.poll(() => room(page)).toBe(false);
+});
+
+test("a blank query is no query: no Clear button, no room, and the list stays collapsed", async ({ page }) => {
+  await page.goto(`/?focus=${JUDAH}`);
+  await focusIs(page, JUDAH);
+  await filterBox(page, "Person").fill(" ");
+  await expect(panel(page).getByRole("button", { name: "Clear filter Person" })).toHaveCount(0);
+  await expect(panel(page).getByRole("button", { name: "121 more" })).toBeVisible();
+  await expect(panel(page).getByRole("list", { name: "Person (127)" }).getByRole("listitem")).toHaveCount(6);
+  expect(await room(page)).toBe(false);
+});
