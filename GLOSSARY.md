@@ -107,3 +107,14 @@ A node in Ring 1 or around a Pinned Node that is in the top K of its type for bo
 **Your Path**:
 Every node that has been the Focus in this browser, until the reader clears it, in order of the latest visit. The last five are drawn in the scene as small dim nodes joined to the current Focus; the breadcrumb row shows all of them.
 _Avoid_: Trail (the earlier name), breadcrumb (as a separate concept), history
+
+**Splash**:
+The screen over the app on a first visit in a browser: the title, the site icon's graph drawn large, the page's description, and two buttons, Start exploring and Take the tour. Shown once per browser; the Welcome link shows it again (decisions 203 and 204).
+_Avoid_: Welcome screen, intro, modal
+
+**Welcome**:
+The footer link that shows the Splash again.
+
+**Tour**:
+The guided walk through the app, one step at a time, studying Jesus Christ. It starts from the Splash's Take the tour button or the footer link "Help: take the tour", and when it ends the reader's state comes back as it was.
+_Avoid_: Onboarding, walkthrough, tutorial

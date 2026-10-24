@@ -13,6 +13,8 @@
   import { screen } from "./screen.svelte";
   import Search from "./Search.svelte";
   import Sheet from "./Sheet.svelte";
+  import Splash from "./Splash.svelte";
+  import { SPLASH_KEY } from "./splash";
   import Tour from "./Tour.svelte";
   import { TOUR_START, type TourPage } from "./tour";
   import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
@@ -33,6 +35,9 @@
   let failure = $state<{ message: string; retry: () => void }>();
   let noWebGL = $state(false);
   let hint = $state(!stored(HINT_KEY));
+  // The splash on a first visit in this browser (decision 203), and again from the Welcome link
+  // (decision 204); the hint waits until it closes, and while a tour is asked for or runs.
+  let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
@@ -206,9 +211,10 @@
 
   // Keys on the scene (or on nothing): the arrows step the selection through Ring 1 in sector order,
   // Right and Down forward, Enter makes the Selected Node the Focus, Backspace goes back to the newest
-  // node on Your Path (PRD 10.4). Keys in the search box, a button, or the view picker are theirs.
+  // node on Your Path (PRD 10.4). Keys in the search box, a button, the view picker, or the splash
+  // are theirs.
   function sceneKey(e: KeyboardEvent) {
-    if ((e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !onScreen) return;
+    if (splash || (e.target !== document.body && e.target !== host) || e.altKey || e.ctrlKey || e.metaKey || !onScreen) return;
     const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
     if (dir) {
       const ring = onScreen.nodes.filter((n) => n.ring1).sort((a, b) => a.ring1!.sector - b.ring1!.sector || a.ring1!.pos - b.ring1!.pos);
@@ -242,14 +248,28 @@
     store(HINT_KEY, "1");
   }
 
-  // The first-run tour (decision 155): offered in this browser until taken or skipped, "on" while it
-  // runs. While it runs nothing is kept in this browser and the address is replaced, not pushed; when
-  // it ends, the reader's state comes back (on a phone the sheet's tab too) and a note written in it
-  // goes unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back
-  // too (decision 185).
-  const TOUR_KEY = "wend.tourOffered";
-  let tour = $state<"offer" | "on">();
-  const touring = $derived(tour === "on");
+  // The app behind it already shows its Focus (the address's, else Jesus Christ): closing only
+  // remembers it, and hands focus to the graph. Over a tour (Welcome) the flag is already kept, and
+  // nothing is written while a tour runs.
+  function closeSplash() {
+    splash = false;
+    if (!touring) store(SPLASH_KEY, "1");
+    host.focus();
+  }
+  // Take the tour on the splash starts it as the footer's link does; pressed before the graph is
+  // drawn, once it is, or never when the page finds no WebGL. Asked for, the hint waits.
+  let tourAsked = $state(false);
+  function takeTour() {
+    tourAsked = true;
+    if (graph) startTour();
+  }
+
+  // The first-run tour (decisions 155 and 204), started from the splash or the footer's link. While
+  // it runs nothing is kept in this browser and the address is replaced, not pushed; when it ends,
+  // the reader's state comes back (on a phone the sheet's tab too) and a note written in it goes
+  // unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back too
+  // (decision 185).
+  let touring = $state(false);
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean } | undefined;
   const tourPage: TourPage = {
@@ -289,10 +309,10 @@
   }
   // The tour box appears with the tour's start state, loaded first.
   async function startTour() {
-    store(TOUR_KEY, "1");
     await data!.loadWithKin(TOUR_START);
     if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed, full: sheetFull };
-    tour = "on";
+    touring = true;
+    tourAsked = false;
     tours++;
     reading = undefined;
     collapsed = false;
@@ -310,8 +330,7 @@
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
-    store(TOUR_KEY, "1");
-    tour = undefined;
+    touring = false;
   }
 
   // The page opens on the address (decision 128) and the session kept in this browser (decision 133).
@@ -335,6 +354,7 @@
       graph = createGraph(host, data.label, data.quote);
     } catch {
       noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
+      tourAsked = false; // and there is no tour, as there is no footer link for one
       return;
     }
     graph.setView(viewShown);
@@ -343,7 +363,7 @@
     graph.onNodeDoubleClick(makeFocus);
     graph.onHover(showTip);
     graph.render(onScreen, model.selected);
-    if (!stored(TOUR_KEY)) tour = "offer";
+    if (tourAsked) startTour();
     // The browser tests read node positions and set what no control sets, such as a low node limit;
     // only their build (vite build --mode e2e) has the hooks.
     if (import.meta.env.MODE === "e2e") Object.assign(window, { wendGraph: graph, wendApply: apply });
@@ -492,8 +512,8 @@
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
   <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
-  {#if tour}
-    {#key tours}<Tour offer={tour === "offer"} page={tourPage} onstart={startTour} onend={endTour} />{/key}
+  {#if touring}
+    {#key tours}<Tour page={tourPage} onend={endTour} />{/key}
   {/if}
 {/if}
 {#if failure}
@@ -505,7 +525,7 @@
 <!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
      elsewhere each keeps its own place. -->
 <div class="dock" data-tour="dock" bind:offsetHeight={dockHeight}>
-  {#if hint}
+  {#if hint && !splash && !tourAsked && !touring}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
       {#if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}
@@ -544,9 +564,12 @@
 <!-- On a phone the footer is the end of the Details tab. -->
 {#if !screen.phone}<footer>{@render about()}</footer>{/if}
 {#snippet about()}
+  <!-- The splash again (decision 204); a tour running stays under it. -->
+  <button class="link" onclick={() => (splash = true)}>Welcome</button><span class="muted">. </span>
   {#if onScreen && !noWebGL}<button class="link" onclick={startTour}>Help: take the tour</button><span class="muted">. </span>{/if}
   <a href="/credits.html">About and credits</a><span class="muted">. Data: CC BY-SA 4.0{#if data}. Data version {version}{/if}</span>
 {/snippet}
+{#if splash}<Splash onclose={closeSplash} ontour={noWebGL ? undefined : takeTour} />{/if}
 {#if tip}<div class="tip" role="tooltip" style:left="{tip.x + 14}px" style:top="{tip.y + 14}px">{tip.text}</div>{/if}
 
 <style>

@@ -7,7 +7,7 @@
   // The filter panel (PRD 10.1 item 5), a popover opened from the Filters button: node types, the
   // Vote Limit, the book filter (decision 130), and animation. On a phone it is inline, a section of
   // the Details tab instead (decision 115).
-  import { typeColour as colour } from "./graph";
+  import { typeColour as colour } from "./colours";
   import { TYPES, typePlural, type NodeType, type State } from "./model";
 
   type Filters = State["filters"];

@@ -10,6 +10,7 @@ import { viewB } from "./views/b";
 import { viewC } from "./views/c";
 import { layout, type ViewModule } from "./views/view";
 import { namePriority, uncrowded, WORDS_PRIORITY } from "./declutter";
+import { TYPE_COLOUR } from "./colours";
 import "./graph.css";
 
 // The tilted plane (the default, decision 118), stacked discs, and free orbit.
@@ -22,16 +23,6 @@ const BG = 0x0d0f17,
   ACCENT = 0xffd27a,
   SHARED = 0x4ff0e0,
   PIN = 0xff9f6e;
-export const TYPE_COLOUR: Record<NodeType, number> = {
-  person: 0x6fa8dc,
-  place: 0x6cc4a1,
-  event: 0xe6b85c,
-  group: 0xb48ee0,
-  theme: 0xe0869b,
-  verse: 0xa9b1c6,
-};
-// The type colour as CSS, so a search result or a filter reads like its node.
-export const typeColour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
 const STYLE: Record<Role, { size: number; opacity: number; labelled: boolean }> = {
   focus: { size: 4.2, opacity: 1, labelled: true },
   ring1: { size: 2.0, opacity: 0.95, labelled: true },

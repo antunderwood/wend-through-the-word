@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, openOnAbraham } from "../scene";
+import { focusIs } from "../scene";
+import { firstVisit, takeTour } from "../splash";
 import { drag } from "../touch";
 import { STEPS } from "../../src/tour";
 
@@ -288,18 +289,15 @@ test("a step in the sheet scrolls its target into view, below the actions held a
   await expect(themes).toBeInViewport();
 });
 
-test("a tour taken from the offer on a closed sheet's Reader tab gives both back when it ends", async ({ page }) => {
-  // A browser not yet offered the tour, whose sheet was left on its Reader tab.
-  await page.addInitScript(() => {
-    localStorage.removeItem("wend.tourOffered");
-    localStorage.setItem("wend.sheetTab", "reader");
-  });
-  await openOnAbraham(page);
+test("a tour taken from the splash on the sheet's Reader tab gives the open sheet and the tab back when it ends", async ({ page }) => {
+  // A first visit to the splash in a browser whose sheet was left on its Reader tab, on Abraham.
+  await firstVisit(page, { "wend.sheetTab": "reader", "wend.journey": JSON.stringify({ focus: ABRAHAM, path: [] }) });
+  await page.goto("/");
   await focusIs(page, ABRAHAM);
-  await expect(sheet(page).getByRole("tab", { name: "Reader" })).toHaveAttribute("aria-selected", "true");
-  await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
-  await expect(tour(page)).toContainText("studying Jesus Christ");
-  await tour(page).getByRole("button", { name: "Take the tour" }).tap();
+  await expect(sheet(page).getByRole("tab", { name: "Reader", includeHidden: true })).toHaveAttribute("aria-selected", "true");
+  await takeTour(page).tap();
+  // The first steps' targets are in the scene, so the tour closes the sheet.
+  await expect(sheet(page).getByRole("button", { name: "Open the sheet" })).toBeVisible();
   for (let n = 1; n <= 4; n++) {
     await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
     await tour(page).getByRole("button", { name: "Do it for me" }).tap();
@@ -310,8 +308,8 @@ test("a tour taken from the offer on a closed sheet's Reader tab gives both back
   await shown(page);
   await tour(page).getByRole("button", { name: "End tour" }).tap();
   await focusIs(page, ABRAHAM);
-  await expect(sheet(page).getByRole("button", { name: "Open the sheet" })).toBeVisible();
-  await expect(sheet(page).getByRole("tab", { name: "Reader", includeHidden: true })).toHaveAttribute("aria-selected", "true");
+  await expect(sheet(page).getByRole("button", { name: "Close the sheet" })).toBeVisible();
+  await expect(sheet(page).getByRole("tab", { name: "Reader" })).toHaveAttribute("aria-selected", "true");
   expect(await page.evaluate(() => localStorage.getItem("wend.sheetTab"))).toBe("reader");
 });
 

@@ -5,7 +5,7 @@
   // box closes after a choice, on Escape, or on a tap outside it.
   import { tick } from "svelte";
   import type { Data } from "./data";
-  import { typeColour as colour } from "./graph";
+  import { typeColour as colour } from "./colours";
   import { TYPES, TYPE_NAME, typeOf, type Id, type NodeType } from "./model";
   import { screen } from "./screen.svelte";
 
