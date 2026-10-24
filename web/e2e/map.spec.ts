@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { openMap as open, pan, selectedDot, thirdParty } from "./map";
+import { attribution, BUILT_TILES, lines, onTileHost, openMap as open, pan, providerLink, selectedDot, thirdParty } from "./map";
 import { focusIs } from "./scene";
 import { selectedIs } from "./touch-input";
 
@@ -23,7 +23,7 @@ test("a shared link to a Place asks nothing of the tile host until Show map, and
   expect(asked).toEqual([]);
 
   // The notice is announced; Cancel and Continue leave the keyboard on the button that asked.
-  const notice = panel(page).getByRole("status").filter({ hasText: /tiles come from OpenStreetMap, which sees your address and the area you view/ });
+  const notice = panel(page).getByRole("status").filter({ hasText: `tiles come from ${BUILT_TILES.name}, which sees your address and the area you view` });
   await panel(page).getByRole("button", { name: "Show map" }).click();
   await expect(notice).toBeVisible();
   await panel(page).getByRole("button", { name: "Cancel" }).click();
@@ -36,9 +36,22 @@ test("a shared link to a Place asks nothing of the tile host until Show map, and
 
   await expect(map(page).getByText("Bethlehem", { exact: true })).toBeVisible();
   await expect(map(page).locator(".dot")).toBeVisible();
-  await expect(map(page).getByRole("link", { name: "OpenStreetMap" })).toBeVisible();
+  await expect(providerLink(map(page))).toBeVisible();
   await expect.poll(() => asked.length).toBeGreaterThan(0);
-  expect(asked.every((u) => u.startsWith("https://tile.openstreetmap.org/"))).toBe(true);
+  expect(asked.every(onTileHost)).toBe(true);
+  // The attribution is one line. Esri's sources are cut short, and their button shows them all and
+  // hides them again (decision 199).
+  const credit = attribution(map(page));
+  expect(await lines(credit)).toBe(1);
+  if (BUILT_TILES.name === "Esri") {
+    const sources = credit.getByRole("button", { name: /^Sources: Esri, .* and the GIS User Community$/ });
+    await sources.click();
+    await expect(sources).toHaveAttribute("aria-expanded", "true");
+    expect(await lines(credit)).toBeGreaterThan(1);
+    await sources.click();
+    await expect(sources).toHaveAttribute("aria-expanded", "false");
+    expect(await lines(credit)).toBe(1);
+  }
   // The facts stay as they were.
   await expect(panel(page).getByRole("list", { name: "Facts" })).toContainText("Coordinates");
 

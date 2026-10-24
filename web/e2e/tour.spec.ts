@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, openOnAbraham } from "./scene";
+import { onTileHost } from "./map";
 import { STEPS } from "../src/tour";
-import { TILES } from "../src/tiles";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -127,7 +127,7 @@ for (const view of ["A"] as const) {
     const before = await state(page);
     // The tour asks nothing of the map's tile host (#88).
     const tiles: string[] = [];
-    page.on("request", (r) => new URL(r.url()).hostname === new URL(TILES.url).hostname && tiles.push(r.url()));
+    page.on("request", (r) => onTileHost(r.url()) && tiles.push(r.url()));
     await help(page).click();
     for (const [i, act] of BY_MOUSE.entries()) {
       await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
