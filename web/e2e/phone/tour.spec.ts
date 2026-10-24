@@ -194,6 +194,11 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
     await box.tap();
     await box.fill("Peter, the rock.");
   },
+  // Show map is in the Details tab, ringed and left shut; a Place selected ends the step.
+  async (page) => {
+    await bar(page).getByRole("button", { name: "Jesus Christ" }).tap();
+    await details(page).getByRole("list", { name: /^Place/ }).getByRole("button", { name: /^Bethlehem/ }).tap();
+  },
 ];
 
 for (const [size, view] of [
@@ -245,6 +250,22 @@ test("the camera step names drag and pinch, the search step points at the search
   await expect(tour(page)).toContainText(`Step 6 of ${STEPS.length}`);
   await expect(sheet(page).getByRole("tab", { name: "Details" })).toHaveAttribute("aria-selected", "true");
   await shown(page);
+});
+
+// A tap's click is aimed after the finger lifts: a tap on God that passed step 3 drew step 4's box
+// under the finger, and the click pressed End tour (CI on PR #89). A click whose press began off the
+// box, as that one's did, presses nothing in it; here the press is on Recentre.
+test("a tap's click that lands on the box after the finger lifts elsewhere does not press its buttons", async ({ page }) => {
+  await reader(page, "A");
+  await help(page).tap();
+  await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+  await page.getByRole("button", { name: "Recentre" }).tap();
+  await tour(page)
+    .getByRole("button", { name: "End tour" })
+    .evaluate((b) => b.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 })));
+  await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
+  await tour(page).getByRole("button", { name: "End tour" }).tap();
+  await focusIs(page, SARAH);
 });
 
 test("a step in the sheet scrolls its target into view, below the actions held at the top", async ({ page }) => {

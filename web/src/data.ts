@@ -255,6 +255,12 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       const corrections = (d.corrections ?? []).filter((c, i, all) => all.findIndex((o) => o.field === c.field && o.note === c.note) === i);
       return { ...own, facts, entry: d.dictionary_entry, corrections };
     },
+    // A Place's point, for the map; none when the build has no point for it.
+    async point(id: Id): Promise<{ lat: number; lon: number } | undefined> {
+      await load(id);
+      const d = files.get(id)!;
+      return d.lat !== undefined && d.lon !== undefined ? { lat: d.lat, lon: d.lon } : undefined;
+    },
     outside,
     // A Verse's OSIS book, and whether its chapter is built (the book filter).
     bookOf: (id: Id) => ({ osis: books.get(id.slice(0, 2))?.osis, built: !outside(id) }),

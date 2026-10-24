@@ -14,8 +14,9 @@ import "./graph.css";
 
 // The tilted plane (the default, decision 118), stacked discs, and free orbit.
 export const VIEWS: Record<View, ViewModule> = { A: viewA, B: viewB, C: viewC };
-const DOUBLE_CLICK_MS = 400,
-  MOVE_MS = 700;
+// Two clicks on one node within this time are a double click; the map's dots use it too.
+export const DOUBLE_CLICK_MS = 400;
+const MOVE_MS = 700;
 
 const BG = 0x0d0f17,
   ACCENT = 0xffd27a,

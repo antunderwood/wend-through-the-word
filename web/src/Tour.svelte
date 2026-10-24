@@ -157,6 +157,14 @@
   let down: { x: number; y: number } | undefined;
   const onScene = (e: Event) => !!(e.target as Element).closest?.('[data-tour="scene"]');
 
+  // A tap's click is aimed after the finger lifts, where the box may by then be: the tap on a node
+  // that passed a step drew the next step's box under the finger, and its click pressed End tour.
+  // A click on the box counts only when the press began on it, or with no press (a key).
+  let pressed = false;
+  function guard(e: MouseEvent) {
+    if (e.detail && !pressed) e.stopPropagation();
+  }
+
   function end(keep: boolean) {
     page.panBack();
     onend(keep);
@@ -164,7 +172,10 @@
 </script>
 
 <svelte:window
-  onpointerdown={(e) => (down = onScene(e) ? { x: e.clientX, y: e.clientY } : undefined)}
+  onpointerdown={(e) => {
+    down = onScene(e) ? { x: e.clientX, y: e.clientY } : undefined;
+    pressed = box.contains(e.target as Node);
+  }}
   onpointermove={(e) => {
     if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) at.moved = true;
   }}
@@ -172,7 +183,7 @@
   onwheel={(e) => onScene(e) && (at.moved = true)}
 />
 <div class="tour-target" hidden bind:this={ring}></div>
-<div class="tour" role="dialog" aria-label="Tour" bind:this={box}>
+<div class="tour" role="dialog" aria-label="Tour" bind:this={box} onclickcapture={guard}>
   <!-- The words, which scroll when the box is held shorter than they need, then the buttons. -->
   {#if offer}
     <div class="words">

@@ -27,7 +27,7 @@ If a host is blocked, fetch the file by hand and run `uv run python -m pipeline.
 
 ## Front end
 
-The page is in `web/` (TypeScript, Svelte 5, Vite, three.js). `npm run dev` there serves it with the export in `out/data/`, or the one in `WEND_DATA`.
+The page is in `web/` (TypeScript, Svelte 5, Vite, three.js, and Leaflet for the map). `npm run dev` there serves it with the export in `out/data/`, or the one in `WEND_DATA`.
 
 Its tests read an export built from the fixtures:
 

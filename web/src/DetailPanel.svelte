@@ -5,7 +5,8 @@
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
-  import { passes, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import PlaceMap from "./PlaceMap.svelte";
+  import { passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import { screen } from "./screen.svelte";
   import type { Notes } from "./session";
 
@@ -222,13 +223,17 @@
     {/await}
   </section>
   {#if compact}<div class="actions">{@render actions()}</div>{/if}
+  <!-- The map's own block, below the fixed section (and on a phone its actions), so the map can be
+       taller than the section allows. It keeps one height whatever it shows, so the lists below
+       never move between the two clicks of a double click. -->
+  <PlaceMap {data} {model} select={(id) => apply({ type: "select", id })} {makeFocus} />
   {#await listing then list}
     <!-- An Entity's linked Verses are in Bible order (Verse Keys sort so). Each item has its source
          in its title and a correction link after it; a link between two Entities is a
          Relationship, sent as the Relationship line sends it. -->
     {#each list.types as t (t)}
       {@const linked = t === "verse" && isEntity(list.r.id)}
-      {@const found = list.r.links.filter((l) => l.type === t && l.id !== list.r.id && passes(l, model.filters, data.bookOf))}
+      {@const found = passing(list.r, t, model.filters, data.bookOf)}
       {@const all = linked ? found.sort((a, b) => (a.id < b.id ? -1 : 1)) : found}
       {@const key = `${neighboursOf}|${t}`}
       {@const pageKey = `${list.r.id}|${key}`}
