@@ -37,7 +37,7 @@ test("the Your Path bar shows the Focus then Your Path newest first, and can be 
   await expect(items).toHaveText(["Hagar", "Sarah", "Abraham"]);
 });
 
-// A double click on a step makes it the Focus (decision 205): two clicks on one step within the
+// A double click on a step makes it the Focus (decision 206): two clicks on one step within the
 // app's 400 ms, timed as the scene times them, whatever the bar redraws between them.
 test.describe("a double click on a step", () => {
   const ABRAHAM = "person:abraham_58";

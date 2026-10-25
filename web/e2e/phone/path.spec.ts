@@ -4,7 +4,7 @@ import { doubleTap, drag, pageMoved } from "../touch";
 import { selectedIs } from "../touch-input";
 
 // Your Path in the phone's top bar (decision 183): a double tap on a step makes it the Focus
-// (decision 205), and a sideways drag scrolls the steps without counting as a tap.
+// (decision 206), and a sideways drag scrolls the steps without counting as a tap.
 const HAGAR = "person:hagar_1348",
   SARAH = "person:sarah_2473";
 

@@ -12,7 +12,7 @@
   // The Focus first, then Your Path newest first.
   const items = $derived([model.focus, ...[...model.path].reverse()]);
   // A click selects at once, and a second click on the same step within the double click time makes
-  // it the Focus (decision 205); the Focus's own step stays as it is. A click from the keyboard
+  // it the Focus (decision 206); the Focus's own step stays as it is. A click from the keyboard
   // (detail 0) only selects, as before.
   const isDouble = doubleClicks();
   function clicked(id: Id, e: MouseEvent) {
