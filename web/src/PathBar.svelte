@@ -1,16 +1,32 @@
 <script lang="ts">
+  import { doubleClicks } from "./graph";
   import type { Action, Id, State } from "./model";
 
-  let { model, label, apply, notes }: { model: State; label: (id: Id) => string; apply: (a: Action) => void; notes: Record<Id, string> } = $props();
+  let {
+    model,
+    label,
+    apply,
+    notes,
+    makeFocus,
+  }: { model: State; label: (id: Id) => string; apply: (a: Action) => void; notes: Record<Id, string>; makeFocus: (id: Id) => void } = $props();
   // The Focus first, then Your Path newest first.
   const items = $derived([model.focus, ...[...model.path].reverse()]);
+  // A click selects at once, and a second click on the same step within the double click time makes
+  // it the Focus (decision 205); the Focus's own step stays as it is. A click from the keyboard
+  // (detail 0) only selects, as before.
+  const isDouble = doubleClicks();
+  function clicked(id: Id, e: MouseEvent) {
+    if (e.detail && isDouble(id)) {
+      if (id !== model.focus) makeFocus(id);
+    } else apply({ type: "select", id });
+  }
 </script>
 
 <nav class="path" aria-label="Your Path">
   <ol>
     {#each items as id, i (id)}
       <li>
-        <button data-tour="path-{id}" class:focus={i === 0} class:selected={id === model.selected} class:noted={notes[id]} title={notes[id] ? "Has a note" : undefined} onclick={() => apply({ type: "select", id })}>{label(id)}</button>
+        <button data-tour="path-{id}" class:focus={i === 0} class:selected={id === model.selected} class:noted={notes[id]} title={notes[id] ? "Has a note" : undefined} onclick={(e) => clicked(id, e)}>{label(id)}</button>
       </li>
     {/each}
   </ol>
@@ -53,6 +69,7 @@
     border-radius: 999px;
     padding: 2px 8px;
     cursor: pointer;
+    touch-action: manipulation; /* a double tap on a step makes the Focus, never zooms; a drag still scrolls */
   }
   .focus {
     border-color: #ffd27a;

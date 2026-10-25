@@ -507,7 +507,7 @@
     </button>
     {@render details()}
   {/if}
-  <PathBar {model} {label} {apply} {notes} />
+  <PathBar {model} {label} {apply} {notes} {makeFocus} />
   {#if reading && !screen.phone}
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}

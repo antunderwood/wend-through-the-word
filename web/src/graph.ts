@@ -15,8 +15,19 @@ import "./graph.css";
 
 // The tilted plane (the default, decision 118), stacked discs, and free orbit.
 export const VIEWS: Record<View, ViewModule> = { A: viewA, B: viewB, C: viewC };
-// Two clicks on one node within this time are a double click; the map's dots use it too.
+// Two clicks on one node within this time are a double click; the map's dots and Your Path use it too.
 export const DOUBLE_CLICK_MS = 400;
+// A click on id, which is the second of a double click when the last one was on id within that time.
+// Timed by hand, by id, since the page may redraw between the two clicks and native dblclick fails.
+export function doubleClicks(): (id: Id) => boolean {
+  let last = { id: "", t: 0 };
+  return (id) => {
+    const now = performance.now(),
+      double = last.id === id && now - last.t < DOUBLE_CLICK_MS;
+    last = double ? { id: "", t: 0 } : { id, t: now };
+    return double;
+  };
+}
 const MOVE_MS = 700;
 
 const BG = 0x0d0f17,
@@ -562,17 +573,8 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     hover: [] as ((n: SceneNode | null, x: number, y: number) => void)[],
     fps: [] as ((fps: number) => void)[],
   };
-  let lastClick = { id: "", t: 0 };
-  function click(id: Id) {
-    const now = performance.now();
-    if (lastClick.id === id && now - lastClick.t < DOUBLE_CLICK_MS) {
-      lastClick = { id: "", t: 0 };
-      handlers.double.forEach((f) => f(id));
-    } else {
-      lastClick = { id, t: now };
-      handlers.click.forEach((f) => f(id));
-    }
-  }
+  const isDouble = doubleClicks();
+  const click = (id: Id) => (isDouble(id) ? handlers.double : handlers.click).forEach((f) => f(id));
   const ray = new THREE.Raycaster(),
     ndc = new THREE.Vector2();
   function pick(e: MouseEvent): THREE.Sprite | null {
