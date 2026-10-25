@@ -119,6 +119,16 @@ The node limit test page is not deployed (decision 156), so a phone opens it fro
 4. Run the test as on a desktop (decisions 123 and 150): note the phone, its browser, and the frame rate at each node count. The PRD's target is up to 150 nodes at 30 frames per second or more (PRD 11); the node limit is 500 on every screen (decision 177).
 5. Stop the preview with Ctrl+C. Record the result as a decision. There is one node limit and no phone limit (decision 177): a phone that cannot draw 500 nodes smoothly is a decision about that limit, not a separate phone value.
 
+## Redrawing the site icon
+
+The splash's graphic is `ICON` in `web/src/splash.ts`; `web/public/icon.svg` draws the same graph, and the PNG icons are rendered from the SVG (decision 205). After changing both, render the PNGs again from the repository root:
+
+```
+node web/icons.ts
+```
+
+It writes `web/public/icon.png` (32 px) and `web/public/apple-touch-icon.png` (180 px, square corners) with Playwright's Chromium (`cd web && npx playwright install chromium` once if it is missing). Then `cd web && npx vitest run tests/splash.test.ts` checks that the SVG, `ICON` and both PNGs agree. Open the PNGs to look at them before committing.
+
 ## A browser spec fails in CI but not on your machine
 
 CI's runner draws text in DejaVu Sans, which is wider than the font in the stock Playwright image and on a Mac, so a row can wrap or a label can cover a control only there. To reproduce it, run the failing specs once in `mcr.microsoft.com/playwright:v1.63.0-noble` (the version in `web/package.json`) after `apt-get install -y fonts-dejavu-core`. Run only the failing specs, once.
