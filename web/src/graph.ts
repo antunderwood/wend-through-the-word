@@ -19,7 +19,7 @@ export const VIEWS: Record<View, ViewModule> = { A: viewA, B: viewB, C: viewC };
 export const DOUBLE_CLICK_MS = 400;
 // A click on id, which is the second of a double click when the last one was on id within that time.
 // Timed by hand, by id, since the page may redraw between the two clicks and native dblclick fails.
-export function doubleClicks(): (id: Id) => boolean {
+export function doubleClickTimer(): (id: Id) => boolean {
   let last = { id: "", t: 0 };
   return (id) => {
     const now = performance.now(),
@@ -565,15 +565,14 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     for (const L of names) L.el.classList.toggle("crowded", hidden.has(L));
   }
 
-  // Picking. A click is a pointer down and up without a drag; two clicks on the same node within
-  // 400 ms are a double click (the page may redraw between them, so native dblclick fails).
+  // Picking. A click is a pointer down and up without a drag.
   const handlers = {
     click: [] as ((id: Id) => void)[],
     double: [] as ((id: Id) => void)[],
     hover: [] as ((n: SceneNode | null, x: number, y: number) => void)[],
     fps: [] as ((fps: number) => void)[],
   };
-  const isDouble = doubleClicks();
+  const isDouble = doubleClickTimer();
   const click = (id: Id) => (isDouble(id) ? handlers.double : handlers.click).forEach((f) => f(id));
   const ray = new THREE.Raycaster(),
     ndc = new THREE.Vector2();

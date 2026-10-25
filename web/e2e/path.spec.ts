@@ -43,8 +43,23 @@ test.describe("a double click on a step", () => {
   const ABRAHAM = "person:abraham_58";
   const items = (page: Page) => page.getByRole("navigation", { name: "Your Path" }).getByRole("listitem");
   const heading = (page: Page) => page.getByRole("complementary", { name: "Selected Node" }).getByRole("heading", { level: 2 });
-  // Long enough for a second click, and a Focus that loads, to show.
-  const settle = (page: Page) => page.waitForTimeout(600);
+  // Long enough for a Focus that should not move, but did, to load and show. Nothing on the page
+  // marks that it did not, so this wait is fixed; a slow runner can only make it miss a fault,
+  // never fail a page that works.
+  const settle = (page: Page) => page.waitForTimeout(1000);
+  // A double click on a step, its two clicks dispatched in the page one after the other, with the bar
+  // redrawn between them, so the page's own clock times them and a runner slowed by software WebGL
+  // cannot spread them past the app's 400 ms (Playwright's dblclick waits on the browser between its
+  // presses). Each click's detail counts the clicks, as the browser's own does.
+  const doubleClick = (page: Page, name: string) =>
+    items(page)
+      .getByRole("button", { name, exact: true })
+      .evaluate(async (step) => {
+        const click = (detail: number) => step.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, detail }));
+        click(1);
+        await Promise.resolve(); // the bar redraws
+        click(2);
+      });
 
   // Abraham, then Sarah, then Hagar, kept in this browser: the bar reads Hagar, Sarah, Abraham.
   test.beforeEach(async ({ page }) => {
@@ -58,7 +73,7 @@ test.describe("a double click on a step", () => {
   });
 
   test("on an earlier step makes it the Focus, and Your Path keeps its steps", async ({ page }) => {
-    await items(page).getByText("Abraham").dblclick();
+    await doubleClick(page, "Abraham");
     await focusIs(page, ABRAHAM);
     await expect(page).toHaveURL(/focus=person:abraham_58/);
     await expect(heading(page)).toHaveText("Abraham");
@@ -69,7 +84,7 @@ test.describe("a double click on a step", () => {
     const abraham = items(page).getByText("Abraham");
     await abraham.click();
     await expect(heading(page)).toHaveText("Abraham");
-    await page.waitForTimeout(450);
+    await page.waitForTimeout(700); // well past the 400 ms, however slow the runner
     await abraham.click();
     await settle(page);
     await focusIs(page, HAGAR);
@@ -79,19 +94,20 @@ test.describe("a double click on a step", () => {
 
   test("on the Focus's own step changes nothing", async ({ page }) => {
     const url = page.url();
-    await items(page).getByText("Hagar").dblclick();
+    await doubleClick(page, "Hagar");
     await settle(page);
     await focusIs(page, HAGAR);
     expect(page.url()).toBe(url);
     await expect(items(page)).toHaveText(["Hagar", "Sarah", "Abraham"]);
   });
 
-  test("the keyboard still only selects, even with Enter pressed twice quickly", async ({ page }) => {
-    await items(page).getByRole("button", { name: "Abraham" }).focus();
-    await page.keyboard.press("Enter");
-    await page.keyboard.press("Enter");
-    await expect(heading(page)).toHaveText("Abraham");
-    await settle(page);
-    await focusIs(page, HAGAR);
-  });
+  for (const key of ["Enter", "Space"])
+    test(`the keyboard still only selects, even with ${key} pressed twice quickly`, async ({ page }) => {
+      await items(page).getByRole("button", { name: "Abraham" }).focus();
+      await page.keyboard.press(key);
+      await page.keyboard.press(key);
+      await expect(heading(page)).toHaveText("Abraham");
+      await settle(page);
+      await focusIs(page, HAGAR);
+    });
 });

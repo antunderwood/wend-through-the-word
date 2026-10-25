@@ -43,7 +43,9 @@ test("a sideways drag in the bar scrolls the steps and is never a tap", async ({
   await drag(page, from, { x: from.x - 120, y: from.y });
   await drag(page, from, { x: from.x - 120, y: from.y });
   await expect.poll(() => steps.evaluate((ol) => ol.scrollLeft)).toBeGreaterThan(0);
-  await page.waitForTimeout(600);
+  // Long enough for a tap that should not have counted, but did, to show: nothing marks that it did
+  // not, so the wait is fixed, and a slow runner can only make it miss a fault, never fail a page that works.
+  await page.waitForTimeout(1000);
   await focusIs(page, HAGAR);
   await selectedIs(page, HAGAR);
   expect(await pageMoved(page)).toEqual({ scale: 1, x: 0, y: 0 });

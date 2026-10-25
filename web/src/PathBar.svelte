@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { doubleClicks } from "./graph";
+  import { doubleClickTimer } from "./graph";
   import type { Action, Id, State } from "./model";
 
   let {
@@ -14,7 +14,7 @@
   // A click selects at once, and a second click on the same step within the double click time makes
   // it the Focus (decision 206); the Focus's own step stays as it is. A click from the keyboard
   // (detail 0) only selects, as before.
-  const isDouble = doubleClicks();
+  const isDouble = doubleClickTimer();
   function clicked(id: Id, e: MouseEvent) {
     if (e.detail && isDouble(id)) {
       if (id !== model.focus) makeFocus(id);
@@ -70,6 +70,9 @@
     padding: 2px 8px;
     cursor: pointer;
     touch-action: manipulation; /* a double tap on a step makes the Focus, never zooms; a drag still scrolls */
+    /* A double click makes the Focus and never selects the step's text, which Safari would do. */
+    -webkit-user-select: none; /* Safari's name for it */
+    user-select: none;
   }
   .focus {
     border-color: #ffd27a;
