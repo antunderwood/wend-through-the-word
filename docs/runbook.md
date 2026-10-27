@@ -129,6 +129,16 @@ node web/icons.ts
 
 It writes `web/public/icon.png` (32 px) and `web/public/apple-touch-icon.png` (180 px, square corners) with Playwright's Chromium (`cd web && npx playwright install chromium` once if it is missing). Then `cd web && npx vitest run tests/splash.test.ts` checks that the SVG, `ICON` and both PNGs agree. Open the PNGs to look at them before committing.
 
+## Re-measuring the bold rule
+
+The rule that bolds names in the shared Verses was measured on the whole Bible (decision 207). After a new export, measure it again from the repository root:
+
+```
+node web/measure-bold.ts out/data/<version>
+```
+
+It reads the export only and prints the hit rate of Person and Place mentions and, over every pair of nodes in one Verse, the bold runs the pair adds or loses against each node alone, with the first 10 of each (`--all` lists every one). Compare them with the decision's numbers; a change worth keeping goes in the decision.
+
 ## A browser spec fails in CI but not on your machine
 
 CI's runner draws text in DejaVu Sans, which is wider than the font in the stock Playwright image and on a Mac, so a row can wrap or a label can cover a control only there. To reproduce it, run the failing specs once in `mcr.microsoft.com/playwright:v1.63.0-noble` (the version in `web/package.json`) after `apt-get install -y fonts-dejavu-core`. Run only the failing specs, once.

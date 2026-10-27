@@ -208,8 +208,10 @@ test.describe("at 1440 x 900", () => {
     await people(page).getByRole("button", { name: /^Hagar/ }).click();
     await expect(relationship(page)).toBeVisible();
     await expect(panel(page).getByRole("heading", { name: /Dictionary/ })).toBeVisible(); // her details loaded
-    await panel(page).evaluate((p) => p.scrollTo(0, 0));
+    // And her shared Verses: drawn after the scroll below, they would hold Hagar's row and scroll back.
     const shared = panel(page).getByRole("heading", { name: /^Together in/ });
+    await expect(shared).toBeVisible();
+    await panel(page).evaluate((p) => p.scrollTo(0, 0));
     const below = async () => (await box(shared)).y - (await headerBottom(page));
     const usual = await below();
     await firstClickHolds(page, panel(page).getByRole("list", { name: /^Together in/ }).getByRole("button").first());
