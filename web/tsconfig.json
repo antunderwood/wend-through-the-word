@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts", "e2e/**/*.ts", "vite.config.ts", "stage.ts", "icons.ts", "live-check.ts", "cache-rules.ts"]
+  "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts", "e2e/**/*.ts", "vite.config.ts", "stage.ts", "icons.ts", "live-check.ts", "cache-rules.ts", "measure-bold.ts"]
 }

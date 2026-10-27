@@ -287,7 +287,7 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
     exists: async (id: Id) => known(id) && (typeOf(id) !== "verse" || (await chapterFile(id)).verses.some((v) => v.key === id)),
     record: (id: Id) => records.get(id),
     // An Entity's type, name, and aliases, from the search index (no fetch): for the names in bold
-    // in a shared Verse (decision 207).
+    // in a shared Verse (decision 208).
     named: (id: Id) => entities.get(id),
     genderOf: (id: Id) => records.get(id)?.gender,
     // The first sentence of a loaded Verse's BSB text or Entity's Dictionary Entry; "" until

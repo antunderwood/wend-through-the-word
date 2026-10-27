@@ -238,8 +238,8 @@
   const pins = $derived(model.pins);
   const sharing = $derived.by(() => {
     retries;
-    // The names in bold in each list's Verses (decision 207): both nodes the list is about, from the
-    // search index, so they come with the list and never after it.
+    // The names in bold in each list's Verses: both nodes the list is about, from the search index
+    // (decision 208), so they come with the list and never after it.
     const names = (o: Id) => [versesOf, o].flatMap((id) => data.named(id) ?? []);
     return Promise.all(
       [...new Set([focus, ...pins])]

@@ -43,6 +43,13 @@ describe("a shared Verse shows the names of its Person and Place in bold", () =>
     expect(bold("Joseph, the husband of Mary", person("Joseph (Husband of Mary)"))).toEqual(["Joseph"]);
   });
 
+  it("reads a name or an alias with a hyphen or a space at either end as the name without it", () => {
+    const text = "from Baale to Baale-judah, and Abram";
+    expect(bold(text, { type: "place", name: "Baale-" })).toEqual(["Baale"]);
+    expect(bold(text, { type: "place", name: "Gibeah", aliases: ["Baale ", " -"] })).toEqual(["Baale"]);
+    expect(bold(text, person("Abraham", "-Abram"))).toEqual(["Abram"]);
+  });
+
   it("bolds a multi-word name as one phrase, a hyphen and a space alike", () => {
     expect(bold("They camped in the Valley of Shaveh.", { type: "place", name: "Valley of Shaveh" })).toEqual(["Valley of Shaveh"]);
     expect(bold("from Baale-judah to Baale Judah", { type: "place", name: "Baale-judah" })).toEqual(["Baale-judah", "Baale Judah"]);
@@ -96,9 +103,28 @@ describe("an ordinary word is never bold", () => {
     expect(bold("Holy Father, protect them by Your name,", god)).toEqual(["Father"]);
   });
 
+  it("does not bold a call at a quotation's start, as the text does not tell it from a parable's", () => {
+    // Matt 8:25, where Theographic tags Jesus (owner, decision 207).
+    expect(bold("The disciples went and woke Him, saying, “Lord, save us! We are perishing!”", jesus)).toEqual([]);
+  });
+
+  it("bolds an alias next to a capitalised word across a comma, which parts a list, not a title", () => {
+    const abraham = person("Abraham", "Abram");
+    expect(bold("Terah took his son Abram, Lot his grandson,", abraham)).toEqual(["Abram"]);
+    expect(bold("After leaving Haran, Abram took his wife Sarai", abraham)).toEqual(["Abram"]);
+    expect(bold("After leaving Haran and Abram took his wife Sarai", abraham)).toEqual([]);
+  });
+
   it("does not bold an alias that is part of some other name", () => {
     expect(bold("After Jesus was born in Bethlehem in Judea, during the time of King Herod,", jesus)).toEqual(["Jesus"]);
     expect(bold("“the Lord Jesus, who appeared to you on the road", jesus)).toEqual(["Lord", "Jesus"]);
     expect(bold("I will also deny him before My Father in heaven.", god)).toEqual(["Father"]);
+  });
+
+  it("guards each node's names on their own: another node's name does not make an alias a name", () => {
+    // Matt 2:1 with the panel's two nodes: "King" is Jesus's alias, but here Herod's title.
+    const text = "After Jesus was born in Bethlehem in Judea, during the time of King Herod, Magi from the east arrived in Jerusalem,";
+    expect(bold(text, jesus, person("Herod"))).toEqual(["Jesus", "Herod"]);
+    expect(bold(text, person("Herod"), jesus)).toEqual(["Jesus", "Herod"]);
   });
 });

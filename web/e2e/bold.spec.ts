@@ -12,8 +12,8 @@ const textOf = (text: Locator) => text.evaluate((p) => p.textContent);
 
 test.use({ reducedMotion: "reduce" });
 
-async function open(page: Page, focus: string, sel: string) {
-  await page.goto(`/?focus=${focus}&sel=${sel}`);
+async function open(page: Page, focus: string, sel: string, more = "") {
+  await page.goto(`/?focus=${focus}&sel=${sel}${more}`);
   await focusIs(page, focus);
 }
 
@@ -47,6 +47,22 @@ test("a shared Verse for a Theme bolds no word for the Theme, and still bolds th
   expect(await bold(verseText(page, "Matt 1:1"))).toEqual(["Abraham"]);
   const all = await shared(page).locator("strong").allTextContents();
   expect(new Set(all)).toEqual(new Set(["Abram", "Abraham", "Abraham’s"]));
+});
+
+test("a list shared with a pin bolds the names of both its ends", async ({ page }) => {
+  await open(page, "person:sarah_2473", "person:abraham_58", "&pins=place:ur_1189");
+  const withUr = panel(page).getByRole("list", { name: /^Together with Ur of the Chaldees in 1 verse/ });
+  // "And Terah took his son Abram, ... the wife of Abram, and they set out from Ur of the Chaldeans"
+  const text = withUr.getByRole("listitem").filter({ hasText: "Gen 11:31" }).locator(".verse-text");
+  await expect(text.locator("strong")).toHaveText(["Abram", "Abram", "Ur"]);
+});
+
+test("a list shared with an Event bolds no word for the Event, and still bolds the Person at the other end", async ({ page }) => {
+  // The Event "Abraham enters Canaan": "Canaan" in Gen 11:31 stays plain, Abraham's "Abram" bolds.
+  await open(page, "event:71", "person:abraham_58");
+  const text = verseText(page, "Gen 11:31");
+  await expect(text).toContainText("for the land of Canaan");
+  await expect(text.locator("strong")).toHaveText(["Abram", "Abram"]);
 });
 
 test("markup in a Verse's text is shown as text, not drawn", async ({ page }) => {
