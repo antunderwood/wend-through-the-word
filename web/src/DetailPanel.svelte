@@ -2,6 +2,7 @@
   // The detail panel: the Selected Node, the Verses it shares with the Focus and pins, its own data,
   // and the Neighbour lists. Props only; App owns the Focus Model state.
   import { untrack, type Snippet } from "svelte";
+  import { boldNames } from "./bold";
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
@@ -237,10 +238,13 @@
   const pins = $derived(model.pins);
   const sharing = $derived.by(() => {
     retries;
+    // The names in bold in each list's Verses (decision 207): both nodes the list is about, from the
+    // search index, so they come with the list and never after it.
+    const names = (o: Id) => [versesOf, o].flatMap((id) => data.named(id) ?? []);
     return Promise.all(
       [...new Set([focus, ...pins])]
         .filter((o) => o !== versesOf && isEntity(versesOf) && isEntity(o))
-        .map(async (o) => ({ with: o, verses: await data.shared(o, versesOf) })),
+        .map(async (o) => ({ with: o, names: names(o), verses: await data.shared(o, versesOf) })),
     );
   });
   // A built Verse's BSB text under its name (decision 138); not when the click came from the shared
@@ -287,12 +291,14 @@
     {#if !compact}{@render verse()}{/if}
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
     {#await sharing then lists}
-      {#each lists as { with: o, verses }, i (o)}
+      {#each lists as { with: o, names, verses }, i (o)}
         {#if verses.length}
           <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
           <ul aria-labelledby="shared-{i}">
             {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
-              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{v.text}</p></li>
+              <!-- A Person's or a Place's name in bold: text and strong elements, never markup from
+                   the data, so the Verse's text stays one string. -->
+              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{#each boldNames(v.text, names) as r, j (j)}{#if r.bold}<strong>{r.text}</strong>{:else}{r.text}{/if}{/each}</p></li>
             {/each}
           </ul>
           {@render more(`${versesOf}|${o}`, verses.length)}
