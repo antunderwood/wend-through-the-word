@@ -75,7 +75,8 @@ test("markup in a Verse's text is shown as text, not drawn", async ({ page }) =>
   });
   await open(page, "person:sarah_2473", "person:abraham_58");
   const text = verseText(page, "Gen 25:10");
-  expect(await bold(text)).toEqual(["Abraham", "Sarah"]);
+  // Waits for the list, which is drawn after the Focus.
+  await expect(text.locator("strong")).toHaveText(["Abraham", "Sarah"]);
   expect(await textOf(text)).toBe(marked);
   await expect(text.locator("b, img")).toHaveCount(0);
 });

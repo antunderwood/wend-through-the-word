@@ -127,4 +127,27 @@ describe("an ordinary word is never bold", () => {
     expect(bold(text, jesus, person("Herod"))).toEqual(["Jesus", "Herod"]);
     expect(bold(text, person("Herod"), jesus)).toEqual(["Jesus", "Herod"]);
   });
+
+  it("counts another node's name as a name where “and” joins the two, as in a list of people", () => {
+    // Acts 3:1, Luke 23:12 and Acts 11:30, each with the two nodes Theographic tags.
+    const peter = person("Simon Peter", "Peter", "Simon", "Cephas");
+    const john = person("John the Apostle");
+    const peterAndJohn = "One afternoon Peter and John were going up to the temple at the hour of prayer, the ninth hour.";
+    expect(bold(peterAndJohn, peter, john)).toEqual(["Peter", "John"]);
+    // Each node alone still keeps its word plain beside a name it does not know.
+    expect(bold(peterAndJohn, peter)).toEqual([]);
+    expect(bold("That day Herod and Pilate became friends; before this time they had been enemies.", person("Herod Antipas"), person("Pontius Pilate"))).toEqual([
+      "Herod",
+      "Pilate",
+    ]);
+    expect(bold("This they did, sending their gift to the elders with Barnabas and Saul.", person("Barnabas"), person("Paul", "Saul"))).toEqual([
+      "Barnabas",
+      "Saul",
+    ]);
+  });
+
+  it("still keeps a word plain where “and” joins it to a capitalised word that is no node's name", () => {
+    expect(bold("You rejected the Holy and Righteous One", jesus, god)).toEqual([]);
+    expect(bold("Then Peter and Andrew left their nets", person("Simon Peter", "Peter"), person("John the Apostle"))).toEqual([]);
+  });
 });
