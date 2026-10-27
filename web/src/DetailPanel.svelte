@@ -3,6 +3,7 @@
   // and the Neighbour lists. Props only; App owns the Focus Model state.
   import { untrack, type Snippet } from "svelte";
   import { boldNames } from "./bold";
+  import { typeColour } from "./colours";
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
@@ -296,9 +297,9 @@
           <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
           <ul aria-labelledby="shared-{i}">
             {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
-              <!-- A Person's or a Place's name in bold: text and strong elements, never markup from
-                   the data, so the Verse's text stays one string. -->
-              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{#each boldNames(v.text, names) as r, j (j)}{#if r.bold}<strong>{r.text}</strong>{:else}{r.text}{/if}{/each}</p></li>
+              <!-- A Person's or a Place's name in bold and its type's colour: text and strong elements,
+                   never markup from the data, so the Verse's text stays one string. -->
+              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{#each boldNames(v.text, names) as r, j (j)}{#if r.bold}<strong style:color={typeColour(r.type as NodeType)}>{r.text}</strong>{:else}{r.text}{/if}{/each}</p></li>
             {/each}
           </ul>
           {@render more(`${versesOf}|${o}`, verses.length)}
@@ -669,9 +670,11 @@
   .item .muted {
     font-size: 12px;
   }
+  /* The text is dimmed by its colour and not its opacity, so a bold name, in its type's colour (the
+     graph's disc colours), is not dimmed with it. */
   .verse-text {
     margin: 0 0 8px 4px;
-    opacity: 0.85;
+    color: #c4c7d3;
   }
   .verse-full {
     margin: 6px 0;
