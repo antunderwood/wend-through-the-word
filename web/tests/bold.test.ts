@@ -12,10 +12,16 @@ describe("a shared Verse shows the names of its Person and Place in bold", () =>
     const runs = boldNames(text, [person("Absalom")]);
     expect(runs).toEqual([
       { text: "Then Hushai said to ", bold: false },
-      { text: "Absalom", bold: true },
+      { text: "Absalom", bold: true, type: "person" },
       { text: ", “The advice is not good.”", bold: false },
     ]);
     expect(runs.map((r) => r.text).join("")).toBe(text);
+  });
+
+  it("says whose name a bold run is by type, so the panel can colour it", () => {
+    const place = { type: "place", name: "Bethlehem" };
+    const runs = boldNames("Jesus was born in Bethlehem.", [{ type: "person", name: "Jesus" }, place]);
+    expect(runs.filter((r) => r.bold).map((r) => [r.text, r.type])).toEqual([["Jesus", "person"], ["Bethlehem", "place"]]);
   });
 
   it("shows a Verse plain when there are no names, and an empty Verse as no runs", () => {

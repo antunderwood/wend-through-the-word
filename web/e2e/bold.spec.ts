@@ -17,19 +17,21 @@ async function open(page: Page, focus: string, sel: string, more = "") {
   await focusIs(page, focus);
 }
 
-test("with Abraham selected and Sarah the Focus, a shared Verse shows both names bold in the same colour, its text unchanged", async ({ page }) => {
+test("with Abraham selected and Sarah the Focus, a shared Verse shows both names bold in the Person colour, its text unchanged", async ({ page }) => {
   await open(page, "person:sarah_2473", "person:abraham_58");
   const text = verseText(page, "Gen 25:10");
   await expect(text.locator("strong")).toHaveCount(3);
   expect(await bold(text)).toEqual(["Abraham", "Abraham", "Sarah"]);
   expect(await textOf(text)).toBe("This was the field that Abraham had bought from the Hittites. Abraham was buried there with his wife Sarah.");
-  // Weight only: the bold word keeps the Verse's colour.
+  // Bold, in the graph's Person colour (a Place's would be its green), the Verse's own text not.
   const look = await text.locator("strong").first().evaluate((s) => {
     const own = getComputedStyle(s),
       verse = getComputedStyle(s.parentElement!);
-    return { colour: own.color === verse.color, heavier: +own.fontWeight > +verse.fontWeight };
+    return { colour: own.color, plain: verse.color, heavier: +own.fontWeight > +verse.fontWeight };
   });
-  expect(look).toEqual({ colour: true, heavier: true });
+  expect(look.colour).toBe("rgb(111, 168, 220)"); // #6fa8dc
+  expect(look.colour).not.toBe(look.plain);
+  expect(look.heavier).toBe(true);
 });
 
 test("a Verse that does not write the name (a pronoun) shows plain", async ({ page }) => {

@@ -3,7 +3,8 @@
 // and false bold are in the decision.
 
 // A piece of a Verse's text; the runs joined are the text exactly.
-export type Run = { text: string; bold: boolean };
+// A bold run says whose name it is by type, so the panel can colour it like that type's disc.
+export type Run = { text: string; bold: boolean; type?: string };
 export type Named = { type: string; name: string; aliases?: readonly string[] };
 
 // The kinds of name, the surest first. A name: a node's name, a phrase, a word in capitals ("LORD").
@@ -56,14 +57,14 @@ function names(n: Named): Map<string, NodeName> {
 export function boldNames(text: string, nodes: readonly Named[]): Run[] {
   const matched = nodes.map((node) => matchNames(text, names(node)));
   const spans = matched
-    .flatMap((own, i) => guard(text, own, matched.filter((_, j) => j !== i).flat()))
+    .flatMap((own, i) => guard(text, own, matched.filter((_, j) => j !== i).flat()).map((s) => ({ ...s, type: nodes[i].type })))
     .sort((a, b) => a.start - b.start || b.end - a.end);
   const runs: Run[] = [];
   let at = 0;
   for (const span of spans) {
     if (span.start < at) continue; // inside or across one already bold
     if (span.start > at) runs.push({ text: text.slice(at, span.start), bold: false });
-    runs.push({ text: text.slice(span.start, span.end), bold: true });
+    runs.push({ text: text.slice(span.start, span.end), bold: true, type: span.type });
     at = span.end;
   }
   if (at < text.length) runs.push({ text: text.slice(at), bold: false });
