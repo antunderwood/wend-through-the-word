@@ -87,7 +87,7 @@ These rules are fixed for version 1.
 | ACAI | Word to entity tags | CC BY-SA 4.0 |
 | STEPBible TIPNR | Strong's numbers for people and places | CC BY 4.0 |
 | STEPBible TAHOT, TAGNT, lexicons | Word study | CC BY 4.0 |
-| UBS open licence data | Plants, animals, objects, routes | CC BY-SA 4.0 |
+| UBS open licence data | Plants, animals, objects, routes. Routes ship on the map since decision 220 | CC BY-SA 4.0 |
 | Wikidata | Outward links (QIDs) | CC0 |
 
 ### 6.3 Live display only

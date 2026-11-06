@@ -13,6 +13,7 @@ Small slices of the real sources, cut by `cut.py` from a full download. Each sli
 | `sources/??.zip`, `sources/no-country.zip` | GeoNames dump files, download.geonames.org/export/dump (downloaded 2026-10-19) | CC BY 4.0 |
 | `sources/NavesTopicalDictionary.csv` | Nave's Topical Bible, BibleData, github.com/BradyStephenson/bible-data (commit `720a8da`) | CC BY 4.0 |
 | `sources/aobd-001.json` to `sources/aobd-026.json` | Aquifer Open Bible Dictionary (adapted from the Tyndale Open Bible Dictionary), github.com/BibleAquifer/AquiferOpenBibleDictionary `eng/json` (commit `663a34e`) | CC BY-SA 4.0 |
+| `sources/ubs-routes.zip` | UBS Bible Routes, github.com/ubsicap/ubs-open-license `ubs-bible-routes/GeoJsonRoutes` (commit `a15a96c`): five real route files, unchanged | CC BY-SA 4.0 |
 | `sources/acai-v2026-10-30.zip` | Synthetic, written by `make_acai.py` in the ACAI format (github.com/BibleAquifer/ACAI). Holds no real ACAI rows | Our own test data, MIT |
 | `sources/TVTMS - Translators Versification Traditions with Methodology for Standardisation for Eng+Heb+Lat+Grk+Others - STEPBible.org CC BY.txt` | Synthetic, written by hand in the TVTMS format (github.com/STEPBible/STEPBible-Data). Holds no real TVTMS rows | Our own test data, MIT |
 | `sources/TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt` | Synthetic, written by hand in the TIPNR format (github.com/STEPBible/STEPBible-Data). Holds no real TIPNR rows | Our own test data, MIT |
@@ -54,5 +55,7 @@ The ACAI fixture is written by `make_acai.py` (run it again after changing `peop
 The TVTMS fixture is written by hand too (licences.md, section 5, rule 4), with a byte order mark and CRLF line ends like the real file. It has a short table of English differences from the KJV (3 John 1:14 and 15, Philippians 1:16 and 17, Revelation 12:17) and four condensed sections: Psalm 3 (a title, in the Psalm layout with a `BIBLES` row), Joel 2 to 4 (a chapter boundary), one commented-out row, and a Revelation row whose range crosses a chapter. The rows follow the real numbering but are typed by hand.
 
 The Aquifer Open Bible Dictionary files keep the articles whose title is a fixture Nave's heading, or its part before a bracket or a comma, up to 6,000 characters of HTML (and Angel, longer, for the match before a bracket), without `associations`. One synthetic article, a second "Gold", tests a title that several articles share.
+
+`curated/routes.csv` joins the five route files to passages: Hagar (Gen 16), Isaac to Gerar (Gen 26) and the flight to Egypt (Matt 2) ship; Isaac to Beersheba is not reviewed; Paul's voyage has a synthetic passage, Zeph 3:9, outside the fixture books.
 
 Rules for later fixtures are in `docs/licences.md`, section 5. In short: the TIPNR fixture is synthetic, and OpenStreetMap records use made-up coordinates.

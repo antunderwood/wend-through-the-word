@@ -25,6 +25,7 @@ Quotes are copied from the upstream text on the date checked. Where we could not
 | STEPBible TVTMS | Moves each source's verse references into KJV numbering | CC BY 4.0, with a request not to repost the file | No rows ship; credited | 2026-11-06 |
 | Nave's Topical Bible (bible-data) | Themes and Filed Under links | CC BY 4.0 (the dataset) | Yes | 2026-10-19 |
 | Aquifer Open Bible Dictionary (Mission Mutual, adapted from the Tyndale Open Bible Dictionary) | Dictionary Entry text on Themes | CC BY-SA 4.0 | Yes | 2026-11-06 |
+| UBS Bible Routes (Project MARBLE) | Route lines on the map | CC BY-SA 4.0 | Yes | 2026-11-06 |
 
 ## 1. Licences of this project
 
@@ -259,6 +260,19 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
 - Date checked: 2026-11-06.
 - Notes: every article has `review_level` "None". Its Bible references (`BBCCCVVV`) follow English numbering (it cites Malachi 4); they stay in the text as written and the build joins none of them.
 
+### 3.13 UBS Bible Routes (Project MARBLE)
+
+- URL: https://github.com/ubsicap/ubs-open-license, folder `ubs-bible-routes/GeoJsonRoutes` (commit `a15a96c`). The whole repository is 835 MB, so `download` fetches only the GeoJSON files that `pipeline/curated/routes.csv` names, each pinned to that commit, into one zip (`ubs-routes.zip`).
+- Use: route lines on the map, joined to their passages by our curated `routes.csv` (decision 220). The files hold only lines, with no names or references.
+- Licence as stated: CC BY-SA 4.0.
+- Where stated:
+  - `ubs-bible-routes/README.md`: "This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License", "(© United Bible Societies 2023)", and "These routes are part of a collection of data created for UBS by Dr. Leen Ritmeyer."
+  - `ubs-bible-routes/LICENSE.md` and the repository's `LICENSE.md`: the full CC BY-SA 4.0 text.
+- Conditions: credit United Bible Societies (and Leen Ritmeyer, as the README does), link the source, and share alike (met). The credits page and the map's note under a drawn route carry the credit.
+- OpenStreetMap rule (decision 43, PRD 5 rule 8): the README says the routes were drawn for UBS by Leen Ritmeyer; nothing says they were traced from OpenStreetMap, and the SVG versions were exported from Adobe Illustrator. We treat them as UBS's own work. UNVERIFIED: the base map Ritmeyer drew on.
+- Date checked: 2026-11-06.
+- Not used: the Fauna, Flora and Realia handbooks in the same repository (owner's choice, 2026-11-06). Their images have separate copyright PDFs.
+
 ### 3.12 BSB word alignment (not a build source)
 
 - URL: https://github.com/BibleAquifer/BereanStandardBible, folder `eng/alignments`. Each BSB word linked to a Macula Hebrew (WLC) or Greek (SBLGNT) word.
@@ -328,7 +342,7 @@ Rules:
    - Pleiades slices: CC BY 3.0. GeoNames slices: CC BY 4.0. Wikidata slices: CC0.
    - Curated tables: our own data, CC BY-SA 4.0 (they change Theographic data).
    - ACAI: synthetic records written by `tests/fixtures/make_acai.py`, our own test data (MIT).
-   - Aquifer Open Bible Dictionary slices: CC BY-SA 4.0.
+   - Aquifer Open Bible Dictionary slices and UBS route files: CC BY-SA 4.0.
 4. The TIPNR and TVTMS fixtures are synthetic. We write them by hand in their formats. They hold no real rows. Reason: STEPBible asks that its files are not posted elsewhere (sections 3.9 and 3.9a).
 5. Do not put King James Version text from Theographic `verses.json` into fixtures. Strip `verseText` and similar fields. Reason: the UK status of the KJV is unverified (section 3.2).
 6. Do not put real OpenStreetMap coordinates into fixtures. The spec needs "an OpenStreetMap point that is re-sourced and one that is not found". Use a real record with its coordinates replaced by made-up values, or a synthetic record. Keep `coordinates_source.type` as "osm". Reason: a real OpenStreetMap point in a public repository is ODbL data, even if it never ships.

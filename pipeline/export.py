@@ -69,6 +69,11 @@ def write(b):
         version / "redirects.json",
         {"source": "Curated", "licence": "CC BY-SA 4.0", "redirects": redirects},
     )
+    # Journey lines for the map (decision 220), joined to Verses by the curated routes table.
+    write_json(
+        version / "routes.json",
+        {"source": "UBS Bible Routes", "licence": b.licence("ubs-routes"), "routes": b.routes},
+    )
     write_json(version / "search-index.json", search.index(b))
     write_json(version / "credits.json", credits.credits(b))
 

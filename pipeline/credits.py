@@ -77,6 +77,13 @@ CREDITS = {
         "CC BY-SA 4.0. Its articles are shown as plain text on Themes.",
         "link": "https://github.com/BibleAquifer/AquiferOpenBibleDictionary",
     },
+    "ubs": {  # decision 220: journey lines on the map
+        "name": "UBS Bible Routes (Project MARBLE)",
+        "credit": "Bible Routes from UBS Project MARBLE © United Bible Societies 2023, created for "
+        "UBS by Dr. Leen Ritmeyer, licensed under CC BY-SA 4.0. Each route is joined to its "
+        "passage by this project's curated routes table.",
+        "link": "https://github.com/ubsicap/ubs-open-license/tree/main/ubs-bible-routes",
+    },
     "naves": {
         "name": "Nave's Topical Bible (BibleData)",
         "credit": 'Brady Stephenson, "BibleData: Structured Datasets from the Holy Bible", '
