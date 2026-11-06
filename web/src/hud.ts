@@ -46,3 +46,35 @@ export function shortList(value: string, keep = 4) {
   const all = value.split(", ").filter((v, i, a) => a.indexOf(v) === i);
   return all.length <= keep ? all.join(", ") : `${all.slice(0, keep).join(", ")} +${all.length - keep}`;
 }
+
+// Where the reader put the HUD and how big they made it, kept in this browser. No place: the card
+// sits at its default spot, top right; no h: it is as tall as its content allows.
+export type HudPlace = { x: number; y: number; w: number; h?: number };
+export const HUD_PLACE_KEY = "wend.hudPlace";
+export const HUD_FLICKER_KEY = "wend.hudFlicker";
+export const HUD_W = 340;
+export const HUD_MIN = { w: 280, h: 220 };
+export const HUD_MAX_W = 720;
+const EDGE = 8;
+
+export function keptPlace(): HudPlace | null {
+  try {
+    const p = JSON.parse(stored(HUD_PLACE_KEY) ?? "null");
+    return p && [p.x, p.y, p.w].every(Number.isFinite) ? p : null;
+  } catch {
+    return null;
+  }
+}
+export const keepPlace = (p: HudPlace | null) => store(HUD_PLACE_KEY, JSON.stringify(p));
+export const keptFlicker = () => stored(HUD_FLICKER_KEY) === "on";
+export const keepFlicker = (on: boolean) => store(HUD_FLICKER_KEY, on ? "on" : "off");
+
+// The place kept whole on a screen of the given size: the card's width and height fit, and at least
+// its whole width and its top strip stay on screen, so it can always be dragged back.
+export function clampPlace(p: HudPlace, screenW: number, screenH: number): HudPlace {
+  const w = Math.round(Math.min(Math.max(p.w, HUD_MIN.w), HUD_MAX_W, screenW - 2 * EDGE));
+  const h = p.h === undefined ? undefined : Math.round(Math.min(Math.max(p.h, HUD_MIN.h), screenH - 2 * EDGE));
+  const x = Math.round(Math.min(Math.max(p.x, EDGE), screenW - w - EDGE));
+  const y = Math.round(Math.min(Math.max(p.y, EDGE), screenH - (h ?? 120) - EDGE));
+  return h === undefined ? { x, y, w } : { x, y, w, h };
+}

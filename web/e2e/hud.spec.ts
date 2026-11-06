@@ -4,7 +4,7 @@ import { focusIs, nodes, openOnAbraham } from "./scene";
 const ABRAHAM = "person:abraham_58";
 const hud = (page: Page) => page.getByRole("region", { name: "Selected Node HUD" });
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
-const toggle = (page: Page) => page.getByRole("button", { name: "HUD" });
+const toggle = (page: Page) => page.getByRole("button", { name: "HUD", exact: true });
 
 test.use({ reducedMotion: "reduce" });
 
@@ -36,8 +36,8 @@ test("the HUD shows the Selected Node over the scene in place of the panel, and 
   await page.reload();
   await expect(hud(page)).toBeVisible();
 
-  // Details goes back to the full panel.
-  await hud(page).getByRole("button", { name: "Details" }).click();
+  // Panel goes back to the full panel.
+  await hud(page).getByRole("button", { name: "Panel" }).click();
   await expect(hud(page)).toHaveCount(0);
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
   await expect.poll(async () => (await panel(page).boundingBox())!.x).toBeLessThan(page.viewportSize()!.width - 300);
@@ -50,4 +50,77 @@ test("Make Focus on the HUD moves the Focus", async ({ page }) => {
   await hud(page).getByRole("button", { name: "Make Focus" }).click();
   await focusIs(page, "person:isaac_616");
   await expect(hud(page).getByText("Focus", { exact: true })).toBeVisible();
+});
+
+test("the HUD moves by its strip and its grip, sizes by its corner, and keeps both", async ({ page }) => {
+  await toggle(page).click();
+  const before = (await hud(page).boundingBox())!;
+  const strip = hud(page).locator("header");
+  const s = (await strip.boundingBox())!;
+  await page.mouse.move(s.x + 120, s.y + 8);
+  await page.mouse.down();
+  await page.mouse.move(s.x - 480, s.y + 108, { steps: 5 });
+  await page.mouse.up();
+  const moved = (await hud(page).boundingBox())!;
+  expect(Math.round(moved.x - before.x)).toBe(-600);
+  expect(Math.round(moved.y - before.y)).toBe(100);
+
+  await hud(page).getByRole("button", { name: "Move HUD" }).press("ArrowRight");
+  expect(Math.round((await hud(page).boundingBox())!.x - moved.x)).toBe(16);
+
+  const corner = (await hud(page).getByRole("button", { name: "Resize HUD" }).boundingBox())!;
+  await page.mouse.move(corner.x + 9, corner.y + 9);
+  await page.mouse.down();
+  await page.mouse.move(corner.x - 31, corner.y - 31, { steps: 5 });
+  await page.mouse.up();
+  const sized = (await hud(page).boundingBox())!;
+  expect(Math.round(sized.width)).toBe(Math.round(before.width) - 40);
+  // A card moved low is cut to the screen, so its corner stays in reach.
+  expect(sized.y + sized.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+
+  await page.reload();
+  const kept = (await hud(page).boundingBox())!;
+  expect(Math.round(kept.x)).toBe(Math.round(moved.x) + 16);
+  expect(Math.round(kept.width)).toBe(Math.round(before.width) - 40);
+  expect(Math.round(kept.height)).toBe(Math.round(sized.height));
+
+  await hud(page).getByRole("button", { name: "Reset HUD position" }).click();
+  expect((await hud(page).boundingBox())!).toEqual(before);
+});
+
+test("the HUD's tabs list the links, the shared verses, and the note", async ({ page }) => {
+  await toggle(page).click();
+  // The Focus has no shared verses with itself, but a note.
+  await expect(hud(page).getByRole("tab")).toHaveText(["Overview", "Links", "Note"]);
+  await hud(page).getByRole("tab", { name: "Links" }).click();
+  await expect(hud(page).getByRole("list", { name: /^People \d/ })).toBeVisible();
+  await hud(page).getByRole("searchbox", { name: "Filter links" }).fill("isaac");
+  await expect(hud(page).getByRole("button", { name: /^Isaac/ })).toBeVisible();
+  // A click in the list selects, and the tab stays.
+  await hud(page).getByRole("button", { name: /^Isaac/ }).first().click();
+  await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
+  await expect(hud(page).getByRole("tab", { name: "Links" })).toHaveAttribute("aria-selected", "true");
+
+  await hud(page).getByRole("tab", { name: "Together" }).click();
+  await expect(hud(page).getByRole("heading", { name: /^With Abraham in \d+ verses?$/ })).toBeVisible();
+
+  await hud(page).getByRole("button", { name: "Make Focus" }).click();
+  await focusIs(page, "person:isaac_616");
+  await hud(page).getByRole("tab", { name: "Note" }).click();
+  await hud(page).getByRole("textbox", { name: "Note on Isaac" }).fill("Son of the promise");
+  await page.reload();
+  await hud(page).getByRole("tab", { name: "Note" }).click();
+  await expect(hud(page).getByRole("textbox", { name: /^Note on Isaac/ })).toHaveValue("Son of the promise");
+});
+
+test("the flicker is kept, and never runs with animation off", async ({ page }) => {
+  await toggle(page).click();
+  const flicker = hud(page).getByRole("button", { name: "Flicker" });
+  await expect(flicker).toHaveAttribute("aria-pressed", "false");
+  await flicker.click();
+  await expect(flicker).toHaveAttribute("aria-pressed", "true");
+  await page.reload();
+  await expect(hud(page).getByRole("button", { name: "Flicker" })).toHaveAttribute("aria-pressed", "true");
+  // reducedMotion "reduce" is on for these specs: nothing animates.
+  expect(await hud(page).evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 });

@@ -529,6 +529,9 @@
         onpanel={() => setInfoMode("panel")}
         nodeRect={graph?.nodeRect}
         {motion}
+        {notes}
+        onnote={(id, text) => setNotes(withNote(notes, id, text))}
+        download={downloadNotes}
       />
     {/if}
   {/if}

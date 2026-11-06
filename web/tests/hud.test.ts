@@ -43,3 +43,15 @@ describe("the HUD", () => {
     expect(shortList("a, b, c, d, e, f, a", 4)).toBe("a, b, c, d +2");
   });
 });
+
+import { clampPlace } from "../src/hud";
+describe("the HUD's place", () => {
+  it("stays whole on the screen", () => {
+    expect(clampPlace({ x: -50, y: -10, w: 340 }, 1280, 720)).toEqual({ x: 8, y: 8, w: 340 });
+    expect(clampPlace({ x: 2000, y: 900, w: 340, h: 400 }, 1280, 720)).toEqual({ x: 932, y: 312, w: 340, h: 400 });
+  });
+  it("keeps its size between the least and the most", () => {
+    expect(clampPlace({ x: 100, y: 100, w: 100, h: 50 }, 1280, 720)).toEqual({ x: 100, y: 100, w: 280, h: 220 });
+    expect(clampPlace({ x: 0, y: 0, w: 5000, h: 5000 }, 1280, 720)).toEqual({ x: 8, y: 8, w: 720, h: 704 });
+  });
+});
