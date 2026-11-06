@@ -11,7 +11,8 @@
   font-size: 12px;
   margin-top: 9px;
   padding: 0 3px;
-  text-shadow: 0 0 3px #000, 0 0 6px #000;
+  /* A dark halo, so a name stays readable where it crosses a line or another node's disc. */
+  text-shadow: 0 0 2px #0d0f17, 0 0 3px #0d0f17, 0 0 6px #000, 0 0 10px #000;
   user-select: none;
 }
 .nl.focus {

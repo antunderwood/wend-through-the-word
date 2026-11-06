@@ -8,6 +8,7 @@
   import { createGraph, VIEWS, type Graph } from "./graph";
   import Hud from "./Hud.svelte";
   import { keepInfoMode, keptInfoMode, type InfoMode } from "./hud";
+  import Legend, { LEGEND_ID } from "./Legend.svelte";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
   import { notesMarkdown } from "./notes";
@@ -473,6 +474,7 @@
   <!-- On a phone the filter panel and the footer end the Details tab, after the lists. -->
   {#snippet filtersAndLinks()}
     {@render filters(true)}
+    {#if !noWebGL}<Legend inline />{/if}
     <footer class="about">{@render about()}</footer>
   {/snippet}
   <!-- The reader closes only where it is a drawer. -->
@@ -585,6 +587,10 @@
     {:else}
       <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
       {@render filters(false)}
+      {#if !noWebGL}
+        <button class="pill" popovertarget={LEGEND_ID}>Key</button>
+        <Legend />
+      {/if}
       <button class="pill" onclick={copyLink}>Copy link</button>
       <!-- The Selected Node on a see-through HUD over the scene, in place of the side panel. -->
       {#if !noWebGL && !touring}

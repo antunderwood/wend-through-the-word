@@ -10,7 +10,7 @@ import { viewB } from "./views/b";
 import { viewC } from "./views/c";
 import { layout, type ViewModule } from "./views/view";
 import { namePriority, uncrowded, WORDS_PRIORITY } from "./declutter";
-import { TYPE_COLOUR } from "./colours";
+import { TYPE_COLOUR, TYPE_LETTER } from "./colours";
 import "./graph.css";
 
 // The tilted plane (the default, decision 118), stacked discs, and free orbit.
@@ -83,22 +83,16 @@ const disc = (g: CanvasRenderingContext2D) => {
 const discWith = (text: string) =>
   canvasTex((g) => {
     disc(g);
-    g.fillStyle = "rgba(0,0,0,0.55)";
-    g.font = "bold 56px system-ui, sans-serif";
+    // Large and dark, so the letter reads on a disc only a dozen pixels wide.
+    g.fillStyle = "rgba(0,0,0,0.78)";
+    g.font = "900 84px system-ui, sans-serif";
     g.textAlign = "center";
     g.textBaseline = "middle";
-    g.fillText(text, 64, 68);
+    g.fillText(text, 64, 70);
   });
 function textures() {
   return {
-    type: {
-      person: discWith("P"),
-      place: discWith("L"),
-      event: discWith("E"),
-      group: discWith("G"),
-      theme: discWith("T"),
-      verse: discWith("V"),
-    } satisfies Record<NodeType, THREE.Texture>,
+    type: Object.fromEntries(Object.entries(TYPE_LETTER).map(([t, l]) => [t, discWith(l)])) as unknown as Record<NodeType, THREE.Texture>,
     plus: discWith("+"),
     mask: canvasTex(disc),
     ring: canvasTex((g) => {
