@@ -61,3 +61,28 @@ test("the search placeholder fits its box", async ({ page }) => {
   });
   expect(text).toBeLessThanOrEqual(room);
 });
+
+// One top bar on a desktop: the search field and Your Path lie inside it, nothing hangs below it,
+// and the type chips show only while the box is in use (decision 210).
+test("the search field and Your Path lie in one top bar, and the type chips drop below it in use", async ({ page }) => {
+  const search = page.getByRole("search");
+  const path = page.getByRole("navigation", { name: "Your Path" });
+  const chips = page.getByRole("group", { name: "Filter by type" });
+  for (const box of [await search.boundingBox(), await path.boundingBox()]) {
+    expect(box!.y).toBeGreaterThanOrEqual(0);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(56);
+  }
+  expect(Math.abs((await search.boundingBox())!.y - (await path.boundingBox())!.y)).toBeLessThan(1);
+  await expect(chips).toBeHidden();
+
+  await page.getByRole("searchbox", { name: "Search" }).click();
+  await expect(chips).toBeVisible();
+  expect((await chips.boundingBox())!.y).toBeGreaterThanOrEqual(56);
+  await page.keyboard.press("Escape");
+  await expect(chips).toBeHidden();
+
+  await page.getByRole("searchbox", { name: "Search" }).fill("Isaac");
+  await expect(chips).toBeVisible();
+  await page.getByRole("application").click({ position: { x: 20, y: 300 } });
+  await expect(chips).toBeHidden();
+});

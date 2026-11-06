@@ -505,7 +505,7 @@
 {/snippet}
 
 <style>
-  /* The panel starts below the top strip, so it never covers the Your Path bar there. */
+  /* The panel starts below the top bar, so it never covers Your Path there. */
   .panel {
     position: fixed;
     top: 56px;
@@ -520,7 +520,7 @@
     transition: transform 0.2s;
     overflow-anchor: none; /* the panel holds a clicked item itself (decision 201), in every browser */
   }
-  /* Below the search box and the hint, and right of the reader drawer when it is open. */
+  /* Below the top bar and the hint, and right of the reader drawer when it is open. */
   .panel.full {
     top: 132px;
     left: 0;

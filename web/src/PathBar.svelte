@@ -38,21 +38,19 @@
 </nav>
 
 <style>
+  /* On a desktop the steps lie on the top bar beside the search field, with no box of their own
+     (decision 210): as wide as the steps need, up to the panel chevron; past that they scroll
+     sideways. The panel starts below the bar. */
   .path {
     position: fixed;
-    top: 16px;
-    left: 350px; /* beside the search box (16 + 318 + 16) */
-    /* Only as wide as its steps need, up to the panel chevron; past that the steps scroll sideways.
-       The panel starts below the bar. */
-    max-width: calc(100vw - 350px - 56px);
+    top: 10px;
+    left: 332px; /* beside the search field (16 + 300 + 16) */
+    max-width: calc(100vw - 332px - 56px);
+    height: 36px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 8px;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
-    border-radius: 8px;
   }
   ol {
     display: flex;
@@ -106,10 +104,9 @@
     right: var(--bar); /* the search icon */
     max-width: none;
     height: var(--bar);
-    box-sizing: border-box;
     padding: 0 4px;
-    border-width: 0 0 1px;
-    border-radius: 0;
+    background: rgba(20, 23, 34, 0.92);
+    border-bottom: 1px solid #262a3c;
   }
   /* At the side, left of the sheet and the search icon. */
   :global(html[data-side]) .path {

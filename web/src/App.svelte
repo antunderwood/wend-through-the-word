@@ -433,6 +433,8 @@
   </button>
 {/if}
 {#if onScreen && data}
+  <!-- On a desktop one top bar holds the search field, Your Path, and the panel chevron (decision 210). -->
+  {#if !screen.phone}<div class="topbar"></div>{/if}
   <Search {data} onchoose={makeFocus} />
   {#snippet details()}
     <DetailPanel
@@ -592,7 +594,19 @@
     --edge: 8px;
     --bar: 40px;
   }
-  /* Below the top strip of the search box and the Your Path bar, like the panel. */
+  /* The desktop top bar: the search field, Your Path, and the panel chevron lie on it, and the
+     panel and the scene start at its lower edge (decision 210). */
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    box-sizing: border-box;
+    background: rgba(20, 23, 34, 0.92);
+    border-bottom: 1px solid #262a3c;
+  }
+  /* Below the top bar, like the panel. */
   .stage {
     position: fixed;
     inset: 56px 0 0;
@@ -614,8 +628,9 @@
   .stage :global(canvas) {
     display: block;
   }
-  /* The scene's top left corner: on a desktop below the search box, level with the top of the reader
-     drawer and right of it when it is open, clear of the hint, the controls, and the notes. */
+  /* The scene's top left corner: on a desktop below the top bar and the hint (two lines at 800 px),
+     level with the top of the reader drawer and right of it when it is open, clear of the controls
+     and the notes. */
   .recentre {
     position: fixed;
     top: 132px;
@@ -667,7 +682,7 @@
     background: #2a3048;
     color: #ffd27a;
   }
-  /* Under the search box, clear of the notes in the bottom left corner. */
+  /* Under the top bar and the hint (two lines at 800 px), clear of the notes in the bottom left corner. */
   .drawer {
     position: fixed;
     top: 132px;
