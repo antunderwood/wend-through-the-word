@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham } from "./scene";
 import { backTo, bare, centred, offCentre, recentreInReach } from "./recentre";
+import { box, overlaps } from "./boxes";
 import { STEPS } from "../src/tour";
 
 // A desktop has the Recentre button too (decision 188): in the scene's top left corner, clear of the
@@ -84,6 +85,34 @@ test("Recentre is clear of the panel, the reader drawer, and the controls, open 
     await recentreInReach(page, 32);
     await page.getByRole("button", { name: "Hide panel" }).click();
     await recentreInReach(page, 32);
+  }
+});
+
+// Decision 218: the reader drawer and Recentre start one gutter (16 px) under the top bar, the hint
+// shown or not, and the hint keeps clear of Recentre, and of the drawer where it is at the top.
+test("the reader drawer and Recentre sit just under the top bar, with or without the hint", async ({ page }) => {
+  for (const size of [
+    { width: 1440, height: 900 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(size);
+    await openOnAbraham(page);
+    await focusIs(page, ABRAHAM);
+    await page.getByRole("complementary", { name: "Selected Node" }).getByRole("button", { name: "Read", exact: true }).click();
+    const reader = page.getByRole("region", { name: "Reader" }),
+      hint = page.locator("p.hint");
+    await expect(reader).toBeVisible();
+    await expect(hint).toBeVisible();
+    const bar = await page.evaluate(() => document.querySelector(".grid > .top")!.getBoundingClientRect().bottom);
+    const tops = async () => [(await recentre(page).boundingBox())!.y - bar, (await page.locator(".drawer").boundingBox())!.y - bar].map(Math.round);
+    expect(await tops()).toEqual([16, 16]);
+    // Under 1100 px the hint is at the foot of the scene, over the drawer, as before.
+    const clear = [await box("hint", hint), await box("Recentre", recentre(page)), ...(size.width >= 1100 ? [await box("reader", reader)] : [])];
+    expect(overlaps(clear)).toEqual([]);
+    await page.getByRole("button", { name: "Dismiss hint" }).click();
+    await expect(hint).toBeHidden();
+    expect(await tops()).toEqual([16, 16]);
+    await page.evaluate(() => localStorage.removeItem("wend.hintDismissed"));
   }
 });
 
