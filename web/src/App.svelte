@@ -9,6 +9,7 @@
   import Hud from "./Hud.svelte";
   import { keepInfoMode, keptInfoMode, type InfoMode } from "./hud";
   import Legend, { LEGEND_ID } from "./Legend.svelte";
+  import { fitPanelWidth, keepPanelWidth, keptPanelWidth, PANEL_MAX, PANEL_MIN, PANEL_W } from "./panel";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
   import { notesMarkdown } from "./notes";
@@ -91,6 +92,41 @@
   // The Verse the reader panel is open at; undefined when it is closed. It opens whenever a Verse
   // becomes the Focus or the address names a Verse Focus; closing it lasts until then (decisions 140, 147).
   let reading = $state<Id>();
+  // The detail panel's width as the reader dragged it (decision 225), kept in this browser; null is
+  // the default. The panel takes it fitted to the window, so the scene keeps some room.
+  let panelPick = $state<number | null>(keptPanelWidth());
+  let windowW = $state(innerWidth);
+  const panelW = $derived(panelPick === null ? null : fitPanelWidth(panelPick, windowW, !!reading));
+  // A drag on the panel's left edge sizes it; arrow keys there do the same by 16 px (with Shift, 64),
+  // and a double click goes back to the default width.
+  function sizePanel(e: PointerEvent) {
+    if (e.button !== 0) return;
+    const start = panelW ?? PANEL_W,
+      from = e.clientX,
+      el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    const move = (m: PointerEvent) => (panelPick = fitPanelWidth(start + from - m.clientX, windowW, !!reading));
+    const end = () => {
+      el.removeEventListener("pointermove", move);
+      keepPanelWidth(panelPick);
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", end, { once: true });
+    el.addEventListener("pointercancel", end, { once: true });
+    e.preventDefault();
+  }
+  function nudgePanel(e: KeyboardEvent) {
+    const by = e.shiftKey ? 64 : 16;
+    const d = { ArrowLeft: by, ArrowRight: -by }[e.key];
+    if (!d) return;
+    panelPick = fitPanelWidth((panelW ?? PANEL_W) + d, windowW, !!reading);
+    keepPanelWidth(panelPick);
+    e.preventDefault();
+  }
+  function resetPanel() {
+    panelPick = null;
+    keepPanelWidth(null);
+  }
   // The bottom sheet's open tab on a phone, kept in this browser (docs/specs/mobile.md).
   type SheetTab = "details" | "reader";
   const TAB_STORE = "wend.sheetTab";
@@ -448,7 +484,7 @@
   }
 </script>
 
-<svelte:window onkeydown={sceneKey} onpopstate={moved} />
+<svelte:window onkeydown={sceneKey} onpopstate={moved} bind:innerWidth={windowW} />
 {#snippet filters(inline: boolean)}
   <Filters
     filters={model.filters}
@@ -466,7 +502,7 @@
      the scene. Each part takes its place from the grid and the sizes in tokens.css, so the scene fills
      what the others leave. On a phone the shell draws no box and each part places itself over the
      scene and the bottom sheet. -->
-<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={!!reading}>
+<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={!!reading} style:--panel-w={panelW === null ? undefined : `${panelW}px`}>
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div class="stage" data-tour="scene" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
@@ -559,6 +595,25 @@
     {#if hudDocked}{@render hudCard()}{/if}
   {:else}
     {@render details()}
+    <!-- The panel's left edge, a handle that sizes it (decision 225). -->
+    {#if !(collapsed || noWebGL || hud)}
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+      <div
+        class="panel-edge"
+        role="separator"
+        tabindex="0"
+        aria-orientation="vertical"
+        aria-controls="panel"
+        aria-label="Resize panel"
+        aria-valuemin={PANEL_MIN}
+        aria-valuemax={PANEL_MAX}
+        aria-valuenow={panelW ?? PANEL_W}
+        title="Drag to resize the panel; double click for its default width"
+        onpointerdown={sizePanel}
+        onkeydown={nudgePanel}
+        ondblclick={resetPanel}
+      ></div>
+    {/if}
     {#if hud}{@render hudCard()}{/if}
   {/if}
   {#snippet hudCard()}
@@ -771,6 +826,32 @@
   .grid > :global(.panel) {
     grid-row: main-start / dock-end;
     grid-column: panel;
+  }
+  /* The panel's left edge: a strip 8 px wide over its border, lit while hovered, dragged, or
+     focused (decision 225). */
+  .panel-edge {
+    grid-row: main-start / dock-end;
+    grid-column: panel;
+    justify-self: start;
+    z-index: 2;
+    width: 8px;
+    margin-left: -4px;
+    cursor: col-resize;
+    touch-action: none;
+  }
+  .panel-edge::after {
+    content: "";
+    display: block;
+    width: 2px;
+    height: 100%;
+    margin: 0 auto;
+    transition: background 0.15s;
+  }
+  .panel-edge:is(:hover, :active, :focus-visible)::after {
+    background: var(--accent);
+  }
+  .panel-edge:focus-visible {
+    outline: none;
   }
   .grid > :global(.panel.full) {
     grid-row: main;
