@@ -3,7 +3,7 @@ import { focusIs, nodes, openOnAbraham } from "./scene";
 
 // The selected Focus loads its first page of own Verses (decision 223): wait for it, so no fetch of
 // it is still on its way when a test breaks the data.
-const ownVersesLoaded = (page: Page) => expect(page.getByRole("list", { name: /^In \d+ verses$/ }).getByRole("listitem")).toHaveCount(20);
+const ownVersesLoaded = (page: Page) => expect(page.getByRole("list", { name: /^In \d+ verses$/ }).getByRole("listitem")).toHaveCount(5);
 
 test("a data file that fails twice shows a message and a retry, and the scene stays", async ({ page }) => {
   await openOnAbraham(page);

@@ -71,10 +71,11 @@ test("a list click selects, a double click makes the Focus", async ({ page }) =>
 
 test("the selected Focus lists its own Verses, with BSB text, a page at a time (decision 223)", async ({ page }) => {
   const own = panel(page).getByRole("list", { name: /^In \d+ verses$/ });
-  await expect(own.getByRole("listitem")).toHaveCount(20);
+  // Five at first, so the Neighbour lists below stay near the top; then 20 more at a time.
+  await expect(own.getByRole("listitem")).toHaveCount(5);
   await expect(own.getByRole("listitem").first()).toContainText(/\w+ \d+:\d+/);
-  await panel(page).getByRole("button", { name: /^Show \d+ more \(20 of \d+\)$/ }).click();
-  await expect(own.getByRole("listitem")).not.toHaveCount(20);
+  await panel(page).getByRole("button", { name: /^Show 20 more \(5 of \d+\)$/ }).click();
+  await expect(own.getByRole("listitem")).toHaveCount(25);
   // Another node shows the Verses it shares with the Focus instead.
   await typeList(page, "Theme (37)").getByRole("button", { name: /^Genealogy/ }).click();
   await expect(own).toHaveCount(0);

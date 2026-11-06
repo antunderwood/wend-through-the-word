@@ -17,10 +17,13 @@ export class OwnVerses {
   busy = $state(false);
   #id: Id | undefined;
   #data: () => Data;
+  #first: number;
 
   // `data` and `id` are read when needed; `id` is read in an effect: a new ID starts a new list, none clears it.
-  constructor(data: () => Data, id: () => Id | undefined) {
+  // `first` rows load at once, then VERSE_STEP more at a time.
+  constructor(data: () => Data, id: () => Id | undefined, first = VERSE_STEP) {
     this.#data = data;
+    this.#first = first;
     $effect(() => {
       const next = id();
       untrack(() => this.#start(next));
@@ -35,19 +38,19 @@ export class OwnVerses {
       const keys = await this.#data().verseKeys(id);
       if (this.#id !== id) return;
       this.keys = keys;
-      await this.more();
+      await this.more(this.#first);
     } catch (e) {
       if (this.#id === id) this.failed = (e as Error).message;
     }
   }
 
   // The next page of rows.
-  async more() {
+  async more(step = VERSE_STEP) {
     const [id, keys, from] = [this.#id, this.keys, this.rows.length];
     if (!id || !keys || this.busy || from >= keys.length) return;
     this.busy = true;
     try {
-      const next = await this.#data().verses(keys.slice(from, from + VERSE_STEP), [id]);
+      const next = await this.#data().verses(keys.slice(from, from + step), [id]);
       if (this.#id === id) this.rows = [...this.rows, ...next];
     } catch (e) {
       if (this.#id === id) this.failed = (e as Error).message;

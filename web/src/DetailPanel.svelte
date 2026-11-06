@@ -251,7 +251,8 @@
     );
   });
   // The Focus shares no Verses with itself: selected, it lists its own, a page at a time (decision 223).
-  const own = new OwnVerses(() => data, () => (versesOf === focus && isEntity(versesOf) ? versesOf : undefined));
+  // Only 5 at first, so the Neighbour lists below stay near the top.
+  const own = new OwnVerses(() => data, () => (versesOf === focus && isEntity(versesOf) ? versesOf : undefined), 5);
   // A built Verse's BSB text under its name (decision 138); not when the click came from the shared
   // list, which already shows it and must not move.
   const verseText = $derived(typeOf(selected) === "verse" && versesOf === selected && !data.outside(selected) ? data.load(selected).then((r) => r.text) : undefined);
