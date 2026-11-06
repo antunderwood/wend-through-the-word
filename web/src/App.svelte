@@ -738,8 +738,9 @@
     grid-column: stage-start / panel-end;
     margin-top: calc(var(--top-clear) - var(--top-h));
   }
-  /* The scene's top left corner: on a desktop below the top bar, level with the top of the reader
-     drawer and right of it when it is open, clear of the hint, the controls, and the notes. */
+  /* The scene's top left corner: on a desktop just below the top bar, level with the top of the
+     reader drawer and right of it when it is open. The hint at the top of the scene keeps clear of
+     it (decision 218), so neither moves as the hint comes and goes. */
   .recentre {
     width: 32px;
     height: 32px;
@@ -750,7 +751,7 @@
     grid-column: stage;
     align-self: start;
     justify-self: start;
-    margin: calc(var(--top-clear) - var(--top-h)) 0 0 var(--gutter);
+    margin: var(--gutter) 0 0 var(--gutter);
   }
   /* Large enough to tap. */
   :global(html[data-coarse]) .recentre {
@@ -790,13 +791,13 @@
     background: var(--control-on);
     color: var(--accent);
   }
-  /* Under the top bar, left of the scene, and above the dock. */
+  /* Just under the top bar, left of the scene, and above the dock. */
   .drawer {
     grid-row: main;
     grid-column: drawer;
     width: var(--reader-w);
     min-height: 0;
-    margin: calc(var(--top-clear) - var(--top-h)) var(--gutter) var(--space-2);
+    margin: var(--gutter) var(--gutter) var(--space-2);
     box-sizing: border-box;
     padding: var(--space-3) var(--space-4);
     background: var(--surface);
@@ -964,17 +965,18 @@
     padding: 3px 10px;
     cursor: pointer;
   }
-  /* At the top of the scene, in the middle of what the search box leaves of it. */
+  /* At the top of the scene, in the middle of what the search box leaves of it, and with the reader
+     open, of what the Recentre button leaves (decision 218). */
   .grid > .hint {
     z-index: 1;
     grid-row: main;
     grid-column: stage;
     align-self: start;
     justify-self: center;
-    margin: var(--space-2) var(--gutter) 0 calc(2 * var(--gutter) + var(--search-w));
+    margin: var(--gutter) var(--gutter) 0 calc(2 * var(--gutter) + var(--search-w));
   }
   .grid.reading > .hint {
-    margin-left: var(--gutter);
+    margin-left: calc(2 * var(--gutter) + 44px); /* clear of Recentre, 44 px at the most */
   }
   /* In a narrow window there is too little room right of the search box: the hint is at the foot of
      the drawer and the scene instead, just above the dock, over the drawer if it is open. */
