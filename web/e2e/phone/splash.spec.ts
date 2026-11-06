@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openSheet } from "../touch";
 import { focusIs } from "../scene";
 import { firstVisit, fits, splash, start, takeTour } from "../splash";
 import { STEPS } from "../../src/tour";
@@ -31,6 +32,7 @@ test("Welcome at the end of the Details tab shows the splash again, and Take the
   await page.setViewportSize({ width: 325, height: 600 });
   await page.goto("/");
   await focusIs(page, JESUS);
+  await openSheet(page);
   const details = page.getByRole("region", { name: "Sheet" }).getByRole("tabpanel", { name: "Details" });
   await details.getByRole("button", { name: "Welcome" }).tap();
   await expect(splash(page)).toBeVisible();

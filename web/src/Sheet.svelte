@@ -3,7 +3,8 @@
   // and the panels it holds are its tabs. A tab is one more entry in tabs; each tab's body stays
   // mounted while another tab shows, so it keeps its place. A tap on the handle opens and closes it;
   // a drag on the row moves its top edge with the finger and, on release, snaps to the nearest of
-  // closed (the row only), half the screen, and nearly the whole screen (full). On a screen wider
+  // closed (the row only), peek (the row and the Selected Node's name and actions, where it opens),
+  // half the screen, and nearly the whole screen (full). On a screen wider
   // than it is tall (side) it is a full-height side panel on the right instead, its handle at the
   // start of the row, and it does not drag (decision 184). covered is the px it covers at the bottom
   // of the screen, or at the right when at the side, open or closed.
@@ -15,15 +16,19 @@
     tab = $bindable(tabs[0].id),
     collapsed = $bindable(false),
     full = $bindable(false),
+    peek = $bindable(true),
     covered = $bindable(0),
     side = false,
-  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; full?: boolean; covered?: number; side?: boolean } = $props();
+  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; full?: boolean; peek?: boolean; covered?: number; side?: boolean } = $props();
+  // At the side the sheet is full height, so it never peeks.
+  const peeking = $derived(peek && !collapsed && !full && !side);
 
   let sheet: HTMLElement, row: HTMLElement;
-  // Open, the sheet is half the screen or, dragged up, full. The styles set both heights; the probes
+  // Open, the sheet peeks, or is half the screen or, dragged up, full. The styles set the heights; the probes
   // read them in px. Closed, the row shows with the border; --sheet-handle is its height.
   let height = $state(0),
     width = $state(0),
+    peekPx = $state(0),
     halfPx = $state(0),
     fullPx = $state(0);
   const closedPx = () => parseFloat(getComputedStyle(sheet).getPropertyValue("--sheet-handle")) + 1;
@@ -64,7 +69,15 @@
   // tap on a tab or the handle is still a tap; the tap that ends a drag is not one.
   let press: { y: number; shown: number } | undefined,
     dragged = false;
-  const shown = () => (collapsed ? closedPx() : full ? fullPx : halfPx);
+  const shown = () => (collapsed ? closedPx() : full ? fullPx : peeking ? peekPx : halfPx);
+  // One of the four heights, from the lowest.
+  function setHeight(h: "closed" | "peek" | "half" | "full") {
+    collapsed = h === "closed";
+    peek = h === "peek";
+    full = h === "full";
+  }
+  const level = () => (collapsed ? 0 : peeking ? 1 : full ? 3 : 2);
+  const LEVELS = ["closed", "peek", "half", "full"] as const;
   function down(e: PointerEvent) {
     dragged = false;
     if (!side && e.isPrimary) press = { y: e.clientY, shown: shown() };
@@ -80,9 +93,9 @@
     press = undefined;
     if (dragging === null) return;
     const at = dragging;
-    const [nearest] = [closedPx(), halfPx, fullPx].sort((a, b) => Math.abs(a - at) - Math.abs(b - at));
-    collapsed = nearest !== halfPx && nearest !== fullPx;
-    full = nearest === fullPx && !collapsed;
+    const heights = [closedPx(), peekPx, halfPx, fullPx];
+    const nearest = heights.indexOf([...heights].sort((a, b) => Math.abs(a - at) - Math.abs(b - at))[0]);
+    setHeight(LEVELS[nearest]);
     dragging = null;
     dragged = true;
   }
@@ -97,12 +110,11 @@
     e.preventDefault();
   }
 
-  // Up and Down on the handle step through closed, half, and full, as a drag does.
+  // Up and Down on the handle step through closed, peek, half, and full, as a drag does.
   function stepHeight(e: KeyboardEvent) {
     if (side || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
     e.preventDefault();
-    if (e.key === "ArrowUp") [full, collapsed] = [!collapsed, false];
-    else [full, collapsed] = [false, !full];
+    setHeight(LEVELS[Math.max(0, Math.min(3, level() + (e.key === "ArrowUp" ? 1 : -1)))]);
   }
 
   // Left and Right step through the tabs, round from the last to the first, and Home and End go to
@@ -128,6 +140,7 @@
   class:collapsed
   class:side
   class:full={full && !side}
+  class:peek={peeking}
   class:dragging={dragging !== null}
   style:height={dragHeight}
   style:transform={dragShift}
@@ -137,6 +150,7 @@
   bind:offsetWidth={width}
   bind:this={sheet}
 >
+  <span class="probe peek" aria-hidden="true" bind:offsetHeight={peekPx}></span>
   <span class="probe half" aria-hidden="true" bind:offsetHeight={halfPx}></span>
   <span class="probe whole" aria-hidden="true" bind:offsetHeight={fullPx}></span>
   <!-- The drag is for a finger or a mouse; the keyboard and a screen reader have the handle and the tabs. -->
@@ -144,7 +158,7 @@
   <div class="row" bind:this={row} onpointerdown={down} onpointermove={move} onpointerup={up} onpointercancel={cancel} onclickcapture={swallow}>
     <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab}>
       {#each tabs as t (t.id)}
-        <!-- A tab tapped on a closed sheet opens it. -->
+        <!-- A tab tapped on a closed or peeking sheet opens it at half, to show the tab. -->
         <button
           role="tab"
           id="tab-{t.id}"
@@ -152,8 +166,8 @@
           aria-selected={tab === t.id}
           tabindex={tab === t.id ? 0 : -1}
           onclick={() => {
-            tab = t.id;
-            collapsed = false;
+            if (tab !== t.id) tab = t.id;
+            if (collapsed || peeking) setHeight("half");
           }}>{t.name}</button
         >
       {/each}
@@ -163,10 +177,7 @@
       aria-controls="sheet-body"
       aria-expanded={!collapsed}
       aria-label={collapsed ? "Open the sheet" : "Close the sheet"}
-      onclick={() => {
-        collapsed = !collapsed;
-        full = false;
-      }}
+      onclick={() => setHeight(collapsed ? "peek" : "closed")}
       onkeydown={stepHeight}
     >
       <span class="grip"></span>
@@ -180,18 +191,28 @@
 </section>
 
 <style>
-  /* Half is 46% of the height (the navigation prototype's finding); full leaves the top bar and a
-     strip of the scene in view; closed, only the row shows. What floats at the bottom of the screen
+  /* Peek, where the sheet opens, shows the row and the Selected Node's name, type line and actions
+     (owner, 2026-11-06), leaving most of the screen to the scene. Half is 46% of the height (the
+     navigation prototype's finding); full leaves the top bar and a strip of the scene in view;
+     closed, only the row shows. What floats at the bottom of the screen
      sits above --sheet-covered, which counts the keyboard. */
   :global(html:has(.sheet)) {
     --sheet-half: min(46dvh, 100dvh - var(--keyboard, 0px) - 160px); /* with the keyboard up, room above for the controls */
     --sheet-full: max(var(--sheet-half), 100dvh - var(--keyboard, 0px) - var(--bar, 40px) - 80px);
     --sheet: var(--sheet-half);
     --sheet-handle: 44px;
+    /* The row and its border, then the Details panel's held block of name, type line and actions,
+       whose height is set here (DetailPanel.svelte uses it): 4 px above, the name and type line
+       (48), the actions (44 px buttons with 6 px above and below), its border, and 1 px spare. */
+    --held: 110px;
+    --sheet-peek: min(var(--sheet-half), calc(var(--sheet-handle) + 1px + var(--held)));
     --sheet-covered: calc(var(--sheet) + var(--keyboard, 0px));
   }
   :global(html:has(.sheet.full)) {
     --sheet: var(--sheet-full);
+  }
+  :global(html:has(.sheet.peek)) {
+    --sheet: var(--sheet-peek);
   }
   :global(html:has(.sheet.collapsed)) {
     --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px)); /* and the top border */
@@ -235,6 +256,9 @@
     width: 0;
     visibility: hidden;
     pointer-events: none;
+  }
+  .probe.peek {
+    height: var(--sheet-peek);
   }
   .probe.half {
     height: var(--sheet-half);

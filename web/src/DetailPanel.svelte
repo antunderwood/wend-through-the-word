@@ -44,7 +44,7 @@
     deleteAll: () => void;
     noWebGL: boolean;
     collapsed: boolean;
-    controls?: Snippet; // before the Selected Node: on a phone, the view picker, Filters, and Copy link
+    controls?: Snippet; // after the held name and actions: on a phone, the view picker, Filters, and Copy link
     filtersAndLinks?: Snippet; // after the lists: on a phone, the filters and the page's own links
   } = $props();
 
@@ -266,16 +266,26 @@
       {screen.coarse ? "a tap selects, a double tap makes the Focus." : "a click selects, a double click makes the Focus."}
     </p>
   {/if}
-  {@render controls?.()}
   <!-- On a phone, a section of fixed height, so the Neighbour lists below never move between the two
        taps of a double tap. On a desktop window it draws no box of its own: its header stays at the
        top of the panel and the rest scrolls behind it, one column with the lists (decision 201). -->
+  <!-- On a phone the name, the type line and the actions are one block held at the top of the
+       panel, right under the tabs, so they show even when the sheet is low; the section of fixed
+       height follows, its blank space (if any) at its foot, above the lists. -->
+  {#if compact}
+    <div class="held">
+      <div class="name">{@render nameLines()}</div>
+      <div class="actions">{@render actions()}</div>
+    </div>
+  {/if}
+  <!-- On a phone the view picker, Filters and Copy link, below the held block: the sheet's peek
+       height shows the node, not the controls. -->
+  {@render controls?.()}
   <section class="selected" bind:this={selectedBox}>
     <!-- The name, the type line, the Relationship line when there is one, and on a desktop window the
          buttons; a long text is cut, and whole in its title. -->
     <div class="head" bind:borderBoxSize={headBox}>
-      <h2 class="line" title={label(selected)}>{label(selected)}</h2>
-      {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
+      {#if !compact}{@render nameLines()}{/if}
       {#if compact}{@render verse()}{/if}
       <!-- Each item (type, Relationship, fact, linked Verse) has its source and licence in its hover
            title only; the credits page lists them all (decision 139). On a phone the line keeps its
@@ -348,7 +358,6 @@
       <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => onnote(selected, t)} {download} {deleteAll} />
     {/if}
   </section>
-  {#if compact}<div class="actions">{@render actions()}</div>{/if}
   <!-- The map's own block, below the Selected Node's section (on a phone, below its actions), so the
        map can be taller than the section allows. It keeps one height whatever it shows, so the lists
        below never move between the two clicks of a double click; on a desktop window a selection
@@ -513,6 +522,10 @@
     {#await verseText then t}<p class="verse-full">{t}</p>{/await}
   {/if}
 {/snippet}
+{#snippet nameLines()}
+  <h2 class="line" title={label(selected)}>{label(selected)}</h2>
+  {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
+{/snippet}
 {#snippet typeLine(source?: string)}
   <p class="muted line" title={source ? `${selectedType}, from ${source}` : selectedType}>{selectedType}</p>
 {/snippet}
@@ -544,9 +557,12 @@
     }
   }
   /* On a phone the panel fills the Details tab of the bottom sheet, which places it. */
-  /* A target scrolled into view (by the tour) lands below the actions held at its top. */
+  /* A target scrolled into view (by the tour) lands below the name and actions held at its top, and
+     one scrolled to the end (the note being typed) clear of the bottom by a few px, as scrollTop is
+     whole px while the rows are not. */
   :global(html[data-phone]) .panel {
-    scroll-padding-top: 64px;
+    scroll-padding-top: calc(var(--held) + 8px);
+    scroll-padding-bottom: 4px;
     position: static;
     width: auto;
     height: 100%;
@@ -619,15 +635,50 @@
   :global(html[data-phone]) .selected:has(:focus-visible) {
     animation: none;
   }
-  /* On a phone the actions are one row of fixed height between the section and the lists, held at
-     the top of the panel while the lists scroll under it; the lists below never move between two taps. */
-  .actions {
+  /* On a phone the name, the type line and the actions are one block of fixed height above the
+     section, held at the top of the panel while the rest scrolls under it; nothing below moves
+     between two taps (the name and type are one line each, cut when long). */
+  .held {
+    box-sizing: border-box;
+    height: var(--held);
     position: sticky;
     top: 0;
     z-index: 1;
+    padding-top: 4px;
+    background: var(--surface-opaque);
+    border-bottom: 1px solid var(--line);
+  }
+  /* Its height is fixed, so the sheet's peek height (--held, Sheet.svelte) is known before anything
+     is drawn and the scene never moves when the panel appears: the name and the type line are one
+     line each at fixed line heights, cut when long, and the actions are one row of 44 px buttons. */
+  .name {
+    height: 48px;
+    overflow: hidden;
+  }
+  .name :global(h2) {
+    line-height: 28px;
+  }
+  .name :global(p) {
+    margin: 0;
+    line-height: 20px;
+  }
+  .actions {
     display: flex;
     gap: 4px;
     padding: 6px 0;
+  }
+  /* At the side the sheet is the screen's full height and never peeks, and that height is short:
+     only the actions are held, as before, and the name scrolls away with the rest. */
+  :global(html[data-side]) .held {
+    display: contents;
+  }
+  :global(html[data-side]) .panel {
+    scroll-padding-top: 64px;
+  }
+  :global(html[data-side]) .actions {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     background: var(--surface-opaque);
     border-bottom: 1px solid var(--line);
   }

@@ -10,9 +10,10 @@ const bar = (page: Page) => page.getByRole("navigation", { name: "Your Path" }).
 // With these flags Chromium cannot create a WebGL context, as on a device without WebGL.
 test.use({ reducedMotion: "reduce", launchOptions: { args: ["--disable-webgl", "--disable-webgl2"] } });
 
-// A double tap on a row's middle, once it is scrolled into view.
+// A double tap on a row's middle, once it is scrolled to the middle of the panel, clear of the name
+// and actions held at its top.
 async function doubleTapRow(page: Page, row: ReturnType<Page["getByRole"]>) {
-  await row.scrollIntoViewIfNeeded();
+  await row.evaluate((e) => e.scrollIntoView({ block: "center" }));
   const b = (await row.boundingBox())!;
   await doubleTap(page, { x: b.x + b.width / 2, y: b.y + b.height / 2 });
 }

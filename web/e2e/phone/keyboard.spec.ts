@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openSheet } from "../touch";
 import { focusIs, openOnAbraham } from "../scene";
 
 // The on-screen keyboard. A phone browser shows it over the bottom of the page and shrinks the
@@ -15,6 +16,7 @@ async function open(page: Page) {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
+  await openSheet(page);
 }
 
 // The keyboard comes up, or goes down: the visual viewport is that much shorter, as the browser reports it.

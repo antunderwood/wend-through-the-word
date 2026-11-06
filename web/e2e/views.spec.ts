@@ -3,7 +3,13 @@ import { nodes, openOnAbraham } from "./scene";
 import { start } from "./splash";
 
 const ABRAHAM = "person:abraham_58";
-const sceneReady = (page: Page) => page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
+// The scene is drawn and has settled: on a phone the sheet's peek height is measured after the first
+// frame (decision 214), and the camera eases to the space above it.
+async function sceneReady(page: Page) {
+  await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
+  let last = "";
+  await expect.poll(async () => last === (last = JSON.stringify(await page.evaluate(() => window.wendGraph!.testNodes().map((n) => [n.id, Math.round(n.x), Math.round(n.y)]))))).toBe(true);
+}
 const picker = (page: Page) => page.getByRole("radiogroup", { name: "View" });
 
 test("the picker switches A to B to C with the keyboard, keeping the Focus and every node", async ({ page }) => {

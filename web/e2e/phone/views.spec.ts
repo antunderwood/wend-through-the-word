@@ -1,13 +1,21 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openSheet } from "../touch";
 import { nodes, openOnAbraham } from "../scene";
 
-const sceneReady = (page: Page) => page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
+// The scene is drawn and has settled: on a phone the sheet's peek height is measured after the first
+// frame (decision 214), and the camera eases to the space above it.
+async function sceneReady(page: Page) {
+  await page.waitForFunction(() => (window.wendGraph?.testNodes().length ?? 0) > 0);
+  let last = "";
+  await expect.poll(async () => last === (last = JSON.stringify(await page.evaluate(() => window.wendGraph!.testNodes().map((n) => [n.id, Math.round(n.x), Math.round(n.y)]))))).toBe(true);
+}
 const picker = (page: Page) => page.getByRole("radiogroup", { name: "View" });
 const positions = async (page: Page) => (await nodes(page)).map(({ id, x, y }) => ({ id, x: Math.round(x), y: Math.round(y) }));
 
 test("a phone offers the tilted plane and the free orbit only", async ({ page }) => {
   await openOnAbraham(page);
   await sceneReady(page);
+  await openSheet(page);
   await expect(picker(page).getByRole("radio")).toHaveText(["Tilted plane", "Free orbit"]);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
   // The picker is at the top of the Details tab (decision 183). The keys step over the stacked discs.

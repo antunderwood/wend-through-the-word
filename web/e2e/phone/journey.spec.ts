@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham, themesOnScreen } from "../scene";
-import { doubleTap } from "../touch";
+import { doubleTap, openSheet } from "../touch";
 import { selectedIs, tappable } from "../touch-input";
 
 // The student journey on a phone, by touch alone: search, select, make Focus, pin, Your Path, a
@@ -21,6 +21,7 @@ test("the student journey by touch, and its shared link opened on another phone"
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
+  await openSheet(page);
 
   // Search from the button: Isaac is the Focus and search closes.
   await page.getByRole("button", { name: "Search" }).tap();

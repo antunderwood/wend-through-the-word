@@ -40,7 +40,13 @@
     if (!sheet) return false;
     const handle = sheet.querySelector<HTMLElement>('[aria-controls="sheet-body"]')!;
     const open = handle.getAttribute("aria-expanded") === "true";
-    if (sheet.contains(el) ? !open : open && el.closest('[data-tour="scene"]')) {
+    // A target in a closed or peeking sheet: a tap on its tab opens the sheet at half, at that tab.
+    if (sheet.contains(el) && (!open || sheet.classList.contains("peek"))) {
+      const panel = el.closest("[role=tabpanel]")!;
+      document.getElementById(panel.getAttribute("aria-labelledby")!)!.click();
+      return true;
+    }
+    if (open && el.closest('[data-tour="scene"]')) {
       handle.click();
       return true;
     }

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openSheet } from "../touch";
 import { focusIs, openOnAbraham, themesOnScreen } from "../scene";
 
 const ABRAHAM = "person:abraham_58";
@@ -10,6 +11,7 @@ async function open(page: Page) {
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
+  await openSheet(page);
 }
 
 test("the filters in the Details tab hide a node type and change the Vote Limit, with the explanation shown", async ({ page }) => {

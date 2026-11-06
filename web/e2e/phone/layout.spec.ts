@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openSheet } from "../touch";
 import { box, covered, overlaps } from "../boxes";
 import { focusIs, openOnAbraham } from "../scene";
 
@@ -49,9 +50,10 @@ for (const size of [{ width: 325, height: 700 }]) {
       }
     });
 
-    test("the view picker, Filters, and Copy link are one row at the top of the Details tab, each large enough to tap", async ({ page }) => {
+    test("the view picker, Filters, and Copy link are one row below the Selected Node's name and actions, each large enough to tap", async ({ page }) => {
       await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
+      await openSheet(page);
       const controls = [
         details(page).getByRole("radio", { name: "Tilted plane" }),
         details(page).getByRole("radio", { name: "Free orbit" }),
@@ -65,7 +67,7 @@ for (const size of [{ width: 325, height: 700 }]) {
       for (const b of boxes) {
         expect(b.height, b.name).toBeGreaterThanOrEqual(44);
         expect(b.y + b.height / 2, b.name).toBeCloseTo(boxes[0].y + boxes[0].height / 2, 0); // one row
-        expect(b.y + b.height, b.name).toBeLessThanOrEqual(name.y); // above the Selected Node
+        expect(b.y, b.name).toBeGreaterThanOrEqual(name.y + name.height); // below the Selected Node's name and actions
         expect(b.x, b.name).toBeGreaterThanOrEqual(tab.x);
         expect(b.x + b.width, b.name).toBeLessThanOrEqual(tab.x + tab.width);
       }
@@ -74,6 +76,7 @@ for (const size of [{ width: 325, height: 700 }]) {
     test("a notice shows above the sheet, clear of the hint, then fades", async ({ page }) => {
       await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
+      await openSheet(page);
       await details(page).getByRole("button", { name: "Copy link" }).tap();
       await expect(notice(page)).toHaveText("Link copied.");
       await expect(notice(page)).toHaveCSS("opacity", "1");
@@ -101,6 +104,7 @@ test("on a phone the tour, the credits, and the data version are at the end of t
   await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
+  await openSheet(page);
   const credits = details(page).getByRole("link", { name: "About and credits" });
   await credits.scrollIntoViewIfNeeded();
   await expect(credits).toBeInViewport();
@@ -113,5 +117,5 @@ test("on a phone the tour, the credits, and the data version are at the end of t
 test("on a touch screen the first-use hint says tap and double tap", async ({ page }) => {
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
-  await expect(page.getByText("A tap selects a node.")).toContainText("A tap selects a node. A double tap, Make Focus, or search moves the Focus.");
+  await expect(page.getByText("A tap selects a node.")).toContainText("A tap selects a node. A double tap makes it the Focus.");
 });
