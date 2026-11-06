@@ -5,7 +5,7 @@ import subprocess
 
 import pytest
 from conftest import CURATED as CURATED_FIXTURES
-from conftest import chapter_verse, run_build
+from conftest import chapter_verse, read_tsv, run_build
 from test_curated import broken_tables
 
 
@@ -41,10 +41,20 @@ def test_a_phrase_matches_only_whole_words(tmp_path):
     assert "highlights" not in chapter_verse(out, "Gen.25.21")
 
 
+def test_a_row_whose_text_is_not_the_verse_text_does_not_ship(tmp_path):
+    # The text is there for the reviewer; a row written against other text no longer matches.
+    folder = broken_tables(tmp_path, "Later, Jacob prayed", "highlights.csv", "Later, Isaac prayed")
+    out = run_build(tmp_path / "out", curated=folder)
+    assert "highlights" not in chapter_verse(out, "Gen.25.21")
+    stale = read_tsv(out / "reports" / "curated_no_longer_matches.tsv")
+    assert {"table": "highlights", "line": "2", "ids": "Gen.25.21 person:rebekah_2401",
+            "detail": "the BSB text of Gen.25.21 is not the row's text"} in stale  # fmt: skip
+
+
 @pytest.mark.parametrize(
     "new, old, message",
     [
-        ("Gen.99.1,person:rebekah", "Gen.25.21,person:rebekah", "Gen.99.1 is not a Verse Key"),
+        ('Gen.99.1,"Later', 'Gen.25.21,"Later', "Gen.99.1 is not a Verse Key"),
         ("_2401,,", "_2401,his wife;she,", "highlights.csv line 2: no words"),
     ],
 )

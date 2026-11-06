@@ -3,16 +3,17 @@ naming it, such as "his wife" for Rebekah in Gen 25:21. The front end underlines
 bolds names (decision 207).
 
 They come only from the owner's curated table `highlights.csv`, one row per Verse and node:
-`verse` (OSIS), `id` (Entity ID), `words` (exact BSB phrases, separated by ";"), `note`,
-`reviewed`, `request`. The row's Verse is its evidence. Tools may suggest rows (ACAI's word tags
+`verse` (OSIS), `text` (the Verse's BSB text, so a reviewer can check the row without looking the
+Verse up), `id` (Entity ID), `words` (exact BSB phrases, separated by ";"), `note`, `reviewed`,
+`request`. The row's Verse is its evidence. Tools may suggest rows (ACAI's word tags
 through the BSB alignment), but a row ships only when the owner has reviewed it, so nothing
 machine-made ships.
 
 Runs after `themes` (a row may name a Theme) and after every step that links Entities to Verses.
 A row is checked against the whole Bible, not only the book range:
 - its Verse is a Verse Key, and it has words (else the build fails);
-- its node is an Entity linked to the Verse, and each phrase is in the Verse's BSB text as whole
-  words (else `curated_no_longer_matches`, and it does not ship);
+- its node is an Entity linked to the Verse, its `text` is the Verse's BSB text, and each phrase is
+  in that text as whole words (else `curated_no_longer_matches`, and it does not ship);
 - it is reviewed (else `curated_unreviewed`).
 A row that ships adds {id, words, source, licence, evidence, note, request} to the Verse's
 `highlights` when the Verse is in range. Every place a phrase is written in the Verse is
@@ -61,6 +62,8 @@ def check(b, row, words):
     if key not in b.verse_sets[entity_id]:
         return f"{entity_id} is not linked to {row['verse']}"
     text = b.bsb.get(key, "")
+    if row["text"].strip() != text.strip():
+        return f"the BSB text of {row['verse']} is not the row's text"
     missing = [w for w in words if not whole_words(w, text)]
     return f"BSB {row['verse']} does not have {', '.join(missing)}" if missing else None
 
