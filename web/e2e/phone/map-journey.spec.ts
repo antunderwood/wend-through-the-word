@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openSheet } from "../touch";
 import { openMap, thirdParty } from "../map";
 import { focusIs } from "../scene";
 
@@ -13,6 +14,7 @@ test("in Journey, the Path's Places are joined and a tap on a dot selects that P
   await thirdParty(page);
   await page.goto("/");
   await focusIs(page, "place:egypt_362");
+  await openSheet(page);
   const details = page.getByRole("region", { name: "Sheet" }).getByRole("tabpanel", { name: "Details" });
   await openMap(details, true);
   await details.getByRole("group", { name: "Map view" }).getByRole("button", { name: "Journey" }).tap();

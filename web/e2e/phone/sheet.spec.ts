@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham } from "../scene";
 import { covered } from "../boxes";
-import { doubleTap, drag } from "../touch";
+import { doubleTap, drag, openSheet } from "../touch";
 
 const ABRAHAM = "person:abraham_58",
   GERAR = "place:gerar_459";
@@ -18,11 +18,15 @@ async function open(page: Page) {
 
 test("a tap on a node shows its details in the bottom sheet, with every action", async ({ page }) => {
   await open(page);
-  // The sheet opens on its Details tab, at 46% of the height, at the bottom of the screen.
+  // The sheet opens on its Details tab at its peek height (decision 214), at the bottom of the
+  // screen: the row, then the Selected Node's name and actions, which end at the sheet's foot.
   const sheet = page.getByRole("region", { name: "Sheet" });
   const box = (await sheet.boundingBox())!;
-  expect(box.height).toBeCloseTo(844 * 0.46, 0);
+  expect(box.height).toBeLessThan(844 * 0.25);
   expect(box.y + box.height).toBeCloseTo(844, 0);
+  const pin = (await sheet.getByRole("button", { name: "Pin", exact: true }).boundingBox())!;
+  expect(pin.y + pin.height).toBeLessThanOrEqual(box.y + box.height);
+  expect(pin.y + pin.height).toBeGreaterThan(box.y + box.height - 16);
   await expect(sheet.getByRole("tab", { name: "Details" })).toHaveAttribute("aria-selected", "true");
 
   // Gerar lies in the space above the sheet, clear of the search box.
@@ -70,6 +74,7 @@ const small = (page: Page) =>
 
 test("every button and list row in the sheet is at least 44 px tall", async ({ page }) => {
   await open(page);
+  await openSheet(page);
   // The Focus, with its journey note, then Sarah, with her Relationship to Abraham.
   expect(await small(page)).toEqual([]);
   const details = page.getByRole("tabpanel", { name: "Details" });
@@ -142,6 +147,7 @@ test("the arrow keys, Home, and End move between the sheet's tabs, as in a tab l
 
 test("a double tap on a list row makes it the Focus, and the row does not move between the taps", async ({ page }) => {
   await open(page);
+  await openSheet(page);
   const details = page.getByRole("tabpanel", { name: "Details" });
   const row = details.getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Isaac/ });
   await row.scrollIntoViewIfNeeded();
@@ -177,9 +183,10 @@ async function actionsInReach(page: Page) {
 
 test("the Selected Node's actions stay in view while its section or the lists scroll", async ({ page }) => {
   await open(page);
+  await openSheet(page);
   await actionsInReach(page);
   // Abraham's section holds his journey note and his Dictionary Entry: far more than it shows.
-  const section = page.getByRole("tabpanel", { name: "Details" }).getByRole("heading", { level: 2, name: "Abraham" }).locator("xpath=ancestor::section[1]");
+  const section = page.getByRole("tabpanel", { name: "Details" }).locator("section.selected");
   expect(await section.evaluate((s) => s.scrollHeight > s.clientHeight + 100)).toBe(true);
   await section.evaluate((s) => s.scrollTo(0, s.scrollHeight));
   await actionsInReach(page);
@@ -237,9 +244,10 @@ test.describe("on the owner's phone", () => {
 
   test("the Selected Node's section fades at its foot while more of it is below, and not when it all fits (decision 148)", async ({ page }) => {
     await open(page);
+    await openSheet(page);
     const sheet = page.getByRole("region", { name: "Sheet" });
     const details = sheet.getByRole("tabpanel", { name: "Details" });
-    const section = details.getByRole("heading", { level: 2 }).locator("xpath=ancestor::section[1]");
+    const section = details.locator("section.selected");
     const fade = () => section.evaluate((s) => ({ overflows: s.scrollHeight > s.clientHeight, fade: getComputedStyle(s).getPropertyValue("--fade") }));
     // Abraham's section, 40% of the half sheet, holds a little of his details.
     await expect.poll(fade).toEqual({ overflows: true, fade: "24px" });
@@ -256,8 +264,9 @@ test.describe("on the owner's phone", () => {
   });
 });
 
-// The sheet's three heights on the owner's phone: closed to its row (the tabs and the handle, and
-// the top border), half the screen, and the whole screen but the top bar and an 80 px strip of the scene.
+// The sheet's heights on the owner's phone: closed to its row (the tabs and the handle, and the top
+// border), peek (where it opens, measured), half the screen, and the whole screen but the top bar and
+// an 80 px strip of the scene.
 const CLOSED = 45,
   HALF = OWNER.height * 0.46,
   FULL = OWNER.height - 40 - 80;
@@ -282,6 +291,7 @@ test.describe("a finger on the sheet's row", () => {
 
   test("drags the sheet to nearly the whole screen, half, and closed, following the finger, and the Focus follows", async ({ page }) => {
     await open(page);
+    await openSheet(page);
     expect(await shown(page)).toBeCloseTo(HALF, 0);
 
     // Up 150 px: the top edge follows the finger while it is down, then the sheet snaps to full.
@@ -327,15 +337,20 @@ test.describe("a finger on the sheet's row", () => {
     await expect.poll(() => shown(page)).toBeCloseTo(HALF, 0);
   });
 
-  test("a tap on the handle closes a full sheet and opens it again at half; a tab on a closed sheet opens it", async ({ page }) => {
+  test("a tap on the handle closes a full sheet and opens it again at its peek height; a tab on a closed or peeking sheet opens it at half", async ({ page }) => {
     await open(page);
+    const peek = await shown(page);
+    expect(peek).toBeGreaterThan(CLOSED + 80);
+    expect(peek).toBeLessThan(HALF);
+    await openSheet(page);
+    await expect.poll(() => shown(page)).toBeCloseTo(HALF, 0);
     const from = await handle(page);
     await drag(page, from, { x: from.x, y: from.y - 200 });
     await expect.poll(() => shown(page)).toBeCloseTo(FULL, 0);
     await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
     await expect.poll(() => shown(page)).toBeCloseTo(CLOSED, 0);
     await sheet(page).getByRole("button", { name: "Open the sheet" }).tap();
-    await expect.poll(() => shown(page)).toBeCloseTo(HALF, 0);
+    await expect.poll(() => shown(page)).toBeCloseTo(peek, 0);
 
     await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
     await sheet(page).getByRole("tab", { name: "Reader" }).tap();
@@ -345,17 +360,22 @@ test.describe("a finger on the sheet's row", () => {
 
   test("Up and Down on the handle step through the heights, and Enter opens and closes it", async ({ page }) => {
     await open(page);
+    const peek = await shown(page);
     const button = sheet(page).getByRole("button", { name: /the sheet$/ });
     await button.focus();
+    await page.keyboard.press("ArrowUp");
+    await expect.poll(() => shown(page)).toBeCloseTo(HALF, 0);
     await page.keyboard.press("ArrowUp");
     await expect.poll(() => shown(page)).toBeCloseTo(FULL, 0);
     await page.keyboard.press("ArrowDown");
     await expect.poll(() => shown(page)).toBeCloseTo(HALF, 0);
     await page.keyboard.press("ArrowDown");
+    await expect.poll(() => shown(page)).toBeCloseTo(peek, 0);
+    await page.keyboard.press("ArrowDown");
     await expect.poll(() => shown(page)).toBeCloseTo(CLOSED, 0);
     await expect(button).toHaveAttribute("aria-expanded", "false");
     await page.keyboard.press("Enter");
-    await expect.poll(() => shown(page)).toBeCloseTo(HALF, 0);
+    await expect.poll(() => shown(page)).toBeCloseTo(peek, 0);
     await expect(button).toHaveAttribute("aria-expanded", "true");
     await expect(button).toBeFocused();
   });

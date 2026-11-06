@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openSheet } from "../touch";
 import { box, covered, overlaps } from "../boxes";
 import { focusIs, nodes, openOnAbraham } from "../scene";
 
@@ -129,6 +130,7 @@ for (const size of [{ width: 760, height: 330 }]) {
 test("turning the phone keeps the state: the Focus, the selection, the tab, and the sheet open or closed", async ({ page }) => {
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
+  await openSheet(page);
   await details(page).getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Sarah/ }).tap();
   await expect(heading(page)).toHaveText("Sarah");
 

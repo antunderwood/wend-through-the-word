@@ -53,6 +53,14 @@
   }
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
   let sheetFull = $state(false);
+  // On a phone the sheet opens low, at its peek height: the Selected Node's name and actions only
+  // (owner, 2026-11-06). Read, Filters and a tab tap open it to half.
+  let sheetPeek = $state(true);
+  // Opens the phone's sheet to at least half, for something in it to read.
+  function openSheet() {
+    collapsed = false;
+    sheetPeek = false;
+  }
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
   // scene's centre sits in the space above it, or left of it.
   let sheetCovered = $state(0);
@@ -206,7 +214,7 @@
     reading = first;
     if (screen.phone) {
       chooseTab("reader");
-      collapsed = false;
+      openSheet();
     }
   }
 
@@ -283,7 +291,7 @@
   let touring = $state(false);
   const hud = $derived(infoMode === "hud" && !screen.phone && !noWebGL && !touring && !!graph);
   let tours = $state(0); // each start draws a new tour box
-  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean } | undefined;
+  let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean; peek: boolean } | undefined;
   const tourPage: TourPage = {
     get data() {
       return data!;
@@ -322,13 +330,14 @@
   // The tour box appears with the tour's start state, loaded first.
   async function startTour() {
     await data!.loadWithKin(TOUR_START);
-    if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed, full: sheetFull };
+    if (!touring) saved = { model, reading, notes, tab: sheetTab, collapsed, full: sheetFull, peek: sheetPeek };
     touring = true;
     tourAsked = false;
     tours++;
     reading = undefined;
     collapsed = false;
     sheetFull = false;
+    sheetPeek = false;
     await show(initialState(TOUR_START));
   }
   async function endTour(keep: boolean) {
@@ -339,6 +348,7 @@
       sheetTab = saved!.tab;
       collapsed = saved!.collapsed;
       sheetFull = saved!.full;
+      sheetPeek = saved!.peek;
       await show({ ...saved!.model, notice: "" });
       await tick(); // the address is replaced with the reader's before the tour lets go of it
     }
@@ -366,6 +376,7 @@
       graph = createGraph(host, data.label, data.quote);
     } catch {
       noWebGL = true; // the panel works alone (PRD 10.2 items 8 and 9)
+      sheetPeek = false; // and on a phone the sheet takes the screen, so it does not peek
       tourAsked = false; // and there is no tour, as there is no footer link for one
       return;
     }
@@ -410,7 +421,7 @@
 
   // On a phone the Filters button opens the bottom sheet at the filters in its Details tab.
   async function showFilters() {
-    collapsed = false;
+    openSheet();
     chooseTab("details");
     await tick();
     document.getElementById(FILTERS_ID)!.scrollIntoView({ block: "start" });
@@ -524,6 +535,7 @@
       bind:tab={() => sheetTab, chooseTab}
       bind:collapsed
       bind:full={sheetFull}
+      bind:peek={sheetPeek}
       bind:covered={sheetCovered}
       side={screen.side}
     />
@@ -568,7 +580,8 @@
   {#if hint && !splash && !tourAsked && !touring}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
-      {#if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}
+      <!-- On a phone one short line, so it covers little of the scene. -->
+      {#if screen.phone}A tap selects a node. A double tap makes it the Focus.{:else if screen.coarse}A tap selects a node. A double tap, Make Focus, or search moves the Focus.{:else}A click selects a node. A double click, Make Focus, or search moves the Focus.{/if}
       <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
     </p>
   {/if}

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, openOnAbraham } from "../scene";
-import { doubleTap } from "../touch";
+import { doubleTap, openSheet } from "../touch";
 
 // On a phone the reader is the Reader tab of the bottom sheet, beside Details (decision 127).
 const ABRAHAM = "person:abraham_58";
@@ -20,6 +20,7 @@ async function open(page: Page, path = "/") {
 
 // Selects a Verse from Abraham's Verse list, then taps Read.
 async function readFromList(page: Page, ref: string) {
+  await openSheet(page);
   await details(page).getByRole("list", { name: /^Verse/ }).getByRole("button", { name: new RegExp(`^${ref}`) }).tap();
   await expect(details(page).getByRole("heading", { level: 2 })).toHaveText(ref);
   await details(page).getByRole("button", { name: "Read", exact: true }).tap();

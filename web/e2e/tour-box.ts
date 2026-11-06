@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs } from "./scene";
-import { doubleTap, drag } from "./touch";
+import { doubleTap, drag, openSheet } from "./touch";
 import { STEPS } from "../src/tour";
 
 // The tour box never covers the node a step asks the reader to tap (decision 187), on a desktop
@@ -85,6 +85,7 @@ export function tourBoxSpecs(sizes: { width: number; height: number }[], views: 
           await page.addInitScript((view) => localStorage.setItem("wend.view", view), view);
           await page.goto("/");
           await focusIs(page, JESUS);
+          await openSheet(page);
           const help = page.getByRole("button", { name: "Help: take the tour" });
           await (coarse ? help.tap() : help.click());
           const press = async (at: Point) => (coarse ? page.touchscreen.tap(at.x, at.y) : page.mouse.click(at.x, at.y));

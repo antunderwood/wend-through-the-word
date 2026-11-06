@@ -44,3 +44,13 @@ export async function doubleTap(page: Page, at: Point) {
 // Whether the page itself has been zoomed or scrolled, as a pinch or a drag on an unguarded page would.
 export const pageMoved = (page: Page) =>
   page.evaluate(() => ({ scale: window.visualViewport!.scale, x: window.scrollX + window.visualViewport!.offsetLeft, y: window.scrollY + window.visualViewport!.offsetTop }));
+
+// The phone's sheet opens at its peek height, the Selected Node's name and actions only (decision
+// 214); a tap on the open tab opens it to half, as a reader does to see the rest of the tab.
+// Nothing on a screen without the sheet (a desktop window, a tablet).
+export async function openSheet(page: Page) {
+  if (!(await page.locator(".sheet").count())) return;
+  const tab = page.getByRole("tablist", { name: "Sheet" }).getByRole("tab", { selected: true });
+  await tab.tap();
+  await page.waitForFunction(() => !document.querySelector(".sheet.peek, .sheet.collapsed"));
+}

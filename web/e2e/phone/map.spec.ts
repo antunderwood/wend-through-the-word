@@ -1,7 +1,7 @@
 import { expect, test, type Locator } from "@playwright/test";
 import { attribution, lines, openMap, providerLink, selectedDot, thirdParty } from "../map";
 import { focusIs } from "../scene";
-import { doubleTap, drag } from "../touch";
+import { doubleTap, drag, openSheet } from "../touch";
 import { selectedIs } from "../touch-input";
 
 test.use({ reducedMotion: "reduce" });
@@ -14,6 +14,7 @@ test("with every tile request aborted, Show map in the Details tab still shows t
   const asked = await thirdParty(page);
   await page.goto("/?focus=place:bethlehem_218");
   await focusIs(page, "place:bethlehem_218");
+  await openSheet(page);
   const details = page.getByRole("region", { name: "Sheet" }).getByRole("tabpanel", { name: "Details" });
   await openMap(details, true);
 
@@ -31,6 +32,7 @@ test("in Neighbours, a tap on a dot selects that Place and a double tap makes it
   // Fixture: Haran's Ring 1 Places are Ur of the Chaldees, which has a point, and Canaan, which has none.
   await page.goto("/?focus=place:haran_527");
   await focusIs(page, "place:haran_527");
+  await openSheet(page);
   const details = page.getByRole("region", { name: "Sheet" }).getByRole("tabpanel", { name: "Details" });
   await openMap(details, true);
   await details.getByRole("group", { name: "Map view" }).getByRole("button", { name: "Neighbours" }).tap();
@@ -45,6 +47,7 @@ test("in Neighbours, a tap on a dot selects that Place and a double tap makes it
   const b = (await haran.boundingBox())!;
   await doubleTap(page, { x: b.x + b.width / 2, y: b.y + b.height / 2 });
   await focusIs(page, "place:haran_527");
+  await openSheet(page);
 });
 
 // Whether a finger at this point would touch this element or something inside it.
@@ -67,6 +70,7 @@ for (const [size, full] of [
       await thirdParty(page);
       await page.goto("/?focus=place:haran_527");
       await focusIs(page, "place:haran_527");
+      await openSheet(page);
       const sheet = page.getByRole("region", { name: "Sheet" });
       const details = sheet.getByRole("tabpanel", { name: "Details" });
       const panel = details.getByRole("complementary", { name: "Selected Node" });
@@ -84,7 +88,9 @@ for (const [size, full] of [
       // Haran is the Focus, so Make Focus is its "Focus" badge (decision 210).
       const actions = [panel.getByTitle(/ is the Focus$/), ...["Pin", "Read", "Prev", "Next", "Suggest a correction"].map((name) => panel.getByRole("button", { name, exact: true }))];
       const scrollBy = (dy: number) => panel.evaluate((e, d) => e.scrollBy(0, d), dy);
-      const held = (await panel.boundingBox())!.y + (await actions[0].boundingBox())!.height;
+      // The held block ends below its actions' row (6 px under the buttons, and its border).
+      const a0 = (await actions[0].boundingBox())!;
+      const held = a0.y + a0.height + 7;
       await scrollBy((await details.getByRole("button", { name: "Hide map" }).boundingBox())!.y - held - 8);
       await expect(map).toBeInViewport({ ratio: 1 });
       await expect(name).toBeInViewport({ ratio: 1 });

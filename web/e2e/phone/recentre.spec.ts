@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham } from "../scene";
-import { drag } from "../touch";
+import { drag, openSheet } from "../touch";
 import { backTo, bare, centred, offCentre, pinchOut, recentreInReach } from "../recentre";
 import { STEPS } from "../../src/tour";
 
@@ -121,21 +121,22 @@ for (const size of [
   });
 
 // The owner's report: the tour, by touch, with the sheet closed and opened again between steps. The
-// box never covers Recentre; on the owner's phone the tour pans Jesus Christ clear of its box in
-// step 8, and the pan is undone when the step ends.
+// box never covers Recentre, and the Focus is centred again after step 8, where the tour pans Jesus
+// Christ clear of its box when there is no room for it. (With the sheet reopened at its peek height,
+// decision 214, there is room on the owner's phone, so the tour need not pan there.)
 test.describe("the tour", () => {
   test.use({ viewport: { width: 325, height: 600 } });
 
   test("can be finished by touch with the sheet closed and opened between steps, and a step's pan is undone when it ends", async ({ page }) => {
     await page.goto("/");
     await focusIs(page, "person:jesus_905");
+    await openSheet(page);
     await sheet(page).getByRole("tabpanel", { name: "Details" }).getByRole("button", { name: "Help: take the tour" }).tap();
     const tour = page.getByRole("dialog", { name: "Tour" });
     for (let n = 1; n <= STEPS.length; n++) {
       await expect(tour).toContainText(`Step ${n} of ${STEPS.length}`);
       await recentreInReach(page, 40);
-      if (n === 8) await expect.poll(() => offCentre(page)).toBeGreaterThan(10); // the tour panned
-      else {
+      if (n !== 8) {
         if (n === 9) await centred(page); // and undid the pan when step 8 ended
         for (let i = 0; i < 2; i++) {
           await handle(page).tap();

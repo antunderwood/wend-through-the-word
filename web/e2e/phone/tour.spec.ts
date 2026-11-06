@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs } from "../scene";
 import { firstVisit, takeTour } from "../splash";
-import { drag } from "../touch";
+import { drag, openSheet } from "../touch";
 import { STEPS } from "../../src/tour";
 
 // The tour on a phone (docs/specs/mobile.md): the same steps as on a desktop (e2e/tour.spec.ts).
@@ -130,6 +130,7 @@ for (const [size, view] of [
       page.on("request", (r) => (r.method() !== "GET" || !new URL(r.url()).pathname.startsWith("/data/")) && sent.push(`${r.method()} ${r.url()}`));
 
       const before = await state(page);
+      await openSheet(page);
       await help(page).tap();
       for (let n = 1; n <= STEPS.length; n++) {
         await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
@@ -212,6 +213,7 @@ for (const [size, view] of [
     test(`the reader's own touch actions pass every step and a kept note stays, in view ${view}`, async ({ page }) => {
       await reader(page, view);
       const before = await state(page);
+      await openSheet(page);
       await help(page).tap();
       for (const [i, act] of BY_TOUCH.entries()) {
         await expect(tour(page)).toContainText(`Step ${i + 1} of ${STEPS.length}`);
@@ -229,6 +231,7 @@ for (const [size, view] of [
 
 test("the camera step names drag and pinch, the search step points at the search button, a step says tap, and a step in the sheet opens its tab", async ({ page }) => {
   await reader(page, "A");
+  await openSheet(page);
   await help(page).tap();
   await expect(tour(page)).toContainText("In the tilted plane, drag to pan and pinch to zoom.");
   await tour(page).getByRole("button", { name: "Do it for me" }).tap();
@@ -258,6 +261,7 @@ test("the camera step names drag and pinch, the search step points at the search
 // box, as that one's did, presses nothing in it; here the press is on Recentre.
 test("a tap's click that lands on the box after the finger lifts elsewhere does not press its buttons", async ({ page }) => {
   await reader(page, "A");
+  await openSheet(page);
   await help(page).tap();
   await expect(tour(page)).toContainText(`Step 1 of ${STEPS.length}`);
   await page.getByRole("button", { name: "Recentre" }).tap();
@@ -271,6 +275,7 @@ test("a tap's click that lands on the box after the finger lifts elsewhere does 
 
 test("a step in the sheet scrolls its target into view, below the actions held at the top", async ({ page }) => {
   await reader(page, "A");
+  await openSheet(page);
   await help(page).tap();
   for (let n = 1; n <= 4; n++) {
     await expect(tour(page)).toContainText(`Step ${n} of ${STEPS.length}`);
@@ -315,6 +320,7 @@ test("a tour taken from the splash on the sheet's Reader tab gives the open shee
 
 test("a sheet dragged to nearly the whole screen is half open during the tour and full again when it ends", async ({ page }) => {
   await reader(page, "A");
+  await openSheet(page);
   const shownPx = async () => UPRIGHT.height - (await sheet(page).boundingBox())!.y;
   const b = (await sheet(page).getByRole("button", { name: "Close the sheet" }).boundingBox())!;
   await drag(page, { x: b.x + b.width / 2, y: b.y + b.height / 2 }, { x: b.x + b.width / 2, y: b.y - 250 });

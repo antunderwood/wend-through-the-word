@@ -195,7 +195,7 @@
   }
   :global(html[data-phone]) .box {
     --bar: 44px;
-    --map: 240px;
+    --map: 196px; /* 240 px before the Selected Node's name joined the held actions (decision 214) */
   }
   :global(html[data-side]) .box {
     --map: 116px;
