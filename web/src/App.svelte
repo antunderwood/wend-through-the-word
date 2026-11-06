@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from "svelte";
+  import { onMount, tick, untrack } from "svelte";
   import { read, START, write } from "./address";
   import CorrectionDialog from "./CorrectionDialog.svelte";
   import { createData, fetchJSON, type Data } from "./data";
@@ -43,13 +43,17 @@
   let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
-  // On a desktop window the Selected Node shows in the side panel or on the HUD over the scene, as
-  // the reader last chose in this browser. A phone keeps its sheet; a tour and no WebGL use the panel.
+  // The Selected Node shows in the side panel or on the HUD over the scene, as the reader last chose
+  // in this browser. On an upright phone the HUD takes the place of the sheet's peek: it is docked
+  // above the closed sheet, and the sheet opens to half or full only. A phone on its side keeps the
+  // sheet; a tour and no WebGL use the panel.
   let infoMode = $state<InfoMode>(keptInfoMode());
   function setInfoMode(mode: InfoMode) {
     infoMode = mode;
     keepInfoMode(mode);
     if (mode === "panel") collapsed = false;
+    if (mode === "panel" && screen.phone) sheetPeek = true;
+    if (mode === "hud" && screen.phone) collapsed = true; // closes the sheet, to show the HUD
   }
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
   let sheetFull = $state(false);
@@ -64,7 +68,7 @@
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
   // scene's centre sits in the space above it, or left of it.
   let sheetCovered = $state(0);
-  $effect(() => graph?.setOffset(screen.phone ? sheetCovered : 0, screen.side ? "right" : "bottom"));
+  $effect(() => graph?.setOffset(screen.phone ? sheetCovered + (hudDocked ? hudPx + 8 : 0) : 0, screen.side ? "right" : "bottom"));
   // Without WebGL there is no scene on a phone: the sheet takes the screen below where the scene
   // would start and the column of controls, with a gap above, below, and between them.
   let dockHeight = $state(0);
@@ -289,7 +293,16 @@
   // unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back too
   // (decision 185).
   let touring = $state(false);
-  const hud = $derived(infoMode === "hud" && !screen.phone && !noWebGL && !touring && !!graph);
+  const hud = $derived(infoMode === "hud" && !(screen.phone && screen.side) && !noWebGL && !touring && !!graph);
+  const phoneHud = $derived(hud && screen.phone);
+  // The sheet would peek where the HUD docks, so with the HUD it closes instead; the HUD shows while
+  // the sheet is closed, and the sheet open to half or full lies over the scene as before.
+  $effect(() => {
+    if (phoneHud && sheetPeek && !collapsed) untrack(() => (collapsed = true));
+  });
+  const hudDocked = $derived(phoneHud && collapsed);
+  // The docked HUD's height (a fixed CSS size, read in px) and the gap above the sheet, for the camera.
+  let hudPx = $state(0);
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean; peek: boolean } | undefined;
   const tourPage: TourPage = {
@@ -540,27 +553,36 @@
       bind:peek={sheetPeek}
       bind:covered={sheetCovered}
       side={screen.side}
+      peekable={!phoneHud}
     />
+    <span class="hud-probe" aria-hidden="true" bind:offsetHeight={hudPx}></span>
+    {#if hudDocked}{@render hudCard()}{/if}
   {:else}
     {@render details()}
-    {#if hud}
-      <Hud
-        data={data!}
-        {model}
-        {label}
-        {apply}
-        {makeFocus}
-        {pin}
-        onread={openReader}
-        onpanel={() => setInfoMode("panel")}
-        nodeRect={graph?.nodeRect}
-        {motion}
-        {notes}
-        onnote={(id, text) => setNotes(withNote(notes, id, text))}
-        download={downloadNotes}
-      />
-    {/if}
+    {#if hud}{@render hudCard()}{/if}
   {/if}
+  {#snippet hudCard()}
+    <Hud
+      data={data!}
+      {model}
+      {label}
+      {apply}
+      {makeFocus}
+      {pin}
+      onread={openReader}
+      onpanel={() => setInfoMode("panel")}
+      nodeRect={graph?.nodeRect}
+      {motion}
+      {notes}
+      onnote={(id, text) => setNotes(withNote(notes, id, text))}
+      download={downloadNotes}
+      docked={screen.phone}
+      ondetails={() => {
+        chooseTab("details");
+        openSheet();
+      }}
+    />
+  {/snippet}
   {#if reading && !screen.phone}
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
@@ -612,6 +634,9 @@
     <!-- On a phone Filters and Copy link are icons with the same accessible names, so the row fits
          a 320 px screen. -->
     {#if screen.phone}
+      {#if !noWebGL && !touring && !screen.side}
+        <button class="pill hud-toggle" class:on={hud} aria-pressed={hud} title={hud ? "Show the Selected Node in the sheet" : "Show the Selected Node on a HUD over the graph"} onclick={() => setInfoMode(hud ? "panel" : "hud")}>HUD</button>
+      {/if}
       <button class="pill icon" aria-label="Filters" title="Filters" onclick={showFilters}>
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
       </button>
@@ -661,6 +686,20 @@
   :global(html) {
     --edge: 8px;
     --bar: 40px;
+    /* The HUD docked above the closed sheet on an upright phone: under half the screen, so the scene
+       keeps the rest, and no taller than its overview needs. */
+    --hud-docked: min(44dvh, 360px);
+  }
+  /* What floats at the bottom of the screen (the hint, the notes) sits above the docked HUD. */
+  :global(html:has(.sheet.collapsed):has(.hud.docked)) {
+    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-docked) + var(--edge));
+  }
+  .hud-probe {
+    position: absolute;
+    width: 0;
+    height: var(--hud-docked);
+    visibility: hidden;
+    pointer-events: none;
   }
   /* The desktop grid (decision 211). Columns: the reader drawer (as wide as it is, none when it is
      closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall
@@ -819,11 +858,11 @@
     font-size: var(--fs-2xl);
     line-height: 1;
   }
-  /* Lit in the HUD's own cyan while the HUD shows. */
+  /* Lit in the HUD's own line colour while the HUD shows. */
   .hud-toggle.on {
-    color: #7fe3ff;
-    border-color: rgba(127, 227, 255, 0.7);
-    box-shadow: 0 0 6px rgba(127, 227, 255, 0.4);
+    color: rgb(var(--hud-line));
+    border-color: rgba(var(--hud-line), 0.7);
+    box-shadow: 0 0 6px rgba(var(--hud-line), 0.4);
   }
   .dock {
     display: contents;

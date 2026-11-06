@@ -19,9 +19,11 @@
     peek = $bindable(true),
     covered = $bindable(0),
     side = false,
-  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; full?: boolean; peek?: boolean; covered?: number; side?: boolean } = $props();
-  // At the side the sheet is full height, so it never peeks.
-  const peeking = $derived(peek && !collapsed && !full && !side);
+    peekable = true,
+  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; full?: boolean; peek?: boolean; covered?: number; side?: boolean; peekable?: boolean } = $props();
+  // At the side the sheet is full height, so it never peeks; nor does it where the HUD takes the
+  // peek's place (not peekable): there it is closed, half, or full.
+  const peeking = $derived(peek && !collapsed && !full && !side && peekable);
 
   let sheet: HTMLElement, row: HTMLElement;
   // Open, the sheet peeks, or is half the screen or, dragged up, full. The styles set the heights; the probes
@@ -72,6 +74,7 @@
   const shown = () => (collapsed ? closedPx() : full ? fullPx : peeking ? peekPx : halfPx);
   // One of the four heights, from the lowest.
   function setHeight(h: "closed" | "peek" | "half" | "full") {
+    if (h === "peek" && !peekable) h = "half";
     collapsed = h === "closed";
     peek = h === "peek";
     full = h === "full";
@@ -93,7 +96,7 @@
     press = undefined;
     if (dragging === null) return;
     const at = dragging;
-    const heights = [closedPx(), peekPx, halfPx, fullPx];
+    const heights = [closedPx(), peekable ? peekPx : -Infinity, halfPx, fullPx];
     const nearest = heights.indexOf([...heights].sort((a, b) => Math.abs(a - at) - Math.abs(b - at))[0]);
     setHeight(LEVELS[nearest]);
     dragging = null;
@@ -114,7 +117,10 @@
   function stepHeight(e: KeyboardEvent) {
     if (side || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
     e.preventDefault();
-    setHeight(LEVELS[Math.max(0, Math.min(3, level() + (e.key === "ArrowUp" ? 1 : -1)))]);
+    const up = e.key === "ArrowUp" ? 1 : -1;
+    let to = Math.max(0, Math.min(3, level() + up));
+    if (to === 1 && !peekable) to += up;
+    setHeight(LEVELS[Math.max(0, to)]);
   }
 
   // Left and Right step through the tabs, round from the last to the first, and Home and End go to

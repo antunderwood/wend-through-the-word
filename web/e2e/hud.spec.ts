@@ -32,6 +32,8 @@ test("the HUD shows the Selected Node over the scene in place of the panel, and 
   await page.mouse.click(isaac.x, isaac.y);
   await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
   await expect(hud(page).getByRole("button", { name: "Make Focus" })).toBeEnabled();
+  // The Relationship names the Focus once ("son of Abraham"), not again after a slash.
+  await expect(hud(page).locator(".rel")).toHaveText(/son of Abraham$/);
 
   await page.reload();
   await expect(hud(page)).toBeVisible();
