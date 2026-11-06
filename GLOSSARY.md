@@ -26,7 +26,7 @@ The net number of readers on OpenBible.info who found a Cross-reference helpful 
 _Avoid_: Score, weight, rating
 
 **Dictionary Entry**:
-The article on an Entity from Easton's Bible Dictionary (1897), always shown with that name. Not every Entity has one.
+The dictionary article on an Entity, always shown with the name of its dictionary: Easton's Bible Dictionary (1897) for People, Places, Events and People Groups, and the Aquifer Open Bible Dictionary (adapted from the Tyndale Open Bible Dictionary) for Themes (decision 219). Not every Entity has one.
 _Avoid_: Summary, description
 
 **Entity**:

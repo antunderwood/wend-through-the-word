@@ -70,6 +70,13 @@ CREDITS = {
         "STEPBible.org, based on work at Tyndale House Cambridge.",  # decision 216
         "link": "https://stepbible.github.io/STEPBible-Data/",
     },
+    "aobd": {  # decision 219: Dictionary Entries on Themes
+        "name": "Aquifer Open Bible Dictionary",
+        "credit": "Aquifer Open Bible Dictionary © 2026 Mission Mutual, an adaptation of the "
+        "Tyndale Open Bible Dictionary © 2023 Tyndale House Publishers, both licensed under "
+        "CC BY-SA 4.0. Its articles are shown as plain text on Themes.",
+        "link": "https://github.com/BibleAquifer/AquiferOpenBibleDictionary",
+    },
     "naves": {
         "name": "Nave's Topical Bible (BibleData)",
         "credit": 'Brady Stephenson, "BibleData: Structured Datasets from the Holy Bible", '

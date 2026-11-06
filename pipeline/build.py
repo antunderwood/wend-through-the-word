@@ -16,6 +16,7 @@ from pipeline import (
     coordinates,
     crossrefs,
     curation,
+    dictionary,
     edges,
     entities,
     export,
@@ -33,6 +34,7 @@ STEPS = [
     curation.load,  # before themes (themes_keep.csv), and before edges (a gender correction)
     entities.bsb_names,  # after curation: a curated name wins
     themes.load,
+    dictionary.load,  # Dictionary Entries on Themes, so after themes
     entities.verse_neighbours,  # after every step that links Entities to Verses
     coordinates.load,
     edges.load,

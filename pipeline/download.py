@@ -25,6 +25,13 @@ TVTMS = (
     "TVTMS - Translators Versification Traditions with Methodology for Standardisation for "
     "Eng+Heb+Lat+Grk+Others - STEPBible.org CC BY.txt"
 )
+# Aquifer Open Bible Dictionary (Tyndale, adapted by Mission Mutual), English JSON, pinned to a
+# commit. The articles come in 26 files; each is a source of its own, as GeoNames' countries are.
+AOBD = (
+    "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/"
+    "663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json"
+)
+AOBD_FILES = 26
 PLEIADES = "https://atlantides.org/downloads/pleiades/dumps"
 WIKIDATA = "https://query.wikidata.org/sparql"
 # GeoNames files for the Bible lands, one per country; the whole world file is 422 MB.
@@ -82,6 +89,11 @@ SOURCES = {
         "https://raw.githubusercontent.com/BradyStephenson/bible-data/main/NavesTopicalDictionary.csv",
         "CC BY 4.0",
     ),
+    # Dictionary Entries for Themes (decision 219).
+    **{
+        f"aobd-{n:03d}": (f"{AOBD}/{n:03d}.content.json", "CC BY-SA 4.0")
+        for n in range(1, AOBD_FILES + 1)
+    },
     # Lookups for Places whose OpenBible point is dropped (record "OpenStreetMap coordinates").
     # Pleiades locations, not places: a place's point blends in its OpenStreetMap locations.
     "pleiades-locations": (f"{PLEIADES}/pleiades-locations-latest.csv.gz", "CC BY 3.0"),
@@ -102,8 +114,15 @@ VERSIFICATION = {
     "tipnr": "kjv",  # with Psalm titles as verse 0
     "naves": "kjv",
     "acai": "original",  # Hebrew numbering in the Old Testament, SBLGNT in the New
+    # English numbering (it cites Malachi 4, which Hebrew numbering lacks). Its references stay
+    # in its text as written and the build joins none of them, so nothing is moved.
+    **{f"aobd-{n:03d}": "kjv" for n in range(1, AOBD_FILES + 1)},
 }
-FILE_NAMES = {WIKIDATA: "wikidata-coords.json", SOURCES["acai"][0]: "acai-v2026-10-30.zip"}
+FILE_NAMES = {
+    WIKIDATA: "wikidata-coords.json",
+    SOURCES["acai"][0]: "acai-v2026-10-30.zip",
+    **{SOURCES[f"aobd-{n:03d}"][0]: f"aobd-{n:03d}.json" for n in range(1, AOBD_FILES + 1)},
+}
 QUERY_FILE = "wikidata-query.sparql"  # saved next to its result, so it can be run again
 HEADERS = {"User-Agent": "wend-through-the-word (github.com/antunderwood/wend-through-the-word)"}
 # Every coordinate statement with its rank and references, and the Pleiades and GeoNames IDs.
