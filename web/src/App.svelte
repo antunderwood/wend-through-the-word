@@ -827,15 +827,15 @@
     grid-row: main-start / dock-end;
     grid-column: panel;
   }
-  /* The panel's left edge: a strip 8 px wide over its border, lit while hovered, dragged, or
-     focused (decision 225). */
+  /* The panel's left edge: a strip 8 px wide inside its border, so it never lies over the scene
+     (Recentre stays clear of it in a squeezed window); lit while hovered, dragged, or focused
+     (decision 225). */
   .panel-edge {
     grid-row: main-start / dock-end;
     grid-column: panel;
     justify-self: start;
     z-index: 2;
     width: 8px;
-    margin-left: -4px;
     cursor: col-resize;
     touch-action: none;
   }
