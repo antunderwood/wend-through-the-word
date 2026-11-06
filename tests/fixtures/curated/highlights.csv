@@ -1,0 +1,7 @@
+verse,text,id,words,note,reviewed,request
+Gen.25.21,"Later, Isaac prayed to the LORD on behalf of his wife, because she was barren. And the LORD heard his prayer, and his wife Rebekah conceived.",person:rebekah_2401,his wife;she,"Isaac's wife, Rebekah, named later in the verse.",yes,
+Gen.25.26,"After this, his brother came out grasping Esau’s heel; so he was named Jacob. And Isaac was sixty years old when the twins were born.",person:israel_682,his brother,"Esau's brother, Jacob.",yes,https://example.org/request
+Gen.36.24,These are the sons of Zibeon: Aiah and Anah. (This is the Anah who found the hot springs in the wilderness as he was pasturing the donkeys of his father Zibeon.),person:anah_249,he,The Anah who found the hot springs.,no,
+Gen.25.24,"When her time came to give birth, there were indeed twins in her womb.",person:rebekah_2401,her,"Rebekah, but Theographic does not link her to this verse.",yes,
+Gen.25.21,"Later, Isaac prayed to the LORD on behalf of his wife, because she was barren. And the LORD heard his prayer, and his wife Rebekah conceived.",person:isaac_616,her husband,Not in the BSB text.,yes,
+Gen.25.21,"Later, Isaac prayed to the LORD on behalf of his wife, because she was barren. And the LORD heard his prayer, and his wife Rebekah conceived.",person:nobody_0,she,Not an Entity.,yes,

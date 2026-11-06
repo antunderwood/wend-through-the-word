@@ -89,6 +89,17 @@ describe("data loader", () => {
     );
   });
 
+  it("gives each shared Verse the two nodes' referring terms, from its curated highlights (decision 221)", async () => {
+    const data = await createData(readExport, "");
+    // Fixture: tests/fixtures/curated/highlights.csv has Rebekah's "his wife" and "she" in Gen 25:21.
+    const shared = await data.shared("person:isaac_616", "person:rebekah_2401");
+    const gen25v21 = shared.find((v) => data.label(v.key) === "Gen 25:21")!;
+    expect(gen25v21.terms).toEqual([{ type: "person", words: ["his wife", "she"], name: "Rebekah" }]);
+    // Only the two nodes' terms: Esau and Isaac share Gen 25:26, where the terms are Jacob's.
+    const gen25v26 = (await data.shared("person:isaac_616", "person:esau_1216")).find((v) => data.label(v.key) === "Gen 25:26")!;
+    expect(gen25v26.terms).toEqual([]);
+  });
+
   it("tells same-name Entities of one type apart by the hint after the name", async () => {
     const data = await createData(readExport, "");
     // Fixture: People named Anah, and two Places named Sitnah that share Gen 26:21, so the first

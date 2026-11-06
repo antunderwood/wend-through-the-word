@@ -20,6 +20,7 @@ from pipeline import (
     edges,
     entities,
     export,
+    highlights,
     ranking,
     routes,
     themes,
@@ -41,6 +42,7 @@ STEPS = [
     edges.load,
     crossrefs.load,
     curation.report_aliases,  # after every step that adds Entities
+    highlights.load,  # after every step that links Entities to Verses
     routes.load,  # after every step that links Entities to Verses
     tipnr.load,  # reads the shipped family links, so it runs after edges
     acai.load,  # the same

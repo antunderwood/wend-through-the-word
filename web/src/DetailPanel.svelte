@@ -2,7 +2,7 @@
   // The detail panel: the Selected Node, the Verses it shares with the Focus and pins, its own data,
   // and the Neighbour lists. Props only; App owns the Focus Model state.
   import { untrack, type Snippet } from "svelte";
-  import { boldNames } from "./bold";
+  import VerseText from "./VerseText.svelte";
   import { typeColour } from "./colours";
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
@@ -310,7 +310,7 @@
             {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
               <!-- A Person's or a Place's name in bold and its type's colour: text and strong elements,
                    never markup from the data, so the Verse's text stays one string. -->
-              <li>{@render item(v.key, "", "verses")}<p class="verse-text">{#each boldNames(v.text, names) as r, j (j)}{#if r.bold}<strong style:color={typeColour(r.type as NodeType)}>{r.text}</strong>{:else}{r.text}{/if}{/each}</p></li>
+              <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
             {/each}
           </ul>
           {@render more(`${versesOf}|${o}`, verses.length)}

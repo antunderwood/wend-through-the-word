@@ -1,7 +1,8 @@
 // The data loader: reads the static export. getJSON(url) is injected (fetch in the browser, files
 // in tests). Reads index.json first, then only files under its data_version, so a new build never
 // mixes with a cached old one.
-import { typeOf, type Curated, type Edge, type Id, type Link, type NodeType, type Rec } from "./model";
+import type { Term } from "./bold";
+import { typeOf, type Curated, type Edge, type Highlight, type Id, type Link, type NodeType, type Rec } from "./model";
 
 // fresh: ask the server, past the browser's cache.
 export type GetJSON = (url: string, fresh?: boolean) => Promise<unknown>;
@@ -61,7 +62,7 @@ const year = (y: number) => (y > 0 ? `AD ${y}` : `${1 - y} BC`);
 const degrees = (x: number, plus: string, minus: string) => `${+Math.abs(x).toFixed(4)}° ${x < 0 ? minus : plus}`;
 type Mention = Sourced & Partial<Curated> & { id: Id; edge: string; weight: number };
 type ChapterFile = {
-  verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[] }[];
+  verses: { key: string; text_bsb?: string; mentions: Mention[]; filed_under: Mention[]; cross_references: Link[]; highlights?: Highlight[] }[];
 };
 
 export type Data = Awaited<ReturnType<typeof createData>>;
@@ -173,7 +174,7 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       weight,
       edges: [{ ...edge, direction: "out" as const }],
     }));
-    return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb };
+    return { id, type: "verse", links: [...named, ...v.cross_references].sort(byWeight), ring2: side.ring2, text: v.text_bsb, highlights: v.highlights };
   }
 
   function load(id: Id): Promise<Rec> {
@@ -248,12 +249,19 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       await Promise.allSettled(kin.map((l) => load(l.id)));
       return r;
     },
-    // The Verses two Entities are both linked to, in Bible order, with their BSB text.
-    async shared(a: Id, b: Id): Promise<{ key: Id; text: string }[]> {
+    // The Verses two Entities are both linked to, in Bible order, with their BSB text and the two
+    // Entities' referring terms in it (decision 221).
+    async shared(a: Id, b: Id): Promise<{ key: Id; text: string; terms: Term[] }[]> {
       const [ra, rb] = await Promise.all([load(a), load(b)]);
       const mine = new Set(ra.links.filter((l) => l.type === "verse").map((l) => l.id));
       const keys = rb.links.filter((l) => l.type === "verse" && mine.has(l.id)).map((l) => l.id).sort();
-      return Promise.all(keys.map(async (key) => ({ key, text: (await load(key)).text ?? "" })));
+      return Promise.all(
+        keys.map(async (key) => {
+          const v = await load(key);
+          const terms = (v.highlights ?? []).filter((h) => h.id === a || h.id === b).map((h) => ({ type: typeOf(h.id), words: h.words, name: entities.get(h.id)?.name }));
+          return { key, text: v.text ?? "", terms };
+        }),
+      );
     },
     // What the export holds about an Entity beyond its links, each part with its source and licence.
     async details(id: Id) {
