@@ -241,7 +241,7 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       return r;
     },
     // The Verses two Entities are both linked to, in Bible order, with their BSB text and the two
-    // Entities' referring terms in it (decision 218).
+    // Entities' referring terms in it (decision 221).
     async shared(a: Id, b: Id): Promise<{ key: Id; text: string; terms: Term[] }[]> {
       const [ra, rb] = await Promise.all([load(a), load(b)]);
       const mine = new Set(ra.links.filter((l) => l.type === "verse").map((l) => l.id));

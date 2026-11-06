@@ -1,5 +1,5 @@
 <!-- A shared Verse's BSB text: names in bold (decision 207) and referring terms underlined
-     (decision 218), each in its node's type colour. Inline: the panel gives the paragraph. -->
+     (decision 221), each in its node's type colour. Inline: the panel gives the paragraph. -->
 <script lang="ts">
   import { boldNames, type Named, type Term } from "./bold";
   import { typeColour } from "./colours";

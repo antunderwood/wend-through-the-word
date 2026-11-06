@@ -1,4 +1,4 @@
-"""Referring terms (decision 218): the curated highlights.csv. The fixture table is in
+"""Referring terms (decision 221): the curated highlights.csv. The fixture table is in
 tests/fixtures/curated; the reports it causes are tested in test_curated.py."""
 
 import subprocess

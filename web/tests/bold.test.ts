@@ -158,7 +158,7 @@ describe("an ordinary word is never bold", () => {
   });
 });
 
-describe("a shared Verse underlines its referring terms (decision 218)", () => {
+describe("a shared Verse underlines its referring terms (decision 221)", () => {
   const text = "Later, Isaac prayed to the LORD on behalf of his wife, because she was barren. And the LORD heard his prayer, and his wife Rebekah conceived.";
   const rebekah = { type: "person", words: ["his wife", "she"], name: "Rebekah" };
   const terms = (t: string, nodes: Parameters<typeof boldNames>[1], ...ts: Parameters<typeof boldNames>[2] & object) =>

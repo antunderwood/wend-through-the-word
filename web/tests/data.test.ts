@@ -89,7 +89,7 @@ describe("data loader", () => {
     );
   });
 
-  it("gives each shared Verse the two nodes' referring terms, from its curated highlights (decision 218)", async () => {
+  it("gives each shared Verse the two nodes' referring terms, from its curated highlights (decision 221)", async () => {
     const data = await createData(readExport, "");
     // Fixture: tests/fixtures/curated/highlights.csv has Rebekah's "his wife" and "she" in Gen 25:21.
     const shared = await data.shared("person:isaac_616", "person:rebekah_2401");

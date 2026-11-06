@@ -1,4 +1,4 @@
-"""Referring terms (decision 218): the words of a Verse's BSB text that refer to a node without
+"""Referring terms (decision 221): the words of a Verse's BSB text that refer to a node without
 naming it, such as "his wife" for Rebekah in Gen 25:21. The front end underlines them where it
 bolds names (decision 207).
 

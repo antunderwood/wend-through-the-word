@@ -83,7 +83,7 @@ test("markup in a Verse's text is shown as text, not drawn", async ({ page }) =>
   await expect(text.locator("b, img")).toHaveCount(0);
 });
 
-test("a reviewed referring term is underlined in its node's colour, not bold, and says whom it refers to (decision 218)", async ({ page }) => {
+test("a reviewed referring term is underlined in its node's colour, not bold, and says whom it refers to (decision 221)", async ({ page }) => {
   // tests/fixtures/curated/highlights.csv: Rebekah's "his wife" and "she" in Gen 25:21.
   await open(page, "person:isaac_616", "person:rebekah_2401");
   const text = verseText(page, "Gen 25:21");

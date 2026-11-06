@@ -4,7 +4,7 @@
 
 // A piece of a Verse's text; the runs joined are the text exactly.
 // A bold run says whose name it is by type, so the panel can colour it like that type's disc. A term
-// run is a referring term (decision 218), underlined in its node's type colour.
+// run is a referring term (decision 221), underlined in its node's type colour.
 export type Run = { text: string; bold: boolean; type?: string; term?: true; name?: string };
 export type Named = { type: string; name: string; aliases?: readonly string[] };
 // A node's referring terms in one Verse: the owner's reviewed phrases, as the BSB writes them ("his
