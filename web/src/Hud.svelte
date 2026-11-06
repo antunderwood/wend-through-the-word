@@ -383,7 +383,7 @@
               {@const words = relationWords(list.r.type, l, data.genderOf, plainName(list.r.id)).text}
               <li>
                 <button class="row" onclick={() => apply({ type: "select", id: l.id })} ondblclick={() => makeFocus(l.id)}>
-                  {data.label(l.id, false)}{#if words}<span class="dim"> {words}</span>{/if}
+                  <span class="who">{data.label(l.id, false)}</span>{#if words}{" "}<span class="dim why">{words}</span>{/if}
                 </button>
               </li>
             {/each}
@@ -500,7 +500,7 @@
     background: linear-gradient(180deg, transparent 0, rgba(var(--hud-line), 0.1) 48%, rgba(var(--hud-line), 0.18) 50%, transparent 54%);
     background-size: 100% 240px;
     background-repeat: no-repeat;
-    animation: roll 4.5s linear infinite;
+    animation: roll 24s linear infinite;
   }
   .flicker .name {
     animation: split 5s infinite;
@@ -529,11 +529,13 @@
       opacity: 0.6;
     }
   }
+  /* One slow pass of about 7 seconds, then the glass stays clear for the rest of the 24 second cycle. */
   @keyframes roll {
-    from {
+    0% {
       background-position: 0 -240px;
     }
-    to {
+    30%,
+    100% {
       background-position: 0 calc(100% + 240px);
     }
   }
@@ -844,6 +846,10 @@
     text-align: left;
     cursor: pointer;
   }
+  /* The name and the reason it is listed: a clear gap between them, and the reason wraps under the name if it must. */
+  .row .why {
+    margin-left: 0.5ch;
+  }
   .row:hover {
     border-left-color: rgb(var(--hud-line));
     background: rgba(var(--hud-line), 0.1);
@@ -891,13 +897,16 @@
     padding-top: 10px;
     border-top: 1px solid rgba(var(--hud-line), 0.3);
   }
-  /* Buttons with a cut corner, outlined in the HUD's line. */
+  /* Buttons with a cut corner, outlined in the HUD's line. The clip-path that cuts the corner also cuts
+     off any border or inset shadow on the diagonal, so the outline is a ::before layer clipped to a 1px
+     ring of the same shape (evenodd: the outer outline, then the inner one, leaves only the ring). */
   .actions button {
+    --edge: rgba(var(--hud-line), 0.8);
+    position: relative;
     padding: 6px 10px;
     border: 0;
     border-radius: 0;
-    background: rgba(var(--hud-line), 0.08);
-    box-shadow: inset 0 0 0 1px rgba(var(--hud-line), 0.55);
+    background: rgba(var(--hud-line), 0.1);
     color: var(--ink);
     font: 600 11px/1 var(--mono);
     letter-spacing: 0.1em;
@@ -905,16 +914,30 @@
     clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
     cursor: pointer;
   }
+  .actions button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--edge);
+    pointer-events: none;
+    clip-path: polygon(
+      evenodd,
+      6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px, 6px 0,
+      6.4px 1px, 1px 6.4px, 1px calc(100% - 1px), calc(100% - 6.4px) calc(100% - 1px),
+      calc(100% - 1px) calc(100% - 6.4px), calc(100% - 1px) 1px, 6.4px 1px
+    );
+  }
   .actions button:hover:not(:disabled) {
-    background: rgba(var(--hud-line), 0.22);
+    --edge: rgb(var(--hud-line));
+    background: rgba(var(--hud-line), 0.24);
   }
   .actions button:disabled {
     opacity: 0.4;
     cursor: default;
   }
   .actions .primary {
+    --edge: rgb(var(--hud-line));
     background: rgba(var(--hud-line), 0.28);
-    box-shadow: inset 0 0 0 1px rgb(var(--hud-line));
   }
   .actions .more {
     margin-left: auto;
