@@ -37,6 +37,28 @@ test("the Your Path bar shows the Focus then Your Path newest first, and can be 
   await expect(items).toHaveText(["Hagar", "Sarah", "Abraham"]);
 });
 
+// The bar is only as wide as its steps (UI review finding 5): a new visitor's one step is a small
+// chip beside the search box, not a full-width empty box, and the bar grows as Your Path does.
+test("the Your Path bar takes only the width its steps need", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openOnAbraham(page);
+  await focusIs(page, "person:abraham_58");
+  const bar = page.getByRole("navigation", { name: "Your Path" });
+  await expect(bar.getByRole("listitem")).toHaveText(["Abraham"]);
+  const one = (await bar.boundingBox())!;
+  expect(one.width).toBeLessThan(200);
+
+  await doubleClickLabel(page, "Sarah", SARAH);
+  await expect(bar.getByRole("listitem")).toHaveText(["Sarah", "Abraham"]);
+  const two = (await bar.boundingBox())!;
+  expect(two.x).toBe(one.x);
+  expect(two.width).toBeGreaterThan(one.width);
+  // Clear sits inside the bar, and the bar stops short of the panel chevron.
+  const clear = (await bar.getByRole("button", { name: "Clear", exact: true }).boundingBox())!;
+  expect(clear.x + clear.width).toBeLessThanOrEqual(two.x + two.width);
+  expect(two.x + two.width).toBeLessThanOrEqual(1440 - 56);
+});
+
 // A double click on a step makes it the Focus (decision 206): two clicks on one step within the
 // app's 400 ms, timed as the scene times them, whatever the bar redraws between them.
 test.describe("a double click on a step", () => {
