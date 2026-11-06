@@ -17,6 +17,7 @@
     keepPlace,
     keptFlicker,
     keptPlace,
+    leadRoute,
     linkCounts,
     segments,
     shortList,
@@ -187,30 +188,25 @@
   const outline = $derived(chamfer(w, h, CUT, 0.5));
 
   // The leader line from the card's nearer side to the Selected Node, and the brackets round the
-  // node, followed every frame while the HUD shows (the camera glides and the reader orbits it).
+  // node, followed every frame while the HUD shows (the camera glides and the reader orbits it). It
+  // goes round the Focus (leadRoute) and fades from the card towards the node, so it points the way
+  // without drawing over the picture; the brackets mark the node itself.
   let card = $state<HTMLElement>();
-  let lead = $state<{ points: string; x: number; y: number; r: number } | null>(null);
+  let lead = $state<{ points: string; x: number; y: number; r: number; from: number[]; to: number[] } | null>(null);
+  const disc = (d: DOMRect) => ({ x: d.left + d.width / 2, y: d.top + d.height / 2, r: d.width / 2 });
   $effect(() => {
-    const id = selected;
+    const id = selected,
+      f = focus;
     if (!nodeRect || !card) return;
     let frame = requestAnimationFrame(follow);
     function follow() {
       const n = nodeRect!(id),
-        c = card!.getBoundingClientRect();
-      const x = n ? n.left + n.width / 2 : 0,
-        left = n ? n.right + 12 <= c.left : false,
-        right = n ? n.left - 12 >= c.right : false;
-      if (!n || n.width === 0 || (!left && !right)) lead = null;
+        fr = id === f ? null : nodeRect!(f),
+        route = n && n.width ? leadRoute({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
+      if (!route) lead = null;
       else {
-        const y = n.top + n.height / 2,
-          r = n.width / 2 + 6,
-          s = left ? 1 : -1, // the way from the node to the card
-          edge = left ? c.left : c.right,
-          at = Math.min(Math.max(y, c.top + 28), c.bottom - 28), // where the line meets the card
-          bend = edge - s * 28,
-          knee = x + s * r + s * Math.max(0, s * (bend - x - s * r) - Math.abs(at - y) * 0.4);
-        const points = `${x + s * r},${y} ${knee},${y} ${bend},${at} ${edge},${at}`;
-        if (points !== lead?.points) lead = { points, x, y, r };
+        const points = route.map((p) => p.join(",")).join(" ");
+        if (points !== lead?.points) lead = { points, ...disc(n!), r: disc(n!).r + 6, from: route.at(-1)!, to: route[0] };
       }
       frame = requestAnimationFrame(follow);
     }
@@ -230,8 +226,15 @@
 
 {#if lead}
   <svg class="lead" aria-hidden="true">
-    <path d={brackets(lead.x, lead.y, lead.r)} />
-    <polyline points={lead.points} />
+    <defs>
+      <linearGradient id="hud-lead" gradientUnits="userSpaceOnUse" x1={lead.from[0]} y1={lead.from[1]} x2={lead.to[0]} y2={lead.to[1]}>
+        <stop offset="0" stop-color="rgb(127, 227, 255)" stop-opacity="0.55" />
+        <stop offset="0.6" stop-color="rgb(127, 227, 255)" stop-opacity="0.18" />
+        <stop offset="1" stop-color="rgb(127, 227, 255)" stop-opacity="0.08" />
+      </linearGradient>
+    </defs>
+    <polyline points={lead.points} stroke="url(#hud-lead)" />
+    <path class="brackets" d={brackets(lead.x, lead.y, lead.r)} />
   </svg>
 {/if}
 <section
@@ -938,7 +941,10 @@
     height: 100%;
     pointer-events: none;
     fill: none;
-    stroke: rgba(127, 227, 255, 0.8);
+    stroke-width: 1;
+  }
+  .lead .brackets {
+    stroke: rgba(127, 227, 255, 0.85);
     stroke-width: 1.25;
     filter: drop-shadow(0 0 2px rgba(127, 227, 255, 0.8));
   }

@@ -55,3 +55,24 @@ describe("the HUD's place", () => {
     expect(clampPlace({ x: 0, y: 0, w: 5000, h: 5000 }, 1280, 720)).toEqual({ x: 8, y: 8, w: 720, h: 704 });
   });
 });
+
+import { clearance, leadRoute } from "../src/hud";
+describe("the HUD's leader line", () => {
+  const card = { left: 1000, right: 1340, top: 72, bottom: 600 };
+  it("goes to the nearer side of the card, and not at all from under it", () => {
+    expect(leadRoute({ x: 400, y: 300, r: 8 }, card)![0]).toEqual([408, 300]);
+    expect(leadRoute({ x: 400, y: 300, r: 8 }, card)!.at(-1)).toEqual([1000, 300]);
+    expect(leadRoute({ x: 1400, y: 300, r: 8 }, card)!.at(-1)).toEqual([1340, 300]);
+    expect(leadRoute({ x: 1100, y: 300, r: 8 }, card)).toBeNull();
+  });
+  it("keeps clear of the Focus that lies across its straight way", () => {
+    const focus = { x: 700, y: 300, r: 30 };
+    const route = leadRoute({ x: 400, y: 300, r: 8 }, card, focus)!;
+    expect(clearance(route, focus)).toBeGreaterThanOrEqual(18);
+    expect(route.at(-1)![0]).toBe(1000);
+  });
+  it("takes the plain route when the Focus is out of the way", () => {
+    const route = leadRoute({ x: 400, y: 300, r: 8 }, card, { x: 700, y: 700, r: 30 })!;
+    expect(route.every(([, y]) => y === 300)).toBe(true);
+  });
+});

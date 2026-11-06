@@ -78,3 +78,52 @@ export function clampPlace(p: HudPlace, screenW: number, screenH: number): HudPl
   const y = Math.round(Math.min(Math.max(p.y, EDGE), screenH - (h ?? 120) - EDGE));
   return h === undefined ? { x, y, w } : { x, y, w, h };
 }
+
+// The leader line's route from a node's disc to the nearer side of the card, as points. Of a few
+// routes (straight across then in; down or up to the card's level first; round the Focus above or
+// below), the one that keeps furthest from the Focus's disc, so the line never cuts through the
+// middle of the picture; the shortest when several keep clear. Null when the node is under the card.
+type Disc = { x: number; y: number; r: number };
+type Box = { left: number; right: number; top: number; bottom: number };
+const CLEAR = 18; // px kept between the line and the Focus's disc
+
+const segDistance = ([ax, ay]: number[], [bx, by]: number[], [px, py]: number[]) => {
+  const dx = bx - ax,
+    dy = by - ay,
+    len = dx * dx + dy * dy,
+    t = len ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len)) : 0;
+  return Math.hypot(ax + t * dx - px, ay + t * dy - py);
+};
+const pathLength = (pts: number[][]) => pts.slice(1).reduce((n, p, i) => n + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
+export const clearance = (pts: number[][], d: Disc) => Math.min(...pts.slice(1).map((p, i) => segDistance(pts[i], p, [d.x, d.y]))) - d.r;
+
+export function leadRoute(node: Disc, card: Box, focus?: Disc): number[][] | null {
+  const toLeft = node.x + node.r + 12 <= card.left,
+    toRight = node.x - node.r - 12 >= card.right;
+  if (!toLeft && !toRight) return null;
+  const s = toLeft ? 1 : -1,
+    edge = toLeft ? card.left : card.right,
+    bend = edge - s * 28,
+    at = Math.min(Math.max(node.y, card.top + 28), card.bottom - 28),
+    start = [node.x + s * node.r, node.y],
+    span = s * (bend - start[0]),
+    rise = Math.abs(at - node.y);
+  const routes: number[][][] = [
+    // Across at the node's level, then a slant to the card.
+    [start, [start[0] + s * Math.max(0, span - rise * 0.4), node.y], [bend, at], [edge, at]],
+  ];
+  // A slant to the card's level first, then across.
+  if (rise < span) routes.push([start, [start[0] + s * rise, at], [edge, at]]);
+  // Over or under the Focus: out to its level plus a margin, across, then to the card.
+  if (focus)
+    for (const side of [-1, 1]) {
+      const lane = focus.y + side * (focus.r + CLEAR + 4);
+      const out = Math.abs(lane - node.y);
+      if (out < span) routes.push([start, [start[0] + s * out, lane], [bend - s * Math.abs(at - lane) * 0.4, lane], [bend, at], [edge, at]]);
+    }
+  if (!focus) return routes[0];
+  // Clear enough: the shortest; else the one furthest from the Focus.
+  const clear = routes.filter((r) => clearance(r, focus) >= CLEAR);
+  if (clear.length) return clear.reduce((a, b) => (pathLength(b) < pathLength(a) - 1 ? b : a));
+  return routes.reduce((a, b) => (clearance(b, focus) > clearance(a, focus) ? b : a));
+}
