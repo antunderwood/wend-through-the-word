@@ -8,7 +8,7 @@
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
   import PlaceMap from "./PlaceMap.svelte";
-  import { fold, passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import { fold, passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import { screen } from "./screen.svelte";
   import type { Notes } from "./session";
 
@@ -57,7 +57,10 @@
   let keep: "neighbours" | "verses" | undefined;
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   let selectedBox = $state<HTMLElement>();
-  let headHeight = $state(0);
+  // The header's height, rounded up, and a pixel more: the panel scrolls by whole pixels, so with a
+  // header of fractional height a control scrolled into view could stop a fraction under it.
+  let headBox = $state<ResizeObserverSize[]>();
+  const headHeight = $derived(Math.ceil(headBox?.[0]?.blockSize ?? 0) + 1);
   const RING = 2; // the focus ring's width, outside a control (focus.css)
   // Long lists show 100 rows at a time (decision 165): rows shown per list, by a key naming the list.
   const PAGE = 100;
@@ -272,7 +275,7 @@
   <section class="selected" bind:this={selectedBox}>
     <!-- The name, the type line, the Relationship line when there is one, and on a desktop window the
          buttons; a long text is cut, and whole in its title. -->
-    <div class="head" bind:offsetHeight={headHeight}>
+    <div class="head" bind:borderBoxSize={headBox}>
       <h2 class="line" title={label(selected)}>{label(selected)}</h2>
       {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
       {#if compact}{@render verse()}{/if}
@@ -309,11 +312,8 @@
       {@render failed("the shared verses", e)}
     {/await}
     <!-- Below the shared Verses, whose list must not move between the two clicks of a double
-         click: the journey note and what the Selected Node's own data says, which a click on a
-         shared Verse removes. -->
-    {#if selected === model.focus || model.path.includes(selected)}
-      <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => onnote(selected, t)} {download} {deleteAll} />
-    {/if}
+         click: what the Selected Node's own data says, then the journey note, both of which a click
+         on a shared Verse removes. The node's content comes before the reader's own note. -->
     {#each linkEdges.filter((e) => e.note) as e, i (i)}
       <p class="note">Note on the Relationship: {e.note} Evidence: {cited(e.evidence!)}.{@render request(e.request)}</p>
     {/each}
@@ -346,6 +346,9 @@
     {:catch e}
       {@render failed("the details", e)}
     {/await}
+    {#if selected === model.focus || model.path.includes(selected)}
+      <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => onnote(selected, t)} {download} {deleteAll} />
+    {/if}
   </section>
   {#if compact}<div class="actions">{@render actions()}</div>{/if}
   <!-- The map's own block, below the Selected Node's section (on a phone, below its actions), so the
@@ -382,9 +385,11 @@
              as an opened list does (decision 202). -->
         {#if all.length > k}
           <div class="filter">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" /><path d="M10.4 10.4 14 14" /></svg>
             <input
               type="search"
               aria-label="Filter {TYPE_NAME[t]}"
+              placeholder="Filter {all.length} {TYPE_PLURAL[t]}"
               autocomplete="off"
               value={queries[key] ?? ""}
               oninput={(e) => {
@@ -452,16 +457,32 @@
      row below its section, held at the top of the panel while the lists scroll, and the correction
      link is a flag. -->
 {#snippet actions()}
-  <button data-tour="make-focus" onclick={() => makeFocus(selected)} disabled={selected === model.focus || typeOf(selected) === "overflow"}>Make Focus</button>
+  <!-- Make Focus is the one primary action. On the Focus itself it is a badge, not a greyed button. -->
+  {#if selected === model.focus}
+    <span class="badge" title="{label(selected)} is the Focus">Focus</span>
+  {:else}
+    <button
+      class="primary"
+      data-tour="make-focus"
+      onclick={() => makeFocus(selected)}
+      disabled={typeOf(selected) === "overflow"}
+      title={typeOf(selected) === "overflow" ? "A group of nodes cannot be the Focus: pick one from its list" : undefined}>Make Focus</button
+    >
+  {/if}
   {#if model.pins.includes(selected)}
     <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
   {:else}
     <button data-tour="pin" onclick={() => pin(selected)}>Pin</button>
   {/if}
-  <button onclick={() => apply({ type: "step", dir: -1 })}>Prev</button>
-  <button data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next</button>
   <button data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
+  <!-- Prev and Next step the selection along Your Path; on a desktop window the pair is captioned. -->
+  <span class="path-step" role="group" aria-label="Step along Your Path">
+    {#if !compact}<span class="caption" aria-hidden="true">Your Path</span>{/if}
+    <button title="Previous step on Your Path" onclick={() => apply({ type: "step", dir: -1 })}><span aria-hidden="true">‹&nbsp;</span>Prev</button>
+    <button title="Next step on Your Path" data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next<span aria-hidden="true">&nbsp;›</span></button>
+  </span>
   <button
+    class="quiet"
     class:flag={compact}
     aria-label={compact ? "Suggest a correction" : undefined}
     title={compact ? "Suggest a correction" : undefined}
@@ -636,6 +657,41 @@
     flex: none;
     font-size: 16px;
   }
+  /* On a phone Prev and Next sit in the one row as before, without the caption. */
+  .actions .path-step {
+    display: contents;
+  }
+  .actions .badge {
+    flex: auto;
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  /* On a desktop window the actions wrap: Make Focus, Pin and Read first, then the Your Path pair and
+     the quiet correction link. */
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .path-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .buttons .path-step button {
+    padding: 2px 8px;
+    font-size: 13px;
+  }
+  .caption {
+    font-size: 12px;
+    color: #9aa0b4;
+  }
+  .buttons .quiet {
+    margin-left: auto;
+  }
   h2 {
     margin: 0;
     font-size: 17px;
@@ -697,10 +753,29 @@
     position: relative;
     margin: 2px 0 6px;
   }
+  /* A magnifier at the left end and a placeholder that says what it filters, so the box never reads
+     as an empty bar. */
+  .filter .icon {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    width: 13px;
+    height: 13px;
+    transform: translateY(-50%);
+    fill: none;
+    stroke: #9aa0b4;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  .filter input::placeholder {
+    color: #9aa0b4;
+    opacity: 1;
+  }
   .filter input {
     box-sizing: border-box;
     width: 100%;
-    padding: 3px 56px 3px 8px;
+    padding: 3px 56px 3px 27px;
     border: 1px solid #262a3c;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.06);
@@ -834,5 +909,38 @@
   button:disabled {
     opacity: 0.45;
     cursor: default;
+  }
+  /* Make Focus is the primary action: filled with the accent. The rest are secondary. */
+  button.primary {
+    background: #ffd27a;
+    border-color: #ffd27a;
+    color: #131621;
+    font-weight: 600;
+  }
+  button.primary:hover:not(:disabled) {
+    background: #ffe0a3;
+  }
+  /* Suggest a correction is a quiet text link on a desktop window; on a phone it is the flag. */
+  .buttons button.quiet {
+    padding: 3px 2px;
+    border-color: transparent;
+    background: none;
+    font-size: 12px;
+    color: #9aa0b4;
+    text-decoration: underline;
+  }
+  /* The Focus itself: a badge where Make Focus would be. */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 3px 10px;
+    border: 1px solid #ffd27a;
+    border-radius: 999px;
+    color: #ffd27a;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 </style>

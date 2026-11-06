@@ -30,8 +30,9 @@ const focusCentredLeftOf = (page: Page, x: number) =>
 
 // Each of the Selected Node's actions is whole on screen and nothing lies over its middle.
 async function actionsInReach(page: Page) {
-  for (const name of ["Make Focus", "Pin", "Prev", "Next", "Read", "Suggest a correction"]) {
-    const button = details(page).getByRole("button", { name, exact: true });
+  for (const name of ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correction"]) {
+    // On the Focus itself, Make Focus is a "Focus" badge (decision 209).
+    const button = name === "Make Focus" ? details(page).getByRole("button", { name, exact: true }).or(details(page).getByTitle(/ is the Focus$/)) : details(page).getByRole("button", { name, exact: true });
     await expect(button, name).toBeInViewport({ ratio: 1 });
     const b = (await button.boundingBox())!;
     expect(await button.evaluate((e, p) => e.contains(document.elementFromPoint(p.x, p.y)), { x: b.x + b.width / 2, y: b.y + b.height / 2 }), name).toBe(true);
