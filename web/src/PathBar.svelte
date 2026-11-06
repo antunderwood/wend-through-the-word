@@ -39,7 +39,7 @@
 
 <style>
   /* On a desktop the steps lie on the top bar beside the search field, with no box of their own
-     (decision 210): as wide as the steps need, up to the panel chevron; past that they scroll
+     (decision 211): as wide as the steps need, up to the panel chevron; past that they scroll
      sideways. The panel starts below the bar. */
   .path {
     position: fixed;

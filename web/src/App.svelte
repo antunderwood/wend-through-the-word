@@ -444,7 +444,7 @@
   </button>
 {/if}
 {#if onScreen && data}
-  <!-- On a desktop one top bar holds the search field, Your Path, and the panel chevron (decision 210). -->
+  <!-- On a desktop one top bar holds the search field, Your Path, and the panel chevron (decision 211). -->
   {#if !screen.phone}<div class="topbar"></div>{/if}
   <Search {data} onchoose={makeFocus} />
   {#snippet details()}
@@ -627,7 +627,7 @@
     --bar: 40px;
   }
   /* The desktop top bar: the search field, Your Path, and the panel chevron lie on it, and the
-     panel and the scene start at its lower edge (decision 210). */
+     panel and the scene start at its lower edge (decision 211). */
   .topbar {
     position: fixed;
     top: 0;

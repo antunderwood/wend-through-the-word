@@ -63,7 +63,7 @@ test("the search placeholder fits its box", async ({ page }) => {
 });
 
 // One top bar on a desktop: the search field and Your Path lie inside it, nothing hangs below it,
-// and the type chips show only while the box is in use (decision 210).
+// and the type chips show only while the box is in use (decision 211).
 test("the search field and Your Path lie in one top bar, and the type chips drop below it in use", async ({ page }) => {
   const search = page.getByRole("search");
   const path = page.getByRole("navigation", { name: "Your Path" });

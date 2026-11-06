@@ -2,7 +2,7 @@
   // Search by name, alias, or verse reference, with a type filter. Choosing a result (a click, or
   // Enter for the first) makes it the Focus at once and closes the list (decision 115). On a desktop
   // the box is a field in the top bar, and the type chips and the results drop below it while the
-  // box is in use (decision 210). On a phone
+  // box is in use (decision 211). On a phone
   // search is a button: it opens the box over the top of the scene with the keyboard ready, and the
   // box closes after a choice, on Escape, or on a tap outside it.
   import { tick } from "svelte";
@@ -95,7 +95,7 @@
 {/if}
 
 <style>
-  /* On a desktop the box is a field at the start of the top bar (decision 210), as tall as the
+  /* On a desktop the box is a field at the start of the top bar (decision 211), as tall as the
      Your Path steps' row beside it; it is above the reader panel, so the drop below it is never
      hidden under it. */
   .search {
