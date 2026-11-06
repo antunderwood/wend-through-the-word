@@ -48,3 +48,12 @@ test("in the HUD a node with a route has a Map tab with the route menu; one with
   await expect(hud.getByRole("tab", { name: "Overview" })).toBeVisible();
   await expect(hud.getByRole("tab", { name: "Map" })).toHaveCount(0);
 });
+
+test("an unsure route is marked in the menu and its caption", async ({ page }) => {
+  await thirdParty(page, "tile");
+  await page.goto("/?focus=place:beersheba_170");
+  await focusIs(page, "place:beersheba_170");
+  await open(panel(page));
+  await menu(page).selectOption({ label: "Isaac to Beersheba (a guess) (unsure)" });
+  await expect(panel(page).getByText("Unsure: this route's passage has not been checked.")).toBeVisible();
+});

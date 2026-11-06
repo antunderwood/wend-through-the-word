@@ -186,11 +186,11 @@
             </div>{/if}
           {#if routes.length}<select aria-label="Bible route" bind:value={routeId}>
               <option value="">No route</option>
-              {#each routes as r (r.id)}<option value={r.id}>{r.title}</option>{/each}
+              {#each routes as r (r.id)}<option value={r.id}>{r.title}{r.unreviewed ? " (unsure)" : ""}</option>{/each}
             </select>{/if}
         </div>
         {#if !shown.own}<p class="muted">No point for this {TYPE_NAME.place}. Its sources give none, or none this site can use.</p>{/if}
-        {#if route}<p class="muted">{route.title}, {passage(route)}. Route © United Bible Societies ({route.licence}).</p>
+        {#if route}<p class="muted">{route.title}, {passage(route)}. Route © United Bible Societies ({route.licence}).{#if route.unreviewed} Unsure: this route's passage has not been checked.{/if}</p>
         {:else if shown.note}<p class="muted">{shown.note}</p>{/if}
         {#if shown.places.length || route}
           <!-- The text list names the Places drawn, for a screen reader. -->

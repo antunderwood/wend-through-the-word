@@ -4,7 +4,8 @@ that links Entities to Verses. Sets `b.routes`, which `export` writes as `routes
 
 A route file holds only a line, so each row of `routes.csv` gives the route's title and passage
 (OSIS references or ranges in KJV numbering, joined with ";"). A row ships when it is reviewed
-("yes") and its passage has a Verse in the book range. Each Person, Place and Event named in a
+("yes") and its passage has a Verse in the book range. A row marked "unsure" ships too, flagged
+`unreviewed`, so the map can say its match is a guess (decision 223). Each Person, Place and Event named in a
 shipped route's passage (in the whole Bible) lists the route in `routes`, most shared Verses
 first. Coordinates are rounded to four decimals (about 10 m).
 """
@@ -69,7 +70,7 @@ def load(b):
             if f"{row['file']}.geojson" not in names:
                 errors.append(f"{row['id']}: no file {row['file']}.geojson in ubs-routes")
                 continue
-            ship = row["reviewed"] == "yes" and bool(in_range.intersection(verses))
+            ship = row["reviewed"] in ("yes", "unsure") and bool(in_range.intersection(verses))
             listed = Counter()
             if ship:
                 for e in b.entities.values():
@@ -87,6 +88,7 @@ def load(b):
                         "lines": lines(z.read(f"{row['file']}.geojson")),
                         "source": "UBS Bible Routes",
                         "licence": b.licence("ubs-routes"),
+                        **({"unreviewed": True} if row["reviewed"] == "unsure" else {}),
                     }
                 )
             b.report("routes", id=row["id"], file=row["file"], reviewed=row["reviewed"],
