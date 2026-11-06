@@ -12,3 +12,5 @@ export const TYPE_COLOUR: Record<NodeType, number> = {
 };
 // The type colour as CSS.
 export const typeColour = (t: NodeType) => `#${TYPE_COLOUR[t].toString(16).padStart(6, "0")}`;
+// The letter on each type's disc in the scene, and in the legend that explains them.
+export const TYPE_LETTER: Record<NodeType, string> = { person: "P", place: "L", event: "E", group: "G", theme: "T", verse: "V" };
