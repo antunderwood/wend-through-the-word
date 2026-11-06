@@ -38,9 +38,11 @@
 </nav>
 
 <style>
-  /* On a desktop window the page's top row places it, between the search box and the panel's chevron. */
+  /* On a desktop window the page's top row places it, beside the search box. */
   .path {
-    flex: 1;
+    /* Only as wide as its steps need (decision 209); the top row lets it grow up to the panel's
+       chevron, and past that the steps scroll sideways. */
+    flex: 0 1 auto;
     min-width: 0;
     display: flex;
     align-items: center;
@@ -52,6 +54,7 @@
   }
   ol {
     display: flex;
+    min-width: 0;
     gap: 4px;
     margin: 0;
     padding: 0;
@@ -109,9 +112,6 @@
   /* At the side, left of the sheet and the search icon. */
   :global(html[data-side]) .path {
     right: calc(var(--sheet-covered) + var(--bar));
-  }
-  :global(html[data-phone]) ol {
-    min-width: 0;
   }
   :global(html[data-phone]) button {
     min-height: 34px;

@@ -53,7 +53,7 @@
       bind:this={input}
       type="search"
       aria-label="Search"
-      placeholder="Search names, aliases, or a verse (Gen 22:2)"
+      placeholder="Search people, places, verses"
       autocomplete="off"
       bind:value={query}
       onkeydown={key}

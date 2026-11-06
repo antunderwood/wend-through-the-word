@@ -422,7 +422,7 @@
     {inline}
   />
 {/snippet}
-<!-- On a desktop window the page is a grid (decision 209): the top row of the search box, the Your
+<!-- On a desktop window the page is a grid (decision 210): the top row of the search box, the Your
      Path bar, and the panel's chevron; under it the reader drawer, the scene, and the detail panel side
      by side; and the dock of notes, the view picker, and the footer along the bottom of the drawer and
      the scene. Each part takes its place from the grid and the sizes in tokens.css, so the scene fills
@@ -609,7 +609,7 @@
     --edge: 8px;
     --bar: 40px;
   }
-  /* The desktop grid (decision 209). Columns: the reader drawer (as wide as it is, none when it is
+  /* The desktop grid (decision 210). Columns: the reader drawer (as wide as it is, none when it is
      closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall
      as its notes and controls. The scene runs down behind the dock, as the dock lets a pointer
      through; the drawer and a panel without the scene stop above it. With the panel hidden, or
@@ -753,6 +753,7 @@
   }
   .chevron {
     flex: none;
+    margin-left: auto; /* at the row's end, however wide the Your Path bar is */
     margin-top: calc(var(--space-3) - var(--gutter)); /* 12 px from the window's top, like its right */
     width: 32px;
     height: 32px;
