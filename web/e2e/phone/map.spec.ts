@@ -81,7 +81,7 @@ for (const [size, full] of [
 
       // The block scrolled up to the actions, held at the top of the panel: the whole map shows below
       // them, the Selected Place's name on its dot.
-      // Haran is the Focus, so Make Focus is its "Focus" badge (decision 209).
+      // Haran is the Focus, so Make Focus is its "Focus" badge (decision 210).
       const actions = [panel.getByTitle(/ is the Focus$/), ...["Pin", "Read", "Prev", "Next", "Suggest a correction"].map((name) => panel.getByRole("button", { name, exact: true }))];
       const scrollBy = (dy: number) => panel.evaluate((e, d) => e.scrollBy(0, d), dy);
       const held = (await panel.boundingBox())!.y + (await actions[0].boundingBox())!.height;

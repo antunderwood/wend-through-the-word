@@ -6,7 +6,7 @@ import { focusIs, openOnAbraham } from "./scene";
 // when there is one, and the six buttons stay at the top of the panel, and everything else scrolls
 // behind it as one column (decision 201).
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
-// In tab order. On the Focus itself, Make Focus is a "Focus" badge (decision 209).
+// In tab order. On the Focus itself, Make Focus is a "Focus" badge (decision 210).
 const BUTTONS = ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correction"];
 const button = (page: Page, name: string) => panel(page).getByRole("button", { name, exact: true });
 const action = (page: Page, name: string) => (name === "Make Focus" ? button(page, name).or(panel(page).getByTitle(/ is the Focus$/)) : button(page, name));

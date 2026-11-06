@@ -165,7 +165,7 @@ const ACTIONS = ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correct
 async function actionsInReach(page: Page) {
   const details = page.getByRole("tabpanel", { name: "Details" });
   for (const name of ACTIONS) {
-    // On the Focus itself, Make Focus is a "Focus" badge (decision 209).
+    // On the Focus itself, Make Focus is a "Focus" badge (decision 210).
     const button = name === "Make Focus" ? details.getByRole("button", { name, exact: true }).or(details.getByTitle(/ is the Focus$/)) : details.getByRole("button", { name, exact: true });
     await expect(button, name).toBeInViewport({ ratio: 1 });
     const b = (await button.boundingBox())!;

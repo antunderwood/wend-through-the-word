@@ -48,3 +48,16 @@ test("search results, the scene label, and the panel tell same-name Entities apa
   await expect(page.locator(".labels").getByText("Anah, father of Dishon (Gen 36:24)", { exact: true })).toBeVisible();
   await expect(page.getByRole("complementary", { name: "Selected Node" }).getByRole("heading", { level: 2 })).toHaveText("Anah, father of Dishon (Gen 36:24)");
 });
+
+// The placeholder fits the box on a desktop, uncut (UI review finding 5).
+test("the search placeholder fits its box", async ({ page }) => {
+  const input = page.getByRole("search").getByRole("searchbox", { name: "Search" });
+  await expect(input).toHaveAttribute("placeholder", "Search people, places, verses");
+  const [text, room] = await input.evaluate((el: HTMLInputElement) => {
+    const css = getComputedStyle(el);
+    const ctx = document.createElement("canvas").getContext("2d")!;
+    ctx.font = css.font;
+    return [ctx.measureText(el.placeholder).width, el.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight)];
+  });
+  expect(text).toBeLessThanOrEqual(room);
+});
