@@ -6,7 +6,10 @@ import sys
 
 REPO = "https://github.com/antunderwood/wend-through-the-word"
 THEOGRAPHIC = "https://github.com/robertrouse/theographic-bible-metadata"
-CHECK_ONLY = {"tipnr"}  # read to check the data; credited, but not shipped data (decision 46)
+CHECK_ONLY = {
+    "tipnr",
+    "acai",
+}  # read to check the data; credited, but not shipped data (decision 46)
 
 # The part of a SOURCES name before the first "-" (so "theo-people" is "theo") -> credit.
 CREDITS = {
@@ -54,6 +57,12 @@ CREDITS = {
         "name": "STEP Bible: TIPNR",
         "credit": "Used to check the data; nothing from it is included.",  # decision 46
         "link": "https://www.stepbible.org/",
+    },
+    "acai": {
+        "name": "ACAI Biblical Entity Data",
+        "credit": "ACAI Biblical Entity Data, by BiblioNexus. Used to check the data; nothing "
+        "from it is included.",  # decision 217
+        "link": "https://github.com/BibleAquifer/ACAI",
     },
     "tvtms": {
         "name": "STEP Bible: TVTMS",

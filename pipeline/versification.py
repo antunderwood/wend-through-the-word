@@ -8,6 +8,8 @@ Schemes:
   differences from the KJV. Only rows TVTMS marks with an asterisk move.
 - `hebrew`: the Masoretic numbering (Macula, TAHOT, ACAI), from the "Hebrew" column of each
   section of TVTMS's condensed data: Psalm titles, Joel 3 and 4, Malachi 4, and the rest.
+- `original`: `hebrew` for the Old Testament and `na` for the New, as a source tagged on the
+  original-language texts numbers its verses (ACAI, decision 217).
 
 A Psalm title has no Verse Key, so it moves to verse 1, where the BSB prints it (`verses.NOTES`).
 A reference TVTMS cannot place on one whole KJV verse (a subverse or a moved passage) is left as
@@ -26,7 +28,7 @@ from pipeline.tipnr import STEP_BOOKS
 
 BOOKS = dict(zip(STEP_BOOKS.split(), OSIS_NAMES.split()))  # TVTMS (SIL) code -> OSIS name
 TABLE = {"SBLG": "na", "NRSV": "nrsv", "ESV": "esv", "NIV": "niv", "KJV": "kjv"}
-SCHEMES = ("kjv", "esv", "nrsv", "niv", "na", "hebrew")
+SCHEMES = ("kjv", "esv", "nrsv", "niv", "na", "hebrew", "original")
 # "Psa.3:Title", "*Php.1:16", "Jol.2:28-32", "Rev.13:1a" (a subverse is its verse); not
 # "Absent [=Psa.3:1]", "Rev.12:18-13:1", "Gen.6:1.2" or "Jos.9:2*a-b".
 REF = re.compile(r"\*?(\w+)\.(\d+):(Title|\d+)[a-z]?(?:-(\d+)[a-z]?)?")
@@ -106,6 +108,7 @@ def read(path):
     end = next(i for i, x in enumerate(lines) if x.startswith("#DataEnd(Condensed)"))
     maps = english(lines[:start])
     maps["hebrew"] = hebrew(lines[start + 1 : end])
+    maps["original"] = maps["na"] | maps["hebrew"]  # the books do not overlap
     return {s: {r: k for r, k in m.items() if r != k} for s, m in maps.items()}
 
 
