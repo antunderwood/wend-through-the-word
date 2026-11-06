@@ -94,11 +94,13 @@
       wall = sheet && screen.side ? sheet.left : innerWidth;
     const area = { left: 8, top: 8, right: wall - 8, bottom: floor - 8 };
     // The Recentre button is never covered (decision 188), nor on a phone the open search panel,
-    // whose results the reader taps. The box is never taller than the room clear of them, its text
-    // scrolling when the room is short (a short screen, or wide letters).
+    // whose results the reader taps, or the Your Path bar, whose steps the reader taps in a step. The
+    // box is never taller than the room clear of them, its text scrolling when the room is short (a
+    // short screen, or wide letters).
     const recentre = document.querySelector('[data-tour="recentre"]')?.getBoundingClientRect(),
       search = screen.phone ? document.querySelector('div[data-tour="search"]')?.getBoundingClientRect() : undefined,
-      fixed = [recentre, search].filter((k): k is DOMRect => !!k?.width);
+      path = screen.phone ? document.querySelector('nav[aria-label="Your Path"]')?.getBoundingClientRect() : undefined,
+      fixed = [recentre, search, path].filter((k): k is DOMRect => !!k?.width);
     box.style.maxHeight = `${Math.max(120, tallest(w, fixed, area, m))}px`;
     const h = box.offsetHeight,
       size = { w, h };
