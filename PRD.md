@@ -33,7 +33,7 @@ The data comes from open sources. The data is stored in a graph model. The graph
 - AI generated content shown as fact.
 - Any Worker code. Version 1 is static files only. The NLT display, D1, and KV move to phase 2.
 - Birth and death years for people. Only 70 of 3,067 Theographic people have them.
-- Original summaries for entities. The app shows Easton's Dictionary Entry only.
+- Original summaries for entities. The app shows a Dictionary Entry from a named dictionary only (Easton's, or the Aquifer Open Bible Dictionary on Themes, decision 219).
 
 ## 4. Users
 
@@ -82,12 +82,12 @@ These rules are fixed for version 1.
 |---|---|---|
 | API.Bible or Tyndale NLT API (api.nlt.to) | Live NLT display through a Worker, with a KV cache | Non-commercial terms. NLT on the API.Bible free tier is unverified. |
 | World English Bible | Second free text | Public domain |
-| Tyndale Open Bible Dictionary | Modern article text | CC BY-SA 4.0 |
+| Tyndale Open Bible Dictionary | Modern article text. Shipped on Themes since decision 219, through the Aquifer Open Bible Dictionary | CC BY-SA 4.0 |
 | Macula Hebrew and Greek | Word level links | CC BY 4.0 |
 | ACAI | Word to entity tags | CC BY-SA 4.0 |
 | STEPBible TIPNR | Strong's numbers for people and places | CC BY 4.0 |
 | STEPBible TAHOT, TAGNT, lexicons | Word study | CC BY 4.0 |
-| UBS open licence data | Plants, animals, objects, routes | CC BY-SA 4.0 |
+| UBS open licence data | Plants, animals, objects, routes. Routes ship on the map since decision 220 | CC BY-SA 4.0 |
 | Wikidata | Outward links (QIDs) | CC0 |
 
 ### 6.3 Live display only
@@ -126,7 +126,7 @@ The mismatch report still runs over every source.
 
 Person, Place, Event, People Group, and Theme are all Entities. Verse is not an Entity. Book is not a node. The book filter uses the verse key.
 
-`dictionary_entry` is Easton's text from Theographic `dictText`. Do not use `dictionaryText`: it has broken characters. The interface always labels it "Easton's Bible Dictionary (1897)". Many entities have none.
+`dictionary_entry` is Easton's text from Theographic `dictText`. Do not use `dictionaryText`: it has broken characters. The interface always labels it "Easton's Bible Dictionary (1897)". Many entities have none. A Theme's `dictionary_entry` comes from the Aquifer Open Bible Dictionary instead, labelled with that name (decision 219).
 
 Event years follow the chronology of Floyd Nolen Jones. The interface shows them as "approx., Jones chronology". Theographic stores years in astronomical numbering since October 2026 (4004 BC is -4003). Convert with care.
 

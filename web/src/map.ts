@@ -54,6 +54,8 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   const markers = new Map<Id, L.Marker>();
   // The Journey's line, under the dots; a click passes through it to the map.
   const line = L.polyline([], { className: "journey-line", color: colour, weight: 3, opacity: 0.8, interactive: false });
+  // A UBS route (decision 220): dashed, so it is not taken for the Journey. The panel credits it.
+  let routeLine: L.Polyline | undefined;
 
   // n: how many Places drawn before this one share its point. The first has the dot; each name
   // after it goes one line lower, so no name hides another.
@@ -101,6 +103,8 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   map.on("movestart zoomstart", () => framing || (follow = false));
   function frame() {
     const bounds = L.latLngBounds(shown.map((p) => [p.lat, p.lon]));
+    if (routeLine) bounds.extend(routeLine.getBounds());
+    if (!bounds.isValid()) return;
     framing = true;
     // The framing lasts until the move ends: after a glide, or at once (the first view, a move of
     // nothing, a jump of many zoom levels, reduced motion), so the end is listened for first.
@@ -111,7 +115,7 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
   // fills it again, and a map that follows is framed again.
   const resized = new ResizeObserver(() => {
     map.invalidateSize({ pan: false });
-    if (follow && shown.length) frame();
+    if (follow && (shown.length || routeLine)) frame();
   });
   resized.observe(host);
 
@@ -139,6 +143,19 @@ export function createMap(host: HTMLElement, colour: string, on: MapActions) {
     join(places: MapPlace[]) {
       if (!places.length) return void line.remove();
       line.setLatLngs(places.map((p) => [p.lat, p.lon])).addTo(map);
+    },
+    // Draws a route's lines ([lon, lat] pairs, as GeoJSON has them) and frames the map on it and the
+    // Places; none clears it.
+    route(lines: [number, number][][] | undefined) {
+      routeLine?.remove();
+      routeLine = lines?.length
+        ? L.polyline(
+            lines.map((l) => l.map(([lon, lat]) => [lat, lon] as [number, number])),
+            { className: "route-line", color: colour, weight: 3, opacity: 0.9, dashArray: "6 6", interactive: false },
+          ).addTo(map)
+        : undefined;
+      follow = true;
+      frame();
     },
     // Frames the map on what it shows again, and follows it again.
     recentre() {

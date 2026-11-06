@@ -34,10 +34,13 @@ type EntityFile = Sourced & {
   coord_source?: string;
   dictionary_entry?: Sourced & { text: string };
   corrections?: Correction[];
+  routes?: Id[]; // UBS routes whose passage names it, most shared Verses first (decision 220)
   neighbours: Link[];
   verses: (Edge & { key: string; weight: number })[];
   ring2: Rec["ring2"];
 };
+// A UBS Bible Route (decision 220): its passage's Verses in the build, and its lines as [lon, lat].
+export type Route = Sourced & { id: Id; title: string; passage: string; verses: string[]; lines: [number, number][][] };
 // credits.json, for the detail panel and the credits page.
 export type Credits = {
   licence: string;
@@ -130,6 +133,12 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       : `${reference(id)} is outside this build (${built} only).`;
 
   const credits = () => get<Credits>(`${base}/credits.json`);
+  // routes.json, read the first time the map asks for a route; an export from before decision 220 has none.
+  let routeFile: Promise<Map<Id, Route>> | undefined;
+  const allRoutes = () =>
+    (routeFile ??= get<{ routes: Route[] }>(`${base}/routes.json`)
+      .then((f) => new Map(f.routes.map((r) => [r.id, r])))
+      .catch(() => ((routeFile = undefined), new Map<Id, Route>())));
   const chapterFile = (id: Id) => get<ChapterFile>(`${base}/chapter/${books.get(id.slice(0, 2))?.osis}/${+id.slice(2, 5)}.json`);
   // An Entity of this build, or a Verse in a built chapter (its verse number is not checked).
   const known = (id: Id) => entities.has(id) || (typeOf(id) === "verse" && !outside(id));
@@ -272,6 +281,15 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       // A link correction marks each Entity at its ends, so rows with one note show once (#44).
       const corrections = (d.corrections ?? []).filter((c, i, all) => all.findIndex((o) => o.field === c.field && o.note === c.note) === i);
       return { ...own, facts, entry: d.dictionary_entry, corrections };
+    },
+    // The UBS routes an Entity lists, for the map's route menu: none for most.
+    async routes(id: Id): Promise<Route[]> {
+      if (typeOf(id) === "verse" || typeOf(id) === "overflow") return [];
+      await load(id);
+      const ids = files.get(id)?.routes ?? [];
+      if (!ids.length) return [];
+      const all = await allRoutes();
+      return ids.flatMap((r) => all.get(r) ?? []);
     },
     // A Place's point, for the map; none when the build has no point for it.
     async point(id: Id): Promise<{ lat: number; lon: number } | undefined> {

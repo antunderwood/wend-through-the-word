@@ -16,11 +16,13 @@ from pipeline import (
     coordinates,
     crossrefs,
     curation,
+    dictionary,
     edges,
     entities,
     export,
     highlights,
     ranking,
+    routes,
     themes,
     tipnr,
     verses,
@@ -34,12 +36,14 @@ STEPS = [
     curation.load,  # before themes (themes_keep.csv), and before edges (a gender correction)
     entities.bsb_names,  # after curation: a curated name wins
     themes.load,
+    dictionary.load,  # Dictionary Entries on Themes, so after themes
     entities.verse_neighbours,  # after every step that links Entities to Verses
     coordinates.load,
     edges.load,
     crossrefs.load,
     curation.report_aliases,  # after every step that adds Entities
     highlights.load,  # after every step that links Entities to Verses
+    routes.load,  # after every step that links Entities to Verses
     tipnr.load,  # reads the shipped family links, so it runs after edges
     acai.load,  # the same
     ranking.load,  # after every step that adds Entities or edges

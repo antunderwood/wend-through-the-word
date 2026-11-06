@@ -1,0 +1,6 @@
+id,file,title,passage,confidence,note,reviewed
+route:015_hagar_flees_towards_shur,015. GEN 16 Hagar,Hagar flees towards Shur,Gen.16.6-Gen.16.14,high,,yes
+route:025_isaac_goes_to_gerar,025. Isaac to Gerar,Isaac goes to Gerar,Gen.26.1-Gen.26.6,high,,yes
+route:026_isaac_goes_up_to_beersheba,026. Isaac to Beersheba,Isaac goes up to Beersheba,Gen.26.23,high,"Synthetic: not reviewed, so it does not ship",
+route:155a_the_flight_to_egypt,155a. Bethlehem to Egypt,The flight to Egypt,Matt.2.13-Matt.2.15,high,,yes
+route:205_pauls_voyage_to_rome,205. Paul's Voyage to Rome,Paul's voyage to Rome,Zeph.3.9,high,"Synthetic passage outside the book range, so it does not ship",yes

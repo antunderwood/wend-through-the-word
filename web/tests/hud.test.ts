@@ -76,3 +76,24 @@ describe("the HUD's leader line", () => {
     expect(route.every(([, y]) => y === 300)).toBe(true);
   });
 });
+
+import { dropRoute } from "../src/hud";
+describe("dropRoute", () => {
+  const card = { left: 8, right: 382, top: 420, bottom: 760 };
+  it("drops straight from the node to the docked card's top", () => {
+    expect(dropRoute({ x: 100, y: 200, r: 8 }, card)).toEqual([
+      [100, 208],
+      [100, 420],
+    ]);
+  });
+  it("is null when the node is not above the card", () => {
+    expect(dropRoute({ x: 100, y: 500, r: 8 }, card)).toBeNull();
+  });
+  it("slants out round a Focus in the way", () => {
+    const focus = { x: 195, y: 300, r: 30 };
+    const route = dropRoute({ x: 195, y: 150, r: 8 }, card, focus)!;
+    expect(route.length).toBe(3);
+    expect(clearance(route, focus)).toBeGreaterThanOrEqual(18);
+    expect(route.at(-1)![1]).toBe(420);
+  });
+});

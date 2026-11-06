@@ -411,3 +411,27 @@ for zip_path in sorted(src.glob("*.zip")):
         ]
     with zipfile.ZipFile(dest / zip_path.name, "w") as z:
         z.writestr(zipfile.ZipInfo(txt, date_time=(1980, 1, 1, 0, 0, 0)), "".join(lines))
+
+# Aquifer Open Bible Dictionary (decision 219): the articles whose title is a fixture Nave's
+# heading, or its part before a bracket or a comma, so the tests see both matches and refusals.
+# Each of the 26 files keeps its own articles, so a file may be an empty list. Articles over
+# 6,000 characters are cut (except Angel, the one match before a bracket), and `associations`
+# (passage lists the build does not read) is dropped, to keep the fixture small.
+# Synthetic: a second "Gold" article, to test a title that several articles share.
+naves_kept = list(csv.DictReader(io.StringIO(out.getvalue())))
+forms = set()
+for r in naves_kept:
+    h = r["subject"]
+    forms |= {re.sub(r"[^a-z]", "", x.lower()) for x in (h, h.split(" (")[0], h.split(",")[0])}
+for n in range(1, 27):
+    name = f"aobd-{n:03d}.json"
+    kept = [
+        {k: v for k, v in a.items() if k != "associations"}
+        for a in json.loads((src / name).read_text(encoding="utf-8"))
+        if re.sub(r"[^a-z]", "", a["title"].lower()) in forms
+        and (len(a["content"]) <= 6000 or a["title"] == "Angel")
+    ]
+    if any(a["title"] == "Gold" for a in kept):
+        kept.append({**kept[-1], "content_id": "synthetic-1", "title": "Gold",
+                     "content": "<h1>GOLD</h1><p>Synthetic second article.</p>"})  # fmt: skip
+    (dest / name).write_text(json.dumps(kept, ensure_ascii=False, indent=1) + "\n")
