@@ -7,6 +7,214 @@
     "sha256": "5f06330834af2b557a3cde67a32b11a5a8bbe129f5809337582e7a35af8fdd78",
     "url": "https://github.com/BibleAquifer/ACAI/archive/refs/tags/v2026-10-30.zip"
   },
+  "aobd-001": {
+    "date": "2026-11-06",
+    "file": "aobd-001.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "d0ca1177113d1a6e89b79105abd5629d2c4a3393dd3de1f593a1cc1242fc12a1",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/001.content.json"
+  },
+  "aobd-002": {
+    "date": "2026-11-06",
+    "file": "aobd-002.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "d7a3053dc639efcf38c0679606859edc66dae147e236ec81b83065cf4072eddf",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/002.content.json"
+  },
+  "aobd-003": {
+    "date": "2026-11-06",
+    "file": "aobd-003.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "bdd79b9fadc614dbce10c6137232cbfb751efb01860e428b792ea4d4c162ef47",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/003.content.json"
+  },
+  "aobd-004": {
+    "date": "2026-11-06",
+    "file": "aobd-004.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "bbc7dc19e696aeee79eab9df2e63293ebb2841a49c40453f50d8c9363219040b",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/004.content.json"
+  },
+  "aobd-005": {
+    "date": "2026-11-06",
+    "file": "aobd-005.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "f6b55c4ddbf61d83e7d37199827dc838fa0ba833cfcb96c3f02c14cf1a2a518b",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/005.content.json"
+  },
+  "aobd-006": {
+    "date": "2026-11-06",
+    "file": "aobd-006.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "8fe56893ef3f11a318c6efd9f7f16e165e2fdc27467abc3b7daa37e2617aba25",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/006.content.json"
+  },
+  "aobd-007": {
+    "date": "2026-11-06",
+    "file": "aobd-007.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "eaa97ce0d3d3b6f7805f0f9e18b5a989a3f603546967245ef623b170843ad535",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/007.content.json"
+  },
+  "aobd-008": {
+    "date": "2026-11-06",
+    "file": "aobd-008.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "d434d72ebdeb7acb7d10ce8ee4695c8b8910ea475731b7595df41ccbf2cb2027",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/008.content.json"
+  },
+  "aobd-009": {
+    "date": "2026-11-06",
+    "file": "aobd-009.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "18a2637883bb62ecc6fae88c8b553c64759eec9304625dcc4ab56c1ab7cb3cc9",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/009.content.json"
+  },
+  "aobd-010": {
+    "date": "2026-11-06",
+    "file": "aobd-010.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "962e59e9a82b8851be77deab1027111a073a45aab544f000b9fb88127ee6a72a",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/010.content.json"
+  },
+  "aobd-011": {
+    "date": "2026-11-06",
+    "file": "aobd-011.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "7f54f63f339efa1e2d30513896749780098da438b379b0b1317658ebda2cb983",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/011.content.json"
+  },
+  "aobd-012": {
+    "date": "2026-11-06",
+    "file": "aobd-012.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "356d8905dfd3ad589240bcab7ca63b8ac62bf63e466f9f72d91c6c13f55ef1bd",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/012.content.json"
+  },
+  "aobd-013": {
+    "date": "2026-11-06",
+    "file": "aobd-013.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "8dff799d3011e542de8b220b83863d0d664ec1c9a2c878de86c9c53d3907951f",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/013.content.json"
+  },
+  "aobd-014": {
+    "date": "2026-11-06",
+    "file": "aobd-014.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "64c5e01edca670d75b10c2c5a1c8f707b2f3d5d64d8a82b78b83d2db8d645151",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/014.content.json"
+  },
+  "aobd-015": {
+    "date": "2026-11-06",
+    "file": "aobd-015.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "a34733462b0d57657d63ce3bd3f468af0c9844da288d18affd95db5f8a885fb5",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/015.content.json"
+  },
+  "aobd-016": {
+    "date": "2026-11-06",
+    "file": "aobd-016.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "b487d46fefd02afec051dc717b078eab3da27ec090b7f2d63c2a7cd84181bb9a",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/016.content.json"
+  },
+  "aobd-017": {
+    "date": "2026-11-06",
+    "file": "aobd-017.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "1fcdd78b4f95470c88c161b27f3f0607c813f36c478d02746ad7b51948fc9e25",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/017.content.json"
+  },
+  "aobd-018": {
+    "date": "2026-11-06",
+    "file": "aobd-018.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "764c4d8ab25059ca1b1aa024b87f0a27b652ae23b5251ed044d257f54f2a782e",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/018.content.json"
+  },
+  "aobd-019": {
+    "date": "2026-11-06",
+    "file": "aobd-019.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "a614d07c3842499642dc72f1973d9bbdaf423d71afc542a415efe969de24e4fb",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/019.content.json"
+  },
+  "aobd-020": {
+    "date": "2026-11-06",
+    "file": "aobd-020.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "597ee69f4ee52a0a54b221aca3cd37a4073eed021bc5db1d74a2b4ad373d1e70",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/020.content.json"
+  },
+  "aobd-021": {
+    "date": "2026-11-06",
+    "file": "aobd-021.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "b671bbc3263eac6b4b818c9b1cd5a941d9f6dc1e1dc0c8fe54cf02dcc8f53ed8",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/021.content.json"
+  },
+  "aobd-022": {
+    "date": "2026-11-06",
+    "file": "aobd-022.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "c5540b350733db108c0e21a019ac37e15b842eabb7f3fe5bfc5713a07d9bd30b",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/022.content.json"
+  },
+  "aobd-023": {
+    "date": "2026-11-06",
+    "file": "aobd-023.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "eeb2830e80a560c64980360e76bbf1f0c7a2d43e1e387bd8a1dae2edd9778bda",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/023.content.json"
+  },
+  "aobd-024": {
+    "date": "2026-11-06",
+    "file": "aobd-024.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "38dcbe6a2f4da0bdb17f4bea387f4048d886b0c045c16896b74da42e0756d7a2",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/024.content.json"
+  },
+  "aobd-025": {
+    "date": "2026-11-06",
+    "file": "aobd-025.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "963bbfee980975ef129dc54a1eb80215ed6d008b6f7cee5afc200b8abf338983",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/025.content.json"
+  },
+  "aobd-026": {
+    "date": "2026-11-06",
+    "file": "aobd-026.json",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "93c8cf2697a72973601bb3681a97566598bb0a8f8130864a1a6673a2fd3dbf3a",
+    "url": "https://raw.githubusercontent.com/BibleAquifer/AquiferOpenBibleDictionary/663a34ef9c4edfeff17c8dda22f5f926a8b41f90/eng/json/026.content.json"
+  },
   "bsb": {
     "date": "2026-11-06",
     "file": "bsb.txt",
@@ -327,6 +535,14 @@
     "sha256": "c42cdfec1ae82d3e0c7e2f6a89d73bbed28ede4cf3fe18d5582626881e8d5c78",
     "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Versification/TVTMS%20-%20Translators%20Versification%20Traditions%20with%20Methodology%20for%20Standardisation%20for%20Eng+Heb+Lat+Grk+Others%20-%20STEPBible.org%20CC%20BY.txt"
   },
+  "ubs-routes": {
+    "date": "2026-11-06",
+    "file": "ubs-routes.zip",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "977a4ba179c4e9896baa0adead24d28e4413d58bfcf6db446b581f343335120a",
+    "url": "https://raw.githubusercontent.com/ubsicap/ubs-open-license/a15a96cfaa4ca18a6c0339016645ba1e534db3c8/ubs-bible-routes/GeoJsonRoutes"
+  },
   "wikidata-coords": {
     "date": "2026-11-06",
     "file": "wikidata-coords.json",
@@ -334,7 +550,7 @@
     "licence": "CC0 1.0",
     "query": "wikidata-query.sparql",
     "query_sha256": "ef9572762076c6deb7cf8e8b12b5b8d6190f1400173f4900dc6d8b4fb9f3cd09",
-    "sha256": "140871cc0d5bb0d4c41d0ae48f9238651f7c6c7a71811421e858d354214eb9e8",
+    "sha256": "e94d074cae93dfa312391c0555ff25c4c2b88b27a6489878093b57a65f5df645",
     "url": "https://query.wikidata.org/sparql"
   }
 }

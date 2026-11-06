@@ -4,4 +4,4 @@ sources = "sources"
 ids = "pipeline/ids.tsv"  # published Entity IDs (decision 215)
 out = "out"
 build_date = "2026-11-06"
-data_version = "2026-11-06"
+data_version = "2026-11-06-2"
