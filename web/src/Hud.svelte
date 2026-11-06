@@ -3,7 +3,9 @@
   // A desktop window's alternative to the detail panel (InfoMode "hud"). Its tabs hold the overview,
   // the Neighbour lists, the Verses shared with the Focus, and the journey note; the panel stays one
   // click away for corrections, the map, and the pins' lists. The reader drags the card by its strip
-  // and sizes it by its corner; both are kept in this browser. Props only; App owns the state.
+  // and sizes it by its corner; both are kept in this browser. On a phone (docked) the card is fixed
+  // across the bottom of the scene, just above the closed sheet, in place of the sheet's peek: it does
+  // not move or size, and Details opens the sheet for the rest. Props only; App owns the state.
   import { untrack } from "svelte";
   import { boldNames } from "./bold";
   import { typeColour } from "./colours";
@@ -17,6 +19,7 @@
     keepPlace,
     keptFlicker,
     keptPlace,
+    dropRoute,
     leadRoute,
     linkCounts,
     segments,
@@ -41,6 +44,8 @@
     notes,
     onnote,
     download,
+    docked = false,
+    ondetails,
   }: {
     data: Data;
     model: State;
@@ -55,6 +60,8 @@
     notes: Notes;
     onnote: (id: Id, text: string) => void;
     download: () => void;
+    docked?: boolean; // on a phone: fixed above the closed sheet, not moved or sized
+    ondetails?: () => void; // on a phone: open the sheet at Details
   } = $props();
 
   const CUT = 18; // the cut corners, px
@@ -130,7 +137,7 @@
   let place = $state<HudPlace | null>(keptPlace());
   let flicker = $state(keptFlicker());
   function fit() {
-    if (place) place = clampPlace(place, innerWidth, innerHeight);
+    if (place && !docked) place = clampPlace(place, innerWidth, innerHeight);
   }
   $effect(() => {
     untrack(fit);
@@ -144,7 +151,7 @@
   // A drag on the strip moves the card; on the corner grip it sizes it. Arrow keys on either grip do
   // the same by 16 px (with Shift, 64).
   function drag(e: PointerEvent, sizing: boolean) {
-    if (e.button !== 0 || (!sizing && (e.target as Element).closest("button:not(.grip), [role=tab]"))) return;
+    if (docked || e.button !== 0 || (!sizing && (e.target as Element).closest("button:not(.grip), [role=tab]"))) return;
     const start = here(),
       r = card!.getBoundingClientRect(),
       from = { x: e.clientX, y: e.clientY },
@@ -202,7 +209,7 @@
     function follow() {
       const n = nodeRect!(id),
         fr = id === f ? null : nodeRect!(f),
-        route = n && n.width ? leadRoute({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
+        route = n && n.width ? (docked ? dropRoute : leadRoute)({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
       if (!route) lead = null;
       else {
         const points = route.map((p) => p.join(",")).join(" ");
@@ -228,9 +235,9 @@
   <svg class="lead" aria-hidden="true">
     <defs>
       <linearGradient id="hud-lead" gradientUnits="userSpaceOnUse" x1={lead.from[0]} y1={lead.from[1]} x2={lead.to[0]} y2={lead.to[1]}>
-        <stop offset="0" stop-color="rgb(127, 227, 255)" stop-opacity="0.55" />
-        <stop offset="0.6" stop-color="rgb(127, 227, 255)" stop-opacity="0.18" />
-        <stop offset="1" stop-color="rgb(127, 227, 255)" stop-opacity="0.08" />
+        <stop offset="0" stop-opacity="0.55" />
+        <stop offset="0.6" stop-opacity="0.18" />
+        <stop offset="1" stop-opacity="0.08" />
       </linearGradient>
     </defs>
     <polyline points={lead.points} stroke="url(#hud-lead)" />
@@ -241,24 +248,26 @@
   class="hud"
   class:still={!motion}
   class:flicker={flicker && motion}
-  class:placed={!!place}
+  class:placed={!!place && !docked}
+  class:docked
   aria-label="Selected Node HUD"
   bind:this={card}
   bind:clientWidth={w}
   bind:clientHeight={h}
   style:--type={colour}
-  style:left={place ? `${place.x}px` : undefined}
-  style:top={place ? `${place.y}px` : undefined}
-  style:width="{place?.w ?? HUD_W}px"
-  style:height={place?.h ? `${place.h}px` : undefined}
-  style:max-height={place ? `calc(100dvh - ${place.y}px - 8px)` : undefined}
+  style:left={place && !docked ? `${place.x}px` : undefined}
+  style:top={place && !docked ? `${place.y}px` : undefined}
+  style:width={docked ? undefined : `${place?.w ?? HUD_W}px`}
+  style:height={place?.h && !docked ? `${place.h}px` : undefined}
+  style:max-height={place && !docked ? `calc(100dvh - ${place.y}px - 8px)` : undefined}
 >
   <div class="glass" style:clip-path={clipPath(outline)}></div>
   <svg class="frame" aria-hidden="true">
     <polygon points={svgPoints(outline)} />
     <path d="M{CUT + 10},4.5H{CUT + 70}M{w - 64},{h - 4.5}H{w - CUT - 10}" />
   </svg>
-  <!-- The strip is the handle: a drag on it moves the card. The Move HUD grip is its keyboard way. -->
+  <!-- The strip is the handle: a drag on it moves the card. The Move HUD grip is its keyboard way.
+       Docked on a phone, it does not move; Hide HUD takes the phone back to the sheet's peek. -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <header class="strip" onpointerdown={(e) => drag(e, false)}>
     <span class="tag"><i aria-hidden="true"></i>{typeName}</span>
@@ -267,14 +276,20 @@
       <button class="tool" aria-pressed={flicker} aria-label="Flicker" title={motion ? "Flicker" : "Flicker (off while animation is off)"} onclick={() => setFlicker(!flicker)}>
         <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9 1 3 9h4l-1 6 6-8H8z" /></svg>
       </button>
-      {#if place}
+      {#if docked}
+        <button class="tool" aria-label="Hide HUD" title="Back to the sheet" onclick={onpanel}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" /></svg>
+        </button>
+      {:else if place}
         <button class="tool" aria-label="Reset HUD position" title="Back to the top right, at the first size" onclick={reset}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8a5 5 0 1 0 1.5-3.5M3 2v3h3" /></svg>
         </button>
       {/if}
-      <button class="tool grip" aria-label="Move HUD" title="Drag to move; arrow keys move it too" onkeydown={(e) => nudge(e, false)}>
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 1v14M1 8h14M8 1 6 3M8 1l2 2M8 15l-2-2M8 15l2-2M1 8l2-2M1 8l2 2M15 8l-2-2M15 8l-2 2" /></svg>
-      </button>
+      {#if !docked}
+        <button class="tool grip" aria-label="Move HUD" title="Drag to move; arrow keys move it too" onkeydown={(e) => nudge(e, false)}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 1v14M1 8h14M8 1 6 3M8 1l2 2M8 15l-2-2M8 15l2-2M1 8l2-2M1 8l2 2M15 8l-2-2M15 8l-2 2" /></svg>
+        </button>
+      {/if}
     </span>
   </header>
   {#key selected}
@@ -307,16 +322,22 @@
       <button onclick={() => pin(selected)}>Pin</button>
     {/if}
     <button onclick={onread} disabled={overflow}>Read</button>
-    <button class="more" onclick={onpanel} title="Show the full detail panel: map, pins, and corrections">Panel</button>
+    {#if docked}
+      <button class="more" onclick={ondetails} title="Open the sheet at Details: map, pins, and corrections">Details</button>
+    {:else}
+      <button class="more" onclick={onpanel} title="Show the full detail panel: map, pins, and corrections">Panel</button>
+    {/if}
   </footer>
   <!-- The corner grip sizes the card. -->
-  <button
-    class="resize"
-    aria-label="Resize HUD"
-    title="Drag to resize; arrow keys resize it too"
-    onpointerdown={(e) => drag(e, true)}
-    onkeydown={(e) => nudge(e, true)}
-  ></button>
+  {#if !docked}
+    <button
+      class="resize"
+      aria-label="Resize HUD"
+      title="Drag to resize; arrow keys resize it too"
+      onpointerdown={(e) => drag(e, true)}
+      onkeydown={(e) => nudge(e, true)}
+    ></button>
+  {/if}
 </section>
 
 {#snippet overviewTab()}
@@ -436,10 +457,9 @@
 {/snippet}
 
 <style>
-  /* The HUD's own palette: a cold cyan line on dark glass, so the scene shows through. */
+  /* The HUD's own palette (--hud-* in tokens.css): a bright line on dark glass, so the scene shows through. */
   .hud {
-    --hud-line: 127, 227, 255;
-    --ink: #e8fbff;
+    --ink: rgb(var(--hud-ink));
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
     position: fixed;
     top: 72px;
@@ -456,6 +476,48 @@
   .hud.placed {
     right: auto;
   }
+  /* On a phone: across the screen, just above the closed sheet's row (and the keyboard), at one fixed
+     height (--hud-docked, set in App.svelte) so the camera does not move as the content changes. Taps
+     need room: tabs and buttons are 40 px tall, the name a size smaller. */
+  .hud.docked {
+    top: auto;
+    left: var(--edge);
+    right: var(--edge);
+    bottom: calc(var(--keyboard, 0px) + var(--sheet-handle) + 1px + var(--edge));
+    height: var(--hud-docked);
+    max-height: none;
+    padding: 8px 14px 10px;
+  }
+  .docked .strip {
+    cursor: default;
+    touch-action: auto;
+  }
+  .docked .tool {
+    width: 36px;
+    height: 36px;
+  }
+  .docked .name {
+    margin-top: 6px;
+    font-size: var(--fs-xl);
+  }
+  .docked .tabs {
+    margin-top: 6px;
+  }
+  .docked .tabs button {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+  .docked .actions {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+  .docked .actions button {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+  .docked .row {
+    padding: 8px 6px;
+  }
   .glass,
   .frame {
     position: absolute;
@@ -468,7 +530,7 @@
   .glass {
     background:
       repeating-linear-gradient(0deg, rgba(var(--hud-line), 0.035) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, rgba(var(--hud-line), 0.14), rgba(10, 22, 38, 0.42) 40%, rgba(10, 22, 38, 0.5));
+      linear-gradient(160deg, rgba(var(--hud-line), 0.14), rgba(var(--hud-deep), 0.42) 40%, rgba(var(--hud-deep), 0.5));
     backdrop-filter: blur(3px) saturate(1.2);
     -webkit-backdrop-filter: blur(3px) saturate(1.2);
   }
@@ -684,7 +746,7 @@
     font-size: var(--fs-xs);
   }
   .dim {
-    color: rgba(232, 251, 255, 0.6);
+    color: rgba(var(--hud-ink), 0.6);
   }
   .small {
     font-size: var(--fs-xs);
@@ -701,7 +763,7 @@
     border: 0;
     border-radius: 0;
     background: none;
-    color: rgba(232, 251, 255, 0.6);
+    color: rgba(var(--hud-ink), 0.6);
     font: 600 10px/1 var(--mono);
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -751,7 +813,7 @@
     font: 12px/1.4 var(--mono);
   }
   .facts dt {
-    color: rgba(232, 251, 255, 0.6);
+    color: rgba(var(--hud-ink), 0.6);
   }
   .facts dd {
     margin: 0;
@@ -816,7 +878,7 @@
     padding: 6px 8px;
     border: 0;
     border-radius: 0;
-    background: rgba(5, 12, 22, 0.55);
+    background: rgba(var(--hud-deep), 0.7);
     box-shadow: inset 0 0 0 1px rgba(var(--hud-line), 0.45);
     color: var(--ink);
     font: 12px/1.4 var(--mono);
@@ -825,7 +887,7 @@
     resize: vertical;
   }
   .query::placeholder {
-    color: rgba(232, 251, 255, 0.45);
+    color: rgba(var(--hud-ink), 0.45);
   }
   .rows,
   .verses {
@@ -966,9 +1028,12 @@
     fill: none;
     stroke-width: 1;
   }
+  .lead stop {
+    stop-color: rgb(var(--hud-line));
+  }
   .lead .brackets {
-    stroke: rgba(127, 227, 255, 0.85);
+    stroke: rgba(var(--hud-line), 0.85);
     stroke-width: 1.25;
-    filter: drop-shadow(0 0 2px rgba(127, 227, 255, 0.8));
+    filter: drop-shadow(0 0 2px rgba(var(--hud-line), 0.8));
   }
 </style>

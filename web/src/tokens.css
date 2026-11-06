@@ -39,6 +39,12 @@
   --shared: #4ff0e0; /* a Shared Node's name in the scene */
   --warn: #ff9f6e;
 
+  /* The HUD's own palette (Hud.svelte), as r, g, b so it can be used at any opacity: its line, its
+     text, and the dark of its glass. */
+  --hud-line: 127, 227, 255;
+  --hud-ink: 232, 251, 255;
+  --hud-deep: 10, 22, 38;
+
   /* Type: one family, and a scale of seven sizes. --fs-lg is also the least a phone's field may be
      (decision 182). */
   --font: system-ui, -apple-system, "Segoe UI", sans-serif;

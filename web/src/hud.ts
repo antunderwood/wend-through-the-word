@@ -127,3 +127,23 @@ export function leadRoute(node: Disc, card: Box, focus?: Disc): number[][] | nul
   if (clear.length) return clear.reduce((a, b) => (pathLength(b) < pathLength(a) - 1 ? b : a));
   return routes.reduce((a, b) => (clearance(b, focus) > clearance(a, focus) ? b : a));
 }
+
+// On a phone the card is docked across the bottom of the scene, so the line drops from the node to
+// the card's top edge instead: straight down, or, where that would cut through the Focus, slanting
+// out to one side of it first. Null when the node is not above the card.
+export function dropRoute(node: Disc, card: Box, focus?: Disc): number[][] | null {
+  const start = [node.x, node.y + node.r];
+  if (start[1] + 12 > card.top) return null;
+  const at = (x: number) => Math.min(Math.max(x, card.left + 12), card.right - 12);
+  const routes: number[][][] = [[start, [at(node.x), card.top]]];
+  if (focus)
+    for (const side of [-1, 1]) {
+      const lane = at(focus.x + side * (focus.r + CLEAR + 4)),
+        out = Math.abs(lane - node.x);
+      if (start[1] + out < card.top) routes.push([start, [lane, start[1] + out], [lane, card.top]]);
+    }
+  if (!focus) return routes[0];
+  const clear = routes.filter((r) => clearance(r, focus) >= CLEAR);
+  if (clear.length) return clear.reduce((a, b) => (pathLength(b) < pathLength(a) - 1 ? b : a));
+  return routes.reduce((a, b) => (clearance(b, focus) > clearance(a, focus) ? b : a));
+}
