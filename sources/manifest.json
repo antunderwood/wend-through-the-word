@@ -550,7 +550,7 @@
     "licence": "CC0 1.0",
     "query": "wikidata-query.sparql",
     "query_sha256": "ef9572762076c6deb7cf8e8b12b5b8d6190f1400173f4900dc6d8b4fb9f3cd09",
-    "sha256": "e94d074cae93dfa312391c0555ff25c4c2b88b27a6489878093b57a65f5df645",
+    "sha256": "3031c9d36018af8a52e187f0733fa00529863f04f8eb0fffb9e8544155569550",
     "url": "https://query.wikidata.org/sparql"
   }
 }
