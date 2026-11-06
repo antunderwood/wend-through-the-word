@@ -38,20 +38,18 @@
 </nav>
 
 <style>
+  /* On a desktop window the page's top row places it, beside the search box. */
   .path {
-    position: fixed;
-    top: 16px;
-    left: 350px; /* beside the search box (16 + 318 + 16) */
-    /* Only as wide as its steps need, up to the panel chevron; past that the steps scroll sideways.
-       The panel starts below the bar. */
-    max-width: calc(100vw - 350px - 56px);
-    box-sizing: border-box;
+    /* Only as wide as its steps need (decision 209); the top row lets it grow up to the panel's
+       chevron, and past that the steps scroll sideways. */
+    flex: 0 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 6px 8px;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 8px;
   }
   ol {
@@ -66,10 +64,10 @@
   }
   button {
     font: inherit;
-    font-size: 12px;
+    font-size: var(--fs-sm);
     color: inherit;
     background: none;
-    border: 1px solid #3a4060;
+    border: 1px solid var(--line-strong);
     border-radius: 999px;
     padding: 2px 8px;
     cursor: pointer;
@@ -79,11 +77,11 @@
     user-select: none;
   }
   .focus {
-    border-color: #ffd27a;
-    color: #ffd27a;
+    border-color: var(--accent);
+    color: var(--accent);
   }
   .selected {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--pressed);
   }
   /* A step with a note; the title says so to a screen reader. */
   .noted::after {
@@ -95,16 +93,16 @@
     flex: none;
     margin-left: auto;
     border-radius: 4px;
-    background: #262a3c;
+    background: var(--control);
   }
   /* On a phone the bar is the slim top bar, one row with the search icon at its end (decision 183):
      the steps scroll sideways and Clear or Undo clear stays at the end, and the steps are as tall as
      the bar lets them be. */
   :global(html[data-phone]) .path {
+    position: fixed;
     top: 0;
     left: 0;
     right: var(--bar); /* the search icon */
-    max-width: none;
     height: var(--bar);
     box-sizing: border-box;
     padding: 0 4px;

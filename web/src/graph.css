@@ -8,16 +8,16 @@
   pointer-events: auto;
   cursor: pointer;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   margin-top: 9px;
   padding: 0 3px;
-  text-shadow: 0 0 3px #000, 0 0 6px #000;
+  text-shadow: 0 0 3px var(--shadow), 0 0 6px var(--shadow);
   user-select: none;
 }
 .nl.focus {
-  font-size: 17px;
+  font-size: var(--fs-xl);
   font-weight: 650;
-  color: #ffd27a;
+  color: var(--accent);
   margin-top: 22px;
   width: 240px;
   white-space: normal;
@@ -25,10 +25,10 @@
 }
 /* A long quote wraps to the Focus label's width and stops after three lines. */
 .nl .quote {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   font-style: italic;
-  color: #c9ccd8;
+  color: var(--text-soft);
   white-space: normal;
   width: max-content;
   max-width: 240px;
@@ -50,11 +50,11 @@ html[data-phone] .nl.focus {
   max-width: 240px;
 }
 .nl.overflow {
-  color: #9aa0b4;
+  color: var(--muted);
   font-style: italic;
 }
 .nl.shared {
-  color: #4ff0e0;
+  color: var(--shared);
 }
 .nl.selected {
   text-decoration: underline;
@@ -70,15 +70,15 @@ html[data-phone] .nl.focus {
 /* Relationship words on the Focus edges; a Co-mention reads quieter. Opacity is left to the
    distance fade. */
 .el {
-  font-size: 10px;
-  color: rgba(200, 205, 224, 0.75);
-  text-shadow: 0 0 3px #000;
+  font-size: 10px; /* under the type scale: the scene's words are sized with the declutter rule (decision 124) */
+  color: color-mix(in srgb, var(--text-soft) 75%, transparent);
+  text-shadow: 0 0 3px var(--shadow);
   pointer-events: none;
   white-space: nowrap;
 }
 .el.derived {
   font-style: italic;
-  color: rgba(200, 205, 224, 0.55);
+  color: color-mix(in srgb, var(--text-soft) 55%, transparent);
 }
 /* A name hidden because it would overlap a more important one (decision 124). */
 .labels .crowded {
