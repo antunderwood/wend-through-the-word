@@ -20,7 +20,7 @@
   import { SPLASH_KEY } from "./splash";
   import Tour from "./Tour.svelte";
   import { TOUR_START, type TourPage } from "./tour";
-  import { keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
+  import { followNotes, keepNotes, keepPath, keptNotes, keptPath, restore, withNote, type Notes } from "./session";
   import { store, stored } from "./storage";
 
   const HINT_KEY = "wend.hintDismissed";
@@ -362,7 +362,9 @@
       data = await createData(fetchJSON, "/data", update);
       version = data.version;
       const asked = await readAddress();
-      const next = restore(asked, keptPath(), data.known, data.label);
+      const next = restore(asked, keptPath(), data.known, data.label, data.follow);
+      const followed = followNotes(notes, data.follow); // notes on a replaced ID follow it (decision 215)
+      if (JSON.stringify(followed) !== JSON.stringify(notes)) keepNotes((notes = followed));
       await Promise.all([data.loadWithKin(next.focus), ...next.pins.map(data.load)]);
       model = next;
       if (asked.focus && typeOf(next.focus) === "verse") reading = next.focus;
@@ -411,7 +413,7 @@
     if (onScreen && !touring) keepPath(model);
   });
 
-  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis), data!.verseKey);
+  const readAddress = () => read(location.search, data!.exists, data!.builtBooks.map((b) => b.osis), data!.verseKey, data!.follow);
 
   // Back and Forward make the entry's Focus the Focus again.
   async function moved() {

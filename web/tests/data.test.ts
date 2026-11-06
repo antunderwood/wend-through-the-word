@@ -5,11 +5,11 @@ import { readExport } from "./fixture";
 const ABRAHAM = "person:abraham_58";
 
 describe("data loader", () => {
-  it("reads index.json, then only files under its data_version", async () => {
+  it("reads index.json, then only files under its data_version, the redirects among them (decision 215)", async () => {
     const read: string[] = [];
     const data = await createData(async (url) => (read.push(url), readExport(url)), "");
     await data.load(ABRAHAM);
-    expect(read).toEqual(["/index.json", "/test1/search-index.json", "/test1/entity/person/abraham_58.json"]);
+    expect(read).toEqual(["/index.json", "/test1/search-index.json", "/test1/redirects.json", "/test1/entity/person/abraham_58.json"]);
   });
 
   it("retries a fetch that fails once", async () => {

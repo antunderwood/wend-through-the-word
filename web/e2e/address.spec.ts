@@ -108,3 +108,12 @@ test("a copied link names the Focus, even Jesus Christ with default settings", a
   await expect(page.getByRole("status")).toHaveText("Link copied.");
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(new URL("/?focus=person:jesus_905", page.url()).href);
 });
+
+test("an old link to a replaced ID opens the new ID and rewrites the address (decision 215)", async ({ page }) => {
+  await page.goto("/?focus=theme:sold_birthright"); // fixture redirect to theme:birthright
+  await focusIs(page, "theme:birthright");
+  await expect.poll(() => search(page)).toBe("?focus=theme:birthright");
+  await page.goto("/?focus=person:fixture_removed_9999"); // fixture redirect to nothing
+  await focusIs(page, "theme:birthright"); // the Focus kept in this browser (decision 133)
+  await expect(page.getByRole("status")).toHaveText("person:fixture_removed_9999 is no longer in the data, so left out.");
+});

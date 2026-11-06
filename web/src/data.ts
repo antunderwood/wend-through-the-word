@@ -72,9 +72,16 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
   let version: string, base: string, searchIndex: SearchIndex;
   let entities: Map<Id, SearchIndex["entities"][number]>, books: Map<string, SearchIndex["books"][number]>;
   let built: string, chapters: string[];
-  // Reads a version's search index. Records already loaded stay.
+  // A published ID that no longer ships: the ID that replaces it, or null when removed (decision 215).
+  let redirects: Record<Id, Id | null> = {};
+  // Reads a version's search index and redirects. Records already loaded stay.
   async function open(v: string) {
-    searchIndex = await read<SearchIndex>(`${root}/${v}/search-index.json`);
+    // Read together; an export from before decision 215 has no redirects file.
+    const [index, moved] = await Promise.all([
+      read<SearchIndex>(`${root}/${v}/search-index.json`),
+      read<{ redirects?: Record<Id, Id | null> }>(`${root}/${v}/redirects.json`).catch(() => ({ redirects: {} })),
+    ]);
+    [searchIndex, redirects] = [index, moved.redirects ?? {}];
     [version, base] = [v, `${root}/${v}`];
     entities = new Map(searchIndex.entities.map((e) => [e.id, e]));
     books = new Map(searchIndex.books.map((b) => [b.number, b]));
@@ -220,6 +227,9 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
     credits,
     load,
     search,
+    // The ID to use for a stored or shared ID: itself, the ID that replaced it, or null when it was
+    // removed from the data (decision 215).
+    follow: (id: Id): Id | null => (Object.hasOwn(redirects, id) ? redirects[id] : id),
     // Family words (son or daughter, husband or wife) follow the relative's gender, which only the
     // relative's own file carries, so this also loads every Person with a family link. A relative
     // that fails to load keeps the neutral word (child, spouse).
