@@ -2,7 +2,7 @@
   // Search by name, alias, or verse reference, with a type filter. Choosing a result (a click, or
   // Enter for the first) makes it the Focus at once and closes the list (decision 115). On a desktop
   // the box is a field in the top bar, and the type chips and the results drop below it while the
-  // box is in use (decision 211). On a phone
+  // box is in use (decision 212). On a phone
   // search is a button: it opens the box over the top of the scene with the keyboard ready, and the
   // box closes after a choice, on Escape, or on a tap outside it.
   import { tick } from "svelte";
@@ -24,8 +24,7 @@
 
   function choose(id: Id) {
     query = "";
-    opened = false;
-    active = false;
+    opened = active = false;
     onchoose(id);
   }
   async function open() {
@@ -95,39 +94,39 @@
 {/if}
 
 <style>
-  /* On a desktop the box is a field at the start of the top bar (decision 211), as tall as the
-     Your Path steps' row beside it; it is above the reader panel, so the drop below it is never
-     hidden under it. */
+  /* On a desktop window the page's top row places it: a field at the start of the top bar
+     (decision 212), above the reader panel, so the drop below it is never hidden under it. */
   .search {
-    position: fixed;
+    position: relative;
     z-index: 5;
-    top: 10px;
-    left: 16px;
-    width: 300px;
+    flex: none;
+    width: var(--search-w);
   }
   /* The type chips and the results, in a card that drops below the field. */
   .drop {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + var(--space-2));
     left: 0;
     right: 0;
-    padding: 8px;
-    background: rgba(20, 23, 34, 0.96);
-    border: 1px solid #262a3c;
-    border-radius: 8px;
+    padding: var(--space-2);
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   }
   /* On a phone the open box is a card over the top of the scene and the Your Path bar, the chips and
      the results inside it. */
   :global(html[data-phone]) .search {
+    position: fixed;
     top: 8px;
     left: 8px;
     right: 8px;
     width: auto;
-    padding: 8px;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
-    border-radius: 8px;
+    box-sizing: border-box;
+    padding: var(--space-2);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
   }
   :global(html[data-phone]) .drop {
     position: static;
@@ -163,8 +162,8 @@
     padding: 0;
     display: grid;
     place-items: center;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-width: 0 0 1px 1px;
     border-radius: 0;
   }
@@ -179,8 +178,8 @@
     box-sizing: border-box;
     font: inherit;
     color: inherit;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid #3a4060;
+    background: var(--field);
+    border: 1px solid var(--line-strong);
     border-radius: 6px;
     padding: 0 10px;
     height: 36px;
@@ -199,20 +198,20 @@
     cursor: pointer;
   }
   .chips button {
-    font-size: 11px;
+    font-size: var(--fs-xs);
     padding: 2px 9px;
     border-radius: 999px;
     background: none;
-    border: 1px solid #3a4060;
-    color: #c9ccd8;
+    border: 1px solid var(--line-strong);
+    color: var(--text-soft);
   }
   .chips button:hover {
-    border-color: var(--c, #6b7394);
+    border-color: var(--c, var(--line-hover));
   }
   .chips button[aria-pressed="true"] {
-    background: var(--c, #ffd27a);
-    border-color: var(--c, #ffd27a);
-    color: #0d0f17;
+    background: var(--c, var(--accent));
+    border-color: var(--c, var(--accent));
+    color: var(--bg);
     font-weight: 600;
   }
   ul {
@@ -232,26 +231,26 @@
     border: none;
     border-radius: 4px;
     padding: 5px 6px;
-    color: #e6e8f0;
+    color: var(--text);
   }
   li button:hover,
   li button:focus-visible {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--hover);
   }
   li:first-child button {
-    background: rgba(255, 210, 122, 0.08);
+    background: var(--accent-wash);
   }
   .name {
     flex: 1;
     min-width: 0;
   }
   .hint {
-    color: #9aa0b4;
-    font-size: 11px;
+    color: var(--muted);
+    font-size: var(--fs-xs);
   }
   .type {
     flex: none;
-    font-size: 10px;
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--c);
@@ -260,7 +259,7 @@
     padding: 4px 6px;
   }
   .muted {
-    color: #9aa0b4;
-    font-size: 12px;
+    color: var(--muted);
+    font-size: var(--fs-sm);
   }
 </style>

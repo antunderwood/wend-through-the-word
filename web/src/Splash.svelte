@@ -75,14 +75,14 @@
     width: min(420px, 100vw - 32px);
     max-height: calc(100dvh - 16px);
     padding: 20px;
-    background: #161a28;
+    background: var(--raised);
     color: inherit;
-    border: 1px solid #3a4060;
+    border: 1px solid var(--line-strong);
     border-radius: 8px;
     text-align: center;
   }
   .splash::backdrop {
-    background: rgba(13, 15, 23, 0.75);
+    background: var(--scrim);
   }
   svg {
     display: block;
@@ -90,7 +90,7 @@
     margin: 0 auto 8px;
   }
   path {
-    stroke: #c8cde0;
+    stroke: var(--text-soft);
     stroke-opacity: 0.55;
     stroke-width: 2.5;
   }
@@ -111,12 +111,12 @@
   }
   h2 {
     margin: 0 0 8px;
-    font-size: 22px;
-    color: #ffd27a;
+    font-size: var(--fs-2xl);
+    color: var(--accent);
   }
   p {
     margin: 0 0 16px;
-    font-size: 15px;
+    font-size: var(--fs-lg);
   }
   .buttons {
     display: flex;
@@ -129,8 +129,8 @@
     padding: 0 20px;
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     cursor: pointer;
   }

@@ -22,12 +22,12 @@
   .note {
     margin: 16px 0 10px;
     padding-top: 10px;
-    border-top: 1px solid #262a3c;
+    border-top: 1px solid var(--line);
   }
   label {
     display: block;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   textarea {
     width: 100%;
@@ -36,19 +36,19 @@
     padding: 4px 6px;
     font: inherit;
     color: inherit;
-    background: #161a28;
-    border: 1px solid #3a4060;
+    background: var(--raised);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     resize: vertical;
   }
   .muted {
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   button {
     font: inherit;
-    font-size: 12px;
-    color: #c8cde0;
+    font-size: var(--fs-sm);
+    color: var(--text-soft);
     background: none;
     border: 0;
     padding: 0 0 0 6px;
@@ -56,7 +56,7 @@
     cursor: pointer;
   }
   button:hover {
-    color: #ffd27a;
+    color: var(--accent);
   }
   .danger:hover {
     color: #ff8a80;

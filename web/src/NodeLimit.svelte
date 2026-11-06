@@ -149,9 +149,9 @@
     margin: 0;
     height: 100%;
     overflow: hidden;
-    background: #0d0f17;
-    color: #e6e8f0;
-    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font: var(--fs-md)/1.45 var(--font);
   }
   .stage {
     position: fixed;
@@ -163,14 +163,14 @@
     left: 12px;
     width: 520px;
     padding: 8px 12px;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
+    background: var(--surface);
+    border: 1px solid var(--line);
   }
   .controls > * {
     margin: 6px 0;
   }
   h1 {
-    font-size: 16px;
+    font-size: var(--fs-lg);
   }
   label {
     margin-right: 10px;
@@ -179,11 +179,11 @@
     display: block;
     width: 100%;
     box-sizing: border-box;
-    font: 12px/1.4 ui-monospace, monospace;
-    background: #0d0f17;
+    font: var(--fs-sm)/1.4 var(--font-mono);
+    background: var(--bg);
     color: inherit;
   }
   .message {
-    color: #ff9f6e;
+    color: var(--warn);
   }
 </style>

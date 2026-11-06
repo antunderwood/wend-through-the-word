@@ -33,9 +33,20 @@
   // One choice at a time: all books, this build only, or one book of the build.
   const chosen = $derived(Array.isArray(filters.books) ? filters.books.join(",") : filters.books);
   const choose = (v: string) => set("books", v === "all" || v === "build" ? v : [v]);
+
+  // The popover opens centred above the Filters button that opens it, wherever the page's grid puts
+  // the button.
+  function place(e: ToggleEvent) {
+    if (e.newState !== "open") return;
+    const panel = e.currentTarget as HTMLElement,
+      b = document.querySelector(`[popovertarget="${FILTERS_ID}"]`)?.getBoundingClientRect();
+    if (!b) return;
+    panel.style.setProperty("--x", `${b.left + b.width / 2}px`);
+    panel.style.setProperty("--y", `${innerHeight - b.top}px`);
+  }
 </script>
 
-<div id={FILTERS_ID} class="filters" class:inline popover={inline ? undefined : ""} role={inline ? "group" : "dialog"} aria-label="Filters">
+<div id={FILTERS_ID} class="filters" class:inline popover={inline ? undefined : ""} onbeforetoggle={inline ? undefined : place} role={inline ? "group" : "dialog"} aria-label="Filters">
   {#if inline}<h3>Filters</h3>{/if}
   <fieldset>
     <legend>Show</legend>
@@ -71,14 +82,14 @@
 
 <style>
   .filters {
-    inset: auto auto 60px 50%;
+    inset: auto auto calc(var(--y, 46px) + var(--space-3)) var(--x, 50%);
     transform: translateX(-50%);
     width: 300px;
     margin: 0;
     padding: 12px 16px;
-    background: rgba(20, 23, 34, 0.96);
-    color: #e6e8f0;
-    border: 1px solid #3a4060;
+    background: var(--surface-strong);
+    color: var(--text);
+    border: 1px solid var(--line-strong);
     border-radius: 8px;
   }
   fieldset {
@@ -91,8 +102,8 @@
   }
   legend,
   .muted {
-    color: #9aa0b4;
-    font-size: 12px;
+    color: var(--muted);
+    font-size: var(--fs-sm);
   }
   fieldset input {
     accent-color: var(--c);
@@ -104,7 +115,7 @@
     margin: 8px 0 0;
   }
   .row input {
-    accent-color: #ffd27a;
+    accent-color: var(--accent);
   }
   .row input[type="range"],
   select {
@@ -114,8 +125,8 @@
   select {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
   }
   .muted {
@@ -132,11 +143,11 @@
   }
   h3 {
     margin: 14px 0 4px;
-    font-size: 12px;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #9aa0b4;
+    color: var(--muted);
   }
   .inline label,
   .inline select {

@@ -38,16 +38,14 @@
 </nav>
 
 <style>
-  /* On a desktop the steps lie on the top bar beside the search field, with no box of their own
-     (decision 211): as wide as the steps need, up to the panel chevron; past that they scroll
-     sideways. The panel starts below the bar. */
+  /* On a desktop window the page's top row places it, beside the search field: the steps lie on the
+     top bar with no box of their own (decision 212). */
   .path {
-    position: fixed;
-    top: 10px;
-    left: 332px; /* beside the search field (16 + 300 + 16) */
-    max-width: calc(100vw - 332px - 56px);
+    /* Only as wide as its steps need (decision 209); the top row lets it grow up to the panel's
+       chevron, and past that the steps scroll sideways. */
+    flex: 0 1 auto;
+    min-width: 0;
     height: 36px;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -64,10 +62,10 @@
   }
   button {
     font: inherit;
-    font-size: 12px;
+    font-size: var(--fs-sm);
     color: inherit;
     background: none;
-    border: 1px solid #3a4060;
+    border: 1px solid var(--line-strong);
     border-radius: 999px;
     padding: 2px 8px;
     cursor: pointer;
@@ -77,11 +75,11 @@
     user-select: none;
   }
   .focus {
-    border-color: #ffd27a;
-    color: #ffd27a;
+    border-color: var(--accent);
+    color: var(--accent);
   }
   .selected {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--pressed);
   }
   /* A step with a note; the title says so to a screen reader. */
   .noted::after {
@@ -93,20 +91,21 @@
     flex: none;
     margin-left: auto;
     border-radius: 4px;
-    background: #262a3c;
+    background: var(--control);
   }
   /* On a phone the bar is the slim top bar, one row with the search icon at its end (decision 183):
      the steps scroll sideways and Clear or Undo clear stays at the end, and the steps are as tall as
      the bar lets them be. */
   :global(html[data-phone]) .path {
+    position: fixed;
     top: 0;
     left: 0;
     right: var(--bar); /* the search icon */
-    max-width: none;
     height: var(--bar);
+    box-sizing: border-box;
     padding: 0 4px;
-    background: rgba(20, 23, 34, 0.92);
-    border-bottom: 1px solid #262a3c;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
   }
   /* At the side, left of the sheet and the search icon. */
   :global(html[data-side]) .path {
