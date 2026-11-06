@@ -42,7 +42,10 @@
     position: fixed;
     top: 16px;
     left: 350px; /* beside the search box (16 + 318 + 16) */
-    right: 56px; /* clear of the panel chevron; the panel starts below the bar */
+    /* Only as wide as its steps need, up to the panel chevron; past that the steps scroll sideways.
+       The panel starts below the bar. */
+    max-width: calc(100vw - 350px - 56px);
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -53,6 +56,7 @@
   }
   ol {
     display: flex;
+    min-width: 0;
     gap: 4px;
     margin: 0;
     padding: 0;
@@ -100,6 +104,7 @@
     top: 0;
     left: 0;
     right: var(--bar); /* the search icon */
+    max-width: none;
     height: var(--bar);
     box-sizing: border-box;
     padding: 0 4px;
@@ -109,9 +114,6 @@
   /* At the side, left of the sheet and the search icon. */
   :global(html[data-side]) .path {
     right: calc(var(--sheet-covered) + var(--bar));
-  }
-  :global(html[data-phone]) ol {
-    min-width: 0;
   }
   :global(html[data-phone]) button {
     min-height: 34px;
