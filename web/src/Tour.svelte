@@ -125,7 +125,9 @@
     // little (once a step) when the node does not fit. Until then, or with no node, the place that
     // covers least of them. With no target, the bottom left corner, unless the Recentre button or the
     // search panel is there.
-    let [x, y] = [Math.min(16, wall - w - 8), Math.min(innerHeight - h - 92, floor - h - 8)];
+    // On a desktop window the corner is above the dock of notes, the view picker, and the footer.
+    const dockTop = screen.phone ? innerHeight - 84 : (document.querySelector('[data-tour="dock"]')?.getBoundingClientRect().top ?? innerHeight);
+    let [x, y] = [Math.min(16, wall - w - 8), Math.min(dockTop - h - 8, floor - h - 8)];
     const clearOfFixed = ([a, b]: number[]) => fixed.every((k) => apart({ left: a, top: b, right: a + w, bottom: b + h }, k, m));
     if (keep.length > fixed.length || !clearOfFixed([x, y])) {
       const spot = under ? undefined : spotFor(size, keep, area, m),
@@ -214,9 +216,9 @@
     position: fixed;
     z-index: 10;
     pointer-events: none;
-    border: 2px solid #ffd27a;
+    border: 2px solid var(--accent);
     border-radius: 8px;
-    box-shadow: 0 0 0 4px rgba(255, 210, 122, 0.3);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
   }
   .tour {
     position: fixed;
@@ -224,11 +226,11 @@
     width: 300px;
     box-sizing: border-box;
     padding: 10px 12px;
-    background: #1b1f2e;
-    border: 1px solid #ffd27a;
+    background: var(--raised-2);
+    border: 1px solid var(--accent);
     border-radius: 8px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
-    font-size: 13px;
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--shadow) 60%, transparent);
+    font-size: var(--fs-sm);
     display: flex;
     flex-direction: column;
   }
@@ -249,22 +251,22 @@
   }
   h2 {
     margin: 4px 0;
-    font-size: 15px;
-    color: #ffd27a;
+    font-size: var(--fs-lg);
+    color: var(--accent);
   }
   p {
     margin: 4px 0 8px;
   }
   .muted {
     margin: 0;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;

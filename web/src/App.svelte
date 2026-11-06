@@ -422,18 +422,33 @@
     {inline}
   />
 {/snippet}
+<!-- On a desktop window the page is a grid (decision 209): the top row of the search box, the Your
+     Path bar, and the panel's chevron; under it the reader drawer, the scene, and the detail panel side
+     by side; and the dock of notes, the view picker, and the footer along the bottom of the drawer and
+     the scene. Each part takes its place from the grid and the sizes in tokens.css, so the scene fills
+     what the others leave. On a phone the shell draws no box and each part places itself over the
+     scene and the bottom sheet. -->
+<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL} class:reading={!!reading}>
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<!-- The scene takes the space between the open panels. -->
-<div class="stage" data-tour="scene" class:reading={reading && !screen.phone} class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<div class="stage" data-tour="scene" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 <!-- In the scene's top left corner on every screen: the camera goes back to the Focus (decision 188). -->
 {#if graph}
-  <button class="recentre icon" class:reading={reading && !screen.phone} data-tour="recentre" aria-label="Recentre" title="Recentre" onclick={() => graph?.recentre()}>
+  <button class="recentre icon" data-tour="recentre" aria-label="Recentre" title="Recentre" onclick={() => graph?.recentre()}>
     <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="6" /><path d="M12 2v5M12 17v5M2 12h5M17 12h5" /></svg>
   </button>
 {/if}
 {#if onScreen && data}
-  <Search {data} onchoose={makeFocus} />
+  <div class="top">
+    <Search {data} onchoose={makeFocus} />
+    <PathBar {model} {label} {apply} {notes} {makeFocus} />
+    <!-- The chevron points the way the panel will move. -->
+    {#if !screen.phone}
+      <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+        {collapsed ? "‹" : "›"}
+      </button>
+    {/if}
+  </div>
   {#snippet details()}
     <DetailPanel
       data={data!}
@@ -450,7 +465,6 @@
       deleteAll={() => setNotes({})}
       {noWebGL}
       {collapsed}
-      reading={!!reading}
       controls={screen.phone ? phoneControls : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
     />
@@ -501,13 +515,8 @@
       side={screen.side}
     />
   {:else}
-    <!-- The chevron points the way the panel will move. -->
-    <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
-      {collapsed ? "‹" : "›"}
-    </button>
     {@render details()}
   {/if}
-  <PathBar {model} {label} {apply} {notes} {makeFocus} />
   {#if reading && !screen.phone}
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
@@ -522,9 +531,10 @@
     <button onclick={failure.retry}>Retry</button>
   </div>
 {/if}
-<!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet;
-     elsewhere each keeps its own place. -->
-<div class="dock" data-tour="dock" bind:offsetHeight={dockHeight}>
+<!-- On a phone the hint, the notes, and the controls stack in one column above the bottom sheet (the
+     footer ends the Details tab there). On a desktop window the dock is the grid's bottom row: the
+     notes and the footer on the left, the controls in the middle, so neither can run into the other. -->
+{#snippet hintLine()}
   {#if hint && !splash && !tourAsked && !touring}
     <!-- A coarse pointer taps: the hint names the gestures it has. -->
     <p class="hint">
@@ -532,9 +542,18 @@
       <button aria-label="Dismiss hint" onclick={dismissHint}>&times;</button>
     </p>
   {/if}
+{/snippet}
+<!-- On a desktop window the hint is at the top of the scene, in the middle of it. -->
+{#if !screen.phone}{@render hintLine()}{/if}
+<div class="dock" data-tour="dock" bind:offsetHeight={dockHeight}>
+  {#if screen.phone}{@render hintLine()}{/if}
   {#if onScreen?.hidden}<p class="trimmed">{hiddenNote(onScreen)}</p>{/if}
   <p class="notice" class:faded={!noticeShown || !model.notice} role="status">{model.notice}</p>
-  {#if !screen.phone}<div class="controls">{@render controls()}</div>{/if}
+  {#if !screen.phone}
+    <div class="controls">{@render controls()}</div>
+    <footer>{@render about()}</footer>
+  {/if}
+</div>
 </div>
 {#snippet controls()}
   {#if !noWebGL}
@@ -561,8 +580,6 @@
     {/if}
   {/if}
 {/snippet}
-<!-- On a phone the footer is the end of the Details tab. -->
-{#if !screen.phone}<footer>{@render about()}</footer>{/if}
 {#snippet about()}
   <!-- The splash again (decision 204); a tour running stays under it. -->
   <button class="link" onclick={() => (splash = true)}>Welcome</button><span class="muted">. </span>
@@ -577,14 +594,14 @@
     margin: 0;
     height: 100%;
     overflow: hidden;
-    background: #0d0f17;
-    color: #e6e8f0;
-    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font: var(--fs-md)/1.45 var(--font);
   }
   /* A phone browser zooms in on a field whose text is under 16 px, so on a phone every field is
      16 px (decision 182); pinch zoom of the page stays available. */
   :global(html[data-phone] :is(input, textarea, select)) {
-    font-size: 16px;
+    font-size: var(--fs-lg);
   }
   /* Sizes the phone layout's parts share: the gap at the screen's edges, and the height of the slim
      top bar of Your Path and the search icon (decision 183), above the scene. */
@@ -592,40 +609,91 @@
     --edge: 8px;
     --bar: 40px;
   }
-  /* Below the top strip of the search box and the Your Path bar, like the panel. */
-  .stage {
+  /* The desktop grid (decision 209). Columns: the reader drawer (as wide as it is, none when it is
+     closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall
+     as its notes and controls. The scene runs down behind the dock, as the dock lets a pointer
+     through; the drawer and a panel without the scene stop above it. With the panel hidden, or
+     without WebGL, the scene and the dock take the panel's column too ("wide"). */
+  .grid {
+    container: shell / inline-size;
     position: fixed;
-    inset: 56px 0 0;
+    inset: 0;
+    display: grid;
+    grid-template-columns: [drawer-start] auto [drawer-end stage-start] minmax(0, 1fr) [stage-end panel-start] var(--panel-w) [panel-end];
+    grid-template-rows: [top-start] var(--top-h) [top-end main-start] minmax(0, 1fr) [main-end dock-start] auto [dock-end];
+  }
+  /* On a phone each part places itself (fixed) over the scene and the bottom sheet. */
+  .shell:not(.grid) {
+    display: contents;
+  }
+  /* Parts that lie over the scene stack above it; the scene is positioned, as its names are placed
+     inside it. */
+  .grid > .recentre,
+  .grid > .dock,
+  .grid > :global(.panel) {
+    z-index: 1;
+  }
+  .stage {
     touch-action: none; /* a touch on the scene or a name moves the camera, never the page */
   }
-  .stage.reading {
-    left: 412px; /* the reader drawer's right edge (16 + 380) and a gap */
+  .grid > .stage {
+    position: relative;
+    z-index: 0; /* the names' own z-index stays inside the scene */
+    grid-row: main-start / dock-end;
+    grid-column: stage;
+    overflow: hidden;
   }
-  .stage.narrow {
-    right: 340px; /* the panel's width */
+  .grid.wide > :is(.stage, .dock, .hint) {
+    grid-column-end: panel-end;
   }
   /* On a phone the scene is the whole width below the Your Path bar; the bottom sheet lies over it,
      and the camera's view offset keeps the centre above the sheet. */
   :global(html[data-phone]) .stage {
-    top: var(--bar);
-    left: 0;
-    right: 0;
+    position: fixed;
+    inset: var(--bar) 0 0;
   }
   .stage :global(canvas) {
     display: block;
   }
+  /* The search box, the Your Path bar beside it, and the panel's chevron at the end. The search box's
+     type chips hang below the row, over the scene's top left corner. */
+  .top {
+    display: contents;
+  }
+  .grid > .top {
+    z-index: 2;
+    grid-row: top;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gutter);
+    min-width: 0;
+    padding: var(--gutter) var(--space-3) 0 var(--gutter);
+  }
+  /* The detail panel beside the scene, from below the top row to the bottom; without WebGL it takes
+     the scene's place instead, below the search box and above the dock. */
+  .grid > :global(.panel) {
+    grid-row: main-start / dock-end;
+    grid-column: panel;
+  }
+  .grid > :global(.panel.full) {
+    grid-row: main;
+    grid-column: stage-start / panel-end;
+    margin-top: calc(var(--top-clear) - var(--top-h));
+  }
   /* The scene's top left corner: on a desktop below the search box, level with the top of the reader
      drawer and right of it when it is open, clear of the hint, the controls, and the notes. */
   .recentre {
-    position: fixed;
-    top: 132px;
-    left: 16px;
     width: 32px;
     height: 32px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
   }
-  .recentre.reading {
-    left: 428px; /* the scene's left (412) and a gap */
+  .grid > .recentre {
+    grid-row: main;
+    grid-column: stage;
+    align-self: start;
+    justify-self: start;
+    margin: calc(var(--top-clear) - var(--top-h)) 0 0 var(--gutter);
   }
   /* Large enough to tap. */
   :global(html[data-coarse]) .recentre {
@@ -633,71 +701,107 @@
     height: 44px;
   }
   :global(html[data-phone]) .recentre {
+    position: fixed;
     top: calc(var(--bar) + var(--edge));
     left: var(--edge);
   }
   .controls {
-    position: fixed;
-    left: 50%;
-    bottom: 16px;
-    transform: translateX(-50%);
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
   .views {
     display: flex;
     gap: 2px;
     padding: 3px;
-    border-radius: 999px;
-    background: #161a28;
+    border-radius: var(--radius-pill);
+    background: var(--raised);
   }
   .views button {
     border: 0;
-    border-radius: 999px;
-    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    padding: var(--space-1) var(--space-3);
     background: none;
-    color: #9aa0b4;
+    color: var(--muted);
     font: inherit;
     cursor: pointer;
   }
   .pill {
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
   }
   .views button[aria-checked="true"] {
-    background: #2a3048;
-    color: #ffd27a;
+    background: var(--control-on);
+    color: var(--accent);
   }
-  /* Under the search box, clear of the notes in the bottom left corner. */
+  /* Under the search box, left of the scene, and above the dock. */
   .drawer {
-    position: fixed;
-    top: 132px;
-    left: 16px;
-    bottom: 92px;
-    width: 380px;
+    grid-row: main;
+    grid-column: drawer;
+    width: var(--reader-w);
+    min-height: 0;
+    margin: calc(var(--top-clear) - var(--top-h)) var(--gutter) var(--space-2);
     box-sizing: border-box;
-    padding: 12px 16px;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
-    border-radius: 8px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
   }
   .reader-tab {
     height: 100%;
     box-sizing: border-box;
-    padding: 12px 16px;
+    padding: var(--space-3) var(--space-4);
   }
   .chevron {
-    position: fixed;
-    top: 12px;
-    right: 12px;
+    flex: none;
+    margin-top: calc(var(--space-3) - var(--gutter)); /* 12 px from the window's top, like its right */
     width: 32px;
     height: 32px;
     padding: 0;
-    border-radius: 999px;
-    font-size: 20px;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-2xl);
     line-height: 1;
   }
   .dock {
     display: contents;
+  }
+  /* The dock's columns: the notes and the footer on the left, one under another, and the controls
+     in the middle of the drawer and the scene. The two side columns share what is left, so a long
+     footer or notice wraps rather than run under the controls; where that would leave the footer
+     too narrow, the dock is one column instead, the controls above the footer. The dock itself
+     lets a pointer through to the scene. */
+  .grid > .dock {
+    container: dock / inline-size;
+    grid-row: dock;
+    grid-column: drawer-start / stage-end;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: end;
+    gap: var(--space-1) var(--gutter);
+    padding: 0 var(--gutter) var(--space-3);
+    pointer-events: none;
+  }
+  .grid > .dock > * {
+    grid-column: 1;
+    pointer-events: auto;
+  }
+  /* One line high even when empty, so the drawer above does not move as notices come and go. */
+  .grid > .dock > .notice {
+    min-height: 1lh;
+  }
+  .grid > .dock > .controls {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    margin-bottom: var(--space-1);
+  }
+  @container dock (width < 1000px) {
+    .grid > .dock > * {
+      grid-column: 1 / -1;
+    }
+    .grid > .dock > .controls {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      margin-bottom: 0;
+    }
   }
   /* On a phone the hint, the notes, and the notice are one column above the bottom sheet, or left of
      it at the side; the column itself lets a touch through to the scene, and so does the notice. */
@@ -725,8 +829,8 @@
     pointer-events: none;
     padding: 2px 8px;
     border-radius: 6px;
-    background: rgba(20, 23, 34, 0.92);
-    color: #c8cde0;
+    background: var(--surface);
+    color: var(--text-soft);
     transition: opacity 0.5s;
   }
   /* Faded, it stays in the page for a screen reader, and lets a touch through. */
@@ -742,8 +846,6 @@
      row at 320 px whatever the font: were the words wider, the view names would wrap in their
      buttons, not push an icon onto a second row and the Selected Node's actions off the sheet. */
   .controls.row {
-    position: static;
-    transform: none;
     flex-wrap: nowrap;
     align-items: center;
     gap: 6px;
@@ -780,7 +882,6 @@
   }
   /* The footer at the end of the Details tab: its links are large enough to tap. */
   footer.about {
-    position: static;
     margin: 14px 0 8px;
     line-height: 44px;
   }
@@ -789,48 +890,64 @@
     min-height: 44px;
   }
   .muted {
-    color: #9aa0b4;
+    color: var(--muted);
   }
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;
   }
+  /* At the top of the scene, in the middle of what the search box leaves of it. */
+  .grid > .hint {
+    z-index: 1;
+    grid-row: main;
+    grid-column: stage;
+    align-self: start;
+    justify-self: center;
+    margin: var(--space-2) var(--gutter) 0 calc(2 * var(--gutter) + var(--search-w));
+  }
+  .grid.reading > .hint {
+    margin-left: var(--gutter);
+  }
+  /* In a narrow window there is too little room right of the search box: the hint is at the foot of
+     the drawer and the scene instead, just above the dock, over the drawer if it is open. */
+  @container shell (width < 1100px) {
+    .grid > .hint,
+    .grid.reading > .hint {
+      z-index: 2;
+      grid-column-start: drawer-start;
+      align-self: end;
+      margin: 0 var(--gutter) var(--space-2);
+    }
+  }
   .hint {
-    position: fixed;
-    left: 50%;
-    top: 64px;
-    transform: translateX(-50%);
     margin: 0;
     padding: 6px 8px 6px 14px;
-    background: rgba(20, 23, 34, 0.92);
+    background: var(--surface);
     border-radius: 6px;
-    color: #c8cde0;
+    color: var(--text-soft);
   }
   .hint button {
     margin-left: 8px;
     padding: 0 7px;
   }
   .trimmed {
-    position: fixed;
-    left: 16px;
-    bottom: 64px; /* above the notice line */
     margin: 0;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   .tip {
     position: fixed;
     pointer-events: none;
     padding: 4px 8px;
-    background: rgba(0, 0, 0, 0.85);
-    border: 1px solid #262a3c;
+    background: var(--tip-bg);
+    border: 1px solid var(--line);
     border-radius: 6px;
-    font-size: 12px;
+    font-size: var(--fs-sm);
   }
   .failure {
     position: fixed;
@@ -838,8 +955,8 @@
     top: 40%;
     transform: translateX(-50%);
     padding: 12px 16px;
-    background: rgba(20, 23, 34, 0.96);
-    border: 1px solid #3a4060;
+    background: var(--surface-strong);
+    border: 1px solid var(--line-strong);
     border-radius: 8px;
     text-align: center;
   }
@@ -847,18 +964,12 @@
     margin: 0 0 8px;
   }
   .notice {
-    position: fixed;
-    left: 16px;
-    bottom: 40px; /* above the footer */
     margin: 0;
-    color: #9aa0b4;
+    color: var(--muted);
   }
   footer {
-    position: fixed;
-    left: 16px;
-    bottom: 12px;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   footer a,
   footer .link {

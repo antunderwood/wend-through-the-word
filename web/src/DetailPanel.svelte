@@ -27,7 +27,6 @@
     deleteAll,
     noWebGL,
     collapsed,
-    reading,
     controls,
     filtersAndLinks,
   }: {
@@ -45,7 +44,6 @@
     deleteAll: () => void;
     noWebGL: boolean;
     collapsed: boolean;
-    reading: boolean;
     controls?: Snippet; // before the Selected Node: on a phone, the view picker, Filters, and Copy link
     filtersAndLinks?: Snippet; // after the lists: on a phone, the filters and the page's own links
   } = $props();
@@ -57,7 +55,11 @@
   let keep: "neighbours" | "verses" | undefined;
   let opened = $state<Record<string, boolean>>({}); // "owner|type" lists opened with "N more"
   let selectedBox = $state<HTMLElement>();
-  let headHeight = $state(0);
+  // The header's height rounded up, and a px more: the header and the rows are fractional px high
+  // and the browser scrolls by whole px, so without them a focus ring scrolled just below the
+  // header could overlap it by a fraction.
+  let headBox = $state<ResizeObserverSize[]>();
+  const headHeight = $derived(Math.ceil(headBox?.[0]?.blockSize ?? 0) + 1);
   const RING = 2; // the focus ring's width, outside a control (focus.css)
   // Long lists show 100 rows at a time (decision 165): rows shown per list, by a key naming the list.
   const PAGE = 100;
@@ -258,7 +260,7 @@
   });
 </script>
 
-<aside id="panel" class="panel" class:collapsed class:full={noWebGL} class:reading aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight + RING}px`} bind:this={panelBox} {onscroll}>
+<aside id="panel" class="panel" class:collapsed class:full={noWebGL} aria-label="Selected Node" style:--head={compact ? undefined : `${headHeight + RING}px`} bind:this={panelBox} {onscroll}>
   {#if noWebGL}
     <p class="fallback">
       This browser has no WebGL, so the graph is not drawn. The lists below work alone:
@@ -272,7 +274,7 @@
   <section class="selected" bind:this={selectedBox}>
     <!-- The name, the type line, the Relationship line when there is one, and on a desktop window the
          buttons; a long text is cut, and whole in its title. -->
-    <div class="head" bind:offsetHeight={headHeight}>
+    <div class="head" bind:borderBoxSize={headBox}>
       <h2 class="line" title={label(selected)}>{label(selected)}</h2>
       {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
       {#if compact}{@render verse()}{/if}
@@ -505,30 +507,16 @@
 {/snippet}
 
 <style>
-  /* The panel starts below the top strip, so it never covers the Your Path bar there. */
+  /* On a desktop window the page's grid places the panel: below the top row, so it never covers the
+     Your Path bar there. */
   .panel {
-    position: fixed;
-    top: 56px;
-    right: 0;
-    bottom: 0;
-    width: 340px;
     box-sizing: border-box;
     padding: 12px 16px;
     overflow-y: auto;
-    background: rgba(20, 23, 34, 0.92);
-    border-left: 1px solid #262a3c;
+    background: var(--surface);
+    border-left: 1px solid var(--line);
     transition: transform 0.2s;
     overflow-anchor: none; /* the panel holds a clicked item itself (decision 201), in every browser */
-  }
-  /* Below the search box and the hint, and right of the reader drawer when it is open. */
-  .panel.full {
-    top: 132px;
-    left: 0;
-    width: auto;
-    bottom: 92px; /* above the footer, the notes, and the controls, as the reader drawer */
-  }
-  .panel.full.reading {
-    left: 412px;
   }
   .panel.collapsed {
     transform: translateX(100%);
@@ -552,7 +540,7 @@
     overflow-anchor: auto;
   }
   .fallback {
-    color: #ffd27a;
+    color: var(--accent);
   }
   /* On a desktop window the section draws no box: its header is held at the top of the panel, opaque
      and the panel's full width, and the rest scrolls behind it with the lists (decision 201). */
@@ -565,8 +553,8 @@
     z-index: 1;
     margin: -12px -16px 0;
     padding: 12px 16px 6px;
-    background: #131621; /* the panel's colour over the page, without its transparency */
-    border-bottom: 1px solid #262a3c;
+    background: var(--surface-opaque); /* the panel's colour over the page, without its transparency */
+    border-bottom: 1px solid var(--line);
   }
   :global(html[data-phone]) .head {
     display: contents;
@@ -603,7 +591,7 @@
     display: block;
     height: calc(var(--sheet) * 0.4);
     overflow-y: auto;
-    border-bottom: 1px solid #262a3c;
+    border-bottom: 1px solid var(--line);
     mask:
       linear-gradient(#000 calc(100% - var(--fade)), transparent),
       linear-gradient(#000 0 0) bottom / 100% 1px no-repeat;
@@ -623,8 +611,8 @@
     display: flex;
     gap: 4px;
     padding: 6px 0;
-    background: #121520;
-    border-bottom: 1px solid #262a3c;
+    background: var(--surface-opaque);
+    border-bottom: 1px solid var(--line);
   }
   .actions button {
     flex: auto;
@@ -634,19 +622,19 @@
   }
   .actions .flag {
     flex: none;
-    font-size: 16px;
+    font-size: var(--fs-lg);
   }
   h2 {
     margin: 0;
-    font-size: 17px;
+    font-size: var(--fs-xl);
   }
   h3 {
     margin: 14px 0 4px;
-    font-size: 12px;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #9aa0b4;
+    color: var(--muted);
   }
   p {
     margin: 4px 0;
@@ -665,16 +653,16 @@
     vertical-align: top; /* a name that wraps keeps its number on the first line */
   }
   .item.sel {
-    background: #262a3c;
+    background: var(--control);
   }
   .item .muted {
-    font-size: 12px;
+    font-size: var(--fs-sm);
   }
   /* The text is dimmed by its colour and not its opacity, so a bold name, in its type's colour (the
      graph's disc colours), is not dimmed with it. */
   .verse-text {
     margin: 0 0 8px 4px;
-    color: #c4c7d3;
+    color: var(--text-soft);
   }
   .verse-full {
     margin: 6px 0;
@@ -701,9 +689,9 @@
     box-sizing: border-box;
     width: 100%;
     padding: 3px 56px 3px 8px;
-    border: 1px solid #262a3c;
+    border: 1px solid var(--line);
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--field);
     color: inherit;
     font: inherit;
   }
@@ -717,8 +705,8 @@
     transform: translateY(-50%);
     padding: 1px 8px;
     border-radius: 999px;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   .live {
     position: absolute;
@@ -728,20 +716,20 @@
     clip-path: inset(50%);
   }
   :global(html[data-phone]) .filter input {
-    font-size: 16px; /* under 16px iOS zooms the page when the box is focused */
+    font-size: var(--fs-lg); /* under 16px iOS zooms the page when the box is focused */
   }
   .more {
     margin: 4px 0;
     padding: 1px 8px;
     border-radius: 999px;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   .more[aria-expanded="true"] {
-    color: #ffd27a;
+    color: var(--accent);
   }
   .muted {
-    color: #9aa0b4;
+    color: var(--muted);
   }
   /* One line, cut with an ellipsis. */
   .line {
@@ -782,11 +770,11 @@
   }
   li > .fix::before {
     content: "\2691";
-    font-size: 12px;
+    font-size: var(--fs-sm);
   }
   li > .fix:hover,
   li > .fix:focus-visible {
-    color: #ffd27a;
+    color: var(--accent);
   }
   /* Faded, not hidden, so screen readers and the keyboard still find it. */
   li:not(:hover, :focus-within, :has(.sel)) > .fix {
@@ -797,14 +785,14 @@
     padding: 0;
     border: 0;
     background: none;
-    color: #ffd27a;
+    color: var(--accent);
   }
   .fix {
     padding: 0;
     border: 0;
     background: none;
-    font-size: 11px;
-    color: #9aa0b4;
+    font-size: var(--fs-xs);
+    color: var(--muted);
     text-decoration: underline;
   }
   .facts {
@@ -813,11 +801,11 @@
     list-style: none;
   }
   .note {
-    font-size: 13px;
-    color: #c8cde0;
+    font-size: var(--fs-sm);
+    color: var(--text-soft);
   }
   a {
-    color: #ffd27a;
+    color: var(--accent);
   }
   .entry p {
     min-height: 0;
@@ -825,8 +813,8 @@
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;

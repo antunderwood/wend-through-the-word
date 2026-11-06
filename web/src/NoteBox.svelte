@@ -21,8 +21,8 @@
   }
   label {
     display: block;
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   textarea {
     width: 100%;
@@ -31,21 +31,21 @@
     padding: 4px 6px;
     font: inherit;
     color: inherit;
-    background: #161a28;
-    border: 1px solid #3a4060;
+    background: var(--raised);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     resize: vertical;
   }
   .muted {
-    font-size: 12px;
-    color: #9aa0b4;
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
   button {
     font: inherit;
-    font-size: 12px;
+    font-size: var(--fs-sm);
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 2px 8px;
     cursor: pointer;

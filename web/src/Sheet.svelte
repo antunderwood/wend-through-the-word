@@ -216,8 +216,8 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    background: #121520;
-    border-top: 1px solid #262a3c;
+    background: var(--surface-opaque);
+    border-top: 1px solid var(--line);
     border-radius: 14px 14px 0 0;
     transition:
       transform 0.2s,
@@ -250,14 +250,14 @@
     width: var(--sheet-width);
     height: auto;
     border-top: 0;
-    border-left: 1px solid #262a3c;
+    border-left: 1px solid var(--line);
     border-radius: 14px 0 0 14px;
   }
   .sheet.side .handle {
     flex: none;
     order: -1;
     width: var(--sheet-handle);
-    border-right: 1px solid #262a3c;
+    border-right: 1px solid var(--line);
   }
   .sheet.side .tabs {
     padding-left: 0;
@@ -283,7 +283,7 @@
     flex: none;
     display: flex;
     height: var(--sheet-handle);
-    border-bottom: 1px solid #262a3c;
+    border-bottom: 1px solid var(--line);
     touch-action: none;
   }
   .handle {
@@ -299,7 +299,7 @@
     height: 4px;
     margin: 0 auto;
     border-radius: 999px;
-    background: #3a4060;
+    background: var(--line-strong);
   }
   .body {
     flex: 1;
@@ -317,14 +317,14 @@
     border: 0;
     border-bottom: 2px solid transparent;
     background: none;
-    color: #9aa0b4;
+    color: var(--muted);
     font: inherit;
     padding: 0 12px;
     cursor: pointer;
   }
   .tabs button[aria-selected="true"] {
-    border-bottom-color: #ffd27a;
-    color: #ffd27a;
+    border-bottom-color: var(--accent);
+    color: var(--accent);
   }
   .tabpanel {
     flex: 1;

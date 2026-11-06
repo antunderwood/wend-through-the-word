@@ -1,9 +1,9 @@
 /* The plain pages (the credits page and the not found page): one title style, no WebGL. */
 body {
   margin: 0;
-  background: #0d0f17;
-  color: #e6e8f0;
-  font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--fs-lg)/1.6 var(--font);
 }
 main {
   max-width: 720px;
@@ -12,10 +12,10 @@ main {
 }
 h1 {
   margin: 16px 0;
-  font-size: 28px;
+  font-size: var(--fs-3xl);
   font-weight: 600;
   line-height: 1.25;
 }
 a {
-  color: #ffd27a;
+  color: var(--accent);
 }
