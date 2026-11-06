@@ -1,4 +1,4 @@
-<!-- The key to a list of Verses (decision 225): which colour is which node, so the reader can see
+<!-- The key to a list of Verses (decision 226): which colour is which node, so the reader can see
      where each one sits in the text. Only a Person's and a Place's names are found in the text (bold,
      decision 207) and the owner's referring terms (underlined, decision 221); any other node in the
      list is listed in the Verse's heading, so the key says so rather than leave the reader to look
