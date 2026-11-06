@@ -1,28 +1,28 @@
 id,file,title,passage,confidence,note,reviewed
 route:001_abrams_journey_from_ur_to_haran,001. Abram's Journey to Haran,Abram's journey from Ur to Haran,Gen.11.31-Gen.11.32,high,Line runs Haran to Ur; direction reversed in the file,yes
-route:002_abrams_journey_from_haran_towards_damascus,002. Abram's Journey to Damascus,Abram's journey from Haran towards Damascus,Gen.12.4-Gen.12.5,medium,Damascus is not named in the passage; Gen 15:2 links Abram to Damascus,
+route:002_abrams_journey_from_haran_towards_damascus,002. Abram's Journey to Damascus,Abram's journey from Haran towards Damascus,Gen.12.4-Gen.12.5,medium,Damascus is not named in the passage; Gen 15:2 links Abram to Damascus,unsure
 route:003_abrams_journey_to_shechem,003. Abram's Journey to Shechem,Abram's journey to Shechem,Gen.12.5-Gen.12.6,high,,yes
 route:004_abram_goes_down_from_the_negev_to_egypt,004. Abram's Journey from the Negev to Egypt,Abram goes down from the Negev to Egypt,Gen.12.9-Gen.12.10,high,,yes
-route:005_abrams_journey_to_egypt,005. Abram's Journey to Egypt,Abram's journey to Egypt,Gen.12.10-Gen.12.20,medium,Near duplicate of 004; may be the return in Gen 13:1,
+route:005_abrams_journey_to_egypt,005. Abram's Journey to Egypt,Abram's journey to Egypt,Gen.12.10-Gen.12.20,medium,Near duplicate of 004; may be the return in Gen 13:1,unsure
 route:007_the_four_kings_invade,007. Mesopotamian Invasion,The four kings invade,Gen.14.1-Gen.14.7,high,,yes
 route:008_battle_in_the_valley_of_siddim,008. Battle in the Siddim Valley,Battle in the Valley of Siddim,Gen.14.8-Gen.14.12,high,,yes
-route:009_abram_rescues_lot,009. Sack of Sodom,Abram rescues Lot,Gen.14.13-Gen.14.16,medium,"Title says sack of Sodom; the line ends near Shittim, so it may be the kings' retreat",
-route:012_abram_returns_to_salem,012. Abram's Journey to Salem,Abram returns to Salem,Gen.14.17-Gen.14.20,medium,"Line starts near Damascus (Hobah, Gen 14:15)",
+route:009_abram_rescues_lot,009. Sack of Sodom,Abram rescues Lot,Gen.14.13-Gen.14.16,medium,"Title says sack of Sodom; the line ends near Shittim, so it may be the kings' retreat",unsure
+route:012_abram_returns_to_salem,012. Abram's Journey to Salem,Abram returns to Salem,Gen.14.17-Gen.14.20,medium,"Line starts near Damascus (Hobah, Gen 14:15)",unsure
 route:013_abram_meets_melchizedek,013. Abram meets Melchizedek,Abram meets Melchizedek,Gen.14.17-Gen.14.24,high,Three short lines inside Jerusalem,yes
 route:015_hagar_flees_towards_shur,015. GEN 16 Hagar,Hagar flees towards Shur,Gen.16.6-Gen.16.14,high,,yes
 route:016_the_angels_go_to_sodom,016. GEN 18 Angels to Sodom,The angels go to Sodom,Gen.18.16-Gen.19.1,high,,yes
 route:017_lot_flees_to_zoar,017. GEN 19 Lot to Zoar,Lot flees to Zoar,Gen.19.15-Gen.19.23,high,,yes
 route:018_abraham_moves_from_hebron_to_gerar,018. GEN 20 Hebron to Gerar,Abraham moves from Hebron to Gerar,Gen.20.1,high,,yes
-route:019_abraham_goes_to_moriah,019. GEN 22 Gerar to Moriah,Abraham goes to Moriah,Gen.22.1-Gen.22.4,medium,"The passage starts at Beersheba (Gen 21:33), not Gerar",
+route:019_abraham_goes_to_moriah,019. GEN 22 Gerar to Moriah,Abraham goes to Moriah,Gen.22.1-Gen.22.4,medium,"The passage starts at Beersheba (Gen 21:33), not Gerar",unsure
 route:020_on_the_mountain_in_moriah,020. GEN 22 Land of Moriah,On the mountain in Moriah,Gen.22.5-Gen.22.14,high,,yes
 route:021_abraham_returns_to_beersheba,021. GEN 22 Moriah to Beersheba,Abraham returns to Beersheba,Gen.22.19,high,,yes
 route:023_jacob_goes_from_beersheba_to_haran,023. Beersheba to Haran,Jacob goes from Beersheba to Haran,Gen.28.10-Gen.29.1,high,Line drawn from Haran end,yes
-route:024_rebekah_is_brought_to_isaac,024. From Beersheba to Isaac,Rebekah is brought to Isaac,Gen.24.61-Gen.24.67,low,Title unclear; Isaac lived near Beer-lahai-roi (Gen 24:62),
+route:024_rebekah_is_brought_to_isaac,024. From Beersheba to Isaac,Rebekah is brought to Isaac,Gen.24.61-Gen.24.67,low,Title unclear; Isaac lived near Beer-lahai-roi (Gen 24:62),unsure
 route:025_isaac_goes_to_gerar,025. Isaac to Gerar,Isaac goes to Gerar,Gen.26.1-Gen.26.6,high,,yes
 route:026_isaac_goes_up_to_beersheba,026. Isaac to Beersheba,Isaac goes up to Beersheba,Gen.26.23,high,,yes
 route:027_jacob_from_beersheba_to_bethel,027. Jacob to Bethel,Jacob from Beersheba to Bethel,Gen.28.10-Gen.28.19,high,,yes
 route:028_jacob_flees_from_haran_to_gilead,028. Haran to Gilead,Jacob flees from Haran to Gilead,Gen.31.17-Gen.31.25,high,,yes
-route:029_jacob_from_gilead_to_bethel,029. Mizpah to Bethel,Jacob from Gilead to Bethel,Gen.32.1-Gen.35.7,medium,"Passes Mahanaim, Penuel, Succoth, Shechem",
+route:029_jacob_from_gilead_to_bethel,029. Mizpah to Bethel,Jacob from Gilead to Bethel,Gen.32.1-Gen.35.7,medium,"Passes Mahanaim, Penuel, Succoth, Shechem",unsure
 route:031_joseph_seeks_his_brothers_at_dothan,031. Joseph to Dothan,Joseph seeks his brothers at Dothan,Gen.37.12-Gen.37.17,high,,yes
 route:033_judah_goes_up_to_timnah,033. Judah to Timnah,Judah goes up to Timnah,Gen.38.12-Gen.38.14,high,,yes
 route:034_josephs_brothers_go_down_to_egypt,034. Joseph's brothers to Egypt,Joseph's brothers go down to Egypt,Gen.42.1-Gen.42.5,high,,yes
@@ -33,9 +33,9 @@ route:039_moses_flees_to_midian,039. Moses to Midian,Moses flees to Midian,Exod.
 route:040_moses_leads_the_flock_to_horeb,040. Moses to Horeb,Moses leads the flock to Horeb,Exod.3.1,high,,yes
 route:041_aaron_meets_moses_at_the_mountain_of_god,041. Aaron to Horeb,Aaron meets Moses at the mountain of God,Exod.4.27,high,,yes
 route:042_the_exodus_egypt_to_sinai,042. Exodus Route1,"The Exodus, Egypt to Sinai",Exod.12.37-Exod.19.2,high,,yes
-route:043_from_sinai_to_kadesh,043. Exodus Route2,From Sinai to Kadesh,Num.10.11-Num.12.16;Num.33.16-Num.33.36,medium,Line ends near Ezion-geber,
+route:043_from_sinai_to_kadesh,043. Exodus Route2,From Sinai to Kadesh,Num.10.11-Num.12.16;Num.33.16-Num.33.36,medium,Line ends near Ezion-geber,unsure
 route:044_the_twelve_spies_explore_canaan,044. Spies,The twelve spies explore Canaan,Num.13.17-Num.13.26,high,,yes
-route:046_the_years_in_the_wilderness,046. 38 years wandering,The years in the wilderness,Num.33.19-Num.33.36;Deut.2.1-Deut.2.15,medium,,
+route:046_the_years_in_the_wilderness,046. 38 years wandering,The years in the wilderness,Num.33.19-Num.33.36;Deut.2.1-Deut.2.15,medium,,unsure
 route:047_around_edom_and_moab,047. Transjordan,Around Edom and Moab,Num.20.14-Num.21.20,high,,yes
 route:048_victories_over_sihon_and_og,048. Sihon and Og battle,Victories over Sihon and Og,Num.21.21-Num.21.35,high,,yes
 route:049_balaam_comes_from_pethor,049. Balaam's Journey,Balaam comes from Pethor,Num.22.5-Num.22.36,high,,yes
@@ -49,7 +49,7 @@ route:059_the_gibeonites_come_to_gilgal,059. Deception of The Gibeonites,The Gib
 route:060_israel_goes_to_the_gibeonite_cities,060. Israelitas go the Gibeonites,Israel goes to the Gibeonite cities,Josh.9.16-Josh.9.27,high,,yes
 route:061_the_battle_for_gibeon,061. Battle against Gibeon,The battle for Gibeon,Josh.10.1-Josh.10.27,high,,yes
 route:062_the_southern_campaign,062. Southern campaign,The southern campaign,Josh.10.28-Josh.10.43,high,,yes
-route:063_jabin_of_hazor_gathers_the_kings,063. King of Hazor,Jabin of Hazor gathers the kings,Josh.11.1-Josh.11.5,medium,Several lines converging; may be the gathering of 11:1-5,
+route:063_jabin_of_hazor_gathers_the_kings,063. King of Hazor,Jabin of Hazor gathers the kings,Josh.11.1-Josh.11.5,medium,Several lines converging; may be the gathering of 11:1-5,unsure
 route:064_the_northern_campaign,064. Nothern Campaign,The northern campaign,Josh.11.6-Josh.11.15,high,,yes
 route:066_judahs_conquest,066. Judah's Conquest,Judah's conquest,Judg.1.1-Judg.1.20,high,,yes
 route:067_ehud_defeats_moab,067. Ehud's battle,Ehud defeats Moab,Judg.3.12-Judg.3.30,high,,yes
@@ -64,36 +64,36 @@ route:075_naomi_and_ruth_bethlehem_to_moab_and_back,075. Ruth,"Naomi and Ruth, B
 route:076_hannah_goes_up_to_shiloh,076. Hannah,Hannah goes up to Shiloh,1Sam.1.1-1Sam.1.28,high,,yes
 route:077_the_battle_at_aphek,077. Battle at Aphek,The battle at Aphek,1Sam.4.1-1Sam.4.22,high,,yes
 route:078_the_journeys_of_the_ark,078. Ark Journeys,The journeys of the ark,1Sam.5.1-1Sam.7.2,high,,yes
-route:079_victory_at_mizpah,079. Mizpah battle,Victory at Mizpah,1Sam.7.5-1Sam.7.14,medium,Some lines run north to Kedesh; extent unclear,
+route:079_victory_at_mizpah,079. Mizpah battle,Victory at Mizpah,1Sam.7.5-1Sam.7.14,medium,Some lines run north to Kedesh; extent unclear,unsure
 route:080_samuels_circuit,080. Samuel's Circuit,Samuel's circuit,1Sam.7.15-1Sam.7.17,high,,yes
 route:081_saul_looks_for_the_donkeys,081. Saul's donkey,Saul looks for the donkeys,1Sam.9.1-1Sam.10.16,high,,yes
 route:082_saul_rescues_jabesh_gilead,082. Jabesh battle,Saul rescues Jabesh-gilead,1Sam.11.1-1Sam.11.15,high,,yes
 route:083_the_philistines_camp_at_michmash,083. Michmash battle_1,The Philistines camp at Michmash,1Sam.13.1-1Sam.13.23,high,,yes
 route:084_jonathans_victory_at_michmash,084. Michmash battle_2,Jonathan's victory at Michmash,1Sam.14.1-1Sam.14.46,high,,yes
 route:085_david_and_goliath,085. David and Goliath,David and Goliath,1Sam.17.1-1Sam.17.54,high,,yes
-route:086_david_flees_from_saul_nob_gath_adullam,086. David's wanderings_1,"David flees from Saul (Nob, Gath, Adullam)",1Sam.21.1-1Sam.22.5,medium,,
-route:087_david_at_mizpah_of_moab_and_en_gedi,087. David's wanderings_2,David at Mizpah of Moab and En-gedi,1Sam.22.3-1Sam.22.5;1Sam.24.1-1Sam.24.22,medium,,
-route:088_david_at_keilah_ziph_and_ziklag,088. David's wanderings_3,"David at Keilah, Ziph and Ziklag",1Sam.23.1-1Sam.23.29;1Sam.27.1-1Sam.27.12,medium,,
-route:089_aphek_ziklag_and_the_battle_of_gilboa,089. David's wandering_4,"Aphek, Ziklag and the battle of Gilboa",1Sam.29.1-1Sam.31.13,medium,,
-route:090_david_king_at_hebron,090. David's Kingdom_1,David king at Hebron,2Sam.2.1-2Sam.2.32,medium,,
-route:091_david_takes_jerusalem_and_defeats_the_philistines,091. David's Kingdom_2,David takes Jerusalem and defeats the Philistines,2Sam.5.1-2Sam.5.25,medium,,
-route:092_the_ark_brought_to_jerusalem_wars_with_moab,092. David's Kingdom_3,The ark brought to Jerusalem; wars with Moab,2Sam.6.1-2Sam.6.23;2Sam.8.1-2Sam.8.2,low,,
-route:093_david_unnamed_route,093. David,David (unnamed route),2Sam.8.1,low,Single short line west of Jerusalem; needs a look,
-route:094_davids_wars_with_aram_and_ammon,094. David,David's wars with Aram and Ammon,2Sam.8.3-2Sam.8.12;2Sam.10.1-2Sam.10.19,low,,
-route:095_absaloms_revolt,095. David's Kingdom_6,Absalom's revolt,2Sam.15.1-2Sam.17.29,low,,
-route:096_david_returns_shebas_revolt,096. David's Kingdom_7,David returns; Sheba's revolt,2Sam.19.1-2Sam.20.22,low,,
-route:097_davids_census,097. David's Kingdom_8,David's census,2Sam.24.1-2Sam.24.9,medium,Line goes out to Aroer and back,
-route:099_solomon_is_anointed_at_gihon,099. Solomon's Jerusalem,Solomon is anointed at Gihon,1Kgs.1.32-1Kgs.1.40,medium,,
+route:086_david_flees_from_saul_nob_gath_adullam,086. David's wanderings_1,"David flees from Saul (Nob, Gath, Adullam)",1Sam.21.1-1Sam.22.5,medium,,unsure
+route:087_david_at_mizpah_of_moab_and_en_gedi,087. David's wanderings_2,David at Mizpah of Moab and En-gedi,1Sam.22.3-1Sam.22.5;1Sam.24.1-1Sam.24.22,medium,,unsure
+route:088_david_at_keilah_ziph_and_ziklag,088. David's wanderings_3,"David at Keilah, Ziph and Ziklag",1Sam.23.1-1Sam.23.29;1Sam.27.1-1Sam.27.12,medium,,unsure
+route:089_aphek_ziklag_and_the_battle_of_gilboa,089. David's wandering_4,"Aphek, Ziklag and the battle of Gilboa",1Sam.29.1-1Sam.31.13,medium,,unsure
+route:090_david_king_at_hebron,090. David's Kingdom_1,David king at Hebron,2Sam.2.1-2Sam.2.32,medium,,unsure
+route:091_david_takes_jerusalem_and_defeats_the_philistines,091. David's Kingdom_2,David takes Jerusalem and defeats the Philistines,2Sam.5.1-2Sam.5.25,medium,,unsure
+route:092_the_ark_brought_to_jerusalem_wars_with_moab,092. David's Kingdom_3,The ark brought to Jerusalem; wars with Moab,2Sam.6.1-2Sam.6.23;2Sam.8.1-2Sam.8.2,low,,unsure
+route:093_david_unnamed_route,093. David,David (unnamed route),2Sam.8.1,low,Single short line west of Jerusalem; needs a look,unsure
+route:094_davids_wars_with_aram_and_ammon,094. David,David's wars with Aram and Ammon,2Sam.8.3-2Sam.8.12;2Sam.10.1-2Sam.10.19,low,,unsure
+route:095_absaloms_revolt,095. David's Kingdom_6,Absalom's revolt,2Sam.15.1-2Sam.17.29,low,,unsure
+route:096_david_returns_shebas_revolt,096. David's Kingdom_7,David returns; Sheba's revolt,2Sam.19.1-2Sam.20.22,low,,unsure
+route:097_davids_census,097. David's Kingdom_8,David's census,2Sam.24.1-2Sam.24.9,medium,Line goes out to Aroer and back,unsure
+route:099_solomon_is_anointed_at_gihon,099. Solomon's Jerusalem,Solomon is anointed at Gihon,1Kgs.1.32-1Kgs.1.40,medium,,unsure
 route:100_timber_from_lebanon_for_the_temple,100. Solomon's Temple_1,Timber from Lebanon for the temple,1Kgs.5.1-1Kgs.5.18,high,,yes
 route:100_timber_from_lebanon_duplicate_file,100,Timber from Lebanon (duplicate file),1Kgs.5.1-1Kgs.5.18,high,Same lines as 100. Solomon's Temple_1; drop one,no
-route:101_hirams_craftsmen_and_materials,101. Solomon's Temple_2,Hiram's craftsmen and materials,1Kgs.7.13-1Kgs.7.47,low,,
-route:102_solomons_districts,102. Solomon's Kingdom,Solomon's districts,1Kgs.4.7-1Kgs.4.19,low,,
+route:101_hirams_craftsmen_and_materials,101. Solomon's Temple_2,Hiram's craftsmen and materials,1Kgs.7.13-1Kgs.7.47,low,,unsure
+route:102_solomons_districts,102. Solomon's Kingdom,Solomon's districts,1Kgs.4.7-1Kgs.4.19,low,,unsure
 route:103_solomons_fleet_to_ophir,103. Ophir,Solomon's fleet to Ophir,1Kgs.9.26-1Kgs.9.28;1Kgs.10.11,high,,yes
 route:104_the_queen_of_sheba_visits,104. Queen of Sheba,The queen of Sheba visits,1Kgs.10.1-1Kgs.10.13,high,,yes
 route:105_hadad_and_rezon_solomons_enemies,105. Solomon's enemies,"Hadad and Rezon, Solomon's enemies",1Kgs.11.14-1Kgs.11.25,high,,yes
 route:106_ahijah_meets_jeroboam,106. Jeroboam anointed,Ahijah meets Jeroboam,1Kgs.11.26-1Kgs.11.40,high,,yes
 route:107a_rehoboam_and_jeroboam_come_to_shechem,107a. Rehoboam to Shechem,Rehoboam and Jeroboam come to Shechem,1Kgs.12.1-1Kgs.12.3,high,,yes
-route:107b_jeroboams_shrines_at_dan_and_bethel,107b. Rehoboam to Shechem,Jeroboam's shrines at Dan and Bethel,1Kgs.12.25-1Kgs.12.30,low,Title duplicates 107a; lines run to Dan and Bethel,
+route:107b_jeroboams_shrines_at_dan_and_bethel,107b. Rehoboam to Shechem,Jeroboam's shrines at Dan and Bethel,1Kgs.12.25-1Kgs.12.30,low,Title duplicates 107a; lines run to Dan and Bethel,unsure
 route:108_jeroboams_wife_goes_to_ahijah_at_shiloh,108. Jeroboams wife,Jeroboam's wife goes to Ahijah at Shiloh,1Kgs.14.1-1Kgs.14.18,high,,yes
 route:110_shishak_invades_judah,110. Shishak,Shishak invades Judah,1Kgs.14.25-1Kgs.14.26;2Chr.12.1-2Chr.12.12,high,,yes
 route:111_baasha_against_asa,111. Baasha invasion,Baasha against Asa,1Kgs.15.16-1Kgs.15.22,high,,yes
@@ -105,17 +105,17 @@ route:117_elijah_calls_elisha,117. Elijah and Elisha,Elijah calls Elisha,1Kgs.19
 route:118_ben_hadad_besieges_samaria,118. Siege of Samaria,Ben-hadad besieges Samaria,1Kgs.20.1-1Kgs.20.34,high,,yes
 route:119_naboths_vineyard,119. Naboth's vineyard,Naboth's vineyard,1Kgs.21.1-1Kgs.21.29,high,,yes
 route:120_ahab_at_ramoth_gilead,120. Wars with Syria,Ahab at Ramoth-gilead,1Kgs.22.1-1Kgs.22.40,high,,yes
-route:121_elijah_and_ahaziahs_messengers,121. Ministry of Elijah (contd.),Elijah and Ahaziah's messengers,2Kgs.1.1-2Kgs.1.18,medium,,
+route:121_elijah_and_ahaziahs_messengers,121. Ministry of Elijah (contd.),Elijah and Ahaziah's messengers,2Kgs.1.1-2Kgs.1.18,medium,,unsure
 route:122_elijah_taken_up_elisha_begins,122. Ministry of Elisha,Elijah taken up; Elisha begins,2Kgs.2.1-2Kgs.2.25,high,,yes
 route:123_moab_and_ammon_against_jehoshaphat,123. Moabite Incursion,Moab and Ammon against Jehoshaphat,2Chr.20.1-2Chr.20.30,high,,yes
 route:124_the_campaign_against_moab,124. Moabite Rebellion,The campaign against Moab,2Kgs.3.4-2Kgs.3.27,high,,yes
-route:125_the_march_through_edom_against_moab,125. Moab's Revolt,The march through Edom against Moab,2Kgs.3.6-2Kgs.3.9,medium,Overlaps 124,
-route:126_elisha_and_the_shunammite,126. Ministry of Elisha_cont,Elisha and the Shunammite,2Kgs.4.8-2Kgs.4.37,medium,,
+route:125_the_march_through_edom_against_moab,125. Moab's Revolt,The march through Edom against Moab,2Kgs.3.6-2Kgs.3.9,medium,Overlaps 124,unsure
+route:126_elisha_and_the_shunammite,126. Ministry of Elisha_cont,Elisha and the Shunammite,2Kgs.4.8-2Kgs.4.37,medium,,unsure
 route:127_naaman_is_healed,127. Naaman,Naaman is healed,2Kgs.5.1-2Kgs.5.19,high,,yes
 route:128_the_arameans_at_dothan,128. Ministry of Elisha_cont,The Arameans at Dothan,2Kgs.6.8-2Kgs.6.23,high,,yes
 route:129_ben_hadad_besieges_samaria_again,129. Benhadad,Ben-hadad besieges Samaria again,2Kgs.6.24-2Kgs.7.20,high,,yes
-route:130_elisha_and_hazael_hazaels_wars,130. Elisha and Hazael,Elisha and Hazael; Hazael's wars,2Kgs.8.7-2Kgs.8.15;2Kgs.12.17-2Kgs.12.18,medium,,
-route:131_jehorams_wars_with_edom_and_aram,131. Wars with Edom and Syria,Jehoram's wars with Edom and Aram,2Kgs.8.20-2Kgs.8.29,medium,,
+route:130_elisha_and_hazael_hazaels_wars,130. Elisha and Hazael,Elisha and Hazael; Hazael's wars,2Kgs.8.7-2Kgs.8.15;2Kgs.12.17-2Kgs.12.18,medium,,unsure
+route:131_jehorams_wars_with_edom_and_aram,131. Wars with Edom and Syria,Jehoram's wars with Edom and Aram,2Kgs.8.20-2Kgs.8.29,medium,,unsure
 route:132_jehus_revolt,132. Jehu,Jehu's revolt,2Kgs.9.1-2Kgs.10.17,high,,yes
 route:133_hazael_takes_gilead,133. War with Hazael,Hazael takes Gilead,2Kgs.10.32-2Kgs.10.33,high,,yes
 route:134_jehoash_visits_the_dying_elisha,134. Jehoash to Elisha,Jehoash visits the dying Elisha,2Kgs.13.14-2Kgs.13.25,high,,yes
@@ -127,25 +127,25 @@ route:139_rezin_and_pekah_attack_judah,139. Rezin and Pekah,Rezin and Pekah atta
 route:140_the_fall_of_samaria,140. Fall of Samaria,The fall of Samaria,2Kgs.17.3-2Kgs.17.6,high,,yes
 route:141_israel_deported_to_assyria,141. Deportation to Assyria,Israel deported to Assyria,2Kgs.17.6;2Kgs.17.24,high,,yes
 route:142_sargon_takes_ashdod,142. Sargon,Sargon takes Ashdod,Isa.20.1,high,,yes
-route:143_hezekiah_defeats_the_philistines,143. Hezekiah,Hezekiah defeats the Philistines,2Kgs.18.8,medium,,
-route:144_sennacherib_invades_judah,144. Sennacherib,Sennacherib invades Judah,2Kgs.18.13-2Kgs.18.17;Isa.10.28-Isa.10.32,medium,One line follows the march of Isa 10:28-32,
-route:145_sennacheribs_army_is_struck,145. Sennacheribs defeat,Sennacherib's army is struck,2Kgs.19.8-2Kgs.19.36,medium,,
-route:146_envoys_from_babylon,146. Babylon to Jerusalem,Envoys from Babylon,2Kgs.20.12-2Kgs.20.19,medium,,
-route:147_josiahs_reform,147. Josiah,Josiah's reform,2Kgs.23.15-2Kgs.23.20,medium,Could also be his death at Megiddo (23:29),
+route:143_hezekiah_defeats_the_philistines,143. Hezekiah,Hezekiah defeats the Philistines,2Kgs.18.8,medium,,unsure
+route:144_sennacherib_invades_judah,144. Sennacherib,Sennacherib invades Judah,2Kgs.18.13-2Kgs.18.17;Isa.10.28-Isa.10.32,medium,One line follows the march of Isa 10:28-32,unsure
+route:145_sennacheribs_army_is_struck,145. Sennacheribs defeat,Sennacherib's army is struck,2Kgs.19.8-2Kgs.19.36,medium,,unsure
+route:146_envoys_from_babylon,146. Babylon to Jerusalem,Envoys from Babylon,2Kgs.20.12-2Kgs.20.19,medium,,unsure
+route:147_josiahs_reform,147. Josiah,Josiah's reform,2Kgs.23.15-2Kgs.23.20,medium,Could also be his death at Megiddo (23:29),unsure
 route:148_necos_march_and_josiahs_death,148. Neco,Neco's march and Josiah's death,2Kgs.23.29-2Kgs.23.35,high,,yes
-route:149_jehoahaz_taken_to_riblah,149. Jehoiakim,Jehoahaz taken to Riblah,2Kgs.23.31-2Kgs.23.34,low,Title says Jehoiakim; line runs Lebo-hamath to Jerusalem,
+route:149_jehoahaz_taken_to_riblah,149. Jehoiakim,Jehoahaz taken to Riblah,2Kgs.23.31-2Kgs.23.34,low,Title says Jehoiakim; line runs Lebo-hamath to Jerusalem,unsure
 route:150_nebuchadnezzar_takes_jerusalem,150. Nebuchadnezzar,Nebuchadnezzar takes Jerusalem,2Kgs.24.1-2Kgs.25.21,high,,yes
 route:151_the_exile_to_babylon,151. Babylonian Exile,The exile to Babylon,2Kgs.25.11;Jer.52.28-Jer.52.30,high,,yes
 route:151_gedaliah_at_mizpah,151. Gedaliah,Gedaliah at Mizpah,Jer.40.7-Jer.41.18,high,,yes
 route:152_mary_visits_elizabeth,152. Nazareth to Hebron,Mary visits Elizabeth,Luke.1.39-Luke.1.56,high,Hebron is the traditional site,yes
-route:153_the_flight_to_egypt,153. Going to Egypt,The flight to Egypt,Matt.2.13-Matt.2.15,medium,Overlaps 155a and 155b,
+route:153_the_flight_to_egypt,153. Going to Egypt,The flight to Egypt,Matt.2.13-Matt.2.15,medium,Overlaps 155a and 155b,unsure
 route:153_joseph_and_mary_go_to_bethlehem,153. Nazareth to Bethlehem,Joseph and Mary go to Bethlehem,Luke.2.1-Luke.2.7,high,,yes
-route:154_the_persian_royal_road,154. Royal Road,The Persian Royal Road,Esth.1.1-Esth.1.3,low,No single passage; the road of Esther and Ezra's time,
+route:154_the_persian_royal_road,154. Royal Road,The Persian Royal Road,Esth.1.1-Esth.1.3,low,No single passage; the road of Esther and Ezra's time,unsure
 route:155_jonah_flees_and_goes_to_nineveh,155. Jonah,Jonah flees and goes to Nineveh,Jonah.1.1-Jonah.3.3,high,,yes
 route:155a_the_flight_to_egypt,155a. Bethlehem to Egypt,The flight to Egypt,Matt.2.13-Matt.2.15,high,,yes
 route:155b_the_return_from_egypt_to_nazareth,155b. Bethlehem-Egypt-Nazareth,The return from Egypt to Nazareth,Matt.2.19-Matt.2.23,high,,yes
 route:158_john_baptizes_at_bethany_beyond_the_jordan_and_aenon,158. Bethabara and Aenon,John baptizes at Bethany beyond the Jordan and Aenon,John.1.28;John.3.23,high,,yes
-route:160_john_is_imprisoned,160. Herod imprisons John the baptist,John is imprisoned,Matt.14.3-Matt.14.12;Mark.6.17-Mark.6.29,medium,,
+route:160_john_is_imprisoned,160. Herod imprisons John the baptist,John is imprisoned,Matt.14.3-Matt.14.12;Mark.6.17-Mark.6.29,medium,,unsure
 route:161_the_wedding_at_cana,161. First miracle in Cana,The wedding at Cana,John.2.1-John.2.12,high,,yes
 route:162_jesus_goes_through_samaria,162. Jesus to Samaria,Jesus goes through Samaria,John.4.1-John.4.42,high,,yes
 route:163_jesus_returns_to_galilee,163. Samaria to Nazareth,Jesus returns to Galilee,John.4.43-John.4.45,high,,yes
@@ -153,12 +153,12 @@ route:164_the_officials_son,164. Second miracle in Cana,The official's son,John.
 route:165_jesus_moves_to_capernaum,165. Nazareth to Capernaum,Jesus moves to Capernaum,Matt.4.13;Luke.4.31,high,,yes
 route:166_jesus_calls_the_fishermen,166. Fishermen disciples,Jesus calls the fishermen,Matt.4.18-Matt.4.22;Luke.5.1-Luke.5.11,high,,yes
 route:168_preaching_in_galilee,168. Preaching in the synagogues of Galilee,Preaching in Galilee,Mark.1.35-Mark.1.39;Luke.4.42-Luke.4.44,high,,yes
-route:169_jesus_goes_up_to_jerusalem,169. Capernaum to Jerusalem,Jesus goes up to Jerusalem,John.5.1,medium,,
+route:169_jesus_goes_up_to_jerusalem,169. Capernaum to Jerusalem,Jesus goes up to Jerusalem,John.5.1,medium,,unsure
 route:170_the_widows_son_at_nain,170. Nain,The widow's son at Nain,Luke.7.11-Luke.7.17,high,,yes
 route:170a_jesus_in_the_region_of_tyre_and_sidon,170a. Tyre_Sidon,Jesus in the region of Tyre and Sidon,Matt.15.21-Matt.15.29;Mark.7.24-Mark.7.31,high,,yes
 route:170b_jesus_calms_the_storm,170b. Storm,Jesus calms the storm,Mark.4.35-Mark.5.1;Luke.8.22-Luke.8.26,high,,yes
-route:172_the_transfiguration,172. Transfiguration,The transfiguration,Matt.17.1-Matt.17.9;Mark.9.2-Mark.9.10;Luke.9.28-Luke.9.36,medium,"Line uses Mount Tabor, the traditional site",
-route:174_jesus_goes_up_for_the_feast_of_tabernacles,174. Capernaum to Jerusalem,Jesus goes up for the Feast of Tabernacles,John.7.10,medium,,
+route:172_the_transfiguration,172. Transfiguration,The transfiguration,Matt.17.1-Matt.17.9;Mark.9.2-Mark.9.10;Luke.9.28-Luke.9.36,medium,"Line uses Mount Tabor, the traditional site",unsure
+route:174_jesus_goes_up_for_the_feast_of_tabernacles,174. Capernaum to Jerusalem,Jesus goes up for the Feast of Tabernacles,John.7.10,medium,,unsure
 route:176_the_feast_of_dedication_and_beyond_the_jordan,176. Dedication,The Feast of Dedication and beyond the Jordan,John.10.22-John.10.42,high,,yes
 route:177_lazarus_raised,177. Raising Lazarus,Lazarus raised,John.11.1-John.11.44,high,,yes
 route:178_jesus_withdraws_to_ephraim,178. Ephraim,Jesus withdraws to Ephraim,John.11.54,high,,yes

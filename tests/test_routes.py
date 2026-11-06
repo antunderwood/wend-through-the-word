@@ -34,6 +34,12 @@ def test_an_unreviewed_row_or_one_outside_the_books_does_not_ship(export):
     assert report["route:026_isaac_goes_up_to_beersheba"]["shipped"] == ""
 
 
+def test_an_unsure_row_ships_flagged_unreviewed_and_a_reviewed_one_is_not(export):
+    shipped = routes(export)
+    assert shipped["route:027_isaac_beersheba_unsure"]["unreviewed"] is True
+    assert "unreviewed" not in shipped["route:015_hagar_flees_towards_shur"]
+
+
 def test_people_places_and_events_of_the_passage_list_the_route_most_shared_first(export):
     assert entity(export, "person", "hagar_1348")["routes"] == [
         "route:015_hagar_flees_towards_shur"

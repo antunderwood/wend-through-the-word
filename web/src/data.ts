@@ -40,7 +40,7 @@ type EntityFile = Sourced & {
   ring2: Rec["ring2"];
 };
 // A UBS Bible Route (decision 220): its passage's Verses in the build, and its lines as [lon, lat].
-export type Route = Sourced & { id: Id; title: string; passage: string; verses: string[]; lines: [number, number][][] };
+export type Route = Sourced & { id: Id; title: string; passage: string; verses: string[]; lines: [number, number][][]; unreviewed?: boolean };
 // credits.json, for the detail panel and the credits page.
 export type Credits = {
   licence: string;
