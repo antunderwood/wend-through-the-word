@@ -43,6 +43,29 @@
   let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
+  // The detail panel's width on a desktop window, dragged by its left edge and kept (decision 225).
+  const PANEL_MIN = 280, PANEL_MAX = 720, PANEL_STEP = 24, PANEL_KEY = "wend.panelWidth";
+  const clampPanel = (w: number) => Math.round(Math.min(PANEL_MAX, Math.max(PANEL_MIN, w)));
+  let panelW = $state(clampPanel(Number(stored(PANEL_KEY)) || 340));
+  function setPanelW(w: number) {
+    panelW = clampPanel(Math.min(w, innerWidth - 420)); // the scene keeps 420 px at least
+    store(PANEL_KEY, String(panelW));
+  }
+  function dragPanel(e: PointerEvent) {
+    const start = { x: e.clientX, w: panelW };
+    const move = (m: PointerEvent) => setPanelW(start.w + start.x - m.clientX);
+    const stop = () => (removeEventListener("pointermove", move), removeEventListener("pointerup", stop), removeEventListener("pointercancel", stop));
+    addEventListener("pointermove", move);
+    addEventListener("pointerup", stop);
+    addEventListener("pointercancel", stop);
+    e.preventDefault();
+  }
+  function keyPanel(e: KeyboardEvent) {
+    const step = { ArrowLeft: PANEL_STEP, ArrowRight: -PANEL_STEP }[e.key];
+    if (step) (setPanelW(panelW + step), e.preventDefault());
+    else if (e.key === "Home") (setPanelW(PANEL_MIN), e.preventDefault());
+    else if (e.key === "End") (setPanelW(PANEL_MAX), e.preventDefault());
+  }
   // The Selected Node shows in the side panel or on the HUD over the scene, as the reader last chose
   // in this browser. On an upright phone the HUD takes the place of the sheet's peek: it is docked
   // above the closed sheet, and the sheet opens to half or full only. A phone on its side keeps the
@@ -466,7 +489,7 @@
      the scene. Each part takes its place from the grid and the sizes in tokens.css, so the scene fills
      what the others leave. On a phone the shell draws no box and each part places itself over the
      scene and the bottom sheet. -->
-<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={!!reading}>
+<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={!!reading} style:--panel-w={screen.phone ? undefined : `${panelW}px`}>
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div class="stage" data-tour="scene" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
@@ -559,6 +582,10 @@
     {#if hudDocked}{@render hudCard()}{/if}
   {:else}
     {@render details()}
+  {#if !screen.phone && !(collapsed || noWebGL || hud)}
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_no_noninteractive_tabindex -->
+    <div class="grip" role="separator" aria-orientation="vertical" aria-label="Resize the panel" aria-valuenow={panelW} aria-valuemin={PANEL_MIN} aria-valuemax={PANEL_MAX} tabindex="0" title="Drag to resize the panel" onpointerdown={dragPanel} onkeydown={keyPanel} ondblclick={() => setPanelW(340)}></div>
+  {/if}
     {#if hud}{@render hudCard()}{/if}
   {/if}
   {#snippet hudCard()}
@@ -776,6 +803,20 @@
     grid-row: main;
     grid-column: stage-start / panel-end;
     margin-top: calc(var(--top-clear) - var(--top-h));
+  }
+  /* The handle on the panel's left edge: wider than its line, so it is easy to hit. */
+  .grid > .grip {
+    grid-row: main-start / dock-end;
+    grid-column: panel;
+    justify-self: start;
+    width: 8px;
+    z-index: 2;
+    cursor: col-resize;
+    touch-action: none;
+  }
+  .grip:hover,
+  .grip:focus-visible {
+    background: linear-gradient(to right, var(--accent) 2px, transparent 2px);
   }
   /* The scene's top left corner: on a desktop just below the top bar, level with the top of the
      reader drawer and right of it when it is open. The hint at the top of the scene keeps clear of

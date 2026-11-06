@@ -3,6 +3,7 @@
   // and the Neighbour lists. Props only; App owns the Focus Model state.
   import { untrack, type Snippet } from "svelte";
   import VerseText from "./VerseText.svelte";
+  import VerseKey from "./VerseKey.svelte";
   import { OwnVerses, VERSE_STEP } from "./verses.svelte";
   import { typeColour } from "./colours";
   import type { CorrectionRequest } from "./correction";
@@ -311,6 +312,7 @@
     {:else if own.keys?.length && own.rows.length}
       {@const names = data.named(versesOf) ? [data.named(versesOf)!] : []}
       <h3 id="own-verses">In {own.keys.length} verse{own.keys.length === 1 ? "" : "s"}</h3>
+      <VerseKey {names} underlined={own.rows.some((v) => v.terms.length)} />
       <ul aria-labelledby="own-verses">
         {#each own.rows as v (v.key)}
           <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
@@ -324,6 +326,7 @@
       {#each lists as { with: o, names, verses }, i (o)}
         {#if verses.length}
           <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
+          <VerseKey {names} underlined={verses.some((v) => v.terms.length)} />
           <ul aria-labelledby="shared-{i}">
             {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
               <!-- A Person's or a Place's name in bold and its type's colour: text and strong elements,

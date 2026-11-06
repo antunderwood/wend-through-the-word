@@ -9,6 +9,7 @@
   import { untrack } from "svelte";
   import PlaceMap from "./PlaceMap.svelte";
   import VerseText from "./VerseText.svelte";
+  import VerseKey from "./VerseKey.svelte";
   import { OwnVerses, VERSE_STEP, type VerseRow } from "./verses.svelte";
   import type { Named } from "./bold";
   import { typeColour } from "./colours";
@@ -472,6 +473,7 @@
   {:else if own.keys.length}
     {@const names = data.named(selected) ? [data.named(selected)!] : []}
     <h3>In {own.keys.length} verse{own.keys.length === 1 ? "" : "s"}</h3>
+    <VerseKey {names} underlined={own.rows.some((v) => v.terms.length)} />
     <ul class="verses">
       {#each own.rows as v (v.key)}
         <li>
@@ -494,6 +496,7 @@
   {:then s}
     {#if s && s.verses.length}
       <h3>With {plainName(focus)} in {s.verses.length} verse{s.verses.length === 1 ? "" : "s"}</h3>
+      <VerseKey names={s.names} underlined={s.verses.some((v) => v.terms.length)} />
       <ul class="verses">
         {#each togetherAll ? s.verses : s.verses.slice(0, TOGETHER) as v (v.key)}
           <li>
