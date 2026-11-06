@@ -1,4 +1,12 @@
 {
+  "acai": {
+    "date": "2026-11-06",
+    "file": "acai-v2026-10-30.zip",
+    "how": "downloaded",
+    "licence": "CC BY-SA 4.0",
+    "sha256": "5f06330834af2b557a3cde67a32b11a5a8bbe129f5809337582e7a35af8fdd78",
+    "url": "https://github.com/BibleAquifer/ACAI/archive/refs/tags/v2026-10-30.zip"
+  },
   "bsb": {
     "date": "2026-11-06",
     "file": "bsb.txt",
@@ -326,7 +334,7 @@
     "licence": "CC0 1.0",
     "query": "wikidata-query.sparql",
     "query_sha256": "ef9572762076c6deb7cf8e8b12b5b8d6190f1400173f4900dc6d8b4fb9f3cd09",
-    "sha256": "6e6778e283ea59fc0c2e93aeb5fa55bb76f85038da582c90df76c781c5467d33",
+    "sha256": "140871cc0d5bb0d4c41d0ae48f9238651f7c6c7a71811421e858d354214eb9e8",
     "url": "https://query.wikidata.org/sparql"
   }
 }
