@@ -95,7 +95,7 @@ def test_refuses_an_export_that_breaks_the_file_limit(repo):
         (extra / f"{i}.json").touch()
     run = release(repo, "v1")
     assert run.returncode == 1
-    assert "out/data holds 20667 files, the limit is 20000" in run.stderr
+    assert "out/data holds 20668 files, the limit is 20000" in run.stderr
 
 
 def test_refuses_an_untrimmed_file_or_a_curated_row_that_no_longer_matches(repo):
@@ -116,3 +116,15 @@ def test_the_deploy_workflow_pins_every_action_to_a_commit():
     uses = re.findall(r"uses: (.*)", workflow)
     assert uses
     assert [u for u in uses if not re.fullmatch(r"[\w./-]+@[0-9a-f]{40} # v[\d.]+", u)] == []
+
+
+def test_refuses_an_export_with_ids_not_in_the_registry_or_built_without_it(repo):
+    # Decision 215: the registry is committed with each release.
+    reports = repo / "out" / "reports"
+    with open(reports / "ids_new.tsv", "a") as f:
+        f.write("person:new_1\tperson\n")
+    run = release(repo, "v1")
+    assert run.returncode == 1
+    assert "reports/ids_new.tsv: 1 IDs are not in pipeline/ids.tsv" in run.stderr
+    (reports / "ids_new.tsv").unlink()
+    assert "built without the ID registry" in release(repo, "v1").stderr

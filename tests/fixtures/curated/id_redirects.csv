@@ -1,0 +1,3 @@
+id,to,reason,reviewed,request
+theme:sold_birthright,theme:birthright,"Synthetic: a heading that was renamed, to test a redirect (decision 215).",yes,
+person:fixture_removed_9999,,"Synthetic: a record deleted upstream, to test a removed ID (decision 215).",yes,

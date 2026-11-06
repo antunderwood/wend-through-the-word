@@ -52,6 +52,14 @@ def problems(tag, out):
         found.append(
             f"reports/curated_no_longer_matches.tsv: {len(stale)} curated rows no longer match"
         )
+    # Decision 215: every Entity ID the export ships is in the committed registry.
+    if not (out / "reports" / "ids_new.tsv").exists():
+        found.append("the export was built without the ID registry (config key ids)")
+    elif new := rows(out / "reports" / "ids_new.tsv"):
+        found.append(
+            f"reports/ids_new.tsv: {len(new)} IDs are not in pipeline/ids.tsv; run "
+            f"python -m pipeline.ids record {out} and commit it"
+        )
     if len(files) >= FILE_LIMIT:
         found.append(f"{out / 'data'} holds {len(files)} files, the limit is {FILE_LIMIT}")
     return found

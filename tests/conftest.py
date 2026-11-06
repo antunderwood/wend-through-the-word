@@ -13,6 +13,7 @@ import pytest
 FIXTURES = Path(__file__).parent / "fixtures" / "sources"
 CURATED = FIXTURES.parent / "curated"  # fixture copies of the curated tables, with test rows
 REAL_CURATED = Path(__file__).parent.parent / "pipeline" / "curated"
+IDS = FIXTURES.parent / "ids.tsv"  # the fixture's published IDs (decision 215)
 VERSION = "test1"
 TIPNR = (  # the TIPNR file name, in the fixture and in a download
     "TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt"
@@ -22,7 +23,7 @@ TIPNR = (  # the TIPNR file name, in the fixture and in a download
 BOOKS = ("Gen", "Matt", "John", "3John")  # the fixture's books, in Bible order
 
 
-def run_build(out, sources=FIXTURES, books=BOOKS, curated=CURATED, **extra):
+def run_build(out, sources=FIXTURES, books=BOOKS, curated=CURATED, ids=IDS, **extra):
     """Run the build command, the one test seam. Returns the output folder. `extra` holds more
     config keys with TOML values, such as `size_limit` (the gzipped limit) or
     `previous_reports='"path"'`."""
@@ -31,7 +32,8 @@ def run_build(out, sources=FIXTURES, books=BOOKS, curated=CURATED, **extra):
         f"books = {json.dumps(list(books))}\n"
         f'sources = "{sources}"\n'
         f'curated = "{curated}"\n'
-        f'out = "{out}"\n'
+        + (f'ids = "{ids}"\n' if ids else "")  # None: no registry check (decision 215)
+        + f'out = "{out}"\n'
         'build_date = "2026-10-19"\n'
         f'data_version = "{VERSION}"\n' + "".join(f"{k} = {v}\n" for k, v in extra.items())
     )

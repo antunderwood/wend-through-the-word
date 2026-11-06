@@ -78,6 +78,13 @@ _Avoid_: Edge (for what the reader sees), connection
 **Neighbour**:
 A node directly linked to another node by a source link or a Co-mention.
 
+**Published ID**:
+An Entity ID that a released export has shipped, listed in `pipeline/ids.tsv`. It is never dropped without a Redirect (decision 215).
+
+**Redirect**:
+A reviewed row saying which Entity ID replaces a Published ID that no longer ships, or that it was removed.
+_Avoid_: Alias (a Redirect joins two IDs, an alias is another name)
+
 ### Exploring
 
 **Focus**:

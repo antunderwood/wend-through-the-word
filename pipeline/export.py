@@ -9,7 +9,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from pipeline import credits, ranking, search, summary
+from pipeline import credits, ids, ranking, search, summary
 from pipeline.common import (
     SIZE_RULE,
     file_sizes,
@@ -64,6 +64,11 @@ def write(b):
     for entity in b.entities.values():
         kind, name = entity["id"].split(":", 1)
         write_json(version / "entity" / kind / f"{name}.json", entity)
+    redirects, problems = ids.check(b)  # published IDs never vanish silently (decision 215)
+    write_json(
+        version / "redirects.json",
+        {"source": "Curated", "licence": "CC BY-SA 4.0", "redirects": redirects},
+    )
     write_json(version / "search-index.json", search.index(b))
     write_json(version / "credits.json", credits.credits(b))
 
@@ -113,7 +118,11 @@ def write(b):
     raw = f"{SIZE_RULE['raw_limit'] / 2**20:g} MiB raw"
     print(f"{len(files)} files, {len(over)} over {b.size_limit} bytes gzipped or {raw}")
     if over:
-        sys.exit(f"{len(over)} files are over the size limit: see reports/split_or_trimmed.tsv")
+        problems.append(
+            f"{len(over)} files are over the size limit: see reports/split_or_trimmed.tsv"
+        )
+    if problems:
+        sys.exit("\n".join(problems))
 
 
 def under_limit(b, data):
