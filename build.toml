@@ -3,5 +3,5 @@ books = ["Gen", "Exod", "Lev", "Num", "Deut", "Josh", "Judg", "Ruth", "1Sam", "2
 sources = "sources"
 ids = "pipeline/ids.tsv"  # published Entity IDs (decision 215)
 out = "out"
-build_date = "2026-10-24"
-data_version = "2026-10-24-2"
+build_date = "2026-11-06"
+data_version = "2026-11-06"
