@@ -6,8 +6,10 @@ import { focusIs, openOnAbraham } from "./scene";
 // when there is one, and the six buttons stay at the top of the panel, and everything else scrolls
 // behind it as one column (decision 201).
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
-const BUTTONS = ["Make Focus", "Pin", "Prev", "Next", "Read", "Suggest a correction"];
+// In tab order. On the Focus itself, Make Focus is a "Focus" badge (decision 210).
+const BUTTONS = ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correction"];
 const button = (page: Page, name: string) => panel(page).getByRole("button", { name, exact: true });
+const action = (page: Page, name: string) => (name === "Make Focus" ? button(page, name).or(panel(page).getByTitle(/ is the Focus$/)) : button(page, name));
 const relationship = (page: Page) => panel(page).getByRole("paragraph").filter({ hasText: /^Relationship:/ });
 const people = (page: Page) => panel(page).getByRole("list", { name: "Person (24)" });
 const box = async (l: Locator) => (await l.boundingBox())!;
@@ -99,7 +101,7 @@ test.describe("at 1440 x 900", () => {
   test("the header has no gap without a Relationship and shows the line when there is one", async ({ page }) => {
     // The Focus itself: the buttons follow the type line at the normal spacing.
     const type = panel(page).getByText("Person", { exact: true });
-    const gap = async () => (await box(button(page, "Make Focus"))).y - ((await box(type)).y + (await box(type)).height);
+    const gap = async () => (await box(action(page, "Make Focus"))).y - ((await box(type)).y + (await box(type)).height);
     await expect(relationship(page)).toHaveCount(0);
     expect(await gap()).toBeLessThan(12);
     // Isaac: the Relationship line sits between the type line and the buttons.
@@ -123,7 +125,7 @@ test.describe("at 1440 x 900", () => {
     // Each button whole on screen and nothing over its middle; the header is opaque and starts at the
     // panel's top edge, so points just above the name and just below the buttons are the header's
     // own, not the column scrolled behind it.
-    for (const b of [...BUTTONS.map((n) => button(page, n)), name]) {
+    for (const b of [...BUTTONS.map((n) => action(page, n)), name]) {
       await expect(b).toBeInViewport({ ratio: 1 });
       const r = await box(b);
       expect(await b.evaluate((e, [x, y]) => e.contains(document.elementFromPoint(x, y)), [r.x + r.width / 2, r.y + r.height / 2])).toBe(true);
@@ -190,7 +192,8 @@ test.describe("at 1440 x 900", () => {
     await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText(ref);
     await page.mouse.dblclick(at.x, at.y);
     await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText(ref);
-    await expect(button(page, "Make Focus")).toBeDisabled();
+    await expect(panel(page).getByTitle(/ is the Focus$/)).toHaveText("Focus");
+    await expect(button(page, "Make Focus")).toHaveCount(0);
   });
 
   test("after a click in a list, a press elsewhere in the panel is not held: Show map opens below its button", async ({ page }) => {

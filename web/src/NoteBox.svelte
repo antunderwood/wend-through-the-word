@@ -9,15 +9,20 @@
 
 <section class="note">
   <label for="note">Note on {name}</label>
-  <textarea id="note" data-tour="note" rows="4" value={text} oninput={(e) => onnote(e.currentTarget.value)}></textarea>
-  <p class="muted">Notes stay in this browser only. Download them to keep them.</p>
-  <button onclick={download}>Download notes</button>
-  <button onclick={askToDelete}>Delete all notes</button>
+  <textarea id="note" data-tour="note" rows="3" value={text} oninput={(e) => onnote(e.currentTarget.value)}></textarea>
+  <!-- Download and Delete act on every note, not this node's: quiet links under the box. -->
+  <p class="muted">
+    Notes stay in this browser only.
+    <button onclick={download}>Download notes</button>
+    <button class="danger" onclick={askToDelete}>Delete all notes</button>
+  </p>
 </section>
 
 <style>
   .note {
-    margin: 10px 0;
+    margin: 16px 0 10px;
+    padding-top: 10px;
+    border-top: 1px solid #262a3c;
   }
   label {
     display: block;
@@ -43,11 +48,17 @@
   button {
     font: inherit;
     font-size: 12px;
-    color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
-    border-radius: 4px;
-    padding: 2px 8px;
+    color: #c8cde0;
+    background: none;
+    border: 0;
+    padding: 0 0 0 6px;
+    text-decoration: underline;
     cursor: pointer;
+  }
+  button:hover {
+    color: #ffd27a;
+  }
+  .danger:hover {
+    color: #ff8a80;
   }
 </style>

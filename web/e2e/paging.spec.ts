@@ -23,7 +23,8 @@ test("a long Neighbour list shows 100 rows, then the rest, and a double click pa
   const name = await last.evaluate((b) => b.firstChild!.textContent!.trim()); // the name, not the words after it
   await last.dblclick();
   await expect(panel(page).getByRole("heading", { level: 2 })).toContainText(name);
-  await expect(page.getByRole("button", { name: "Make Focus" })).toBeDisabled();
+  await expect(panel(page).getByTitle(/ is the Focus$/)).toHaveText("Focus");
+  await expect(panel(page).getByRole("button", { name: "Make Focus" })).toHaveCount(0);
 });
 
 test("an Overflow Node's list pages by 100, and the keyboard reaches Show more", async ({ page }) => {
@@ -109,7 +110,8 @@ test("a double click on a filtered row makes the Focus, and the new Focus has no
   await panel(page).getByRole("list", { name: "Person (1 of 127)" }).getByRole("button", { name: /^Ziza/ }).dblclick();
   await expect(panel(page).getByRole("heading", { level: 2 })).toContainText("Ziza");
   await expect(page).toHaveURL(/focus=person:ziza/);
-  await expect(page.getByRole("button", { name: "Make Focus" })).toBeDisabled();
+  await expect(panel(page).getByTitle(/ is the Focus$/)).toHaveText("Focus");
+  await expect(panel(page).getByRole("button", { name: "Make Focus" })).toHaveCount(0);
   for (const box of await panel(page).getByRole("searchbox").all()) await expect(box).toHaveValue("");
 });
 
