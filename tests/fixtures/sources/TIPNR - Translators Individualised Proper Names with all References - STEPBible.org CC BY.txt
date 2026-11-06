@@ -9,7 +9,7 @@ Peleg@Gen.11.16-Luk=HX001	Synthetic TIPNR record, written for tests	 + 					#Syn
 @Brief= Synthetic TIPNR record, written for tests.
 $========== PERSON(s)
 Reu@Gen.11.18-Luk=HX002	Synthetic TIPNR record, written for tests	Peleg@Gen.11.16-Luk + 			Serug@Gen.11.20-Luk		#Synthetic summary	Male																													
-– Named	Reu@Gen.11.18-Luk	HX002«HX002=synthetic	Reu	Gen.11.18; Gen.11.19; Gen.11.20; Gen.11.21
+– Named	Reu@Gen.11.18-Luk	HX002«HX002=synthetic	Reu	Gen.11.18; Gen.11.19; Gen.11.20; Gen.11.21; Psa.3.0
 – Total	Reu	Reu	HX002	Gen.11.18ff
 @Brief= Synthetic TIPNR record, written for tests.
 $========== PERSON(s)

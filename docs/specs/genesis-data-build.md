@@ -47,7 +47,7 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 15. As the owner, I want the BSB text for the configured book range loaded by Verse Key, so that every Verse has its text.
 16. As the owner, I want Genesis to load as 50 chapters and 1,533 verses, so that I know the text is complete.
 17. As the owner, I want Theographic's `verseID` used as the Verse Key with no mapping table, so that the build stays simple.
-18. As the owner, I want `3John.1.15` from OpenBible mapped to `3John.1.14`, so that the cross-reference is not lost.
+18. As the owner, I want `3John.1.15` from OpenBible mapped to `3John.1.14`, so that the cross-reference is not lost. (Decision 216: this now comes from TVTMS, with each source's declared versification.)
 19. As the owner, I want the sixteen BSB verses with no text kept and marked "no BSB text", so that links to them still resolve.
 20. As the owner, I want Rev 12:17 and the Psalm title placement noted but not changed, so that the known differences are on record.
 21. As the owner, I want a mismatch report over every source, with the count and cause of each unmapped link, so that no data is dropped without a record.
@@ -139,7 +139,7 @@ M0 also sets up the repository (private until M5, decision 47), the "Correction 
 ### Verse keys
 
 - The Verse Key is Theographic's `verseID` (`BBCCCVVV`). The label is OSIS (`Gen.1.1`).
-- The four exceptions of PRD 7.1 live in one place. Only the `3John.1.15` remap changes data. The others are flags or notes.
+- The four exceptions of PRD 7.1 live in one place. Since decision 216, references move into KJV numbering by TVTMS (`pipeline/versification.py`), which covers the `3John.1.15` remap and also moves Philippians 1:16 and 17. The others are flags or notes.
 
 ### Ranking and weights
 

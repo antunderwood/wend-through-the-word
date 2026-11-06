@@ -55,6 +55,12 @@ CREDITS = {
         "credit": "Used to check the data; nothing from it is included.",  # decision 46
         "link": "https://www.stepbible.org/",
     },
+    "tvtms": {
+        "name": "STEP Bible: TVTMS",
+        "credit": "Verse numbers of other Bibles moved into KJV numbering with TVTMS, by "
+        "STEPBible.org, based on work at Tyndale House Cambridge.",  # decision 216
+        "link": "https://stepbible.github.io/STEPBible-Data/",
+    },
     "naves": {
         "name": "Nave's Topical Bible (BibleData)",
         "credit": 'Brady Stephenson, "BibleData: Structured Datasets from the Holy Bible", '
