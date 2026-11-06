@@ -6,6 +6,8 @@
   import DetailPanel from "./DetailPanel.svelte";
   import Filters, { FILTERS_ID } from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
+  import Hud from "./Hud.svelte";
+  import { keepInfoMode, keptInfoMode, type InfoMode } from "./hud";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
   import { notesMarkdown } from "./notes";
@@ -40,6 +42,14 @@
   let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
+  // On a desktop window the Selected Node shows in the side panel or on the HUD over the scene, as
+  // the reader last chose in this browser. A phone keeps its sheet; a tour and no WebGL use the panel.
+  let infoMode = $state<InfoMode>(keptInfoMode());
+  function setInfoMode(mode: InfoMode) {
+    infoMode = mode;
+    keepInfoMode(mode);
+    if (mode === "panel") collapsed = false;
+  }
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
   let sheetFull = $state(false);
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
@@ -270,6 +280,7 @@
   // unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back too
   // (decision 185).
   let touring = $state(false);
+  const hud = $derived(infoMode === "hud" && !screen.phone && !noWebGL && !touring && !!graph);
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean } | undefined;
   const tourPage: TourPage = {
@@ -425,7 +436,7 @@
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- The scene takes the space between the open panels. -->
-<div class="stage" data-tour="scene" class:reading={reading && !screen.phone} class:narrow={!collapsed && !noWebGL} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
+<div class="stage" data-tour="scene" class:reading={reading && !screen.phone} class:narrow={!collapsed && !noWebGL && !hud} role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
 <!-- In the scene's top left corner on every screen: the camera goes back to the Focus (decision 188). -->
 {#if graph}
   <button class="recentre icon" class:reading={reading && !screen.phone} data-tour="recentre" aria-label="Recentre" title="Recentre" onclick={() => graph?.recentre()}>
@@ -451,7 +462,7 @@
       download={downloadNotes}
       deleteAll={() => setNotes({})}
       {noWebGL}
-      {collapsed}
+      collapsed={collapsed || hud}
       reading={!!reading}
       controls={screen.phone ? phoneControls : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
@@ -504,10 +515,27 @@
     />
   {:else}
     <!-- The chevron points the way the panel will move. -->
-    <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+    <button class="chevron" hidden={noWebGL || hud} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
       {collapsed ? "‹" : "›"}
     </button>
     {@render details()}
+    {#if hud}
+      <Hud
+        data={data!}
+        {model}
+        {label}
+        {apply}
+        {makeFocus}
+        {pin}
+        onread={openReader}
+        onpanel={() => setInfoMode("panel")}
+        nodeRect={graph?.nodeRect}
+        {motion}
+        {notes}
+        onnote={(id, text) => setNotes(withNote(notes, id, text))}
+        download={downloadNotes}
+      />
+    {/if}
   {/if}
   <PathBar {model} {label} {apply} {notes} {makeFocus} />
   {#if reading && !screen.phone}
@@ -560,6 +588,10 @@
       <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
       {@render filters(false)}
       <button class="pill" onclick={copyLink}>Copy link</button>
+      <!-- The Selected Node on a see-through HUD over the scene, in place of the side panel. -->
+      {#if !noWebGL && !touring}
+        <button class="pill hud-toggle" class:on={hud} aria-pressed={hud} title={hud ? "Show the Selected Node in the side panel" : "Show the Selected Node on a HUD over the graph"} onclick={() => setInfoMode(hud ? "panel" : "hud")}>HUD</button>
+      {/if}
     {/if}
   {/if}
 {/snippet}
@@ -710,6 +742,12 @@
     border-radius: 999px;
     font-size: 20px;
     line-height: 1;
+  }
+  /* Lit in the HUD's own cyan while the HUD shows. */
+  .hud-toggle.on {
+    color: #7fe3ff;
+    border-color: rgba(127, 227, 255, 0.7);
+    box-shadow: 0 0 6px rgba(127, 227, 255, 0.4);
   }
   .dock {
     display: contents;
