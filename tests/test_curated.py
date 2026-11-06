@@ -86,6 +86,7 @@ def test_an_unreviewed_row_does_not_ship_and_is_reported(export):
     assert edge_types(export, "person:abraham_58", "person:isaac_616")[0] == ("PARENT_OF", "out")
     assert report(export, "curated_unreviewed") == [
         {"table": "corrections", "line": "8", "ids": "person:isaac_616 gender", "detail": "no"},
+        {"table": "highlights", "line": "4", "ids": "Gen.36.24 person:anah_249", "detail": "no"},
         {
             "table": "links",
             "line": "8",
@@ -175,6 +176,24 @@ def test_a_row_that_no_longer_matches_is_not_applied_and_is_reported(export):
             "line": "5",
             "ids": "person:nobody_0 gender",
             "detail": "person:nobody_0 is not in Theographic",
+        },
+        {
+            "table": "highlights",
+            "line": "5",
+            "ids": "Gen.25.24 person:rebekah_2401",
+            "detail": "person:rebekah_2401 is not linked to Gen.25.24",
+        },
+        {
+            "table": "highlights",
+            "line": "6",
+            "ids": "Gen.25.21 person:isaac_616",
+            "detail": "BSB Gen.25.21 does not have her husband",
+        },
+        {
+            "table": "highlights",
+            "line": "7",
+            "ids": "Gen.25.21 person:nobody_0",
+            "detail": "person:nobody_0 is not an Entity",
         },
         {
             "table": "links",

@@ -56,6 +56,10 @@ A link from a Verse to a Person, Place, Event, or People Group that the Verse na
 A link from a Verse to a Theme, made because Nave placed the Verse under that heading.
 _Avoid_: Mention (for Themes), about, tagged
 
+**Referring Term**:
+Words of a Verse's BSB text that refer to a linked node without naming it, such as "his wife" for Rebekah in Gen 25:21. Only the owner's reviewed rows in `highlights.csv` make one; the panel underlines it where it bolds names.
+_Avoid_: Highlight (the column name only), pronoun tag, alias
+
 **Subheading**:
 The line of a Nave's entry that files a Verse under its Theme, such as "Sold by Esau" under Birthright. It says why the Verse is there.
 _Avoid_: Label, sub-entry

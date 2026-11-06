@@ -82,3 +82,16 @@ test("markup in a Verse's text is shown as text, not drawn", async ({ page }) =>
   expect(await textOf(text)).toBe(marked);
   await expect(text.locator("b, img")).toHaveCount(0);
 });
+
+test("a reviewed referring term is underlined in its node's colour, not bold, and says whom it refers to (decision 218)", async ({ page }) => {
+  // tests/fixtures/curated/highlights.csv: Rebekah's "his wife" and "she" in Gen 25:21.
+  await open(page, "person:isaac_616", "person:rebekah_2401");
+  const text = verseText(page, "Gen 25:21");
+  await expect(text.locator(".term")).toHaveText(["his wife", "she", "his wife"]);
+  expect(await bold(text)).toEqual(["Isaac", "Rebekah"]);
+  const look = await text.locator(".term").first().evaluate((s) => {
+    const own = getComputedStyle(s);
+    return { line: own.textDecorationLine, colour: own.textDecorationColor, weight: own.fontWeight, title: s.getAttribute("title") };
+  });
+  expect(look).toEqual({ line: "underline", colour: "rgb(111, 168, 220)", weight: "400", title: "Refers to Rebekah" });
+});

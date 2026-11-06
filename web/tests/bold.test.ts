@@ -157,3 +157,33 @@ describe("an ordinary word is never bold", () => {
     expect(bold("Then Peter and Andrew left their nets", person("Simon Peter", "Peter"), person("John the Apostle"))).toEqual([]);
   });
 });
+
+describe("a shared Verse underlines its referring terms (decision 218)", () => {
+  const text = "Later, Isaac prayed to the LORD on behalf of his wife, because she was barren. And the LORD heard his prayer, and his wife Rebekah conceived.";
+  const rebekah = { type: "person", words: ["his wife", "she"], name: "Rebekah" };
+  const terms = (t: string, nodes: Parameters<typeof boldNames>[1], ...ts: Parameters<typeof boldNames>[2] & object) =>
+    boldNames(t, nodes, ts).filter((r) => r.term).map((r) => r.text);
+
+  it("underlines every place each phrase is written, in its node's type, with the node's name", () => {
+    const runs = boldNames(text, [person("Rebekah")], [rebekah]);
+    expect(runs.map((r) => r.text).join("")).toBe(text);
+    expect(runs.filter((r) => r.term)).toEqual([
+      { text: "his wife", bold: false, type: "person", term: true, name: "Rebekah" },
+      { text: "she", bold: false, type: "person", term: true, name: "Rebekah" },
+      { text: "his wife", bold: false, type: "person", term: true, name: "Rebekah" },
+    ]);
+    expect(runs.filter((r) => r.bold).map((r) => r.text)).toEqual(["Rebekah"]);
+  });
+
+  it("matches whole words exactly as given: not inside a word, and not in another case", () => {
+    expect(terms("She said she shed tears.", [], { type: "person", words: ["she"] })).toEqual(["she"]);
+  });
+
+  it("leaves a term plain where it overlaps a bold name: the name wins", () => {
+    expect(terms("Isaac son of Abraham", [person("Isaac")], { type: "person", words: ["Isaac son"] })).toEqual([]);
+  });
+
+  it("changes nothing with no terms", () => {
+    expect(boldNames(text, [person("Rebekah")], [])).toEqual(boldNames(text, [person("Rebekah")]));
+  });
+});

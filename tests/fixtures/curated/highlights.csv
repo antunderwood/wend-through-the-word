@@ -1,0 +1,7 @@
+verse,id,words,note,reviewed,request
+Gen.25.21,person:rebekah_2401,his wife;she,"Isaac's wife, Rebekah, named later in the verse.",yes,
+Gen.25.26,person:israel_682,his brother,"Esau's brother, Jacob.",yes,https://example.org/request
+Gen.36.24,person:anah_249,he,"The Anah who found the hot springs.",no,
+Gen.25.24,person:rebekah_2401,her,"Rebekah, but Theographic does not link her to this verse.",yes,
+Gen.25.21,person:isaac_616,her husband,"Not in the BSB text.",yes,
+Gen.25.21,person:nobody_0,she,"Not an Entity.",yes,

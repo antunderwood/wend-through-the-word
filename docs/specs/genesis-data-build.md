@@ -164,7 +164,10 @@ partners.csv       man_id,woman_id,relation,evidence,note,reviewed,request
 possibly_same.csv  a_id,b_id,evidence,note,reviewed,request
 corrections.csv    id,field,was,value,evidence,note,reviewed,request
 themes_keep.csv    heading,name,evidence,note,reviewed,request
+highlights.csv     verse,id,words,note,reviewed,request
 ```
+
+- `highlights.csv` lists Referring Terms: BSB phrases in a Verse that refer to a linked node without naming it (decision 218). It has no `evidence` column: the row's Verse is its evidence. It is checked after the themes step, so a row may name a Theme.
 
 - `themes_keep.csv` lists Nave's headings that stay Themes although they match a Theographic Person or Place by name or alias (decision 103).
 

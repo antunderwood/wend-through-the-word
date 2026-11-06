@@ -3,9 +3,13 @@
 // and false bold are in the decision.
 
 // A piece of a Verse's text; the runs joined are the text exactly.
-// A bold run says whose name it is by type, so the panel can colour it like that type's disc.
-export type Run = { text: string; bold: boolean; type?: string };
+// A bold run says whose name it is by type, so the panel can colour it like that type's disc. A term
+// run is a referring term (decision 218), underlined in its node's type colour.
+export type Run = { text: string; bold: boolean; type?: string; term?: true; name?: string };
 export type Named = { type: string; name: string; aliases?: readonly string[] };
+// A node's referring terms in one Verse: the owner's reviewed phrases, as the BSB writes them ("his
+// wife" for Rebekah), from the Verse's curated highlights.
+export type Term = { type: string; words: readonly string[]; name?: string };
 
 // The kinds of name, the surest first. A name: a node's name, a phrase, a word in capitals ("LORD").
 // A word: a word of a Person's name with no "of" ("Pilate" of "Pontius Pilate"). An alias: a
@@ -54,21 +58,37 @@ function names(n: Named): Map<string, NodeName> {
 // only where "and" joins the two ("Peter and John" bolds both; "King Herod" keeps Jesus's alias
 // "King" plain with Herod in the list too). A word bold for any node is bold; where two nodes'
 // names overlap, the earlier wins, then the longer, as one pattern of all the names would match.
-export function boldNames(text: string, nodes: readonly Named[]): Run[] {
+// Each referring term is underlined wherever it is written as whole words, exactly as given, except
+// over a bold name: a name wins.
+export function boldNames(text: string, nodes: readonly Named[], terms: readonly Term[] = []): Run[] {
   const matched = nodes.map((node) => matchNames(text, names(node)));
-  const spans = matched
-    .flatMap((own, i) => guard(text, own, matched.filter((_, j) => j !== i).flat()).map((s) => ({ ...s, type: nodes[i].type })))
-    .sort((a, b) => a.start - b.start || b.end - a.end);
+  const bold = matched.flatMap((own, i) =>
+    guard(text, own, matched.filter((_, j) => j !== i).flat()).map((s) => ({ ...s, type: nodes[i].type, term: false, name: undefined })),
+  );
+  const underlined = terms
+    .flatMap((t) => matchTerms(text, t.words).map((s) => ({ ...s, type: t.type, term: true, name: t.name })))
+    .filter((t) => !bold.some((b) => b.start < t.end && t.start < b.end));
+  const spans = [...bold, ...underlined].sort((a, b) => a.start - b.start || b.end - a.end);
   const runs: Run[] = [];
   let at = 0;
   for (const span of spans) {
-    if (span.start < at) continue; // inside or across one already bold
+    if (span.start < at) continue; // inside or across one already marked
     if (span.start > at) runs.push({ text: text.slice(at, span.start), bold: false });
-    runs.push({ text: text.slice(span.start, span.end), bold: true, type: span.type });
+    const piece = text.slice(span.start, span.end);
+    runs.push(span.term ? { text: piece, bold: false, type: span.type, term: true, ...(span.name ? { name: span.name } : {}) } : { text: piece, bold: true, type: span.type });
     at = span.end;
   }
   if (at < text.length) runs.push({ text: text.slice(at), bold: false });
   return runs;
+}
+
+// Where the phrases are written in the text as whole words, exactly as given (the pipeline checks
+// the same way).
+function matchTerms(text: string, words: readonly string[]): { start: number; end: number }[] {
+  if (!words.length) return [];
+  const all = [...words].sort((a, b) => b.length - a.length).map(escape);
+  const re = new RegExp(`(?<![\\p{L}\\p{N}_’'-])(?:${all.join("|")})(?![\\p{L}\\p{N}_-])`, "gu");
+  return [...text.matchAll(re)].map((m) => ({ start: m.index, end: m.index + m[0].length }));
 }
 
 // Where a node's names are written in the text, the longest name first at each place, before any

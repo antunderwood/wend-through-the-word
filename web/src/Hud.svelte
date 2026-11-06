@@ -5,7 +5,7 @@
   // click away for corrections, the map, and the pins' lists. The reader drags the card by its strip
   // and sizes it by its corner; both are kept in this browser. Props only; App owns the state.
   import { untrack } from "svelte";
-  import { boldNames } from "./bold";
+  import VerseText from "./VerseText.svelte";
   import { typeColour } from "./colours";
   import type { Data } from "./data";
   import {
@@ -402,7 +402,8 @@
   {/await}
 {/snippet}
 
-<!-- The Verses the Selected Node shares with the Focus, names in bold in their type's colour. -->
+<!-- The Verses the Selected Node shares with the Focus, names in bold and referring terms underlined
+     in their type's colour. -->
 {#snippet togetherTab()}
   {#await shared}
     <p class="dim">Loading verses…</p>
@@ -413,7 +414,7 @@
         {#each togetherAll ? s.verses : s.verses.slice(0, TOGETHER) as v (v.key)}
           <li>
             <button class="ref" onclick={() => apply({ type: "select", id: v.key })} ondblclick={() => makeFocus(v.key)}>{data.label(v.key)}</button>
-            <p class="text">{#each boldNames(v.text, s.names) as r, j (j)}{#if r.bold}<strong style:color={typeColour(r.type as NodeType)}>{r.text}</strong>{:else}{r.text}{/if}{/each}</p>
+            <p class="text"><VerseText text={v.text} names={s.names} terms={v.terms} /></p>
           </li>
         {/each}
       </ul>
