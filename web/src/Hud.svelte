@@ -438,7 +438,7 @@
 <style>
   /* The HUD's own palette: a cold cyan line on dark glass, so the scene shows through. */
   .hud {
-    --line: 127, 227, 255;
+    --hud-line: 127, 227, 255;
     --ink: #e8fbff;
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
     position: fixed;
@@ -467,8 +467,8 @@
      its labels do not fight the text. Scan lines give it the look of a projected panel. */
   .glass {
     background:
-      repeating-linear-gradient(0deg, rgba(var(--line), 0.035) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, rgba(var(--line), 0.14), rgba(10, 22, 38, 0.42) 40%, rgba(10, 22, 38, 0.5));
+      repeating-linear-gradient(0deg, rgba(var(--hud-line), 0.035) 0 1px, transparent 1px 3px),
+      linear-gradient(160deg, rgba(var(--hud-line), 0.14), rgba(10, 22, 38, 0.42) 40%, rgba(10, 22, 38, 0.5));
     backdrop-filter: blur(3px) saturate(1.2);
     -webkit-backdrop-filter: blur(3px) saturate(1.2);
   }
@@ -476,15 +476,15 @@
     width: 100%;
     height: 100%;
     overflow: visible;
-    filter: drop-shadow(0 0 3px rgba(var(--line), 0.7));
+    filter: drop-shadow(0 0 3px rgba(var(--hud-line), 0.7));
   }
   .frame polygon {
     fill: none;
-    stroke: rgba(var(--line), 0.75);
+    stroke: rgba(var(--hud-line), 0.75);
     stroke-width: 1;
   }
   .frame path {
-    stroke: rgba(var(--line), 0.95);
+    stroke: rgba(var(--hud-line), 0.95);
     stroke-width: 3;
   }
 
@@ -497,7 +497,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 0, rgba(var(--line), 0.1) 48%, rgba(var(--line), 0.18) 50%, transparent 54%);
+    background: linear-gradient(180deg, transparent 0, rgba(var(--hud-line), 0.1) 48%, rgba(var(--hud-line), 0.18) 50%, transparent 54%);
     background-size: 100% 240px;
     background-repeat: no-repeat;
     animation: roll 4.5s linear infinite;
@@ -539,13 +539,13 @@
   }
   @keyframes split {
     0%, 61%, 63.5%, 100% {
-      text-shadow: 0 0 10px rgba(var(--line), 0.45);
+      text-shadow: 0 0 10px rgba(var(--hud-line), 0.45);
     }
     62% {
-      text-shadow: -2px 0 rgba(255, 40, 110, 0.75), 2px 0 rgba(var(--line), 0.85);
+      text-shadow: -2px 0 rgba(255, 40, 110, 0.75), 2px 0 rgba(var(--hud-line), 0.85);
     }
     63% {
-      text-shadow: 1px 0 rgba(255, 40, 110, 0.6), -1px 0 rgba(var(--line), 0.7);
+      text-shadow: 1px 0 rgba(255, 40, 110, 0.6), -1px 0 rgba(var(--hud-line), 0.7);
     }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -562,7 +562,7 @@
     align-items: center;
     gap: 8px;
     padding: 0 0 6px 14px;
-    border-bottom: 1px solid rgba(var(--line), 0.3);
+    border-bottom: 1px solid rgba(var(--hud-line), 0.3);
     font: 600 10px/1 var(--mono);
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -588,8 +588,8 @@
   }
   .badge {
     padding: 2px 6px;
-    border: 1px solid rgba(var(--line), 0.6);
-    color: rgb(var(--line));
+    border: 1px solid rgba(var(--hud-line), 0.6);
+    color: rgb(var(--hud-line));
   }
   .tools {
     margin-left: auto;
@@ -605,7 +605,7 @@
     border: 0;
     border-radius: 0;
     background: none;
-    color: rgba(var(--line), 0.55);
+    color: rgba(var(--hud-line), 0.55);
     cursor: pointer;
   }
   .tool svg {
@@ -617,8 +617,8 @@
   }
   .tool:hover,
   .tool[aria-pressed="true"] {
-    color: rgb(var(--line));
-    filter: drop-shadow(0 0 3px rgba(var(--line), 0.8));
+    color: rgb(var(--hud-line));
+    filter: drop-shadow(0 0 3px rgba(var(--hud-line), 0.8));
   }
   .tool[aria-pressed="true"] svg {
     fill: currentColor;
@@ -635,7 +635,7 @@
     min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(var(--line), 0.4) transparent;
+    scrollbar-color: rgba(var(--hud-line), 0.4) transparent;
     animation: scan 0.22s ease-out;
   }
   .still .body,
@@ -654,12 +654,12 @@
   }
   .name {
     margin: 10px 0 2px;
-    font-size: 22px;
+    font-size: var(--fs-2xl);
     line-height: 1.15;
     font-weight: 650;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(var(--line), 0.45);
+    text-shadow: 0 0 10px rgba(var(--hud-line), 0.45);
     overflow-wrap: anywhere;
   }
   .name::after {
@@ -676,23 +676,23 @@
     font: 12px/1.4 var(--mono);
   }
   .key {
-    color: rgb(var(--line));
+    color: rgb(var(--hud-line));
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: var(--fs-xs);
   }
   .dim {
     color: rgba(232, 251, 255, 0.6);
   }
   .small {
-    font-size: 11px;
+    font-size: var(--fs-xs);
   }
 
   .tabs {
     display: flex;
     gap: 2px;
     margin: 10px 0 4px;
-    border-bottom: 1px solid rgba(var(--line), 0.3);
+    border-bottom: 1px solid rgba(var(--hud-line), 0.3);
   }
   .tabs button {
     padding: 6px 10px 5px;
@@ -710,9 +710,9 @@
     color: var(--ink);
   }
   .tabs button[aria-selected="true"] {
-    color: rgb(var(--line));
-    background: rgba(var(--line), 0.14);
-    box-shadow: inset 0 -2px 0 rgb(var(--line));
+    color: rgb(var(--hud-line));
+    background: rgba(var(--hud-line), 0.14);
+    box-shadow: inset 0 -2px 0 rgb(var(--hud-line));
   }
 
   h3 {
@@ -723,13 +723,13 @@
     font: 600 10px/1 var(--mono);
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--c, rgb(var(--line)));
+    color: var(--c, rgb(var(--hud-line)));
   }
   h3::after {
     content: "";
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(var(--line), 0.5), transparent);
+    background: linear-gradient(90deg, rgba(var(--hud-line), 0.5), transparent);
   }
   h3 .dim {
     letter-spacing: 0.05em;
@@ -757,8 +757,8 @@
   .text {
     margin: 8px 0 0;
     padding-left: 10px;
-    border-left: 2px solid rgba(var(--line), 0.6);
-    font-size: 13px;
+    border-left: 2px solid rgba(var(--hud-line), 0.6);
+    font-size: var(--fs-sm);
     line-height: 1.5;
   }
   .clamp {
@@ -794,7 +794,7 @@
   .bar b {
     flex: 1;
     height: 8px;
-    background: rgba(var(--line), 0.1);
+    background: rgba(var(--hud-line), 0.1);
     transform: skewX(-20deg);
   }
   .bar b.on {
@@ -815,7 +815,7 @@
     border: 0;
     border-radius: 0;
     background: rgba(5, 12, 22, 0.55);
-    box-shadow: inset 0 0 0 1px rgba(var(--line), 0.45);
+    box-shadow: inset 0 0 0 1px rgba(var(--hud-line), 0.45);
     color: var(--ink);
     font: 12px/1.4 var(--mono);
   }
@@ -845,8 +845,8 @@
     cursor: pointer;
   }
   .row:hover {
-    border-left-color: rgb(var(--line));
-    background: rgba(var(--line), 0.1);
+    border-left-color: rgb(var(--hud-line));
+    background: rgba(var(--hud-line), 0.1);
   }
   .verses li {
     margin-bottom: 10px;
@@ -855,7 +855,7 @@
     padding: 0;
     border: 0;
     background: none;
-    color: rgb(var(--line));
+    color: rgb(var(--hud-line));
     font: 600 11px/1 var(--mono);
     letter-spacing: 0.1em;
     cursor: pointer;
@@ -868,7 +868,7 @@
     padding: 0;
     border: 0;
     background: none;
-    color: rgb(var(--line));
+    color: rgb(var(--hud-line));
     font: 11px/1.4 var(--mono);
     letter-spacing: 0.05em;
     text-decoration: underline dotted;
@@ -880,7 +880,7 @@
     font: 600 10px/1 var(--mono);
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgb(var(--line));
+    color: rgb(var(--hud-line));
   }
 
   .actions {
@@ -889,15 +889,15 @@
     gap: 6px;
     margin-top: 12px;
     padding-top: 10px;
-    border-top: 1px solid rgba(var(--line), 0.3);
+    border-top: 1px solid rgba(var(--hud-line), 0.3);
   }
   /* Buttons with a cut corner, outlined in the HUD's line. */
   .actions button {
     padding: 6px 10px;
     border: 0;
     border-radius: 0;
-    background: rgba(var(--line), 0.08);
-    box-shadow: inset 0 0 0 1px rgba(var(--line), 0.55);
+    background: rgba(var(--hud-line), 0.08);
+    box-shadow: inset 0 0 0 1px rgba(var(--hud-line), 0.55);
     color: var(--ink);
     font: 600 11px/1 var(--mono);
     letter-spacing: 0.1em;
@@ -906,15 +906,15 @@
     cursor: pointer;
   }
   .actions button:hover:not(:disabled) {
-    background: rgba(var(--line), 0.22);
+    background: rgba(var(--hud-line), 0.22);
   }
   .actions button:disabled {
     opacity: 0.4;
     cursor: default;
   }
   .actions .primary {
-    background: rgba(var(--line), 0.28);
-    box-shadow: inset 0 0 0 1px rgb(var(--line));
+    background: rgba(var(--hud-line), 0.28);
+    box-shadow: inset 0 0 0 1px rgb(var(--hud-line));
   }
   .actions .more {
     margin-left: auto;
@@ -928,7 +928,7 @@
     height: 18px;
     padding: 0;
     border: 0;
-    background: linear-gradient(135deg, transparent 0 45%, rgba(var(--line), 0.8) 45% 52%, transparent 52% 64%, rgba(var(--line), 0.8) 64% 71%, transparent 71%);
+    background: linear-gradient(135deg, transparent 0 45%, rgba(var(--hud-line), 0.8) 45% 52%, transparent 52% 64%, rgba(var(--hud-line), 0.8) 64% 71%, transparent 71%);
     cursor: nwse-resize;
     touch-action: none;
   }

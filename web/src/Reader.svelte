@@ -110,7 +110,7 @@
   h2 {
     flex: 1;
     margin: 0;
-    font-size: 17px;
+    font-size: var(--fs-xl);
     font-weight: 600;
     line-height: 1.3;
     text-align: center;
@@ -119,7 +119,7 @@
     width: 30px;
     height: 30px;
     padding: 0;
-    font-size: 20px;
+    font-size: var(--fs-2xl);
     line-height: 1;
   }
   header .close {
@@ -132,29 +132,29 @@
     overflow-y: auto;
     margin-top: 10px;
     padding-right: 6px;
-    font-size: 18px;
+    font-size: var(--fs-xl);
     line-height: 1.75;
-    color: #e6e8f0;
+    color: var(--text);
   }
   .verse {
     border-radius: 3px;
   }
   .verse.sel {
-    background: rgba(255, 210, 122, 0.16);
+    background: var(--accent-tint);
   }
   /* A verse's number: the button on a desktop, the start of the verse's button on a phone. */
   .number {
-    color: #9aa0b4;
-    font: 600 12px/1 system-ui, sans-serif;
+    color: var(--muted);
+    font: 600 var(--fs-sm)/1 var(--font);
     vertical-align: super;
   }
   /* In the scene: a brighter number, underlined with dots. */
   .number.linked {
-    color: #d4d8e8;
+    color: var(--text-soft);
     text-decoration: underline dotted;
   }
   .number.current {
-    color: #ffd27a;
+    color: var(--accent);
   }
   .verse button.number {
     padding: 0 2px;
@@ -178,17 +178,17 @@
     text-align: left;
   }
   .muted {
-    color: #9aa0b4;
+    color: var(--muted);
   }
   .translation {
     margin: 8px 0 0;
-    font-size: 12px;
+    font-size: var(--fs-sm);
   }
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     cursor: pointer;
   }

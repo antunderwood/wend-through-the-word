@@ -207,7 +207,7 @@
   }
   .notice {
     margin: 0;
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
   .bar {
     flex: none;
@@ -230,11 +230,11 @@
     white-space: nowrap;
   }
   [aria-pressed="true"] {
-    background: #3a4060;
-    border-color: #ffd27a;
+    background: var(--line-strong);
+    border-color: var(--accent);
   }
   .muted {
-    color: #9aa0b4;
+    color: var(--muted);
   }
   /* A plain background, under the tiles and in their place when they fail to load. Its own stacking
      context keeps the library's layers (z-index up to 1000) under the rest of the page, such as the
@@ -244,7 +244,7 @@
     min-height: 0;
     isolation: isolate;
     border-radius: 4px;
-    background: #1b1f2d;
+    background: var(--raised-2);
     font: inherit;
   }
   /* The tiles are not dimmed (decision 196): the owner chose Esri's as they are. */
@@ -265,7 +265,7 @@
   }
   /* The Selected Place's ring; map.ts draws its dot larger. */
   .map :global(.selected .dot) {
-    box-shadow: 0 0 0 3px #ffd27a;
+    box-shadow: 0 0 0 3px var(--accent);
   }
   /* On a touch screen a dot and a name are each at least 44 px to tap, though drawn smaller. */
   :global(html[data-coarse]) .map :global(.dot) {
@@ -287,9 +287,9 @@
     left: calc(100% + 4px);
     padding: 0 4px;
     border-radius: 3px;
-    background: rgba(13, 15, 23, 0.8);
-    color: #e8eaf2;
-    font-size: 13px;
+    background: var(--scrim);
+    color: var(--text);
+    font-size: var(--fs-sm);
   }
   /* The attribution is one line at 12 px, the library's own size and the least Esri recommends: on
      two lines it covers the Selected Place's tap area in the side sheet's map (decision 197). The
@@ -301,9 +301,9 @@
   .map :global(.leaflet-control-attribution) {
     max-width: 100%;
     box-sizing: border-box;
-    background: rgba(13, 15, 23, 0.8);
-    color: #c8cde0;
-    font-size: 12px;
+    background: var(--scrim);
+    color: var(--text-soft);
+    font-size: var(--fs-sm);
   }
   .map :global(.leaflet-control-attribution:has(.sources)) {
     display: flex;
@@ -329,13 +329,13 @@
     white-space: normal;
   }
   .map :global(.leaflet-control-attribution a) {
-    color: #ffd27a;
+    color: var(--accent);
   }
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;

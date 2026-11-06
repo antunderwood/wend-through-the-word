@@ -84,20 +84,21 @@
 {/if}
 
 <style>
-  /* Above the reader panel, so the results list is never hidden under it. */
+  /* Above the reader panel, so the results list is never hidden under it. On a desktop window the
+     page's top row places it. */
   .search {
-    position: fixed;
     z-index: 5;
-    top: 16px;
-    left: 16px;
-    width: 300px;
-    padding: 8px;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
+    flex: none;
+    box-sizing: border-box;
+    width: var(--search-w);
+    padding: var(--space-2);
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 8px;
   }
   /* On a phone the open box lies over the top of the scene and the Your Path bar. */
   :global(html[data-phone]) .search {
+    position: fixed;
     top: 8px;
     left: 8px;
     right: 8px;
@@ -130,8 +131,8 @@
     padding: 0;
     display: grid;
     place-items: center;
-    background: rgba(20, 23, 34, 0.92);
-    border: 1px solid #262a3c;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-width: 0 0 1px 1px;
     border-radius: 0;
   }
@@ -146,8 +147,8 @@
     box-sizing: border-box;
     font: inherit;
     color: inherit;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid #3a4060;
+    background: var(--field);
+    border: 1px solid var(--line-strong);
     border-radius: 6px;
     padding: 6px 8px;
   }
@@ -163,20 +164,20 @@
     cursor: pointer;
   }
   .chips button {
-    font-size: 11px;
+    font-size: var(--fs-xs);
     padding: 2px 9px;
     border-radius: 999px;
     background: none;
-    border: 1px solid #3a4060;
-    color: #c9ccd8;
+    border: 1px solid var(--line-strong);
+    color: var(--text-soft);
   }
   .chips button:hover {
-    border-color: var(--c, #6b7394);
+    border-color: var(--c, var(--line-hover));
   }
   .chips button[aria-pressed="true"] {
-    background: var(--c, #ffd27a);
-    border-color: var(--c, #ffd27a);
-    color: #0d0f17;
+    background: var(--c, var(--accent));
+    border-color: var(--c, var(--accent));
+    color: var(--bg);
     font-weight: 600;
   }
   ul {
@@ -196,26 +197,26 @@
     border: none;
     border-radius: 4px;
     padding: 5px 6px;
-    color: #e6e8f0;
+    color: var(--text);
   }
   li button:hover,
   li button:focus-visible {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--hover);
   }
   li:first-child button {
-    background: rgba(255, 210, 122, 0.08);
+    background: var(--accent-wash);
   }
   .name {
     flex: 1;
     min-width: 0;
   }
   .hint {
-    color: #9aa0b4;
-    font-size: 11px;
+    color: var(--muted);
+    font-size: var(--fs-xs);
   }
   .type {
     flex: none;
-    font-size: 10px;
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--c);
@@ -224,7 +225,7 @@
     padding: 4px 6px;
   }
   .muted {
-    color: #9aa0b4;
-    font-size: 12px;
+    color: var(--muted);
+    font-size: var(--fs-sm);
   }
 </style>

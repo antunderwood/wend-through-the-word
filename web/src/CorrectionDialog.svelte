@@ -40,18 +40,18 @@
     /* Within a phone's width, with its margins, padding, and 1 px border on each side. */
     max-width: min(360px, 100vw - 2 * (var(--margin) + var(--pad) + 1px));
     padding: 16px var(--pad);
-    background: #161a28;
+    background: var(--raised);
     color: inherit;
-    border: 1px solid #3a4060;
+    border: 1px solid var(--line-strong);
     border-radius: 8px;
   }
   .warning h2 {
     margin: 0 0 8px;
-    font-size: 17px;
+    font-size: var(--fs-xl);
   }
   .warning a {
     margin-right: 12px;
-    color: #ffd27a;
+    color: var(--accent);
   }
   /* On a phone the links and the button are large enough to tap. */
   :global(html[data-phone]) .warning :is(a, button) {
@@ -63,13 +63,13 @@
     padding: 0 16px;
   }
   .muted {
-    color: #9aa0b4;
+    color: var(--muted);
   }
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;

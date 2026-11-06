@@ -35,11 +35,11 @@
     transform: translateX(-50%);
     margin: 0;
     padding: 10px 14px;
-    font-size: 12px;
-    color: #c8cde0;
-    background: rgba(20, 23, 34, 0.96);
-    border: 1px solid #3a4060;
-    border-radius: 8px;
+    font-size: var(--fs-sm);
+    color: var(--text-soft);
+    background: var(--surface-strong);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
   }
   .legend.inline {
     padding: 0;
@@ -50,11 +50,11 @@
   }
   h3 {
     margin: 14px 0 6px;
-    font-size: 12px;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #9aa0b4;
+    color: var(--muted);
   }
   ul {
     list-style: none;
@@ -67,7 +67,7 @@
   ul + ul {
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px solid #262a3c;
+    border-top: 1px solid var(--line);
   }
   /* The sheet makes every row 44 px tall (a tap target), so on a phone the rows go in two columns. */
   .legend.inline ul {
@@ -85,17 +85,17 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    font-size: 11px;
+    font-size: var(--fs-xs);
     font-weight: 900;
     color: rgba(0, 0, 0, 0.78);
   }
   .disc.focus {
-    background: #ffd27a;
-    box-shadow: 0 0 0 2px #0d0f17, 0 0 0 3px #ffd27a;
+    background: var(--accent);
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent);
   }
   .disc.shared {
     background: #a9b1c6;
-    box-shadow: 0 0 0 2px #4ff0e0;
+    box-shadow: 0 0 0 2px var(--shared);
   }
   .dot {
     width: 16px;
@@ -111,7 +111,7 @@
   }
   .line {
     width: 16px;
-    border-top: 1px solid #c8cde0;
+    border-top: 1px solid var(--text-soft);
   }
   .line.dashed {
     border-top-style: dashed;

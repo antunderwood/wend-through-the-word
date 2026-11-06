@@ -59,14 +59,14 @@
     margin: 2px 0;
   }
   .muted {
-    color: #9aa0b4;
-    font-size: 13px;
+    color: var(--muted);
+    font-size: var(--fs-sm);
   }
   button {
     font: inherit;
     color: inherit;
-    background: #262a3c;
-    border: 1px solid #3a4060;
+    background: var(--control);
+    border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 3px 10px;
     cursor: pointer;

@@ -1,0 +1,74 @@
+/* The page's shared values: colours, type sizes, spacing, and the desktop layout's sizes. Every
+   page imports this first, and components use these names instead of typing a value again, so a
+   change (or a light theme later) is made here once. Two sets stay in TypeScript, as WebGL cannot
+   read CSS: the six node type colours (colours.ts, which the page's inline styles read too) and the
+   scene's own colours at the top of graph.ts, whose background, accent, and shared colour match
+   --bg, --accent, and --shared here. */
+:root {
+  /* Surfaces, darkest first. */
+  --bg: #0d0f17;
+  --surface: rgba(20, 23, 34, 0.92); /* a card or panel over the scene */
+  --surface-strong: rgba(20, 23, 34, 0.96); /* a popover or message that must read over anything */
+  --surface-opaque: #131621; /* --surface over --bg, without its transparency */
+  --raised: #161a28; /* a dialog, a field's box, the view picker's track */
+  --raised-2: #1b1f2e; /* the tour box and the map's ground */
+  --scrim: rgba(13, 15, 23, 0.8);
+  --tip-bg: rgba(0, 0, 0, 0.85);
+  --shadow: #000;
+
+  /* Lines and controls. */
+  --line: #262a3c; /* a quiet border between parts */
+  --line-strong: #3a4060; /* a control's border */
+  --line-hover: #6b7394;
+  --control: #262a3c; /* a button's face */
+  --control-on: #2a3048; /* a chosen option */
+  --field: rgba(255, 255, 255, 0.06);
+  --hover: rgba(255, 255, 255, 0.08);
+  --pressed: rgba(255, 255, 255, 0.12);
+
+  /* Text. */
+  --text: #e6e8f0;
+  --text-soft: #c8cde0;
+  --muted: #9aa0b4;
+
+  /* The accent (the Focus, the chosen view, links) and its tints. */
+  --accent: #ffd27a;
+  --accent-ring: rgba(255, 210, 122, 0.4);
+  --accent-tint: rgba(255, 210, 122, 0.16);
+  --accent-wash: rgba(255, 210, 122, 0.08);
+  --shared: #4ff0e0; /* a Shared Node's name in the scene */
+  --warn: #ff9f6e;
+
+  /* Type: one family, and a scale of seven sizes. --fs-lg is also the least a phone's field may be
+     (decision 182). */
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 18px;
+  --fs-2xl: 22px;
+  --fs-3xl: 28px;
+
+  /* Spacing on a 4 px step, and corner radii. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  /* The desktop layout (App.svelte's grid): the gap at the window's edges, the top row of the search
+     box and the Your Path bar, the search box's width, where the parts under its type chips start,
+     and the widths of the reader drawer and the detail panel. */
+  --gutter: var(--space-4);
+  --top-h: 56px;
+  --search-w: 318px;
+  --top-clear: 132px;
+  --reader-w: 380px;
+  --panel-w: 340px;
+}
