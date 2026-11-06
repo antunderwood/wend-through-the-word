@@ -1,36 +1,43 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham } from "./scene";
+
+// The selected Focus loads its first page of own Verses (decision 223): wait for it, so no fetch of
+// it is still on its way when a test breaks the data.
+const ownVersesLoaded = (page: Page) => expect(page.getByRole("list", { name: /^In \d+ verses$/ }).getByRole("listitem")).toHaveCount(5);
 
 test("a data file that fails twice shows a message and a retry, and the scene stays", async ({ page }) => {
   await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
-  // Gen 25's chapter file is first needed when Gen 25:5 becomes the Focus.
-  await page.route("**/chapter/Gen/25.json", (r) => r.abort());
-  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 25:5");
+  await ownVersesLoaded(page);
+  // Gen 36's chapter file is first needed when Gen 36:2 becomes the Focus: Abraham's own Verses in
+  // the panel (decision 223) end before it.
+  await page.route("**/chapter/Gen/36.json", (r) => r.abort());
+  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 36:2");
   await page.getByRole("searchbox", { name: "Search" }).press("Enter");
   const alert = page.getByRole("alert");
-  await expect(alert).toContainText("Could not load Gen 25:5");
+  await expect(alert).toContainText("Could not load Gen 36:2");
   expect((await nodes(page)).find((n) => n.role === "focus")!.id).toBe("person:abraham_58");
 
-  await page.unroute("**/chapter/Gen/25.json");
+  await page.unroute("**/chapter/Gen/36.json");
   await alert.getByRole("button", { name: "Retry" }).click();
-  await focusIs(page, "01025005");
+  await focusIs(page, "01036002");
   await expect(alert).toHaveCount(0);
 });
 
 test("a deploy while the page is open: the next move switches to the new data version and says so", async ({ page }) => {
   await openOnAbraham(page);
   await focusIs(page, "person:abraham_58");
+  await ownVersesLoaded(page);
   const old = (await page.getByRole("contentinfo").textContent())!.match(/Data version (\S+)/)![1];
   // The deploy (decision 159): the old version's files are gone, and index.json names test2,
   // served from the old version's files.
   await page.route(`**/data/${old}/**`, (r) => r.fulfill({ status: 404 }));
   await page.route("**/data/index.json", async (r) => r.fulfill({ json: { ...(await (await r.fetch()).json()), data_version: "test2" } }));
   await page.route("**/data/test2/**", async (r) => r.fulfill({ response: await r.fetch({ url: r.request().url().replace("/test2/", `/${old}/`) }) }));
-  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 25:5");
+  await page.getByRole("searchbox", { name: "Search" }).fill("Gen 36:2");
   await page.getByRole("searchbox", { name: "Search" }).press("Enter");
-  await focusIs(page, "01025005");
-  await expect(page.getByRole("status")).toHaveText("The data was updated to version test2. Gen 25:5 is the Focus.");
+  await focusIs(page, "01036002");
+  await expect(page.getByRole("status")).toHaveText("The data was updated to version test2. Gen 36:2 is the Focus.");
   await expect(page.getByRole("contentinfo")).toContainText("Data version test2");
   await expect(page.getByRole("alert")).toHaveCount(0);
 });

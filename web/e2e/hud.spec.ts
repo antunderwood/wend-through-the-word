@@ -92,8 +92,11 @@ test("the HUD moves by its strip and its grip, sizes by its corner, and keeps bo
 
 test("the HUD's tabs list the links, the shared verses, and the note", async ({ page }) => {
   await toggle(page).click();
-  // The Focus has no shared verses with itself, but a note.
-  await expect(hud(page).getByRole("tab")).toHaveText(["Overview", "Links", "Note"]);
+  // The Focus has no shared verses with itself: its Verses tab lists its own (decision 223).
+  await expect(hud(page).getByRole("tab")).toHaveText(["Overview", "Links", "Verses", "Note"]);
+  await expect(hud(page).getByRole("button", { name: /^In \d+ verses: show all$/ })).toBeVisible();
+  await hud(page).getByRole("tab", { name: "Verses" }).click();
+  await expect(hud(page).getByRole("heading", { name: /^In \d+ verses$/ })).toBeVisible();
   await hud(page).getByRole("tab", { name: "Links" }).click();
   await expect(hud(page).getByRole("list", { name: /^People \d/ })).toBeVisible();
   await hud(page).getByRole("searchbox", { name: "Filter links" }).fill("isaac");
@@ -105,7 +108,10 @@ test("the HUD's tabs list the links, the shared verses, and the note", async ({ 
   await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
   await expect(hud(page).getByRole("tab", { name: "Links" })).toHaveAttribute("aria-selected", "true");
 
-  await hud(page).getByRole("tab", { name: "Together" }).click();
+  // The overview shows one shared Verse, and its link opens the Verses tab.
+  await hud(page).getByRole("tab", { name: "Overview" }).click();
+  await hud(page).getByRole("button", { name: /^With Abraham in \d+ verses?: show all$/ }).click();
+  await expect(hud(page).getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
   await expect(hud(page).getByRole("heading", { name: /^With Abraham in \d+ verses?$/ })).toBeVisible();
 
   await hud(page).getByRole("button", { name: "Make Focus" }).click();

@@ -3,6 +3,7 @@
   // and the Neighbour lists. Props only; App owns the Focus Model state.
   import { untrack, type Snippet } from "svelte";
   import VerseText from "./VerseText.svelte";
+  import { OwnVerses, VERSE_STEP } from "./verses.svelte";
   import { typeColour } from "./colours";
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
@@ -249,6 +250,9 @@
         .map(async (o) => ({ with: o, names: names(o), verses: await data.shared(o, versesOf) })),
     );
   });
+  // The Focus shares no Verses with itself: selected, it lists its own, a page at a time (decision 223).
+  // Only 5 at first, so the Neighbour lists below stay near the top.
+  const own = new OwnVerses(() => data, () => (versesOf === focus && isEntity(versesOf) ? versesOf : undefined), 5);
   // A built Verse's BSB text under its name (decision 138); not when the click came from the shared
   // list, which already shows it and must not move.
   const verseText = $derived(typeOf(selected) === "verse" && versesOf === selected && !data.outside(selected) ? data.load(selected).then((r) => r.text) : undefined);
@@ -302,6 +306,20 @@
     {#if !compact}<div class="spacer" bind:this={spacer}></div>{/if}
     {#if !compact}{@render verse()}{/if}
     {#if data.outside(selected)}<p class="muted">{data.outside(selected)}</p>{/if}
+    {#if own.failed}
+      <p class="muted">Could not load the verses: {own.failed}</p>
+    {:else if own.keys?.length && own.rows.length}
+      {@const names = data.named(versesOf) ? [data.named(versesOf)!] : []}
+      <h3 id="own-verses">In {own.keys.length} verse{own.keys.length === 1 ? "" : "s"}</h3>
+      <ul aria-labelledby="own-verses">
+        {#each own.rows as v (v.key)}
+          <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
+        {/each}
+      </ul>
+      {#if own.rows.length < own.keys.length}
+        <button class="more" disabled={own.busy} onclick={() => own.more()}>{own.busy ? "Loading…" : `Show ${Math.min(VERSE_STEP, own.keys.length - own.rows.length)} more (${own.rows.length} of ${own.keys.length})`}</button>
+      {/if}
+    {/if}
     {#await sharing then lists}
       {#each lists as { with: o, names, verses }, i (o)}
         {#if verses.length}
