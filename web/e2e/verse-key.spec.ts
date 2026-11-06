@@ -17,3 +17,19 @@ test("a list of verses has a key saying which node is which, and which are not m
   await panel(page).getByRole("button", { name: /^Genealogy 8 verses/ }).click();
   await expect(panel(page).getByText(/GENEALOGY is not marked/)).toBeVisible();
 });
+
+test("'together in N verses' goes to the verses, in the panel and in the HUD", async ({ page }) => {
+  await openOnAbraham(page);
+  await focusIs(page, "person:abraham_58");
+  await panel(page).getByRole("button", { name: /^Jacob/ }).first().click();
+  // Scroll away from the verses, as a reader who went down the lists would be.
+  await panel(page).evaluate((p) => p.scrollTo(0, 1500));
+  const heading = panel(page).getByRole("heading", { name: /^Together in \d+ verses?$/ });
+  await panel(page).getByRole("button", { name: /^together in \d+ verses?$/ }).click();
+  await expect(heading).toBeInViewport();
+
+  await page.getByRole("button", { name: "HUD", exact: true }).click();
+  const hud = page.getByRole("region", { name: "Selected Node HUD" });
+  await hud.getByRole("button", { name: /^together in \d+ verses?$/ }).click();
+  await expect(hud.getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
+});

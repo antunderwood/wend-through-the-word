@@ -310,7 +310,7 @@
   {#key selected}
     <div class="head">
       <h2 class="name" title={label(selected)}>{label(selected)}</h2>
-      {#if linkWords}<p class="rel"><span class="key">Rel</span> {linkWords}{#if !linkWords.includes(plainName(focus))} <span class="dim">/ {plainName(focus)}</span>{/if}</p>{/if}
+      {#if linkWords}<p class="rel"><span class="key">Rel</span> {#if shared && linkWords.startsWith("together in")}<button class="jump" title="Show the verses" onclick={() => (tab = "verses")}>{linkWords}</button>{:else}{linkWords}{/if}{#if !linkWords.includes(plainName(focus))} <span class="dim">/ {plainName(focus)}</span>{/if}</p>{/if}
     </div>
   {/key}
   {#if tabs.length > 1}
@@ -592,14 +592,14 @@
     z-index: -1;
     pointer-events: none;
   }
-  /* Semi-transparent: a light tint and a slight blur, so the graph stays visible behind the card but
+  /* Mostly opaque (owner, decision 226: verse text must read over graph labels): a tint and a blur, so the graph stays visible behind the card but
      its labels do not fight the text. Scan lines give it the look of a projected panel. */
   .glass {
     background:
       repeating-linear-gradient(0deg, rgba(var(--hud-line), 0.035) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, rgba(var(--hud-line), 0.14), rgba(var(--hud-deep), 0.42) 40%, rgba(var(--hud-deep), 0.5));
-    backdrop-filter: blur(3px) saturate(1.2);
-    -webkit-backdrop-filter: blur(3px) saturate(1.2);
+      linear-gradient(160deg, rgba(var(--hud-line), 0.14), rgba(var(--hud-deep), 0.68) 40%, rgba(var(--hud-deep), 0.78));
+    backdrop-filter: blur(6px) saturate(1.2);
+    -webkit-backdrop-filter: blur(6px) saturate(1.2);
   }
   .frame {
     width: 100%;
@@ -805,6 +805,18 @@
   .rel {
     margin: 6px 0 0;
     font: 12px/1.4 var(--mono);
+  }
+  /* "together in N verses" is the way to the Verses tab. */
+  .jump {
+    all: unset;
+    cursor: pointer;
+    color: rgb(var(--hud-line));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .jump:focus-visible {
+    outline: 2px solid rgb(var(--hud-line));
+    outline-offset: 2px;
   }
   .key {
     color: rgb(var(--hud-line));

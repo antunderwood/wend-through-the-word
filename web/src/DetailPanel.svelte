@@ -164,6 +164,14 @@
       release(); // and when the layout becomes the phone's
     };
   });
+  // "together in N verses" in the Relationship line scrolls to the verses themselves, which the
+  // hold of a clicked list item may have left above the view.
+  function showVerses() {
+    release();
+    const list = panelBox?.querySelector("#shared-0, #own-verses");
+    list?.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    (list?.nextElementSibling?.querySelector("button") as HTMLElement | null)?.focus({ preventScroll: true });
+  }
   function onscroll() {
     if (compact || !panelBox) return;
     if (Math.abs(panelBox.scrollTop - scrolled) > 1) release();
@@ -298,7 +306,7 @@
            under a Verse's own text, which has no shared list below it to hold in place. -->
       <p class="relationship" hidden={!link && (!compact || !!verseText)} title={link && `Relationship: ${linkWords!.text}${evidence ? ` (${data.label(evidence)})` : ""}. ${credit(linkEdges)}`}>
         <!-- The one Relationship line keeps the full words; the lists drop the fixed ones (decision 142). -->
-        {#if link}<span class="words">Relationship: <b>{linkWords!.text}</b>
+        {#if link}<span class="words">Relationship: {#if linkWords!.derived}<button class="jump" title="Go to the verses" onclick={showVerses}>{linkWords!.text}</button>{:else}<b>{linkWords!.text}</b>{/if}
             {#if evidence}(<button class="ref" onclick={() => apply({ type: "select", id: evidence })}>{data.label(evidence)}</button>){/if}</span>
           {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
       </p>
@@ -791,6 +799,13 @@
   }
   /* The text is dimmed by its colour and not its opacity, so a bold name, in its type's colour (the
      graph's disc colours), is not dimmed with it. */
+  .jump {
+    all: unset;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
   .verse-text {
     margin: 0 0 8px 4px;
     color: var(--text-soft);
