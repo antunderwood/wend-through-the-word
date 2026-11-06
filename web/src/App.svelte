@@ -687,8 +687,9 @@
   .stage :global(canvas) {
     display: block;
   }
-  /* The search box, the Your Path bar beside it, and the panel's chevron at the end. The search box's
-     type chips hang below the row, over the scene's top left corner. */
+  /* One top bar (decision 212): the search field, Your Path beside it, and the panel's chevron at
+     the end, with one lower edge where the panel and the scene start. The type chips and the results
+     drop below it only while the search box is in use. */
   .top {
     display: contents;
   }
@@ -697,13 +698,16 @@
     grid-row: top;
     grid-column: 1 / -1;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--gutter);
     min-width: 0;
-    padding: var(--gutter) var(--space-3) 0 var(--gutter);
+    box-sizing: border-box;
+    padding: 0 var(--space-3) 0 var(--gutter);
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
   }
   /* The detail panel beside the scene, from below the top row to the bottom; without WebGL it takes
-     the scene's place instead, below the search box and above the dock. */
+     the scene's place instead, below the top bar and above the dock. */
   .grid > :global(.panel) {
     grid-row: main-start / dock-end;
     grid-column: panel;
@@ -713,7 +717,7 @@
     grid-column: stage-start / panel-end;
     margin-top: calc(var(--top-clear) - var(--top-h));
   }
-  /* The scene's top left corner: on a desktop below the search box, level with the top of the reader
+  /* The scene's top left corner: on a desktop below the top bar, level with the top of the reader
      drawer and right of it when it is open, clear of the hint, the controls, and the notes. */
   .recentre {
     width: 32px;
@@ -765,7 +769,7 @@
     background: var(--control-on);
     color: var(--accent);
   }
-  /* Under the search box, left of the scene, and above the dock. */
+  /* Under the top bar, left of the scene, and above the dock. */
   .drawer {
     grid-row: main;
     grid-column: drawer;
@@ -786,7 +790,6 @@
   .chevron {
     flex: none;
     margin-left: auto; /* at the row's end, however wide the Your Path bar is */
-    margin-top: calc(var(--space-3) - var(--gutter)); /* 12 px from the window's top, like its right */
     width: 32px;
     height: 32px;
     padding: 0;
