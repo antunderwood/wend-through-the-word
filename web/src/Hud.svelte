@@ -295,7 +295,7 @@
   {#key selected}
     <div class="head">
       <h2 class="name" title={label(selected)}>{label(selected)}</h2>
-      {#if linkWords}<p class="rel"><span class="key">Rel</span> {linkWords} <span class="dim">/ {plainName(focus)}</span></p>{/if}
+      {#if linkWords}<p class="rel"><span class="key">Rel</span> {linkWords}{#if !linkWords.includes(plainName(focus))} <span class="dim">/ {plainName(focus)}</span>{/if}</p>{/if}
     </div>
   {/key}
   {#if tabs.length > 1}
