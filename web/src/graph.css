@@ -59,6 +59,14 @@ html[data-phone] .nl.focus {
 .nl.selected {
   text-decoration: underline;
 }
+/* A label with a quote (the Focus, a Verse) underlines its name only: a decoration on the label
+   would run through every line of the quote and make it read as a block of links. */
+.nl.selected.quoted {
+  text-decoration: none;
+}
+.nl.selected .name {
+  text-decoration: underline;
+}
 /* Relationship words on the Focus edges; a Co-mention reads quieter. Opacity is left to the
    distance fade. */
 .el {

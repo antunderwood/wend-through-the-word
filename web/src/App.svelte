@@ -6,6 +6,8 @@
   import DetailPanel from "./DetailPanel.svelte";
   import Filters, { FILTERS_ID } from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
+  import Hud from "./Hud.svelte";
+  import { keepInfoMode, keptInfoMode, type InfoMode } from "./hud";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
   import { notesMarkdown } from "./notes";
@@ -40,6 +42,14 @@
   let splash = $state(!stored(SPLASH_KEY));
   let tip = $state.raw<{ text: string; x: number; y: number } | null>(null);
   let collapsed = $state(false);
+  // On a desktop window the Selected Node shows in the side panel or on the HUD over the scene, as
+  // the reader last chose in this browser. A phone keeps its sheet; a tour and no WebGL use the panel.
+  let infoMode = $state<InfoMode>(keptInfoMode());
+  function setInfoMode(mode: InfoMode) {
+    infoMode = mode;
+    keepInfoMode(mode);
+    if (mode === "panel") collapsed = false;
+  }
   // On a phone, the bottom sheet open at nearly the whole screen rather than half (dragged there).
   let sheetFull = $state(false);
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
@@ -270,6 +280,7 @@
   // unless the reader keeps it. On a phone the sheet, open (half or full) or closed, comes back too
   // (decision 185).
   let touring = $state(false);
+  const hud = $derived(infoMode === "hud" && !screen.phone && !noWebGL && !touring && !!graph);
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean } | undefined;
   const tourPage: TourPage = {
@@ -422,13 +433,13 @@
     {inline}
   />
 {/snippet}
-<!-- On a desktop window the page is a grid (decision 210): the top row of the search box, the Your
+<!-- On a desktop window the page is a grid (decision 211): the top row of the search box, the Your
      Path bar, and the panel's chevron; under it the reader drawer, the scene, and the detail panel side
      by side; and the dock of notes, the view picker, and the footer along the bottom of the drawer and
      the scene. Each part takes its place from the grid and the sizes in tokens.css, so the scene fills
      what the others leave. On a phone the shell draws no box and each part places itself over the
      scene and the bottom sheet. -->
-<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL} class:reading={!!reading}>
+<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={!!reading}>
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div class="stage" data-tour="scene" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
@@ -444,7 +455,7 @@
     <PathBar {model} {label} {apply} {notes} {makeFocus} />
     <!-- The chevron points the way the panel will move. -->
     {#if !screen.phone}
-      <button class="chevron" hidden={noWebGL} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
+      <button class="chevron" hidden={noWebGL || hud} aria-controls="panel" aria-expanded={!collapsed} aria-label={collapsed ? "Show panel" : "Hide panel"} onclick={() => (collapsed = !collapsed)}>
         {collapsed ? "‹" : "›"}
       </button>
     {/if}
@@ -464,7 +475,7 @@
       download={downloadNotes}
       deleteAll={() => setNotes({})}
       {noWebGL}
-      {collapsed}
+      collapsed={collapsed || hud}
       controls={screen.phone ? phoneControls : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
     />
@@ -516,6 +527,23 @@
     />
   {:else}
     {@render details()}
+    {#if hud}
+      <Hud
+        data={data!}
+        {model}
+        {label}
+        {apply}
+        {makeFocus}
+        {pin}
+        onread={openReader}
+        onpanel={() => setInfoMode("panel")}
+        nodeRect={graph?.nodeRect}
+        {motion}
+        {notes}
+        onnote={(id, text) => setNotes(withNote(notes, id, text))}
+        download={downloadNotes}
+      />
+    {/if}
   {/if}
   {#if reading && !screen.phone}
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
@@ -577,6 +605,10 @@
       <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
       {@render filters(false)}
       <button class="pill" onclick={copyLink}>Copy link</button>
+      <!-- The Selected Node on a see-through HUD over the scene, in place of the side panel. -->
+      {#if !noWebGL && !touring}
+        <button class="pill hud-toggle" class:on={hud} aria-pressed={hud} title={hud ? "Show the Selected Node in the side panel" : "Show the Selected Node on a HUD over the graph"} onclick={() => setInfoMode(hud ? "panel" : "hud")}>HUD</button>
+      {/if}
     {/if}
   {/if}
 {/snippet}
@@ -609,7 +641,7 @@
     --edge: 8px;
     --bar: 40px;
   }
-  /* The desktop grid (decision 210). Columns: the reader drawer (as wide as it is, none when it is
+  /* The desktop grid (decision 211). Columns: the reader drawer (as wide as it is, none when it is
      closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall
      as its notes and controls. The scene runs down behind the dock, as the dock lets a pointer
      through; the drawer and a panel without the scene stop above it. With the panel hidden, or
@@ -643,7 +675,7 @@
     grid-column: stage;
     overflow: hidden;
   }
-  .grid.wide > :is(.stage, .dock, .hint) {
+  .grid.wide > :is(.stage, .dock) {
     grid-column-end: panel-end;
   }
   /* On a phone the scene is the whole width below the Your Path bar; the bottom sheet lies over it,
@@ -661,7 +693,7 @@
     display: contents;
   }
   .grid > .top {
-    z-index: 2;
+    z-index: 5; /* the search results stay over the HUD (4), under the tour (10) */
     grid-row: top;
     grid-column: 1 / -1;
     display: flex;
@@ -761,6 +793,12 @@
     border-radius: var(--radius-pill);
     font-size: var(--fs-2xl);
     line-height: 1;
+  }
+  /* Lit in the HUD's own cyan while the HUD shows. */
+  .hud-toggle.on {
+    color: #7fe3ff;
+    border-color: rgba(127, 227, 255, 0.7);
+    box-shadow: 0 0 6px rgba(127, 227, 255, 0.4);
   }
   .dock {
     display: contents;

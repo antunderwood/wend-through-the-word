@@ -52,7 +52,9 @@ test.describe("with reduced motion", () => {
     expect(Math.max(...frame.filter((n) => n.role === "ring1").map((n) => far(n, focus)))).toBeGreaterThan(100);
     await expect(page.getByRole("status")).toHaveText("Sarah is the Focus.");
     await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Sarah");
-    await expect(panel.getByRole("button", { name: "Make Focus" })).toBeDisabled();
+    // The Focus itself shows a Focus badge in place of Make Focus.
+    await expect(panel.getByTitle("Sarah is the Focus")).toHaveText("Focus");
+    await expect(panel.getByRole("button", { name: "Make Focus" })).toHaveCount(0);
   });
 
   test("a double click on a node makes it the Focus", async ({ page }) => {

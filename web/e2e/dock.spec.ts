@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { box, overlaps } from "./boxes";
 import { focusIs, openOnAbraham } from "./scene";
 
-// The dock along the bottom of the drawer and the scene (decision 210): the notes and the footer
+// The dock along the bottom of the drawer and the scene (decision 211): the notes and the footer
 // never run into the view picker, Filters, or Copy link, nor any of them into the panel, at a wide
 // window, a laptop, and a tablet's width, with the reader drawer open or closed.
 for (const size of [
