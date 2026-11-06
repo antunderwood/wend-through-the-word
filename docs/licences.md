@@ -21,6 +21,7 @@ Quotes are copied from the upstream text on the date checked. Where we could not
 | Wikidata | Replacement coordinates | CC0 (structured data) | Yes | 2026-10-19 |
 | GeoNames | Replacement coordinates | CC BY 4.0 | Yes | 2026-10-19 |
 | STEPBible TIPNR | Build-time check only | CC BY 4.0, with a request not to repost the file | No | 2026-10-19 |
+| ACAI Biblical Entity Data (BiblioNexus) | Build-time check only | CC BY-SA 4.0 | No | 2026-11-06 |
 | STEPBible TVTMS | Moves each source's verse references into KJV numbering | CC BY 4.0, with a request not to repost the file | No rows ship; credited | 2026-11-06 |
 | Nave's Topical Bible (bible-data) | Themes and Filed Under links | CC BY 4.0 (the dataset) | Yes | 2026-10-19 |
 
@@ -212,6 +213,15 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
   - The README says each individual "has a description in brief, short and article length (created by Claude 3 AI)". Decision 7 relies on this.
   - Theographic lists TIPNR as a source for people and verse tagging. So TIPNR's credit also reaches us through Theographic.
 
+### 3.9b ACAI Biblical Entity Data
+
+- URL: https://github.com/BibleAquifer/ACAI, release tag `v2026-10-30` (commit `bb82a88`, 2026-10-30), downloaded as the tag's zip. The build reads `people/json`, `places/json` and `groups/json`.
+- Use: build-time check of identity, Mentions and family links against Theographic (decision 217). Nothing ships.
+- Licence as stated: CC BY-SA 4.0. `LICENSE.md`: "ACAI Biblical Entity Data © 2024 by BiblioNexus is licensed under CC BY SA 4.0".
+- Conditions: credit BiblioNexus with a link; share alike (met: the dataset is CC BY-SA 4.0). The credits page names it, marked as used for checks only.
+- Date checked: 2026-11-06.
+- Notes: ACAI's verse references use original-language numbering (Hebrew in the Old Testament, SBLGNT in the New), so they are moved into KJV numbering by TVTMS (decision 216). `alternate_sources.vizbible` holds Theographic record IDs.
+
 ### 3.9a STEPBible TVTMS
 
 - URL: https://github.com/STEPBible/STEPBible-Data, folder "Versification" (branch `master`, last commit `5de0a47`, 2026-11-02). File: "TVTMS - Translators Versification Traditions with Methodology for Standardisation for Eng+Heb+Lat+Grk+Others - STEPBible.org CC BY.txt".
@@ -297,6 +307,7 @@ Rules:
    - Nave's slices: CC BY 4.0.
    - Pleiades slices: CC BY 3.0. GeoNames slices: CC BY 4.0. Wikidata slices: CC0.
    - Curated tables: our own data, CC BY-SA 4.0 (they change Theographic data).
+   - ACAI: synthetic records written by `tests/fixtures/make_acai.py`, our own test data (MIT).
 4. The TIPNR and TVTMS fixtures are synthetic. We write them by hand in their formats. They hold no real rows. Reason: STEPBible asks that its files are not posted elsewhere (sections 3.9 and 3.9a).
 5. Do not put King James Version text from Theographic `verses.json` into fixtures. Strip `verseText` and similar fields. Reason: the UK status of the KJV is unverified (section 3.2).
 6. Do not put real OpenStreetMap coordinates into fixtures. The spec needs "an OpenStreetMap point that is re-sourced and one that is not found". Use a real record with its coordinates replaced by made-up values, or a synthetic record. Keep `coordinates_source.type` as "osm". Reason: a real OpenStreetMap point in a public repository is ODbL data, even if it never ships.

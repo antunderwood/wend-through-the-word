@@ -94,8 +94,8 @@ def credits(export):
 def test_credits_list_every_source_the_build_read_and_no_other(export):
     shipped = read_json(export / "data" / "index.json")["sources"]
     entries = credits(export)["sources"]
-    # TIPNR is read for the check only, so it is credited but not listed as shipped data.
-    assert sorted(f for e in entries for f in e["files"]) == sorted([*shipped, "tipnr"])
+    # TIPNR and ACAI are read for checks only, so they are credited but not listed as shipped data.
+    assert sorted(f for e in entries for f in e["files"]) == sorted([*shipped, "tipnr", "acai"])
     assert all(e["name"] and e["licence"] and e["link"].startswith("https://") for e in entries)
     theographic = next(e for e in entries if e["name"] == "Theographic Bible Metadata")
     assert theographic["licence"] == "CC BY-SA 4.0"

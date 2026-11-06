@@ -67,6 +67,12 @@ SOURCES = {
     "theo-geo": (f"{THEO.removesuffix('/json')}/geo/bible-places.geojson", "CC BY-SA 4.0"),
     **{f"geo-{t}": (f"{GEO}/{t}.jsonl", "CC BY 4.0") for t in ("ancient", "modern", "source")},
     "tipnr": (f"{STEP}/{TIPNR.replace(' ', '%20')}", "CC BY 4.0"),
+    # Check only (decision 217): People, Places and Groups tagged in the original languages, with
+    # the Theographic record IDs they match. A release tag, so the download is pinned.
+    "acai": (
+        "https://github.com/BibleAquifer/ACAI/archive/refs/tags/v2026-10-30.zip",
+        "CC BY-SA 4.0",
+    ),
     # Moves each source's verse references into KJV numbering (decision 216).
     "tvtms": (
         f"{STEP.removesuffix('Proper%20Nouns')}Versification/{TVTMS.replace(' ', '%20')}",
@@ -95,8 +101,9 @@ VERSIFICATION = {
     "theo-verses": "kjv",
     "tipnr": "kjv",  # with Psalm titles as verse 0
     "naves": "kjv",
+    "acai": "original",  # Hebrew numbering in the Old Testament, SBLGNT in the New
 }
-FILE_NAMES = {WIKIDATA: "wikidata-coords.json"}
+FILE_NAMES = {WIKIDATA: "wikidata-coords.json", SOURCES["acai"][0]: "acai-v2026-10-30.zip"}
 QUERY_FILE = "wikidata-query.sparql"  # saved next to its result, so it can be run again
 HEADERS = {"User-Agent": "wend-through-the-word (github.com/antunderwood/wend-through-the-word)"}
 # Every coordinate statement with its rank and references, and the Pleiades and GeoNames IDs.

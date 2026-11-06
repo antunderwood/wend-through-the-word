@@ -77,3 +77,12 @@ def test_the_build_reports_every_reference_it_moves_by_source(export):
         ("crossrefs", "3John.1.15"): "3John.1.14",
         ("tipnr", "Ps.3.0"): "Ps.3.1",
     }
+
+
+def test_original_numbering_is_hebrew_in_the_old_testament_and_greek_in_the_new():
+    assert to_kjv("original", "Ps.3.2", "Joel.4.1", "3John.1.15", "Phil.1.16") == {
+        "Ps.3.2": "Ps.3.1",
+        "Joel.4.1": "Joel.3.1",
+        "3John.1.15": "3John.1.14",
+        "Phil.1.16": "Phil.1.17",
+    }
