@@ -30,7 +30,7 @@ test("a tap on a node shows its details in the bottom sheet, with every action",
   await page.touchscreen.tap(gerar.x, gerar.y);
   const details = sheet.getByRole("tabpanel", { name: "Details" });
   await expect(details.getByRole("heading", { level: 2 })).toHaveText("Gerar");
-  for (const name of ["Make Focus", "Pin", "Prev", "Next", "Read", "Suggest a correction"]) {
+  for (const name of ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correction"]) {
     await expect(details.getByRole("button", { name, exact: true })).toBeVisible();
   }
 });
@@ -161,11 +161,12 @@ test("a double tap on a list row makes it the Focus, and the row does not move b
 });
 
 // Each of the Selected Node's actions is drawn whole on screen and nothing lies over its middle.
-const ACTIONS = ["Make Focus", "Pin", "Prev", "Next", "Read", "Suggest a correction"];
+const ACTIONS = ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correction"];
 async function actionsInReach(page: Page) {
   const details = page.getByRole("tabpanel", { name: "Details" });
   for (const name of ACTIONS) {
-    const button = details.getByRole("button", { name, exact: true });
+    // On the Focus itself, Make Focus is a "Focus" badge (decision 210).
+    const button = name === "Make Focus" ? details.getByRole("button", { name, exact: true }).or(details.getByTitle(/ is the Focus$/)) : details.getByRole("button", { name, exact: true });
     await expect(button, name).toBeInViewport({ ratio: 1 });
     const b = (await button.boundingBox())!;
     expect(b.height, name).toBeGreaterThanOrEqual(44);
@@ -218,7 +219,7 @@ test.describe("on the owner's phone", () => {
     expect(box.y + box.height).toBeCloseTo(visible, 0);
     const details = page.getByRole("tabpanel", { name: "Details" });
     for (const name of ACTIONS) {
-      const b = (await details.getByRole("button", { name, exact: true }).boundingBox())!;
+      const b = (await (name === "Make Focus" ? details.getByRole("button", { name, exact: true }).or(details.getByTitle(/ is the Focus$/)) : details.getByRole("button", { name, exact: true })).boundingBox())!;
       expect(b.y + b.height, name).toBeLessThanOrEqual(visible);
     }
   });

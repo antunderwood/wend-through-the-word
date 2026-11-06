@@ -357,6 +357,12 @@ export function createGraph(host: HTMLElement, label: (id: Id) => string, quote:
     // The Focus shows its first line; a Verse always shows its quote (PRD 10.4 node look 5).
     const q = n.role === "focus" || n.type === "verse" ? quote(n.id) : "";
     if (q) {
+      // The name in a span of its own, so a selection underlines the name and not the quote.
+      const name = document.createElement("span");
+      name.className = "name";
+      name.textContent = d.textContent;
+      d.replaceChildren(name);
+      d.classList.add("quoted");
       const p = document.createElement("div");
       p.className = "quote";
       p.textContent = q;
