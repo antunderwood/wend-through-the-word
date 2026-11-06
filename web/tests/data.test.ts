@@ -100,6 +100,17 @@ describe("data loader", () => {
     expect(gen25v26.terms).toEqual([]);
   });
 
+  it("gives an Entity's own Verse Keys in order, and their text and its terms a page at a time (decision 223)", async () => {
+    const data = await createData(readExport, "");
+    const keys = await data.verseKeys("person:rebekah_2401");
+    expect(keys).toEqual([...keys].sort());
+    expect(keys.map((k) => data.label(k))).toContain("Gen 25:21");
+    const [row] = await data.verses(keys.filter((k) => data.label(k) === "Gen 25:21"), ["person:rebekah_2401"]);
+    expect(row.terms).toEqual([{ type: "person", words: ["his wife", "she"], name: "Rebekah" }]);
+    // With a second Entity, only the Verses both are linked to, as shared() gives them.
+    expect(await data.verseKeys(ABRAHAM, "theme:genealogy")).toEqual((await data.shared(ABRAHAM, "theme:genealogy")).map((v) => v.key));
+  });
+
   it("tells same-name Entities of one type apart by the hint after the name", async () => {
     const data = await createData(readExport, "");
     // Fixture: People named Anah, and two Places named Sitnah that share Gen 26:21, so the first

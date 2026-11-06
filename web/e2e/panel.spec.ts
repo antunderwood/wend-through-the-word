@@ -69,6 +69,18 @@ test("a list click selects, a double click makes the Focus", async ({ page }) =>
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Sarah");
 });
 
+test("the selected Focus lists its own Verses, with BSB text, a page at a time (decision 223)", async ({ page }) => {
+  const own = panel(page).getByRole("list", { name: /^In \d+ verses$/ });
+  // Five at first, so the Neighbour lists below stay near the top; then 20 more at a time.
+  await expect(own.getByRole("listitem")).toHaveCount(5);
+  await expect(own.getByRole("listitem").first()).toContainText(/\w+ \d+:\d+/);
+  await panel(page).getByRole("button", { name: /^Show 20 more \(5 of \d+\)$/ }).click();
+  await expect(own.getByRole("listitem")).toHaveCount(25);
+  // Another node shows the Verses it shares with the Focus instead.
+  await typeList(page, "Theme (37)").getByRole("button", { name: /^Genealogy/ }).click();
+  await expect(own).toHaveCount(0);
+});
+
 test("the panel lists the Verses a Selected Node shares with the Focus, with BSB text", async ({ page }) => {
   await typeList(page, "Theme (37)").getByRole("button", { name: /^Genealogy/ }).click();
   // Genealogy stands in for Faith, which shares no Verse with Abraham in the fixture.

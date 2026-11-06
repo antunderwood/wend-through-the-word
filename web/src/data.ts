@@ -230,6 +230,27 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
     return hits.slice(0, 30).map(({ id, hint }) => ({ id, hint }));
   }
 
+  // The Verse Keys an Entity is linked to, in Bible order; with a second Entity, only those both
+  // are linked to.
+  async function verseKeys(a: Id, b?: Id): Promise<Id[]> {
+    const keysOf = (r: Rec) => r.links.filter((l) => l.type === "verse").map((l) => l.id);
+    const [ra, rb] = await Promise.all([load(a), b === undefined ? undefined : load(b)]);
+    const mine = keysOf(ra);
+    if (!rb) return mine.sort();
+    const both = new Set(mine);
+    return keysOf(rb).filter((k) => both.has(k)).sort();
+  }
+  // Those Verses with their BSB text and the referring terms in it of the Entities `ids` (decision 221).
+  async function verses(keys: Id[], ids: Id[]): Promise<{ key: Id; text: string; terms: Term[] }[]> {
+    return Promise.all(
+      keys.map(async (key) => {
+        const v = await load(key);
+        const terms = (v.highlights ?? []).filter((h) => ids.includes(h.id)).map((h) => ({ type: typeOf(h.id), words: h.words, name: entities.get(h.id)?.name }));
+        return { key, text: v.text ?? "", terms };
+      }),
+    );
+  }
+
   return {
     get version() {
       return version;
@@ -249,19 +270,12 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
       await Promise.allSettled(kin.map((l) => load(l.id)));
       return r;
     },
+    verseKeys,
+    verses,
     // The Verses two Entities are both linked to, in Bible order, with their BSB text and the two
     // Entities' referring terms in it (decision 221).
     async shared(a: Id, b: Id): Promise<{ key: Id; text: string; terms: Term[] }[]> {
-      const [ra, rb] = await Promise.all([load(a), load(b)]);
-      const mine = new Set(ra.links.filter((l) => l.type === "verse").map((l) => l.id));
-      const keys = rb.links.filter((l) => l.type === "verse" && mine.has(l.id)).map((l) => l.id).sort();
-      return Promise.all(
-        keys.map(async (key) => {
-          const v = await load(key);
-          const terms = (v.highlights ?? []).filter((h) => h.id === a || h.id === b).map((h) => ({ type: typeOf(h.id), words: h.words, name: entities.get(h.id)?.name }));
-          return { key, text: v.text ?? "", terms };
-        }),
-      );
+      return verses(await verseKeys(a, b), [a, b]);
     },
     // What the export holds about an Entity beyond its links, each part with its source and licence.
     async details(id: Id) {

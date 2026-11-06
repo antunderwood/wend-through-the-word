@@ -5,7 +5,7 @@ that links Entities to Verses. Sets `b.routes`, which `export` writes as `routes
 A route file holds only a line, so each row of `routes.csv` gives the route's title and passage
 (OSIS references or ranges in KJV numbering, joined with ";"). A row ships when it is reviewed
 ("yes") and its passage has a Verse in the book range. A row marked "unsure" ships too, flagged
-`unreviewed`, so the map can say its match is a guess (decision 223). Each Person, Place and Event named in a
+`unreviewed`, so the map can say its match is a guess (decision 224). Each Person, Place and Event named in a
 shipped route's passage (in the whole Bible) lists the route in `routes`, most shared Verses
 first. Coordinates are rounded to four decimals (about 10 m).
 """
