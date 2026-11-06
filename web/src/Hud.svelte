@@ -1,13 +1,15 @@
 <script lang="ts">
   // The HUD: the Selected Node on a see-through card over the scene, with a leader line to its node.
   // A desktop window's alternative to the detail panel (InfoMode "hud"). Its tabs hold the overview,
-  // the Neighbour lists, the Verses shared with the Focus, and the journey note; the panel stays one
+  // the Neighbour lists, the Verses (shared with the Focus, or the Focus's own), and the journey note; the panel stays one
   // click away for corrections, the map, and the pins' lists. The reader drags the card by its strip
   // and sizes it by its corner; both are kept in this browser. On a phone (docked) the card is fixed
   // across the bottom of the scene, just above the closed sheet, in place of the sheet's peek: it does
   // not move or size, and Details opens the sheet for the rest. Props only; App owns the state.
   import { untrack } from "svelte";
   import VerseText from "./VerseText.svelte";
+  import { OwnVerses, VERSE_STEP, type VerseRow } from "./verses.svelte";
+  import type { Named } from "./bold";
   import { typeColour } from "./colours";
   import type { Data } from "./data";
   import {
@@ -99,15 +101,18 @@
       ? data.shared(focus, selected).then((verses) => ({ verses, names: [selected, focus].flatMap((id) => data.named(id) ?? []) }))
       : undefined,
   );
+  // The Focus has no Verses shared with itself: its tab lists its own, a page at a time (decision 223).
+  const own = new OwnVerses(() => data, () => (selected === focus && isEntity(selected) ? selected : undefined));
+  const hasVerses = $derived(!!shared || (selected === focus && isEntity(selected)));
   const noted = $derived(selected === focus || model.path.includes(selected));
 
   // The tabs this node has; a tab the next node lacks falls back to the overview.
-  type Tab = "overview" | "links" | "together" | "note";
+  type Tab = "overview" | "links" | "verses" | "note";
   let tab = $state<Tab>("overview");
   const tabs = $derived<{ id: Tab; name: string }[]>([
     { id: "overview", name: "Overview" },
     ...(listing ? [{ id: "links" as Tab, name: "Links" }] : []),
-    ...(shared ? [{ id: "together" as Tab, name: "Together" }] : []),
+    ...(hasVerses ? [{ id: "verses" as Tab, name: "Verses" }] : []),
     ...(noted ? [{ id: "note" as Tab, name: "Note" }] : []),
   ]);
   const shownTab = $derived(tabs.some((t) => t.id === tab) ? tab : "overview");
@@ -309,7 +314,7 @@
     <div class="body" id="hud-body" role={tabs.length > 1 ? "tabpanel" : undefined} aria-labelledby={tabs.length > 1 ? `hud-tab-${shownTab}` : undefined}>
       {#if shownTab === "overview"}{@render overviewTab()}{/if}
       {#if shownTab === "links"}{@render linksTab()}{/if}
-      {#if shownTab === "together"}{@render togetherTab()}{/if}
+      {#if shownTab === "verses"}{@render versesTab()}{/if}
       {#if shownTab === "note"}{@render noteTab()}{/if}
     </div>
   {/key}
@@ -342,6 +347,15 @@
 
 {#snippet overviewTab()}
   {#if data.outside(selected)}<p class="dim">{data.outside(selected)}</p>{/if}
+  <!-- One Verse on the overview, so the Verses tab is never hidden behind its name (decision 223):
+       one with an underlined referring term when the loaded Verses have one. -->
+  {#if shared}
+    {#await shared then s}
+      {#if s?.verses.length}{@render versePeek(s.verses, s.verses.length, s.names, `With ${plainName(focus)} in`)}{/if}
+    {/await}
+  {:else if own.keys?.length && own.rows.length}
+    {@render versePeek(own.rows, own.keys.length, data.named(selected) ? [data.named(selected)!] : [], "In")}
+  {/if}
   {#if verseText}
     {#await verseText then t}{#if t}<blockquote class="text">{t}</blockquote>{/if}{/await}
   {/if}
@@ -425,7 +439,46 @@
 
 <!-- The Verses the Selected Node shares with the Focus, names in bold and referring terms underlined
      in their type's colour. -->
-{#snippet togetherTab()}
+{#snippet versePeek(rows: VerseRow[], total: number, names: Named[], lead: string)}
+  {@const v = rows.find((x) => x.terms.length) ?? rows[0]}
+  <h3>Verses</h3>
+  <div class="peek">
+    <button class="ref" onclick={() => apply({ type: "select", id: v.key })} ondblclick={() => makeFocus(v.key)}>{data.label(v.key)}</button>
+    <p class="text clamp"><VerseText text={v.text} {names} terms={v.terms} /></p>
+  </div>
+  <button class="link" onclick={() => (tab = "verses")}>{lead} {total} verse{total === 1 ? "" : "s"}: show all</button>
+{/snippet}
+
+{#snippet versesTab()}
+  {#if shared}{@render togetherList()}{:else}{@render ownList()}{/if}
+{/snippet}
+
+<!-- The Focus's own Verses, its name in bold and its referring terms underlined, a page at a time. -->
+{#snippet ownList()}
+  {#if own.failed}
+    <p class="dim">Could not load the verses: {own.failed}</p>
+  {:else if !own.keys || (own.keys.length && !own.rows.length)}
+    <p class="dim">Loading verses…</p>
+  {:else if own.keys.length}
+    {@const names = data.named(selected) ? [data.named(selected)!] : []}
+    <h3>In {own.keys.length} verse{own.keys.length === 1 ? "" : "s"}</h3>
+    <ul class="verses">
+      {#each own.rows as v (v.key)}
+        <li>
+          <button class="ref" onclick={() => apply({ type: "select", id: v.key })} ondblclick={() => makeFocus(v.key)}>{data.label(v.key)}</button>
+          <p class="text"><VerseText text={v.text} {names} terms={v.terms} /></p>
+        </li>
+      {/each}
+    </ul>
+    {#if own.rows.length < own.keys.length}
+      <button class="link" disabled={own.busy} onclick={() => own.more()}>{own.busy ? "Loading…" : `${Math.min(VERSE_STEP, own.keys.length - own.rows.length)} more (${own.rows.length} of ${own.keys.length})`}</button>
+    {/if}
+  {:else}
+    <p class="dim">No verse is linked to {plainName(selected)}.</p>
+  {/if}
+{/snippet}
+
+{#snippet togetherList()}
   {#await shared}
     <p class="dim">Loading verses…</p>
   {:then s}
@@ -929,7 +982,8 @@
     letter-spacing: 0.1em;
     cursor: pointer;
   }
-  .verses .text {
+  .verses .text,
+  .peek .text {
     margin-top: 4px;
   }
   .link {
