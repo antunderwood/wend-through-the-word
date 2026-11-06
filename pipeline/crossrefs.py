@@ -11,7 +11,6 @@ import zipfile
 from collections import Counter, defaultdict
 
 from pipeline.common import report_mismatches, ring2_entries
-from pipeline.verses import REMAP
 
 
 def load(b):
@@ -25,7 +24,7 @@ def load(b):
         a, to, votes = row.split("\t")
         start, _, end = to.partition("-")
         refs = [a, start, end] if end else [a, start]
-        keys = [b.verse_keys.get(REMAP.get(r, r)) for r in refs]
+        keys = [b.verse_keys.get(b.to_kjv("crossrefs", r)) for r in refs]
         if None in keys:
             missing.update(r for r, k in zip(refs, keys) if k is None)
             continue

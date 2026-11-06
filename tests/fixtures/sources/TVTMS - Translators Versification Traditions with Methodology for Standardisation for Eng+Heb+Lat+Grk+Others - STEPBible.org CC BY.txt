@@ -1,0 +1,29 @@
+﻿Synthetic TVTMS file, written for tests in the format of STEPBible's TVTMS. It holds no real TVTMS rows.
+Differences between KJV and other  English versions:
+NA/ SBLG	NET2full/ NRSV	ESV	NIV	KJV	MAPPINGS  * = KJV
+*3Jn.1:14-15	*3Jn.1:14-15	*3Jn.1:14-15	3Jn.1:14	3Jn.1:14	synthetic
+*Php.1:16	*Php.1:16	*Php.1:16	*Php.1:16	Php.1:17	synthetic
+*Php.1:17	*Php.1:17	*Php.1:17	*Php.1:17	Php.1:16	synthetic
+Rev.12:17	Rev.12:17	Rev.12:17a	Rev.12:17	Rev.12:17	
+So, for a synthetic test the mappings are as above.
+#DataStart(Condensed)
+$Section (in Eng refs)	English KJV	Hebrew	Latin	Greek
+$Psa.3:1-3:8
+English KJV	 & Psa.3:8=Last & Psa.3:TextBeforeV1=Exist
+Hebrew + Greek + Latin	 & Psa.3:9=Last & Psa.3:TextBeforeV1=NotExist
+BIBLES	English KJV	Hebrew	Latin	Greek
+OneToOne	Psa.3:Title	Psa.3:1	Psa.3:1	Psa.3:1
+OneToOne	Psa.3:1	Psa.3:2	Psa.3:2	Psa.3:2
+OneToOne	Psa.3:2-8	Psa.3:3-9	Psa.3:3-9	Psa.3:3-9
+
+$Jol.2:28--3:21	English KJV	Hebrew	Latin	Greek
+TEST: If...	Jol.3:21=Last	Jol.3:5=Last	Jol.3:21=Last	Jol.3:5=Last
+OneToOne	Jol.2:28-32	Jol.3:1-5	Jol.2:28-32	Jol.3:1-5
+OneToOne	Jol.3:1-21	Jol.4:1-21	Jol.3:1-21	Jol.4:1-21
+#OneToOne	Jol.3:1	Jol.9:1	Jol.9:1	Jol.9:1
+
+$Rev.12:17-13.1a	English KJV	Greek
+OneToOne	Rev.13:1	Rev.12:18-13:1
+#DataEnd(Condensed)
+#DataStart(Expanded)
+#DataEnd(Expanded)

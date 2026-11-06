@@ -30,8 +30,9 @@ def direct_links(keys):
     return out
 
 
-def people(path, books):
-    """TIPNR PERSON records: unique key -> names, verses (OSIS), and a set of keys per field."""
+def people(path, books, to_kjv):
+    """TIPNR PERSON records: unique key -> names, verses (OSIS, KJV numbering), and a set of
+    keys per field."""
     out = {}
     for block in path.read_text(encoding="utf-8").split("\n$========== ")[1:]:
         kind, head, *lines = block.splitlines()
@@ -53,7 +54,7 @@ def people(path, books):
             for ref in sub[4].split(";"):  # "Gen.11.20", "Exo.7.10a"; skips "LXX Gen.11.20"
                 m = re.fullmatch(r"(\w+)\.(\d+)\.(\d+)[a-e]?", ref.strip())
                 if m and m[1] in books:
-                    r["verses"].add(f"{books[m[1]]}.{m[2]}.{m[3]}")
+                    r["verses"].add(to_kjv("tipnr", f"{books[m[1]]}.{m[2]}.{m[3]}"))
     return out
 
 
@@ -74,7 +75,7 @@ def links(e):
 def load(b):
     order = {v["order"]: osis for osis, v in b.books.items()}
     books = {s: order[i] for i, s in enumerate(STEP_BOOKS.split(), 1) if i in order}
-    tipnr = people(b.source("tipnr"), books)
+    tipnr = people(b.source("tipnr"), books, b.to_kjv)
     by_name = defaultdict(set)
     for key, r in tipnr.items():
         for n in r["names"]:

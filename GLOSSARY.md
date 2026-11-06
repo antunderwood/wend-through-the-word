@@ -10,8 +10,12 @@ An explorable graph of the Bible. A reader moves from a verse or an entity to th
 One verse of the Bible, identified by its Verse Key. A Verse is not an Entity.
 
 **Verse Key**:
-The number of a verse in English verse numbering, as book, chapter and verse (Genesis 1:1 is 01001001). The Berean Standard Bible and the KJV share these numbers.
+The number of a verse in KJV versification, as book, chapter and verse (Genesis 1:1 is 01001001). A source that numbers verses another way has its references moved into KJV versification before they are joined (decision 216). The Berean Standard Bible shares these numbers everywhere except Philippians 1:16 and 17, which it has in the other order.
 _Avoid_: Verse ID, reference (for the key itself)
+
+**Versification**:
+How a Bible numbers its verses. Each source declares its own (`VERSIFICATION` in `pipeline/download.py`): `kjv`, `esv`, `niv`, `nrsv`, `na`, or `hebrew` (the Masoretic numbering of Hebrew sources, where Psalm titles are verses and Joel has four chapters).
+_Avoid_: verse numbering scheme, canon
 
 **Cross-reference**:
 A link from one Verse to a related Verse, from OpenBible.info, such as Gen 1:1 to Ps 115:15.

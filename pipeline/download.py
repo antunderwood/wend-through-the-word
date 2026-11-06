@@ -21,6 +21,10 @@ GEO = "https://raw.githubusercontent.com/openbibleinfo/Bible-Geocoding-Data/main
 TIPNR = (
     "TIPNR - Translators Individualised Proper Names with all References - STEPBible.org CC BY.txt"
 )
+TVTMS = (
+    "TVTMS - Translators Versification Traditions with Methodology for Standardisation for "
+    "Eng+Heb+Lat+Grk+Others - STEPBible.org CC BY.txt"
+)
 PLEIADES = "https://atlantides.org/downloads/pleiades/dumps"
 WIKIDATA = "https://query.wikidata.org/sparql"
 # GeoNames files for the Bible lands, one per country; the whole world file is 422 MB.
@@ -63,6 +67,11 @@ SOURCES = {
     "theo-geo": (f"{THEO.removesuffix('/json')}/geo/bible-places.geojson", "CC BY-SA 4.0"),
     **{f"geo-{t}": (f"{GEO}/{t}.jsonl", "CC BY 4.0") for t in ("ancient", "modern", "source")},
     "tipnr": (f"{STEP}/{TIPNR.replace(' ', '%20')}", "CC BY 4.0"),
+    # Moves each source's verse references into KJV numbering (decision 216).
+    "tvtms": (
+        f"{STEP.removesuffix('Proper%20Nouns')}Versification/{TVTMS.replace(' ', '%20')}",
+        "CC BY 4.0",
+    ),
     "naves": (
         "https://raw.githubusercontent.com/BradyStephenson/bible-data/main/NavesTopicalDictionary.csv",
         "CC BY 4.0",
@@ -77,6 +86,15 @@ SOURCES = {
         f"geonames-{c}": (f"https://download.geonames.org/export/dump/{c}.zip", "CC BY 4.0")
         for c in GEONAMES
     },
+}
+# The versification of each source's verse references (decision 216; schemes in
+# pipeline/versification.py). The Verse Key is KJV versification, so "kjv" moves nothing.
+VERSIFICATION = {
+    "bsb": "niv",  # Philippians 1:16 and 17 in the Greek order; checked on BibleAquifer's BSB
+    "crossrefs": "esv",  # OpenBible.info numbers verses as the ESV does
+    "theo-verses": "kjv",
+    "tipnr": "kjv",  # with Psalm titles as verse 0
+    "naves": "kjv",
 }
 FILE_NAMES = {WIKIDATA: "wikidata-coords.json"}
 QUERY_FILE = "wikidata-query.sparql"  # saved next to its result, so it can be run again

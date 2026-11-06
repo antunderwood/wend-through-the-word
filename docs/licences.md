@@ -21,6 +21,7 @@ Quotes are copied from the upstream text on the date checked. Where we could not
 | Wikidata | Replacement coordinates | CC0 (structured data) | Yes | 2026-10-19 |
 | GeoNames | Replacement coordinates | CC BY 4.0 | Yes | 2026-10-19 |
 | STEPBible TIPNR | Build-time check only | CC BY 4.0, with a request not to repost the file | No | 2026-10-19 |
+| STEPBible TVTMS | Moves each source's verse references into KJV numbering | CC BY 4.0, with a request not to repost the file | No rows ship; credited | 2026-11-06 |
 | Nave's Topical Bible (bible-data) | Themes and Filed Under links | CC BY 4.0 (the dataset) | Yes | 2026-10-19 |
 
 ## 1. Licences of this project
@@ -211,6 +212,15 @@ Note: a licence that is not NC can still carry an NC-like limit in its terms. Se
   - The README says each individual "has a description in brief, short and article length (created by Claude 3 AI)". Decision 7 relies on this.
   - Theographic lists TIPNR as a source for people and verse tagging. So TIPNR's credit also reaches us through Theographic.
 
+### 3.9a STEPBible TVTMS
+
+- URL: https://github.com/STEPBible/STEPBible-Data, folder "Versification" (branch `master`, last commit `5de0a47`, 2026-11-02). File: "TVTMS - Translators Versification Traditions with Methodology for Standardisation for Eng+Heb+Lat+Grk+Others - STEPBible.org CC BY.txt".
+- Use: moves each source's verse references into KJV numbering before they are joined (decision 216). No TVTMS row ships, but the placement of shipped data depends on it, so it is credited.
+- Licence as stated: CC BY 4.0. File header: "Data created by www.STEPBible.org based on work at Tyndale House Cambridge (CC BY 4.0)", and "Attribute the data to Tyndale House and STEPBible.org, and include a link to STEPBible.github.io/STEPBible-Data as the source of this data."
+- The same "do not post copies of this data file elsewhere" request as TIPNR (section 3.9), so its fixture is synthetic (section 5, rule 4).
+- Since March 2025 TVTMS's standard is KJV versification, the same as the Verse Key.
+- Date checked: 2026-11-06.
+
 ### 3.10 Nave's Topical Bible (bible-data)
 
 - URL: https://github.com/BradyStephenson/bible-data, file `NavesTopicalDictionary.csv` (branch `main`, commit `720a8da`, 2026-10-03).
@@ -287,7 +297,7 @@ Rules:
    - Nave's slices: CC BY 4.0.
    - Pleiades slices: CC BY 3.0. GeoNames slices: CC BY 4.0. Wikidata slices: CC0.
    - Curated tables: our own data, CC BY-SA 4.0 (they change Theographic data).
-4. The TIPNR fixture is synthetic. We write it by hand in the TIPNR format. It holds no real TIPNR rows. Reason: TIPNR asks that the file is not posted elsewhere (section 3.9).
+4. The TIPNR and TVTMS fixtures are synthetic. We write them by hand in their formats. They hold no real rows. Reason: STEPBible asks that its files are not posted elsewhere (sections 3.9 and 3.9a).
 5. Do not put King James Version text from Theographic `verses.json` into fixtures. Strip `verseText` and similar fields. Reason: the UK status of the KJV is unverified (section 3.2).
 6. Do not put real OpenStreetMap coordinates into fixtures. The spec needs "an OpenStreetMap point that is re-sourced and one that is not found". Use a real record with its coordinates replaced by made-up values, or a synthetic record. Keep `coordinates_source.type` as "osm". Reason: a real OpenStreetMap point in a public repository is ODbL data, even if it never ships.
 
