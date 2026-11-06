@@ -5,7 +5,7 @@
   // the Place alone or with its Neighbours (#85), whose dots select and make the Focus, or the
   // Journey along Your Path (#86). The map is a block of its own below the Selected Node's section,
   // of one height whatever it shows (#87).
-  import type { Data } from "./data";
+  import type { Data, Route } from "./data";
   import { typeColour } from "./colours";
   import type { MapActions, MapPlace, PlaceMap } from "./map";
   import { topK, TYPE_NAME, typePlural, TYPES, typeOf, type Id, type State } from "./model";
@@ -114,6 +114,29 @@
     return { key: `${id}|none`, own: true, places: [], note: `No ${TYPE_NAME.place} to show.` };
   }
 
+  // UBS routes (decision 220): the Selected Node's routes, if any, in a menu; the one chosen is drawn
+  // dashed over whatever the view shows. A new selection starts with no route.
+  let routes = $state<Route[]>([]);
+  let routeId = $state("");
+  const route = $derived(routes.find((r) => r.id === routeId));
+  $effect(() => {
+    const id = selected;
+    routeId = "";
+    routes = [];
+    if (open) data.routes(id).then((r) => id === selected && (routes = r)).catch(() => {});
+  });
+
+  // "Gen 16:6 to 14" or "Acts 13:1 to 14:28": the route's Verses in this build, first to last.
+  function passage(r: Route) {
+    const ref = (osis: string) => osis.split(".");
+    const [b1, c1, v1] = ref(r.verses[0]);
+    const [b2, c2, v2] = ref(r.verses[r.verses.length - 1]);
+    if (b1 !== b2) return r.passage.replaceAll(";", "; ").replaceAll(".", " ");
+    const book = data.builtBooks.find((b) => b.osis === b1)?.name ?? b1;
+    if (r.verses.length === 1) return `${book} ${c1}:${v1}`;
+    return c1 === c2 ? `${book} ${c1}:${v1} to ${v2}` : `${book} ${c1}:${v1} to ${c2}:${v2}`;
+  }
+
   // The map is made when its box first shows, and removed with it.
   let map = $state.raw<PlaceMap>();
   function draw(host: HTMLElement) {
@@ -129,6 +152,7 @@
     if (map && shown?.places.length) map.show(shown.places, shown.key);
   });
   $effect(() => map?.join(shown?.line ? shown.places : []));
+  $effect(() => map?.route(route?.lines));
   // A selection made elsewhere (a list, the search) drops a click on a dot still waiting to select.
   $effect(() => {
     selected;
@@ -141,7 +165,7 @@
        for a button over it. -->
   <div class="top">
     <button data-tour="show-map" aria-expanded={open} onclick={press} bind:this={toggle}>{open ? "Hide map" : "Show map"}</button>
-    {#if open && shown?.places.length}<button onclick={() => map?.recentre()}>Recentre map</button>{/if}
+    {#if open && (shown?.places.length || route)}<button onclick={() => map?.recentre()}>Recentre map</button>{/if}
   </div>
   <!-- Asking or open, the box keeps one height whatever it shows (the notice, a message, a load
        under way, the map), so the lists below it never move between the two clicks of a double
@@ -160,10 +184,15 @@
           {#if isPlace}<div role="group" aria-label="Map view">
               {#each VIEWS as v (v)}<button aria-pressed={view === v} onclick={() => choose(v)}>{v === "Place" ? TYPE_NAME.place : v}</button>{/each}
             </div>{/if}
+          {#if routes.length}<select aria-label="Bible route" bind:value={routeId}>
+              <option value="">No route</option>
+              {#each routes as r (r.id)}<option value={r.id}>{r.title}</option>{/each}
+            </select>{/if}
         </div>
         {#if !shown.own}<p class="muted">No point for this {TYPE_NAME.place}. Its sources give none, or none this site can use.</p>{/if}
-        {#if shown.note}<p class="muted">{shown.note}</p>{/if}
-        {#if shown.places.length}
+        {#if route}<p class="muted">{route.title}, {passage(route)}. Route © United Bible Societies ({route.licence}).</p>
+        {:else if shown.note}<p class="muted">{shown.note}</p>{/if}
+        {#if shown.places.length || route}
           <!-- The text list names the Places drawn, for a screen reader. -->
           <div class="map" role="region" aria-label="Map" {@attach draw}></div>
           <ul class="text" aria-label="Shown on the map">
@@ -211,7 +240,16 @@
   }
   .bar {
     flex: none;
+    display: flex;
+    gap: 6px;
     height: var(--bar);
+  }
+  /* The route menu takes the room the view switch leaves, its titles cut short. */
+  .bar select {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
   }
   .bar > div {
     display: flex;

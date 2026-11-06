@@ -25,8 +25,12 @@ _Avoid_: Parallel, related verse
 The net number of readers on OpenBible.info who found a Cross-reference helpful (up votes minus down votes). It measures usefulness to readers, not scholarly strength. The Vote Limit hides Cross-references below a chosen number.
 _Avoid_: Score, weight, rating
 
+**Bible Route**:
+A journey line from the UBS Bible Routes, joined by a curated table to the passage that tells it ("Hagar flees towards Shur", Gen 16:6 to 14). The map draws one, dashed, when the reader picks it for a Person, Place or Event its passage names (decision 220). Not the Journey, which follows Your Path.
+_Avoid_: Path, Journey
+
 **Dictionary Entry**:
-The article on an Entity from Easton's Bible Dictionary (1897), always shown with that name. Not every Entity has one.
+The dictionary article on an Entity, always shown with the name of its dictionary: Easton's Bible Dictionary (1897) for People, Places, Events and People Groups, and the Aquifer Open Bible Dictionary (adapted from the Tyndale Open Bible Dictionary) for Themes (decision 219). Not every Entity has one.
 _Avoid_: Summary, description
 
 **Entity**:
