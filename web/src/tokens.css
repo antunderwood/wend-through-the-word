@@ -74,7 +74,7 @@
   --gutter: var(--space-4);
   --top-h: 56px;
   --search-w: 318px;
-  --top-clear: 132px; /* clear of the hint at the top of the scene (decision 212) */
+  --top-clear: 132px; /* where the no-WebGL panel starts, clear of the hint (decision 212) */
   --reader-w: 380px;
   --panel-w: 340px;
 }
