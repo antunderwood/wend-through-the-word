@@ -681,6 +681,13 @@
     align-items: center;
     gap: 4px;
   }
+  /* One whole-pixel height for every control in the row, the Focus badge too: swapping the badge for
+     Make Focus between the two clicks of a double click must not change the header's height. */
+  .buttons button,
+  .buttons .badge {
+    box-sizing: border-box;
+    height: 28px;
+  }
   .buttons .path-step button {
     padding: 2px 8px;
     font-size: 13px;
