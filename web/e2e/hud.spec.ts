@@ -96,6 +96,8 @@ test("the HUD's tabs list the links, the shared verses, and the note", async ({ 
   await expect(hud(page).getByRole("list", { name: /^People \d/ })).toBeVisible();
   await hud(page).getByRole("searchbox", { name: "Filter links" }).fill("isaac");
   await expect(hud(page).getByRole("button", { name: /^Isaac/ })).toBeVisible();
+  // The name and the reason it is listed are separate words, not run together ("Isaacson of Abraham").
+  await expect(hud(page).getByRole("button", { name: /^Isaac \S/ }).first()).toBeVisible();
   // A click in the list selects, and the tab stays.
   await hud(page).getByRole("button", { name: /^Isaac/ }).first().click();
   await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
