@@ -7,6 +7,7 @@
   // across the bottom of the scene, just above the closed sheet, in place of the sheet's peek: it does
   // not move or size, and Details opens the sheet for the rest. Props only; App owns the state.
   import { untrack } from "svelte";
+  import PlaceMap from "./PlaceMap.svelte";
   import VerseText from "./VerseText.svelte";
   import { typeColour } from "./colours";
   import type { Data } from "./data";
@@ -102,12 +103,20 @@
   const noted = $derived(selected === focus || model.path.includes(selected));
 
   // The tabs this node has; a tab the next node lacks falls back to the overview.
-  type Tab = "overview" | "links" | "together" | "note";
+  type Tab = "overview" | "links" | "together" | "map" | "note";
+  // UBS routes (decision 220) draw on the map, so a node that has any gets a Map tab.
+  let routed = $state("");
+  $effect(() => {
+    const id = selected;
+    if (routed !== id) routed = "";
+    if (isEntity(id)) data.routes(id).then((r) => id === selected && r.length && (routed = id)).catch(() => {});
+  });
   let tab = $state<Tab>("overview");
   const tabs = $derived<{ id: Tab; name: string }[]>([
     { id: "overview", name: "Overview" },
     ...(listing ? [{ id: "links" as Tab, name: "Links" }] : []),
     ...(shared ? [{ id: "together" as Tab, name: "Together" }] : []),
+    ...(routed === selected ? [{ id: "map" as Tab, name: "Map" }] : []),
     ...(noted ? [{ id: "note" as Tab, name: "Note" }] : []),
   ]);
   const shownTab = $derived(tabs.some((t) => t.id === tab) ? tab : "overview");
@@ -310,6 +319,7 @@
       {#if shownTab === "overview"}{@render overviewTab()}{/if}
       {#if shownTab === "links"}{@render linksTab()}{/if}
       {#if shownTab === "together"}{@render togetherTab()}{/if}
+      {#if shownTab === "map"}<PlaceMap {data} {model} select={(id) => apply({ type: "select", id })} {makeFocus} />{/if}
       {#if shownTab === "note"}{@render noteTab()}{/if}
     </div>
   {/key}

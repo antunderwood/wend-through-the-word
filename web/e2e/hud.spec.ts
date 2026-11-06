@@ -92,8 +92,8 @@ test("the HUD moves by its strip and its grip, sizes by its corner, and keeps bo
 
 test("the HUD's tabs list the links, the shared verses, and the note", async ({ page }) => {
   await toggle(page).click();
-  // The Focus has no shared verses with itself, but a note.
-  await expect(hud(page).getByRole("tab")).toHaveText(["Overview", "Links", "Note"]);
+  // The Focus has no shared verses with itself, but a note and a route (Map).
+  await expect(hud(page).getByRole("tab")).toHaveText(["Overview", "Links", "Map", "Note"]);
   await hud(page).getByRole("tab", { name: "Links" }).click();
   await expect(hud(page).getByRole("list", { name: /^People \d/ })).toBeVisible();
   await hud(page).getByRole("searchbox", { name: "Filter links" }).fill("isaac");

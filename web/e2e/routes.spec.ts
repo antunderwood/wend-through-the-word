@@ -32,3 +32,19 @@ test("a node with no route has no menu", async ({ page }) => {
   await expect(map(page).locator(".dot")).toBeVisible();
   await expect(menu(page)).toHaveCount(0);
 });
+
+test("in the HUD a node with a route has a Map tab with the route menu; one without has none", async ({ page }) => {
+  await thirdParty(page, "tile");
+  await page.addInitScript(() => localStorage.setItem("wend.infoMode", "hud"));
+  await page.goto("/?focus=person:hagar_1348");
+  await focusIs(page, "person:hagar_1348");
+  const hud = page.getByRole("region", { name: "Selected Node HUD" });
+  await hud.getByRole("tab", { name: "Map" }).click();
+  await open(hud);
+  await hud.getByRole("combobox", { name: "Bible route" }).selectOption({ label: "Hagar flees towards Shur" });
+  await expect(hud.getByRole("region", { name: "Map" }).locator("path.route-line")).toBeVisible();
+  await page.goto("/?focus=place:bethlehem_218");
+  await focusIs(page, "place:bethlehem_218");
+  await expect(hud.getByRole("tab", { name: "Overview" })).toBeVisible();
+  await expect(hud.getByRole("tab", { name: "Map" })).toHaveCount(0);
+});
