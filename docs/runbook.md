@@ -14,6 +14,14 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    A data version is digits and hyphens only (the Deploy workflow refuses anything else before it reaches the environment): for a second data version on one day, add `-2`, as in `2026-10-22-2`, never a letter. Never reuse a data version for different data: files under `/data/<version>/` are cached for a year (decision 157). A release with code changes only can keep the data version.
 
    The whole Bible (data version 2026-10-22) took about 1.5 minutes and under 1 GB of memory on the owner's Mac (up to 5 minutes while other heavy work ran; about 2 minutes of processor time, a third of it measuring gzipped sizes). It writes 9,397 files: 417 MB raw, 53 MB gzipped, the largest 99 KB gzipped (the Psalm 119 Ring 2 file). Before compact JSON (decision 168) the same sources gave 655 MB raw, 57 MB gzipped.
+   Published Entity IDs (decision 215): the build fails when an ID in `pipeline/ids.tsv` no longer ships and has no reviewed row in `pipeline/curated/id_redirects.csv`; `out/reports/ids_missing.tsv` lists them. Give each a row: `to` is the ID that replaces it, or empty when it is gone. After a successful build, register the new IDs (`out/reports/ids_new.tsv`) and commit the registry before releasing:
+
+   ```
+   uv run python -m pipeline.ids record out
+   git add pipeline/ids.tsv && git commit -m "Register the IDs of data version <version>"
+   ```
+
+   Once only, before the first release with this check: seed the registry from the live release, so that IDs shipped since then are caught. Download its zip (`gh release download <live tag>`), unzip it into a folder, and run `uv run python -m pipeline.ids record <that folder>`.
 3. Test the site locally on the new export before releasing. The dev server serves `out/data` (or the folder in `WEND_DATA`) at `/data`:
 
    ```
@@ -27,7 +35,7 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    uv run python -m pipeline.release v2026-10-19 --dry-run
    ```
 
-   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, a file in `out/data` is over the size limit (500 KB gzipped or 25 MiB raw; measuring takes about 15 seconds for the whole Bible), `out/reports/split_or_trimmed.tsv` has a file that is not trimmed, `out/reports/curated_no_longer_matches.tsv` has rows (fix the curated tables, decision 77), or `out/data` holds 20,000 files or more. It prints a warning for each other report with rows: read them before releasing.
+   Name the tag `v` plus the data version; add `.2`, `.3` for later releases of the same data. The command refuses when the working tree has uncommitted changes, the tag exists here or on GitHub, a file in `out/data` is over the size limit (500 KB gzipped or 25 MiB raw; measuring takes about 15 seconds for the whole Bible), `out/reports/split_or_trimmed.tsv` has a file that is not trimmed, `out/reports/curated_no_longer_matches.tsv` has rows (fix the curated tables, decision 77), `out/reports/ids_new.tsv` has rows or is missing (register the IDs, step 2), or `out/data` holds 20,000 files or more. It prints a warning for each other report with rows: read them before releasing.
 5. Release:
 
    ```

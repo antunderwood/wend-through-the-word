@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { START } from "../src/address";
 import { createData } from "../src/data";
-import { restore } from "../src/session";
+import { followNotes, restore } from "../src/session";
 import { readExport } from "./fixture";
 
 const data = await createData(readExport, "");
@@ -33,5 +33,27 @@ describe("the page opens on", () => {
 
   it("the kept session less any node this build no longer has", () => {
     expect(open({}, { focus: "person:nobody_1", path: [SARAH, "person:nobody_2"] })).toMatchObject({ focus: START, path: [SARAH] });
+  });
+});
+
+describe("a published ID that no longer ships (decision 215)", () => {
+  const RENAMED = "theme:sold_birthright", // fixture redirect to theme:birthright
+    REMOVED = "person:fixture_removed_9999"; // fixture redirect to nothing
+  const follow = data.follow;
+
+  it("is followed to the ID that replaced it, or left out when removed", () => {
+    expect(follow(RENAMED)).toBe("theme:birthright");
+    expect(follow(REMOVED)).toBeNull();
+    expect(follow(SARAH)).toBe(SARAH);
+  });
+
+  it("moves the kept Focus and Path steps, drops removed ones, and repeats no step", () => {
+    const s = restore({}, { focus: RENAMED, path: [REMOVED, "theme:birthright", SARAH, RENAMED] }, data.known, data.label, follow);
+    expect(s).toMatchObject({ focus: "theme:birthright", path: [SARAH] });
+  });
+
+  it("moves notes to the new ID, joining any note there, and keeps a removed ID's note", () => {
+    const notes = { [RENAMED]: "old", "theme:birthright": "new", [REMOVED]: "kept", [SARAH]: "s" };
+    expect(followNotes(notes, follow)).toEqual({ "theme:birthright": "old\n\nnew", [REMOVED]: "kept", [SARAH]: "s" });
   });
 });

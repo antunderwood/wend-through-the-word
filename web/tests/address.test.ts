@@ -8,7 +8,7 @@ const data = await createData(readExport, "");
 const ISAAC = "person:isaac_616",
   ABRAHAM = "person:abraham_58";
 // Fixture: Genesis, Matthew, and 3 John are built.
-const read = (search: string) => readAddress(search, data.exists, data.builtBooks.map((b) => b.osis), data.verseKey);
+const read = (search: string) => readAddress(search, data.exists, data.builtBooks.map((b) => b.osis), data.verseKey, data.follow);
 const write = (s: State, view: View, share = false) => writeAddress(s, view, data.osis, share);
 
 describe("the page address", async () => {
@@ -97,6 +97,22 @@ describe("the page address", async () => {
     expect(await read("?focus=01011099&sel=01011040&pins=01011033,01011032")).toEqual({
       pins: ["01011032"],
       notice: "Not recognised in this link, so left out: focus 01011099, sel 01011040, pins 01011033.",
+    });
+  });
+});
+
+describe("an old shared link (decision 215)", () => {
+  it("opens the ID that replaced a published ID", async () => {
+    expect(await read("?focus=theme:sold_birthright&pins=theme:sold_birthright")).toEqual({
+      focus: "theme:birthright",
+      pins: ["theme:birthright"],
+    });
+  });
+
+  it("says a removed ID is no longer in the data", async () => {
+    expect(await read("?focus=person:fixture_removed_9999&pins=person:fixture_removed_9999,person:isaac_616")).toEqual({
+      pins: ["person:isaac_616"],
+      notice: "person:fixture_removed_9999, person:fixture_removed_9999 are no longer in the data, so left out.",
     });
   });
 });

@@ -34,6 +34,7 @@ def bible(tmp_path_factory):
         sources=SOURCES,
         books=BOOKS,
         curated=REAL_CURATED,
+        ids=None,  # a test build; the real registry is checked by the release
     )
 
 

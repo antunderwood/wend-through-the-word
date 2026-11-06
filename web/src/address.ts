@@ -26,17 +26,22 @@ export function write(s: State, view: View, osis: (id: Id) => string, share = fa
 
 // exists(id) says whether a node exists in this build (for a Verse, it may read the chapter); books
 // are the OSIS codes of its books; verseKey(text) is the Verse Key a verse reference names (the
-// search box's parsing). Anything not recognised is left out and named in the notice; a missing
+// search box's parsing); follow(id) is the ID that replaced a published ID, or null when it was
+// removed (decision 215). Anything not recognised is left out and named in the notice; a missing
 // Focus is the caller's to fill (Jesus Christ).
 export async function read(
   search: string,
   exists: (id: Id) => Promise<boolean>,
   books: string[],
   verseKey: (text: string) => Id | undefined,
+  follow: (id: Id) => Id | null = (id) => id,
 ): Promise<Asked> {
   const p = new URLSearchParams(search);
   // A Verse is written Gen.22.2 (decision 149); its Verse Key and the search box's forms read too.
-  const id = (v: string) => verseKey(v) ?? v;
+  // An old shared link's ID reads as the ID that replaced it.
+  const id = (v: string) => follow(verseKey(v) ?? v) ?? v;
+  const gone = (v: string) => follow(verseKey(v) ?? v) === null;
+  const removed: string[] = [];
   const ids = [p.get("focus"), p.get("sel"), ...(p.get("pins")?.split(",") ?? [])].filter((v) => v !== null).map(id);
   const found = new Set(await Promise.all(ids.map(async (id) => ((await exists(id)) ? id : ""))));
   const known = (v: string) => found.has(id(v));
@@ -49,7 +54,8 @@ export async function read(
     const v = p.get(key);
     if (v === null) return undefined;
     if (ok(v)) return v;
-    if (node && !readable(v)) unread.push(v);
+    if (node && gone(v)) removed.push(v);
+    else if (node && !readable(v)) unread.push(v);
     else dropped.push(`${key} ${v}`);
   };
   const focus = take("focus", known, true);
@@ -62,8 +68,9 @@ export async function read(
     // A node pinned twice, in any form, counts once.
     const good = pins.filter((v, i) => known(v) && pins.findIndex((w) => id(w) === id(v)) === i);
     asked.pins = good.slice(0, MAX_PINS).map(id);
-    const bad = [...pins.filter((v) => !known(v) && readable(v)), ...good.slice(MAX_PINS)];
+    const bad = [...pins.filter((v) => !known(v) && readable(v) && !gone(v)), ...good.slice(MAX_PINS)];
     if (bad.length) dropped.push(`pins ${bad.join(",")}`);
+    removed.push(...pins.filter(gone));
     unread.push(...pins.filter((v) => !readable(v)));
   }
   const view = take("view", (v) => ["A", "B", "C"].includes(v));
@@ -84,6 +91,7 @@ export async function read(
   if (chosen.length) filters.books = chosen;
   if (Object.keys(filters).length) asked.filters = filters;
   const notice = [
+    removed.length ? `${removed.join(", ")} ${removed.length > 1 ? "are" : "is"} no longer in the data, so left out.` : "",
     dropped.length ? `Not recognised in this link, so left out: ${dropped.join(", ")}.` : "",
     unread.length ? `${unread.join(", ")} ${unread.length > 1 ? "are not Verses" : "is not a Verse"} here. Write a Verse as Gen.22.2 or Gen 22:2.` : "",
   ].filter(Boolean);
