@@ -745,6 +745,12 @@
        keeps the rest, and no taller than its overview needs. */
     --hud-docked: min(44dvh, 360px);
   }
+  /* Short or zoomed in: the HUD's fixed chrome is a bigger share, so it may take a little more. */
+  @media (max-height: 640px) {
+    :global(html) {
+      --hud-docked: min(52dvh, 360px);
+    }
+  }
   /* What floats at the bottom of the screen (the hint, the notes) sits above the docked HUD. */
   :global(html:has(.sheet.collapsed):has(.hud.docked)) {
     --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-docked) + var(--edge));

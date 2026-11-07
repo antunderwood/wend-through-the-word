@@ -553,34 +553,76 @@
     bottom: calc(var(--keyboard, 0px) + var(--sheet-handle) + 1px + var(--edge));
     height: var(--hud-docked);
     max-height: none;
-    padding: 8px 14px 10px;
+    padding: 6px 12px 8px;
   }
   .docked .strip {
+    padding-bottom: 2px;
     cursor: default;
     touch-action: auto;
   }
   .docked .tool {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
   .docked .name {
-    margin-top: 6px;
-    font-size: var(--fs-xl);
+    margin-top: 4px;
+    font-size: var(--fs-lg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .docked .rel {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Short or zoomed screens: the relation line gives way to the content. */
+  @media (max-height: 640px) {
+    .docked .rel {
+      display: none;
+    }
+    .docked .name::after {
+      display: none;
+    }
+  }
+  .docked .strip,
+  .docked .head,
+  .docked .tabs {
+    flex-shrink: 0; /* only the content pane gives way */
   }
   .docked .tabs {
-    margin-top: 6px;
+    margin-top: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
   .docked .tabs button {
-    min-height: 40px;
-    padding: 0 12px;
+    flex: 0 0 auto;
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
   }
+  /* One row, never wrapped: buttons are compact and shrink before they scroll sideways. */
   .docked .actions {
-    margin-top: 8px;
-    padding-top: 8px;
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
+    gap: 5px;
+    margin-top: 4px;
+    padding-top: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
   .docked .actions button {
-    min-height: 40px;
-    padding: 0 12px;
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
   }
   .docked .row {
     padding: 8px 6px;
