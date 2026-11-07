@@ -61,6 +61,25 @@ test("on a phone the HUD docks above the closed sheet in place of its peek, and 
   await expect(page.locator(".sheet.peek")).toHaveCount(1);
 });
 
+test("on a narrow, zoomed phone the HUD buttons stay on one row and the content pane keeps room", async ({ page }) => {
+  // Browser zoom at 130 percent shrinks the CSS viewport; the text-size setting does much the same.
+  await page.setViewportSize({ width: 300, height: 560 });
+  await page.addInitScript(() => localStorage.setItem("wend.infoMode", "hud"));
+  await open(page);
+  await expect(hud(page)).toBeVisible();
+  await hud(page).getByRole("tab", { name: "Verses" }).tap();
+  await page.screenshot({ path: process.env.HUD_ZOOM_SHOT ?? "test-results/hud-zoom.png" });
+  const boxes = await hud(page).locator(".actions button").evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
+  expect(boxes.length).toBeGreaterThanOrEqual(3);
+  for (const b of boxes) expect(Math.abs(b.y - boxes[0].y)).toBeLessThan(1);
+  for (const b of boxes) expect(b.height).toBeLessThanOrEqual(32);
+  const body = (await hud(page).locator(".body").boundingBox())!,
+    card = (await hud(page).boundingBox())!;
+  const tabH = (await hud(page).getByRole("tab", { name: "Verses" }).boundingBox())!.height;
+  expect(tabH).toBeGreaterThanOrEqual(30);
+  expect(body.height).toBeGreaterThan(card.height * 0.35);
+});
+
 test("on a phone on its side the sheet stays and the HUD is not offered", async ({ page }) => {
   await page.setViewportSize({ width: 844, height: 390 });
   await page.addInitScript(() => localStorage.setItem("wend.infoMode", "hud"));
