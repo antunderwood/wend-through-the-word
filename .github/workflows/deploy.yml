@@ -10,19 +10,27 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Release tag to deploy (an earlier one rolls back)
-        required: true
+        description: Release tag to deploy (an earlier one rolls back); empty deploys the latest release
+        required: false
 concurrency: { group: deploy, cancel-in-progress: false }
 permissions: { contents: read }
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      TAG: ${{ inputs.tag || github.event.release.tag_name }} # empty on a manual run without a tag
       DATA: ${{ github.workspace }}/release/data
       SITE: ${{ github.workspace }}/site
     steps:
       # Actions are pinned to a commit, so a moved tag cannot change what runs (decision 160).
+      # A manual run with no tag deploys the latest published release (decision 229).
+      - name: Find the tag
+        env: { GH_TOKEN: "${{ github.token }}", GH_REPO: "${{ github.repository }}" }
+        run: |
+          [ -n "$TAG" ] || TAG=$(gh release view --json tagName --jq .tagName)
+          [ -n "$TAG" ] || { echo "No tag given and no release found."; exit 1; }
+          echo "Deploying $TAG"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with: { ref: "${{ env.TAG }}", persist-credentials: false }
       - name: Download the release's data
