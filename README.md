@@ -42,7 +42,7 @@ npm run check           # svelte-check
 
 ## Release
 
-`uv run python -m pipeline.release <tag>` releases the local export, and the Deploy workflow puts it live. See `docs/runbook.md` for releasing, rolling back, and the weekly usage check.
+`uv run python -m pipeline.release <tag>` releases the local export, and the Deploy workflow puts it live. `gh workflow run code-release.yml` (or Actions, Code release, on GitHub) releases and deploys `main` with the existing data, from anywhere. See `docs/runbook.md` for releasing, rolling back, and the weekly usage check.
 
 ## Corrections
 
