@@ -49,6 +49,7 @@
     onnote,
     download,
     docked = false,
+    minimised = $bindable(false),
     ondetails,
   }: {
     data: Data;
@@ -65,6 +66,7 @@
     onnote: (id: Id, text: string) => void;
     download: () => void;
     docked?: boolean; // on a phone: fixed above the closed sheet, not moved or sized
+    minimised?: boolean; // on a phone: a slim bar of the type and name; the Selected Node stays
     ondetails?: () => void; // on a phone: open the sheet at Details
   } = $props();
 
@@ -227,7 +229,7 @@
     function follow() {
       const n = nodeRect!(id),
         fr = id === f ? null : nodeRect!(f),
-        route = n && n.width && !(docked && expanded) ? (docked ? dropRoute : leadRoute)({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
+        route = n && n.width && !(docked && expanded && !minimised) ? (docked ? dropRoute : leadRoute)({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
       if (!route) lead = null;
       else {
         const points = route.map((p) => p.join(",")).join(" ");
@@ -268,7 +270,8 @@
   class:flicker={flicker && motion}
   class:placed={!!place && !docked}
   class:docked
-  class:expanded={docked && expanded}
+  class:expanded={docked && expanded && !minimised}
+  class:minimised={docked && minimised}
   aria-label="Selected Node HUD"
   bind:this={card}
   bind:clientWidth={w}
@@ -287,9 +290,17 @@
   </svg>
   <!-- The strip is the handle: a drag on it moves the card. The Move HUD grip is its keyboard way.
        Docked on a phone, it does not move; Hide HUD takes the phone back to the sheet's peek. -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <header class="strip" onpointerdown={(e) => drag(e, false)}>
+  <!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
+  <header class="strip" onpointerdown={(e) => drag(e, false)} onclick={(e) => docked && minimised && !(e.target as Element).closest("button") && (minimised = false)}>
     <span class="tag"><i aria-hidden="true"></i>{typeName}</span>
+    {#if docked && minimised}
+      <span class="mini-name" title={label(selected)}>{label(selected)}</span>
+      <span class="tools">
+        <button class="tool" aria-label="Restore HUD" aria-expanded="false" title="Show the HUD again" onclick={() => (minimised = false)}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 10l5-5 5 5" /></svg>
+        </button>
+      </span>
+    {:else}
     {#if selected === focus}<span class="badge">Focus</span>{:else if model.pins.includes(selected)}<span class="badge">Pinned</span>{/if}
     <span class="tools">
       <button class="tool" aria-pressed={flicker} aria-label="Flicker" title={motion ? "Flicker" : "Flicker (off while animation is off)"} onclick={() => setFlicker(!flicker)}>
@@ -298,6 +309,9 @@
       {#if docked}
         <button class="tool" aria-label={expanded ? "Shrink HUD" : "Expand HUD"} aria-expanded={expanded} title={expanded ? "Back to the docked size" : "Take more of the screen"} onclick={() => (expanded = !expanded)}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d={expanded ? "M3 6l5 5 5-5" : "M3 10l5-5 5 5"} /></svg>
+        </button>
+        <button class="tool" aria-label="Minimise HUD" title="Shrink to a slim bar" onclick={() => (minimised = true)}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 11h10" /></svg>
         </button>
         <button class="tool" aria-label="Hide HUD" title="Back to the sheet" onclick={onpanel}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" /></svg>
@@ -313,7 +327,9 @@
         </button>
       {/if}
     </span>
+    {/if}
   </header>
+  {#if !(docked && minimised)}
   {#key selected}
     <div class="head">
       <h2 class="name" title={label(selected)}>{label(selected)}</h2>
@@ -351,6 +367,7 @@
       <button class="more" onclick={onpanel} title="Show the full detail panel: map, pins, and corrections">Panel</button>
     {/if}
   </footer>
+  {/if}
   <!-- The corner grip sizes the card. -->
   {#if !docked}
     <button
@@ -570,6 +587,30 @@
   .docked .tool {
     width: 32px;
     height: 32px;
+  }
+  /* Minimised: one slim bar, the type and the name, with a way back. The whole bar restores it. */
+  .hud.docked.minimised {
+    height: var(--hud-mini);
+    padding: 4px 6px 4px 12px;
+    justify-content: center;
+  }
+  .minimised .strip {
+    padding: 0;
+    border-bottom: 0;
+    cursor: pointer;
+  }
+  .mini-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 600 var(--fs-lg) var(--mono);
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+  .minimised .tag {
+    flex: 0 0 auto;
   }
   .docked .name {
     margin-top: 4px;
