@@ -54,6 +54,19 @@ How to release, roll back, and look after the live site at https://wendtheword.f
    git tag -d v2026-10-19
    ```
 
+### Code-only release without the Mac (decision 227)
+
+When the data stays as it is, the "Code release" workflow (`.github/workflows/code-release.yml`) releases and deploys current `main` from GitHub, with no computer of the owner's involved. Start it from the GitHub app or website (Actions, Code release, "Run workflow", branch `main`), or by Claude in the cloud with the `actions_run_trigger` GitHub tool, or in a terminal:
+
+```
+gh workflow run code-release.yml
+gh run watch
+```
+
+It refuses unless: it runs on `main`; the `check` and `web` CI jobs passed on the head commit; and `build.toml`'s `data_version` has a release with its zip (a new data version was never released, so it needs `pipeline.release`). It tags the head commit with the next suffix of the data version (`v<data_version>.1`, then `.2`; an existing tag is never reused), copies the zip from the latest release of that data version onto the new release, and starts the Deploy workflow for the tag (a release made by a workflow does not start other workflows by itself, so it starts Deploy explicitly). Tick "dry run" to see the tag it would use and run the checks only. A failed Deploy is followed as in step 6 and rolled back as in "Roll back".
+
+Data releases (a new `data_version`, changed curated tables or sources) still need the computer with the downloaded `sources/`.
+
 The live check can be run by hand at any time: `node web/live-check.ts https://wendtheword.flying-ant.uk <data version> --email`. Leave out `--email` for any other address, such as a local `wrangler dev` server: only the live domain has Email Routing records (decision 162).
 
 ### After the first deploy: email

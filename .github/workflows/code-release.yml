@@ -1,0 +1,82 @@
+name: Code release
+# Releases the current main with the data version it already has, then deploys it (decision 227).
+# For when the owner is away from the computer that holds the downloaded sources: start it from
+# the GitHub app or website (Actions, Code release, "Run workflow"), or with
+# `gh workflow run code-release.yml`. It never builds data: it copies the data zip of the latest
+# release. A change to the data (a new data_version in build.toml) needs pipeline.release instead,
+# and this workflow refuses it (docs/runbook.md).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only work out the tag and run the checks; create and deploy nothing
+        type: boolean
+        default: false
+concurrency: { group: code-release, cancel-in-progress: false }
+permissions:
+  contents: write # creates the tag and the release
+  actions: write # starts the Deploy workflow (a release made with GITHUB_TOKEN does not)
+  checks: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Only the default branch
+        run: '[ "$GITHUB_REF" = "refs/heads/main" ] || { echo "Run this on main, not $GITHUB_REF."; exit 1; }'
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with: { persist-credentials: false }
+      - name: CI is green on this commit
+        run: |
+          sha=$(git rev-parse HEAD)
+          # A check that is still running or failed stops the release; CI is the "check" and "web" jobs.
+          gh api "repos/$GH_REPO/commits/$sha/check-runs?per_page=100" \
+            --jq '[.check_runs[] | select(.name == "check" or .name == "web")] | map(.conclusion)' > conclusions.json
+          cat conclusions.json
+          jq -e 'length >= 2 and all(. == "success")' conclusions.json > /dev/null \
+            || { echo "CI has not passed on $sha: wait for it or fix it."; exit 1; }
+      - name: Work out the tag and find the data
+        run: |
+          version=$(sed -n 's/^data_version *= *"\(.*\)"/\1/p' build.toml)
+          [[ "$version" =~ ^[0-9][0-9-]*$ ]] || { echo "Bad data version in build.toml: $version"; exit 1; }
+          # The latest release with this data version's zip is the one to copy. If there is none,
+          # build.toml names data that was never released, which only pipeline.release can make.
+          source_tag=""
+          for tag in $(gh release list --limit 30 --json tagName,isDraft --jq '.[] | select(.isDraft | not) | .tagName'); do
+            if gh release view "$tag" --json assets --jq '.assets[].name' | grep -qx "wend-data-$version.zip"; then
+              source_tag=$tag
+              break
+            fi
+          done
+          [ -n "$source_tag" ] || { echo "No release has wend-data-$version.zip: build.toml has a data version that was never released. Use pipeline.release (docs/runbook.md)."; exit 1; }
+          # The next suffix after every tag of this data version, so a tag is never reused (decision 153).
+          last=0
+          for tag in $(git ls-remote --tags origin "refs/tags/v$version" "refs/tags/v$version.*" | sed 's|.*refs/tags/||'); do
+            n=${tag#"v$version"}; n=${n#.}
+            if [[ "$n" =~ ^[0-9]+$ ]] && [ "$n" -gt "$last" ]; then last=$n; fi
+          done
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null || [ "$last" -gt 0 ]; then
+            new_tag="v$version.$((last + 1))"
+          else
+            new_tag="v$version"
+          fi
+          { echo "VERSION=$version"; echo "SOURCE_TAG=$source_tag"; echo "NEW_TAG=$new_tag"; } >> "$GITHUB_ENV"
+          echo "Data $version from $source_tag; new tag $new_tag on $(git rev-parse HEAD)"
+      - name: Create the release
+        if: ${{ !inputs.dry_run }}
+        run: |
+          gh release download "$SOURCE_TAG" --pattern "wend-data-$VERSION.zip" --dir release
+          # The zip must hold the data version build.toml names, or the page and data would not match.
+          [ "$(unzip -p "release/wend-data-$VERSION.zip" data/index.json | jq -er .data_version)" = "$VERSION" ] \
+            || { echo "The zip's data version is not $VERSION."; exit 1; }
+          build_date=$(unzip -p "release/wend-data-$VERSION.zip" data/index.json | jq -er .build_date)
+          notes=$(printf 'Data version: %s\nBuild date: %s\nCommit: %s\nCode release: data copied from %s\n' \
+            "$VERSION" "$build_date" "$GITHUB_SHA" "$SOURCE_TAG")
+          gh release create "$NEW_TAG" "release/wend-data-$VERSION.zip" --target "$GITHUB_SHA" --notes "$notes"
+      - name: Start the deploy
+        if: ${{ !inputs.dry_run }}
+        run: |
+          gh workflow run deploy.yml --ref main -f tag="$NEW_TAG"
+          echo "Started Deploy for $NEW_TAG: follow it under Actions, Deploy."
