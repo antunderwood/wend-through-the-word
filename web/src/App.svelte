@@ -339,6 +339,7 @@
   const hudDocked = $derived(phoneHud && collapsed);
   // The docked HUD's height (a fixed CSS size, read in px) and the gap above the sheet, for the camera.
   let hudPx = $state(0);
+  let hudMin = $state(false); // the phone HUD shrunk to a slim bar; kept until the page reloads
   let tours = $state(0); // each start draws a new tour box
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean; peek: boolean } | undefined;
   const tourPage: TourPage = {
@@ -591,7 +592,7 @@
       side={screen.side}
       peekable={!phoneHud}
     />
-    <span class="hud-probe" aria-hidden="true" bind:offsetHeight={hudPx}></span>
+    <span class="hud-probe" class:min={hudMin} aria-hidden="true" bind:offsetHeight={hudPx}></span>
     {#if hudDocked}{@render hudCard()}{/if}
   {:else}
     {@render details()}
@@ -632,6 +633,7 @@
       onnote={(id, text) => setNotes(withNote(notes, id, text))}
       download={downloadNotes}
       docked={screen.phone}
+      bind:minimised={hudMin}
       ondetails={() => {
         chooseTab("details");
         openSheet();
@@ -744,6 +746,7 @@
     /* The HUD docked above the closed sheet on an upright phone: under half the screen, so the scene
        keeps the rest, and no taller than its overview needs. */
     --hud-docked: min(44dvh, 360px);
+    --hud-mini: 48px; /* minimised: a slim bar */
   }
   /* Short or zoomed in: the HUD's fixed chrome is a bigger share, so it may take a little more. */
   @media (max-height: 640px) {
@@ -755,12 +758,18 @@
   :global(html:has(.sheet.collapsed):has(.hud.docked)) {
     --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-docked) + var(--edge));
   }
+  :global(html:has(.sheet.collapsed):has(.hud.minimised)) {
+    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-mini) + var(--edge));
+  }
   .hud-probe {
     position: absolute;
     width: 0;
     height: var(--hud-docked);
     visibility: hidden;
     pointer-events: none;
+  }
+  .hud-probe.min {
+    height: var(--hud-mini);
   }
   /* The desktop grid (decision 211). Columns: the reader drawer (as wide as it is, none when it is
      closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall
