@@ -104,6 +104,7 @@ def load(b):
         if score:
             match[entity_id] = key
         gender[entity_id] = f["gender"]
+    b.tipnr_match = match  # for the ACAI crosswalk check (pipeline/acai_words.py)
     matched = defaultdict(set)  # TIPNR key -> Theographic Entity IDs
     for entity_id, key in match.items():
         matched[key].add(entity_id)
