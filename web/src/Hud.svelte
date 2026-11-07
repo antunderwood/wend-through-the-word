@@ -118,6 +118,9 @@
     if (isEntity(id)) data.routes(id).then((r) => id === selected && r.length && (routed = id)).catch(() => {});
   });
   let tab = $state<Tab>("overview");
+  // On a phone the card can take nearly the whole screen, to read a long list; the tab, and a new
+  // selection, leave it so. Nothing is kept: a reload docks it again.
+  let expanded = $state(false);
   const tabs = $derived<{ id: Tab; name: string }[]>([
     { id: "overview", name: "Overview" },
     ...(listing ? [{ id: "links" as Tab, name: "Links" }] : []),
@@ -224,7 +227,7 @@
     function follow() {
       const n = nodeRect!(id),
         fr = id === f ? null : nodeRect!(f),
-        route = n && n.width ? (docked ? dropRoute : leadRoute)({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
+        route = n && n.width && !(docked && expanded) ? (docked ? dropRoute : leadRoute)({ ...disc(n), r: disc(n).r + 6 }, card!.getBoundingClientRect(), fr && fr.width ? disc(fr) : undefined) : null;
       if (!route) lead = null;
       else {
         const points = route.map((p) => p.join(",")).join(" ");
@@ -265,6 +268,7 @@
   class:flicker={flicker && motion}
   class:placed={!!place && !docked}
   class:docked
+  class:expanded={docked && expanded}
   aria-label="Selected Node HUD"
   bind:this={card}
   bind:clientWidth={w}
@@ -292,6 +296,9 @@
         <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9 1 3 9h4l-1 6 6-8H8z" /></svg>
       </button>
       {#if docked}
+        <button class="tool" aria-label={expanded ? "Shrink HUD" : "Expand HUD"} aria-expanded={expanded} title={expanded ? "Back to the docked size" : "Take more of the screen"} onclick={() => (expanded = !expanded)}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d={expanded ? "M3 6l5 5 5-5" : "M3 10l5-5 5 5"} /></svg>
+        </button>
         <button class="tool" aria-label="Hide HUD" title="Back to the sheet" onclick={onpanel}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" /></svg>
         </button>
@@ -579,12 +586,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  /* Expanded: up to a strip of graph under the top bar, so a long list reads without scrolling a
+     small pane. The camera stays where the docked card put it. */
+  .hud.docked.expanded {
+    top: calc(var(--bar) + var(--edge) * 2 + 48px);
+    height: auto;
+  }
   /* Short or zoomed screens: the relation line gives way to the content. */
   @media (max-height: 640px) {
-    .docked .rel {
+    .docked:not(.expanded) .rel {
       display: none;
     }
-    .docked .name::after {
+    .docked:not(.expanded) .name::after {
       display: none;
     }
   }
@@ -642,6 +655,13 @@
       linear-gradient(160deg, rgba(var(--hud-line), 0.14), rgba(var(--hud-deep), 0.68) 40%, rgba(var(--hud-deep), 0.78));
     backdrop-filter: blur(6px) saturate(1.2);
     -webkit-backdrop-filter: blur(6px) saturate(1.2);
+  }
+  /* Expanded, the card covers the graph's names, so it is near solid: long text reads clean. */
+  .expanded .glass {
+    background:
+      repeating-linear-gradient(0deg, rgba(var(--hud-line), 0.035) 0 1px, transparent 1px 3px),
+      linear-gradient(160deg, rgba(var(--hud-line), 0.12), rgba(var(--hud-deep), 0.1) 40%, rgba(var(--hud-deep), 0.1)),
+      linear-gradient(rgba(var(--hud-deep), 0.95), rgba(var(--hud-deep), 0.95));
   }
   .frame {
     width: 100%;

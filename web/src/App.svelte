@@ -804,6 +804,9 @@
   :global(html[data-phone]) .stage {
     position: fixed;
     inset: var(--bar) 0 0;
+    /* The names carry their own z-index; without a context of their own they lay over the HUD and the
+       sheet, and read through the HUD's text. */
+    z-index: 0;
   }
   .stage :global(canvas) {
     display: block;
