@@ -147,9 +147,12 @@ test("on a phone the HUD minimises to a slim bar with the node's name, and resto
 
   // A node tapped while minimised changes the name on the bar.
   await card.getByRole("button", { name: "Minimise HUD" }).tap();
-  const isaac = (await nodes(page)).find((n) => n.id === "person:isaac_616")!;
-  await page.touchscreen.tap(isaac.x, isaac.y);
-  await expect(card).toContainText("Isaac");
+  // The camera eases to make room for the slim bar, so read where Isaac is on each try.
+  await expect(async () => {
+    const isaac = (await nodes(page)).find((n) => n.id === "person:isaac_616")!;
+    await page.touchscreen.tap(isaac.x, isaac.y);
+    await expect(card).toContainText("Isaac", { timeout: 1000 });
+  }).toPass();
   await expect(card.getByRole("tab")).toHaveCount(0);
   await card.getByRole("button", { name: "Restore HUD" }).tap();
   await expect(card.getByRole("heading", { level: 2 })).toHaveText("Isaac");
