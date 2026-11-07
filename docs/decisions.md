@@ -492,3 +492,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 ## 2026-11-07: The phone HUD minimises
 
 229. **The phone HUD can shrink to a slim bar, instead of being hidden outright.** The bar shows the type and the name of the Selected Node with a restore button, and a tap anywhere on it restores the HUD. Nothing is selected or focused differently while it is shrunk, and the camera makes room for the bar, not the full card. The owner did not want a full hide, only something small that is easy to bring back, so there is no third state. The state lasts until the page reloads; Hide HUD still returns the phone to the sheet.
+
+## 2026-11-07: Deploy defaults to the latest release
+
+230. **Running the Deploy workflow by hand without a tag deploys the latest published release.** The tag input was required, so the owner had to look up the newest tag (and a code release makes a new one each time). The Code release workflow already works out and passes its own tag, so only the manual run changed; a tag still deploys that tag, which is how a rollback is done (docs/runbook.md). Cost: an empty tag after a release that was made but should not go live deploys it, so a rollback still names the earlier tag.
