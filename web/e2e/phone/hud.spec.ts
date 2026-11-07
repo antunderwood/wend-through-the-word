@@ -87,3 +87,33 @@ test("on a phone on its side the sheet stays and the HUD is not offered", async 
   await expect(hud(page)).toHaveCount(0);
   await expect(sheet(page).getByRole("button", { name: "HUD", exact: true })).toHaveCount(0);
 });
+
+test("on a phone the HUD expands to nearly the whole screen and shrinks back, keeping its tab", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("wend.infoMode", "hud"));
+  await open(page);
+  const card = hud(page);
+  await expect(card).toBeVisible();
+  const docked = (await card.boundingBox())!;
+
+  await card.getByRole("button", { name: "Expand HUD" }).tap();
+  await expect(card.getByRole("button", { name: "Shrink HUD" })).toHaveAttribute("aria-expanded", "true");
+  const big = (await card.boundingBox())!;
+  expect(big.height).toBeGreaterThan(docked.height * 1.5);
+  expect(big.height).toBeGreaterThan(844 * 0.6);
+  // The card stays above the sheet's row and under the top bar.
+  const row = (await sheet(page).getByRole("tablist", { name: "Sheet" }).boundingBox())!;
+  expect(big.y + big.height).toBeLessThanOrEqual(row.y);
+  expect(big.y).toBeGreaterThan(40);
+  await page.screenshot({ path: process.env.HUD_EXPAND_SHOT ?? "test-results/hud-expanded.png" });
+
+  // Switching tabs keeps it expanded.
+  await card.getByRole("tab", { name: "Verses" }).tap();
+  await expect(card.getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
+  expect((await card.boundingBox())!.height).toBeCloseTo(big.height, 0);
+
+  // Shrink goes back to the docked size, tab kept.
+  await card.getByRole("button", { name: "Shrink HUD" }).tap();
+  await expect(card.getByRole("button", { name: "Expand HUD" })).toBeVisible();
+  expect((await card.boundingBox())!.height).toBeCloseTo(docked.height, 0);
+  await expect(card.getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
+});
