@@ -23,7 +23,7 @@ jobs:
       SITE: ${{ github.workspace }}/site
     steps:
       # Actions are pinned to a commit, so a moved tag cannot change what runs (decision 160).
-      # A manual run with no tag deploys the latest published release (decision 229).
+      # A manual run with no tag deploys the latest published release (decision 230).
       - name: Find the tag
         env: { GH_TOKEN: "${{ github.token }}", GH_REPO: "${{ github.repository }}" }
         run: |

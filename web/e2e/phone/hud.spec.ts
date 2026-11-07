@@ -117,3 +117,43 @@ test("on a phone the HUD expands to nearly the whole screen and shrinks back, ke
   expect((await card.boundingBox())!.height).toBeCloseTo(docked.height, 0);
   await expect(card.getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
 });
+
+test("on a phone the HUD minimises to a slim bar with the node's name, and restores with a tap", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("wend.infoMode", "hud"));
+  await open(page);
+  const card = hud(page);
+  await expect(card).toBeVisible();
+  const docked = (await card.boundingBox())!;
+
+  await card.getByRole("button", { name: "Minimise HUD" }).tap();
+  await expect(card.getByRole("button", { name: "Restore HUD" })).toBeVisible();
+  // Only the bar: the type and the name, no tabs or actions.
+  await expect(card).toContainText("Abraham");
+  await expect(card.getByRole("tab")).toHaveCount(0);
+  await expect(card.getByRole("button", { name: "Pin" })).toHaveCount(0);
+  const bar = (await card.boundingBox())!,
+    row = (await sheet(page).getByRole("tablist", { name: "Sheet" }).boundingBox())!;
+  expect(bar.height).toBeLessThanOrEqual(56);
+  expect(bar.height).toBeLessThan(docked.height / 3);
+  expect(bar.y + bar.height).toBeLessThanOrEqual(row.y);
+  // The selection and Focus stay where they were.
+  await focusIs(page, ABRAHAM);
+  await page.screenshot({ path: process.env.HUD_MIN_SHOT ?? "test-results/hud-minimised.png" });
+
+  // Tapping the bar brings the HUD back at the docked size.
+  await card.locator(".mini-name").tap();
+  await expect(card.getByRole("button", { name: "Minimise HUD" })).toBeVisible();
+  expect((await card.boundingBox())!.height).toBeCloseTo(docked.height, 0);
+
+  // A node tapped while minimised changes the name on the bar.
+  await card.getByRole("button", { name: "Minimise HUD" }).tap();
+  // The camera eases to make room for the slim bar, so read where Isaac is on each try.
+  await expect(async () => {
+    const isaac = (await nodes(page)).find((n) => n.id === "person:isaac_616")!;
+    await page.touchscreen.tap(isaac.x, isaac.y);
+    await expect(card).toContainText("Isaac", { timeout: 1000 });
+  }).toPass();
+  await expect(card.getByRole("tab")).toHaveCount(0);
+  await card.getByRole("button", { name: "Restore HUD" }).tap();
+  await expect(card.getByRole("heading", { level: 2 })).toHaveText("Isaac");
+});
