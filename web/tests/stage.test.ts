@@ -65,6 +65,29 @@ describe("staged site", () => {
     for (const icon of icons) expect(existsSync(join(site, icon)), icon).toBe(true);
   });
 
+  it("is installable as an app: a manifest linked from every page, its icons staged, and a service worker with a fetch handler that leaves /data alone", () => {
+    for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).toContain('<link rel="manifest" href="/manifest.webmanifest" />');
+    const m = JSON.parse(readFileSync(join(site, "manifest.webmanifest"), "utf8"));
+    expect(m).toMatchObject({ display: "standalone", start_url: "/", scope: "/", theme_color: "#0d0f17", background_color: "#0d0f17" });
+    expect(m.name).toBeTruthy();
+    expect(m.short_name).toBeTruthy();
+    const sizes = (purpose: string) => m.icons.filter((i: { purpose: string }) => i.purpose === purpose).map((i: { sizes: string }) => i.sizes);
+    expect(sizes("any")).toEqual(expect.arrayContaining(["192x192", "512x512"]));
+    expect(sizes("maskable")).toContain("512x512");
+    for (const icon of m.icons) {
+      const png = readFileSync(join(site, icon.src));
+      expect(png.subarray(1, 4).toString(), icon.src).toBe("PNG");
+      const [w, h] = icon.sizes.split("x").map(Number);
+      expect([png.readUInt32BE(16), png.readUInt32BE(20)], icon.src).toEqual([w, h]);
+    }
+    const sw = readFileSync(join(site, "sw.js"), "utf8");
+    expect(sw).toContain('addEventListener("fetch"');
+    expect(sw).toContain('startsWith("/data/")');
+    const js = files().filter((f) => f.startsWith("assets/") && f.endsWith(".js"));
+    expect(js.some((f) => readFileSync(join(site, f), "utf8").includes("/sw.js")), "the page registers /sw.js").toBe(true);
+    for (const path of ["/sw.js", "/manifest.webmanifest"]) expect(cacheControl(path), path).toBe("public, max-age=0, must-revalidate");
+  });
+
   it("writes no em or en dashes in the pages", () => {
     for (const page of ["index.html", "credits.html", "404.html"]) expect(readFileSync(join(site, page), "utf8"), page).not.toMatch(/[\u2013\u2014]/);
   });

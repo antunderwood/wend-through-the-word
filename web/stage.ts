@@ -27,5 +27,9 @@ writeFileSync(
   Cache-Control: ${REVALIDATE}
 /credits
   Cache-Control: ${REVALIDATE}
+/sw.js
+  Cache-Control: ${REVALIDATE}
+/manifest.webmanifest
+  Cache-Control: ${REVALIDATE}
 `,
 );
