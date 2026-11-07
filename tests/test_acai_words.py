@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))  # the tests run the pipeline as a program
 
-from pipeline import acai_words  # noqa: E402
+from pipeline import acai_words
 
 
 def test_tokens_match_the_alignment_numbering():
