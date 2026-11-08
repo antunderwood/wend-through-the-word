@@ -201,6 +201,8 @@ const BY_TOUCH: ((page: Page) => Promise<unknown>)[] = [
     await bar(page).getByRole("button", { name: "Jesus Christ" }).tap();
     await details(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Bethlehem/ }).tap();
   },
+  // The HUD button is in the Details tab's row, ringed; tapped in the tour it ends the step only.
+  (page) => details(page).getByRole("button", { name: "HUD", exact: true }).tap(),
 ];
 
 for (const [size, view] of [

@@ -124,6 +124,12 @@ const BY_MOUSE: ((page: Page) => Promise<unknown>)[] = [
     await bar(page).getByRole("button", { name: "Jesus Christ" }).click();
     await panel(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Bethlehem/ }).click();
   },
+  // The HUD button is ringed; pressed in the tour it ends the step and switches nothing.
+  async (page) => {
+    await expect(tour(page)).toContainText("Try the HUD");
+    await page.getByRole("button", { name: "HUD", exact: true }).click();
+    await expect(panel(page)).toBeVisible();
+  },
 ];
 
 for (const view of ["A"] as const) {
@@ -185,6 +191,7 @@ test("the whole tour with the keyboard only", async ({ page }) => {
       await enter(bar(page).getByRole("button", { name: "Jesus Christ" }));
       await enter(panel(page).getByRole("list", { name: /^Location/ }).getByRole("button", { name: /^Bethlehem/ }));
     },
+    () => enter(page.getByRole("button", { name: "HUD", exact: true })),
   ];
   await enter(help(page));
   for (const [i, act] of BY_KEYBOARD.entries()) {
