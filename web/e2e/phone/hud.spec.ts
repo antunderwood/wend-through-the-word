@@ -135,7 +135,10 @@ test("on a phone the HUD minimises to a slim bar with the node's name, and resto
     row = (await sheet(page).getByRole("tablist", { name: "Sheet" }).boundingBox())!;
   expect(bar.height).toBeLessThanOrEqual(56);
   expect(bar.height).toBeLessThan(docked.height / 3);
-  expect(bar.y + bar.height).toBeLessThanOrEqual(row.y);
+  // It shares the closed sheet's row, to the right of the tabs, not above it.
+  expect(bar.x).toBeGreaterThanOrEqual(row.x + row.width);
+  expect(bar.y).toBeGreaterThanOrEqual(row.y - 4);
+  expect(bar.y + bar.height).toBeLessThanOrEqual(row.y + row.height + 4);
   // The selection and Focus stay where they were.
   await focusIs(page, ABRAHAM);
   await page.screenshot({ path: process.env.HUD_MIN_SHOT ?? "test-results/hud-minimised.png" });
