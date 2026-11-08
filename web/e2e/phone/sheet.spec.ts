@@ -46,7 +46,7 @@ test("the path line shows where a node on Your Path is, with Prev and Next, and 
   await openSheet(page);
   const details = page.getByRole("tabpanel", { name: "Details" });
   // Abraham is the Focus and the only step: his place, and both steps off.
-  await expect(details.getByText("1 of 1")).toBeVisible();
+  await expect(details.getByText("Your Path 1 of 1")).toBeVisible();
   await expect(details.getByRole("button", { name: "Prev", exact: true })).toBeDisabled();
   await expect(details.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
   // The actions are slim to look at and as tall as 44 px to touch.
@@ -56,7 +56,7 @@ test("the path line shows where a node on Your Path is, with Prev and Next, and 
   // A node not on Your Path has no path line.
   await details.getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Sarah/ }).tap();
   await expect(details.getByRole("heading", { level: 2 })).toHaveText("Sarah");
-  await expect(details.getByText(/ of \d+$/)).toHaveCount(0);
+  await expect(details.getByText(/^Your Path \d+ of \d+$/)).toHaveCount(0);
 });
 
 // A slim button's touch size: the larger of its box and its ::after, which reaches past it.
