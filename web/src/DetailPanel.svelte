@@ -601,11 +601,11 @@
     {#if compact}<span class="kind">{selectedType}</span>{#if !screen.side && stepAt >= 0}{@render pathLine()}{/if}{:else}{selectedType}{/if}
   </p>
 {/snippet}
-<!-- On a phone: where the Selected Node is on Your Path, with the two steps; only for a node on it. -->
+<!-- On a phone: where the Selected Node is on Your Path, named so, with the two steps; only for a node on it. -->
 {#snippet pathLine()}
   <span class="path-line" role="group" aria-label="Step along Your Path">
     <button class="step slim" aria-label="Prev" title="Previous step on Your Path" disabled={stepAt === 0} onclick={() => apply({ type: "step", dir: -1 })}><span aria-hidden="true">‹</span></button>
-    <span class="where">{stepAt + 1} of {pathLength}</span>
+    <span class="where" title="{stepAt + 1} of {pathLength} on Your Path">Your Path {stepAt + 1} of {pathLength}</span>
     <button class="step slim" aria-label="Next" title="Next step on Your Path" data-tour="next" disabled={stepAt === pathLength - 1} onclick={() => apply({ type: "step", dir: 1 })}><span aria-hidden="true">›</span></button>
   </span>
 {/snippet}
