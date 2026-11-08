@@ -119,6 +119,31 @@ test("every button and list row in the sheet is at least 44 px tall", async ({ p
   expect(await small(page)).toEqual([]);
 });
 
+test("stepping along Your Path brings the step's pill into view in the top bar", async ({ page }) => {
+  await open(page);
+  const search = page.getByRole("searchbox", { name: "Search" });
+  for (const name of ["Sarah", "Hagar", "Isaac", "Jacob", "Lot", "Nahor"]) {
+    await page.getByRole("button", { name: "Search" }).tap();
+    await search.fill(name);
+    await page.getByRole("list", { name: "Search results" }).getByRole("button").first().tap();
+  }
+  const bar = page.getByRole("navigation", { name: "Your Path" });
+  const details = page.getByRole("tabpanel", { name: "Details" });
+  const whole = async () => {
+    const b = (await bar.locator("button.selected").boundingBox())!;
+    const r = (await bar.getByRole("list").boundingBox())!;
+    return b.x >= r.x - 1 && b.x + b.width <= r.x + r.width + 1;
+  };
+  // Seven steps: Nahor (the Focus) first, Abraham, the oldest, last and off the edge. Step back to him.
+  for (let i = 0; i < 6; i++) await details.getByRole("button", { name: "Prev", exact: true }).tap();
+  await expect(details.getByText("Your Path 1 of 7")).toBeVisible();
+  await expect.poll(whole).toBe(true);
+  // And forward again, to the Focus, at the other end.
+  for (let i = 0; i < 6; i++) await details.getByRole("button", { name: "Next", exact: true }).tap();
+  await expect(details.getByText("Your Path 7 of 7")).toBeVisible();
+  await expect.poll(whole).toBe(true);
+});
+
 test("Your Path is one row that scrolls sideways, with Clear at its end, and a tap on a step selects it", async ({ page }) => {
   await open(page);
   // Seven Foci by search: Abraham, then six more.

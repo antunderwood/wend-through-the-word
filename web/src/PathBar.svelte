@@ -11,6 +11,19 @@
   }: { model: State; label: (id: Id) => string; apply: (a: Action) => void; notes: Record<Id, string>; makeFocus: (id: Id) => void } = $props();
   // The Focus first, then Your Path newest first.
   const items = $derived([model.focus, ...[...model.path].reverse()]);
+  // Whatever selects a step (a click, Prev and Next, a node in the scene) brings its pill into view: the
+  // row scrolls sideways, by the least it takes, and not at all when the pill is already whole.
+  let row = $state<HTMLOListElement>();
+  $effect(() => {
+    void model.selected;
+    void items.length;
+    const pill = row?.querySelector<HTMLElement>("button.selected");
+    if (!row || !pill) return;
+    const r = row.getBoundingClientRect();
+    const b = pill.getBoundingClientRect();
+    const by = b.left < r.left ? b.left - r.left - 8 : b.right > r.right ? b.right - r.right + 8 : 0;
+    if (by) row.scrollBy({ left: by, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
   // A click selects at once, and a second click on the same step within the double click time makes
   // it the Focus (decision 206); the Focus's own step stays as it is. A click from the keyboard
   // (detail 0) only selects, as before.
@@ -23,7 +36,7 @@
 </script>
 
 <nav class="path" aria-label="Your Path">
-  <ol>
+  <ol bind:this={row}>
     {#each items as id, i (id)}
       <li>
         <button data-tour="path-{id}" class:focus={i === 0} class:selected={id === model.selected} class:noted={notes[id]} title={notes[id] ? "Has a note" : undefined} onclick={(e) => clicked(id, e)}>{label(id)}</button>

@@ -33,7 +33,7 @@
     svgPoints,
     type HudPlace,
   } from "./hud";
-  import { fold, passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, typePlural, type Action, type Id, type NodeType, type State } from "./model";
+  import { fold, passing, pathPlace, relation, relationWords, typeOf, TYPES, TYPE_NAME, typePlural, type Action, type Id, type NodeType, type State } from "./model";
   import type { Notes } from "./session";
 
   let {
@@ -111,6 +111,8 @@
   const own = new OwnVerses(() => data, () => (selected === focus && isEntity(selected) ? selected : undefined));
   const hasVerses = $derived(!!shared || (selected === focus && isEntity(selected)));
   const noted = $derived(selected === focus || model.path.includes(selected));
+  // Where the Selected Node is on Your Path (decision 234), for the line under its name.
+  const pathAt = $derived(pathPlace(model));
 
   // The tabs this node has; a tab the next node lacks falls back to the overview.
   type Tab = "overview" | "links" | "verses" | "map" | "note";
@@ -336,6 +338,13 @@
   {#key selected}
     <div class="head">
       <h2 class="name" title={label(selected)}>{label(selected)}</h2>
+      {#if pathAt}
+        <p class="step" role="group" aria-label="Step along Your Path">
+          <button aria-label="Prev" title="Previous step on Your Path" disabled={pathAt.at === 0} onclick={() => apply({ type: "step", dir: -1 })}><span aria-hidden="true">‹</span></button>
+          <span class="where" title="{pathAt.at + 1} of {pathAt.of} on Your Path">Your Path {pathAt.at + 1} of {pathAt.of}</span>
+          <button aria-label="Next" title="Next step on Your Path" disabled={pathAt.at === pathAt.of - 1} onclick={() => apply({ type: "step", dir: 1 })}><span aria-hidden="true">›</span></button>
+        </p>
+      {/if}
       {#if linkWords}<p class="rel"><span class="key">Rel</span> {#if shared && linkWords.startsWith("together in")}<button class="jump" title="Show the verses" onclick={() => (tab = "verses")}>{linkWords}</button>{:else}{linkWords}{/if}{#if !linkWords.includes(plainName(focus))} <span class="dim">/ {plainName(focus)}</span>{/if}</p>{/if}
     </div>
   {/key}
@@ -946,6 +955,37 @@
     margin-top: 6px;
     background: var(--type);
     box-shadow: 0 0 6px var(--type);
+  }
+  /* Your Path N of M under the name: bare arrows 22 px tall to look at, 40 px to touch (the ::after). */
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 4px 0 0;
+    font: 11px/1.3 var(--mono);
+    color: rgb(var(--hud-ink));
+  }
+  .step button {
+    position: relative;
+    width: 28px;
+    height: 22px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: rgb(var(--hud-line));
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .step button::after {
+    content: "";
+    position: absolute;
+    inset: -9px -6px;
+  }
+  .step button:disabled {
+    opacity: 0.35;
+    cursor: default;
   }
   .rel {
     margin: 6px 0 0;

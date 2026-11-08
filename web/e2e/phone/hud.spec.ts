@@ -160,3 +160,20 @@ test("on a phone the HUD minimises to a slim bar with the node's name, and resto
   await card.getByRole("button", { name: "Restore HUD" }).tap();
   await expect(card.getByRole("heading", { level: 2 })).toHaveText("Isaac");
 });
+
+test("the phone HUD names the Selected Node's place on Your Path, and its arrows are 40 px to touch", async ({ page }) => {
+  await open(page);
+  await openSheet(page);
+  await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
+  await expect(hud(page).getByText("Your Path 1 of 1")).toBeVisible();
+  // Slim to look at, and the touch size reaches 40 px or more with the ::after.
+  for (const name of ["Prev", "Next"]) {
+    const button = hud(page).getByRole("button", { name, exact: true });
+    const touch = await button.evaluate((e) => {
+      const a = getComputedStyle(e, "::after");
+      return { h: parseFloat(a.height) || 0, w: parseFloat(a.width) || 0 };
+    });
+    expect(touch.h, name).toBeGreaterThanOrEqual(40);
+    expect(touch.w, name).toBeGreaterThanOrEqual(40);
+  }
+});
