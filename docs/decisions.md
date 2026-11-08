@@ -496,3 +496,7 @@ Numbers start at 56, because ticket #4 records decision 55.
 ## 2026-11-07: Deploy defaults to the latest release
 
 230. **Running the Deploy workflow by hand without a tag deploys the latest published release.** The tag input was required, so the owner had to look up the newest tag (and a code release makes a new one each time). The Code release workflow already works out and passes its own tag, so only the manual run changed; a tag still deploys that tag, which is how a rollback is done (docs/runbook.md). Cost: an empty tag after a release that was made but should not go live deploys it, so a rollback still names the earlier tag.
+
+## 2026-11-08: The tour points out the HUD
+
+231. **The tour ends with a step that rings the HUD button and explains it, but does not switch the HUD on.** The owner asked for the HUD to be shown as an option in the introductory tour, including how to reach it (the owner wrote "hub"; read as the HUD). The tour runs on the panel and keeps nothing in the browser, so pressing the button during the tour only ends the step; the reader tries the HUD after it. The button is shown during the tour, on a sideways phone too, so the step has a target, and its text says a sideways phone keeps the sheet. The phone text covers Expand and Minimise. Costs one more step in every walk through the tour.

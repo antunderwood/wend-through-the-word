@@ -26,6 +26,10 @@ export type TourPage = {
   panTo(id: Id, x: number, y: number, zoomOut: number): void;
   // Eases back the pans and zoom panTo made, when a step or the tour ends (decision 188).
   panBack(): void;
+  // The HUD button was pressed in the tour. It switches nothing and keeps nothing: the tour runs on
+  // the panel, and the reader tries the HUD after it.
+  readonly hudShown: boolean;
+  showHud(): void;
 };
 // at: the model and notes when the step began, and whether the camera has moved since.
 export type At = { model: State; notes: Notes; moved: boolean };
@@ -189,6 +193,17 @@ export const STEPS: Step[] = [
     target: () => tour("show-map"),
     check: (p) => typeOf(p.model.selected) === "place",
     act: (p) => p.apply({ type: "select", id: BETHLEHEM }),
+  },
+  {
+    // The HUD is pointed out, not switched on: the tour runs on the panel and keeps nothing.
+    title: "Try the HUD",
+    text: (p) =>
+      p.coarse
+        ? "The HUD button, in the row at the top of the Details tab, shows the Selected Node on a see-through card over the graph instead of in the sheet. Upright, the card docks above the closed sheet; Expand takes more of the screen and Minimise shrinks it to a slim bar you tap to restore. A phone on its side keeps the sheet. Tap HUD to finish this tour step; the tour itself stays on the sheet, so try the HUD once it ends."
+        : "The HUD button, with Filters, Key, and Copy link, shows the Selected Node on a see-through card over the graph instead of in the side panel. Drag the card to move it, and press Panel on the card (or HUD again) to bring the panel back. Click HUD to finish this tour step; the tour itself stays on the panel, so try the HUD once it ends.",
+    target: () => tour("hud"),
+    check: (p) => p.hudShown,
+    act: (p) => p.showHud(),
   },
 ];
 
