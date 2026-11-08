@@ -141,3 +141,22 @@ test("the flicker is kept, and never runs with animation off", async ({ page }) 
   // reducedMotion "reduce" is on for these specs: nothing animates.
   expect(await hud(page).evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 });
+
+test("the HUD names the Selected Node's place on Your Path, with steps, for a node on it only", async ({ page }) => {
+  await toggle(page).click();
+  // Abraham is the Focus and the only step.
+  await expect(hud(page).getByText("Your Path 1 of 1")).toBeVisible();
+  await expect(hud(page).getByRole("button", { name: "Prev", exact: true })).toBeDisabled();
+  await expect(hud(page).getByRole("button", { name: "Next", exact: true })).toBeDisabled();
+  // A node that is not on Your Path has no such line.
+  const isaac = (await nodes(page)).find((n) => n.id === "person:isaac_616")!;
+  await page.mouse.click(isaac.x, isaac.y);
+  await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Isaac");
+  await expect(hud(page).getByText(/^Your Path \d+ of \d+$/)).toHaveCount(0);
+  // Made the Focus, he is step 2 of 2, and Prev steps back to Abraham.
+  await hud(page).getByRole("button", { name: "Make Focus" }).click();
+  await expect(hud(page).getByText("Your Path 2 of 2")).toBeVisible();
+  await hud(page).getByRole("button", { name: "Prev", exact: true }).click();
+  await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Abraham");
+  await expect(hud(page).getByText("Your Path 1 of 2")).toBeVisible();
+});

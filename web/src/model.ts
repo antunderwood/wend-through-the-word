@@ -185,6 +185,12 @@ export const initialState = (focus: Id): State => ({
 });
 
 // label names a node in the notice line.
+// Where the Selected Node is on Your Path (the Focus is its last step), for "Your Path N of M"; null
+// when it is not on it. at is 0-based.
+export function pathPlace(s: State): { at: number; of: number } | null {
+  const at = [...s.path, s.focus].indexOf(s.selected);
+  return at < 0 ? null : { at, of: s.path.length + 1 };
+}
 export function reduce(s: State, a: Action, label: (id: Id) => string): State {
   switch (a.type) {
     case "focus": {

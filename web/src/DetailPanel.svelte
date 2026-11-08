@@ -12,7 +12,7 @@
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
   import PlaceMap from "./PlaceMap.svelte";
-  import { fold, passing, relation, relationWords, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
+  import { fold, passing, pathPlace, relation, relationWords, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import { screen } from "./screen.svelte";
   import type { Notes } from "./session";
 
@@ -77,8 +77,9 @@
   // A phone, upright or on its side: the Selected Node's section is too short to hold its actions.
   const compact = $derived(screen.phone);
   // Your Path with the Focus last (decision 114's order); the Selected Node's place on it, or -1.
-  const pathLength = $derived(model.path.length + 1);
-  const stepAt = $derived([...model.path, model.focus].indexOf(selected));
+  const onPath = $derived(pathPlace(model));
+  const pathLength = $derived(onPath?.of ?? 0);
+  const stepAt = $derived(onPath?.at ?? -1);
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
 
