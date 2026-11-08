@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { doubleClickLabel, focusIs, nodes, openOnAbraham } from "./scene";
+import { doubleClickLabel, focusIs, nodes, openOnAbraham, showAllBooks } from "./scene";
 
 const ABRAHAM = "person:abraham_58";
 const panel = (page: Page) => page.getByRole("complementary", { name: "Selected Node" });
@@ -71,20 +71,47 @@ test("a list click selects, a double click makes the Focus", async ({ page }) =>
 
 test("the selected Focus lists its own Verses, with BSB text, a page at a time (decision 223)", async ({ page }) => {
   const own = panel(page).getByRole("list", { name: /^In \d+ verses$/ });
-  // Five at first, so the Neighbour lists below stay near the top; then 20 more at a time.
+  // Abraham's 29 Verses are in Genesis and Matthew, so they are grouped (decision 233); the first
+  // book is open. Five at first, so the Neighbour lists below stay near the top; then 20 more at a time.
   await expect(own.getByRole("listitem")).toHaveCount(5);
   await expect(own.getByRole("listitem").first()).toContainText(/\w+ \d+:\d+/);
-  await panel(page).getByRole("button", { name: /^Show 20 more \(5 of \d+\)$/ }).click();
+  await panel(page).getByRole("button", { name: /^Show 20 more \(5 of 26\)$/ }).click();
   await expect(own.getByRole("listitem")).toHaveCount(25);
   // Another node shows the Verses it shares with the Focus instead.
   await typeList(page, "Theme (37)").getByRole("button", { name: /^Genealogy/ }).click();
   await expect(own).toHaveCount(0);
 });
 
+test("a long Verse list is grouped under collapsing Testaments and books, with counts (decision 233)", async ({ page }) => {
+  const own = panel(page).getByRole("list", { name: /^In \d+ verses$/ });
+  const ot = panel(page).getByRole("button", { name: /^Old Testament/ });
+  const nt = panel(page).getByRole("button", { name: /^New Testament/ });
+  await expect(ot).toHaveText(/26 verses/);
+  await expect(nt).toHaveText(/3 verses/);
+  await expect(ot).toHaveAttribute("aria-expanded", "true");
+  await expect(nt).toHaveAttribute("aria-expanded", "false");
+  await expect(panel(page).getByRole("button", { name: /^Genesis/ })).toHaveAttribute("aria-expanded", "true");
+  await expect(own.getByRole("listitem")).toHaveCount(5);
+  // The New Testament is one tap away, and a book opens on its own.
+  await nt.click();
+  const matthew = panel(page).getByRole("button", { name: /^Matthew/ });
+  await expect(matthew).toHaveText(/3$/);
+  await expect(matthew).toHaveAttribute("aria-expanded", "false");
+  await matthew.click();
+  await expect(own.getByRole("listitem")).toHaveCount(8);
+  await expect(own.getByRole("listitem").last()).toContainText(/^Matt \d+:\d+/);
+  // Closing a book or a Testament hides its rows.
+  await ot.click();
+  await expect(own.getByRole("listitem")).toHaveCount(3);
+  await matthew.click();
+  await expect(own.getByRole("listitem")).toHaveCount(0);
+});
+
 test("the panel lists the Verses a Selected Node shares with the Focus, with BSB text", async ({ page }) => {
   await typeList(page, "Theme (37)").getByRole("button", { name: /^Genealogy/ }).click();
   // Genealogy stands in for Faith, which shares no Verse with Abraham in the fixture.
   const verses = panel(page).getByRole("list", { name: "Together in 8 verses" });
+  await showAllBooks(panel(page));
   await expect(verses.getByRole("listitem")).toHaveCount(8);
   await expect(verses.getByRole("listitem").first()).toContainText("Gen 11:26");
   await expect(verses.getByRole("listitem").first()).toContainText("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");

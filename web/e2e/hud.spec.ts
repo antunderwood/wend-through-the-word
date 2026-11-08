@@ -97,6 +97,13 @@ test("the HUD's tabs list the links, the shared verses, and the note", async ({ 
   await expect(hud(page).getByRole("button", { name: /^In \d+ verses: show all$/ })).toBeVisible();
   await hud(page).getByRole("tab", { name: "Verses" }).click();
   await expect(hud(page).getByRole("heading", { name: /^In \d+ verses$/ })).toBeVisible();
+  // Abraham's Verses are in Genesis and Matthew: grouped, the first book open, the rest a tap away (decision 233).
+  await expect(hud(page).getByRole("button", { name: /^Old Testament/ })).toHaveAttribute("aria-expanded", "true");
+  await expect(hud(page).getByRole("button", { name: /^New Testament/ })).toHaveAttribute("aria-expanded", "false");
+  await expect(hud(page).getByRole("listitem")).toHaveCount(20);
+  await hud(page).getByRole("button", { name: /^New Testament/ }).click();
+  await hud(page).getByRole("button", { name: /^Matthew/ }).click();
+  await expect(hud(page).getByRole("listitem").last()).toContainText(/^Matt \d+:\d+/);
   await hud(page).getByRole("tab", { name: "Links" }).click();
   await expect(hud(page).getByRole("list", { name: /^People \d/ })).toBeVisible();
   await hud(page).getByRole("searchbox", { name: "Filter links" }).fill("isaac");

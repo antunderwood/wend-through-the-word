@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { doubleClickLabel, focusIs, nodes, openOnAbraham, themesOnScreen } from "./scene";
+import { doubleClickLabel, focusIs, nodes, openOnAbraham, themesOnScreen, showAllBooks } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473",
@@ -59,6 +59,7 @@ for (const view of ["A", "B", "C"] as const) {
     await themes.getByRole("button", { name: /^Genealogy/ }).click();
     await expect(heading(page)).toHaveText("Genealogy");
     const verses = panel(page).getByRole("list", { name: "Together in 8 verses" }).getByRole("listitem");
+    await showAllBooks(panel(page));
     await expect(verses).toHaveCount(8);
     await expect(verses.first()).toContainText("Gen 11:26");
     await expect(verses.first()).toContainText("When Terah was 70 years old, he became the father of Abram, Nahor, and Haran.");

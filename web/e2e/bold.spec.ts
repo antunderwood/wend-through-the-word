@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { focusIs } from "./scene";
+import { focusIs, showAllBooks } from "./scene";
 
 // The names in bold in the shared Verses (#111, decision 207): the Selected Node's and the Focus's,
 // when each is a Person or a Place, drawn as text and strong elements.
@@ -44,6 +44,9 @@ test("a Verse that does not write the name (a pronoun) shows plain", async ({ pa
 
 test("a shared Verse for a Theme bolds no word for the Theme, and still bolds the Person at the other end", async ({ page }) => {
   await open(page, "person:abraham_58", "theme:genealogy");
+  // Six Genesis verses show; the Matthew ones are under the New Testament.
+  await expect(shared(page).getByRole("listitem")).toHaveCount(6);
+  await showAllBooks(panel(page));
   await expect(shared(page).getByRole("listitem")).toHaveCount(8);
   // "This is the record of the genealogy of Jesus Christ, ... the son of Abraham:"
   expect(await bold(verseText(page, "Matt 1:1"))).toEqual(["Abraham"]);
