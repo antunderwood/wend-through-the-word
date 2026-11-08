@@ -10,8 +10,10 @@
   import PlaceMap from "./PlaceMap.svelte";
   import VerseText from "./VerseText.svelte";
   import VerseKey from "./VerseKey.svelte";
+  import VerseGroups from "./VerseGroups.svelte";
   import { OwnVerses, VERSE_STEP, type VerseRow } from "./verses.svelte";
-  import type { Named } from "./bold";
+  import { groupKeys } from "./verse-groups";
+  import type { Named, Term } from "./bold";
   import { typeColour } from "./colours";
   import type { Data } from "./data";
   import {
@@ -499,20 +501,40 @@
     {@const names = data.named(selected) ? [data.named(selected)!] : []}
     <h3>In {own.keys.length} verse{own.keys.length === 1 ? "" : "s"}</h3>
     <VerseKey {names} underlined={own.rows.some((v) => v.terms.length)} />
-    <ul class="verses">
-      {#each own.rows as v (v.key)}
-        <li>
-          <button class="ref" onclick={() => apply({ type: "select", id: v.key })} ondblclick={() => makeFocus(v.key)}>{data.label(v.key)}</button>
-          <p class="text"><VerseText text={v.text} {names} terms={v.terms} /></p>
-        </li>
-      {/each}
-    </ul>
-    {#if own.rows.length < own.keys.length}
-      <button class="link" disabled={own.busy} onclick={() => own.more()}>{own.busy ? "Loading…" : `${Math.min(VERSE_STEP, own.keys.length - own.rows.length)} more (${own.rows.length} of ${own.keys.length})`}</button>
+    {@const groups = groupKeys(own.keys)}
+    {#if groups}
+      {#key selected}
+        <VerseGroups {groups} bookName={data.bookName} ready={(k) => k in own.cache} load={(ks) => own.ensure(ks)} hud>
+          {#snippet list(keys)}
+            <ul class="verses">
+              {#each keys as k (k)}
+                {@const v = own.cache[k]}
+                {@render verseRow(v.key, v.text, names, v.terms)}
+              {/each}
+            </ul>
+          {/snippet}
+        </VerseGroups>
+      {/key}
+    {:else}
+      <ul class="verses">
+        {#each own.rows as v (v.key)}
+          {@render verseRow(v.key, v.text, names, v.terms)}
+        {/each}
+      </ul>
+      {#if own.shown < own.keys.length}
+        <button class="link" disabled={own.busy} onclick={() => own.more()}>{own.busy ? "Loading…" : `${Math.min(VERSE_STEP, own.keys.length - own.shown)} more (${own.shown} of ${own.keys.length})`}</button>
+      {/if}
     {/if}
   {:else}
     <p class="dim">No verse is linked to {plainName(selected)}.</p>
   {/if}
+{/snippet}
+
+{#snippet verseRow(key: Id, text: string, names: Named[], terms: Term[])}
+  <li>
+    <button class="ref" onclick={() => apply({ type: "select", id: key })} ondblclick={() => makeFocus(key)}>{data.label(key)}</button>
+    <p class="text"><VerseText {text} {names} {terms} /></p>
+  </li>
 {/snippet}
 
 {#snippet togetherList()}
@@ -522,16 +544,28 @@
     {#if s && s.verses.length}
       <h3>With {plainName(focus)} in {s.verses.length} verse{s.verses.length === 1 ? "" : "s"}</h3>
       <VerseKey names={s.names} underlined={s.verses.some((v) => v.terms.length)} />
-      <ul class="verses">
-        {#each togetherAll ? s.verses : s.verses.slice(0, TOGETHER) as v (v.key)}
-          <li>
-            <button class="ref" onclick={() => apply({ type: "select", id: v.key })} ondblclick={() => makeFocus(v.key)}>{data.label(v.key)}</button>
-            <p class="text"><VerseText text={v.text} names={s.names} terms={v.terms} /></p>
-          </li>
-        {/each}
-      </ul>
-      {#if s.verses.length > TOGETHER}
-        <button class="link" aria-expanded={togetherAll} onclick={() => (togetherAll = !togetherAll)}>{togetherAll ? "Fewer" : `All ${s.verses.length}`}</button>
+      {@const groups = groupKeys(s.verses.map((v) => v.key))}
+      {#if groups}
+        {@const by = new Map(s.verses.map((v) => [v.key, v]))}
+        <VerseGroups {groups} bookName={data.bookName} ready={() => true} load={() => {}} hud>
+          {#snippet list(keys)}
+            <ul class="verses">
+              {#each keys as k (k)}
+                {@const v = by.get(k)!}
+                {@render verseRow(v.key, v.text, s.names, v.terms)}
+              {/each}
+            </ul>
+          {/snippet}
+        </VerseGroups>
+      {:else}
+        <ul class="verses">
+          {#each togetherAll ? s.verses : s.verses.slice(0, TOGETHER) as v (v.key)}
+            {@render verseRow(v.key, v.text, s.names, v.terms)}
+          {/each}
+        </ul>
+        {#if s.verses.length > TOGETHER}
+          <button class="link" aria-expanded={togetherAll} onclick={() => (togetherAll = !togetherAll)}>{togetherAll ? "Fewer" : `All ${s.verses.length}`}</button>
+        {/if}
       {/if}
     {:else}
       <p class="dim">No verse names both {plainName(selected)} and {plainName(focus)}.</p>
