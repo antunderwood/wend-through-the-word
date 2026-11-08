@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { focusIs, nodes, openOnAbraham, themesOnScreen, type OnScreen } from "./scene";
+import { focusIs, nodes, openOnAbraham, themesOnScreen, type OnScreen, showAllBooks } from "./scene";
 
 const ABRAHAM = "person:abraham_58",
   SARAH = "person:sarah_2473";
@@ -65,6 +65,7 @@ test("the book filter leaves the Verses two nodes share, as they are the evidenc
   await open(page, "/?focus=person:abraham_58&books=Matt");
   await page.keyboard.press("Escape");
   await panel(page).getByRole("list", { name: "Theme (37)" }).getByRole("button", { name: /^Genealogy/ }).click();
+  await showAllBooks(panel(page));
   await expect(panel(page).getByRole("list", { name: "Together in 8 verses" }).getByRole("listitem")).toHaveCount(8);
 });
 

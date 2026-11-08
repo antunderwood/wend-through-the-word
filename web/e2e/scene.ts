@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 // The browser tests read the drawn scene through window.wendGraph, set only in the e2e build, and
 // can act on the Focus Model through window.wendApply, for a state no control sets (a low node limit).
@@ -32,4 +32,13 @@ export const themesOnScreen = async (page: Page) => (await nodes(page)).filter((
 export async function doubleClickLabel(page: Page, name: string, id: string) {
   await page.locator(".labels").getByText(name, { exact: true }).dblclick();
   await focusIs(page, id);
+}
+
+// Opens every Testament and book of a grouped Verse list (decision 233), so a test reads all its rows.
+export async function showAllBooks(root: Locator) {
+  await root.locator(".testament button").first().waitFor();
+  for (const kind of [".testament", ".book"]) {
+    const shut = root.locator(`${kind} button[aria-expanded="false"]`);
+    while (await shut.count()) await shut.first().click();
+  }
 }

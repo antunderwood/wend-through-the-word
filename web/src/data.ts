@@ -313,6 +313,8 @@ export async function createData(getJSON: GetJSON, root: string, onUpdate?: (ver
     },
     outside,
     // A Verse's OSIS book, and whether its chapter is built (the book filter).
+    // A book's name from its order number (the first two digits of a Verse Key).
+    bookName: (number: string) => books.get(number)?.name ?? number,
     bookOf: (id: Id) => ({ osis: books.get(id.slice(0, 2))?.osis, built: !outside(id) }),
     // The books with chapters in this build, in Bible order.
     get builtBooks() {

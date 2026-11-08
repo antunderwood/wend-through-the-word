@@ -4,7 +4,9 @@
   import { untrack, type Snippet } from "svelte";
   import VerseText from "./VerseText.svelte";
   import VerseKey from "./VerseKey.svelte";
+  import VerseGroups from "./VerseGroups.svelte";
   import { OwnVerses, VERSE_STEP } from "./verses.svelte";
+  import { groupKeys } from "./verse-groups";
   import { typeColour } from "./colours";
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
@@ -321,13 +323,29 @@
       {@const names = data.named(versesOf) ? [data.named(versesOf)!] : []}
       <h3 id="own-verses">In {own.keys.length} verse{own.keys.length === 1 ? "" : "s"}</h3>
       <VerseKey {names} underlined={own.rows.some((v) => v.terms.length)} />
-      <ul aria-labelledby="own-verses">
-        {#each own.rows as v (v.key)}
-          <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
-        {/each}
-      </ul>
-      {#if own.rows.length < own.keys.length}
-        <button class="more" disabled={own.busy} onclick={() => own.more()}>{own.busy ? "Loading…" : `Show ${Math.min(VERSE_STEP, own.keys.length - own.rows.length)} more (${own.rows.length} of ${own.keys.length})`}</button>
+      {@const groups = groupKeys(own.keys)}
+      {#if groups}
+        {#key versesOf}
+          <VerseGroups {groups} bookName={data.bookName} ready={(k) => k in own.cache} load={(ks) => own.ensure(ks)} first={5} step={VERSE_STEP} more="Show ">
+            {#snippet list(keys)}
+              <ul aria-labelledby="own-verses">
+                {#each keys as k (k)}
+                  {@const v = own.cache[k]}
+                  <li>{@render item(k, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
+                {/each}
+              </ul>
+            {/snippet}
+          </VerseGroups>
+        {/key}
+      {:else}
+        <ul aria-labelledby="own-verses">
+          {#each own.rows as v (v.key)}
+            <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
+          {/each}
+        </ul>
+        {#if own.shown < own.keys.length}
+          <button class="more" disabled={own.busy} onclick={() => own.more()}>{own.busy ? "Loading…" : `Show ${Math.min(VERSE_STEP, own.keys.length - own.shown)} more (${own.shown} of ${own.keys.length})`}</button>
+        {/if}
       {/if}
     {/if}
     {#await sharing then lists}
@@ -335,14 +353,29 @@
         {#if verses.length}
           <h3 id="shared-{i}">Together {o === focus ? "" : `with ${label(o)} `}in {verses.length} verse{verses.length === 1 ? "" : "s"}</h3>
           <VerseKey {names} underlined={verses.some((v) => v.terms.length)} />
-          <ul aria-labelledby="shared-{i}">
-            {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
-              <!-- A Person's or a Place's name in bold and its type's colour: text and strong elements,
-                   never markup from the data, so the Verse's text stays one string. -->
-              <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
-            {/each}
-          </ul>
-          {@render more(`${versesOf}|${o}`, verses.length)}
+          {@const groups = groupKeys(verses.map((v) => v.key))}
+          {#if groups}
+            {@const by = new Map(verses.map((v) => [v.key, v]))}
+            <VerseGroups {groups} bookName={data.bookName} ready={() => true} load={() => {}} first={VERSE_STEP} step={VERSE_STEP} more="Show ">
+              {#snippet list(keys)}
+                <ul aria-labelledby="shared-{i}">
+                  {#each keys as k (k)}
+                    {@const v = by.get(k)!}
+                    <li>{@render item(k, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
+                  {/each}
+                </ul>
+              {/snippet}
+            </VerseGroups>
+          {:else}
+            <ul aria-labelledby="shared-{i}">
+              {#each paged(`${versesOf}|${o}`, verses) as v (v.key)}
+                <!-- A Person's or a Place's name in bold and its type's colour: text and strong elements,
+                     never markup from the data, so the Verse's text stays one string. -->
+                <li>{@render item(v.key, "", "verses")}<p class="verse-text"><VerseText text={v.text} {names} terms={v.terms} /></p></li>
+              {/each}
+            </ul>
+            {@render more(`${versesOf}|${o}`, verses.length)}
+          {/if}
         {/if}
       {/each}
     {:catch e}
