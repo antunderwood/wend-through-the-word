@@ -20,7 +20,8 @@
     covered = $bindable(0),
     side = false,
     peekable = true,
-  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; full?: boolean; peek?: boolean; covered?: number; side?: boolean; peekable?: boolean } = $props();
+    away = false,
+  }: { tabs: Tab[]; tab?: Id; collapsed?: boolean; full?: boolean; peek?: boolean; covered?: number; side?: boolean; peekable?: boolean; away?: boolean } = $props();
   // At the side the sheet is full height, so it never peeks; nor does it where the HUD takes the
   // peek's place (not peekable): there it is closed, half, or full.
   const peeking = $derived(peek && !collapsed && !full && !side && peekable);
@@ -39,16 +40,7 @@
   // The camera offset follows the sheet's height once a drag ends, not every move of the finger.
   $effect(() => {
     if (dragging !== null) return;
-    covered = collapsed ? closedPx() : side ? width : height;
-  });
-
-  // The tabs' width, for what shares the closed row beside them (the minimised HUD).
-  let tabsW = $state(0);
-  $effect(() => {
-    const root = document.documentElement;
-    if (side || !tabsW) root.style.removeProperty("--sheet-tabs");
-    else root.style.setProperty("--sheet-tabs", `${tabsW}px`);
-    return () => root.style.removeProperty("--sheet-tabs");
+    covered = away ? 0 : collapsed ? closedPx() : side ? width : height;
   });
 
   // The on-screen keyboard, or a browser's toolbar, lies over the bottom of the page and shrinks the
@@ -153,6 +145,7 @@
 <section
   class="sheet"
   class:collapsed
+  class:away
   class:side
   class:full={full && !side}
   class:peek={peeking}
@@ -171,7 +164,7 @@
   <!-- The drag is for a finger or a mouse; the keyboard and a screen reader have the handle and the tabs. -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="row" bind:this={row} onpointerdown={down} onpointermove={move} onpointerup={up} onpointercancel={cancel} onclickcapture={swallow}>
-    <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab} bind:offsetWidth={tabsW}>
+    <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab}>
       {#each tabs as t (t.id)}
         <!-- A tab tapped on a closed or peeking sheet opens it at half, to show the tab. -->
         <button
@@ -261,6 +254,15 @@
   }
   .sheet.collapsed {
     transform: translateY(calc(100% - var(--sheet-handle) - 1px)); /* and the top border */
+  }
+  /* Away: the phone's HUD is showing, so the whole sheet, tabs and handle too, is off the screen. The
+     HUD's Details button, or the sheet's HUD button, is the switch between the two. */
+  .sheet.away {
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform 0.2s,
+      visibility 0s 0.2s;
   }
   /* The finger moves the sheet: no easing behind it. */
   .sheet.dragging {

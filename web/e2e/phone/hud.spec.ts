@@ -21,14 +21,14 @@ test("on a phone the HUD docks above the closed sheet in place of its peek, and 
   await openSheet(page);
   await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
 
-  // The sheet closes to its row and the HUD sits just above it, across the screen.
-  await expect(page.locator(".sheet.collapsed")).toHaveCount(1);
+  // The sheet goes right away, tabs and handle too, and the HUD sits at the bottom, across the screen.
+  await expect(page.locator(".sheet.away")).toHaveCount(1);
+  await expect(sheet(page).getByRole("tablist", { name: "Sheet" })).toBeHidden();
   await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Abraham");
-  const card = (await hud(page).boundingBox())!,
-    row = (await sheet(page).getByRole("tablist", { name: "Sheet" }).boundingBox())!;
+  const card = (await hud(page).boundingBox())!;
   expect(card.x).toBeCloseTo(8, 0);
   expect(card.width).toBeCloseTo(390 - 16, 0);
-  expect(card.y + card.height).toBeLessThanOrEqual(row.y);
+  expect(card.y + card.height).toBeCloseTo(844 - 8, 0);
   expect(card.height).toBeLessThanOrEqual(844 * 0.45);
   // It does not move or size on a phone.
   await expect(hud(page).getByRole("button", { name: "Move HUD" })).toHaveCount(0);
@@ -47,13 +47,14 @@ test("on a phone the HUD docks above the closed sheet in place of its peek, and 
   // Details opens the sheet at half over it; closing the sheet brings the HUD back.
   await hud(page).getByRole("button", { name: "Details" }).tap();
   await expect(hud(page)).toHaveCount(0);
-  await expect(page.locator(".sheet.peek, .sheet.collapsed")).toHaveCount(0);
+  await expect(page.locator(".sheet.peek, .sheet.collapsed, .sheet.away")).toHaveCount(0);
   await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
   await expect(hud(page)).toBeVisible();
-  // The handle opens the sheet to half, not to a peek the HUD would cover.
-  await sheet(page).getByRole("button", { name: "Open the sheet" }).tap();
-  await expect(page.locator(".sheet.peek, .sheet.collapsed")).toHaveCount(0);
-  await sheet(page).getByRole("button", { name: "Close the sheet" }).tap();
+  // The sheet's HUD button is the other way across: open Details, press HUD.
+  await hud(page).getByRole("button", { name: "Details" }).tap();
+  await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
+  await expect(hud(page)).toBeVisible();
+  await expect(page.locator(".sheet.away")).toHaveCount(1);
 
   // Hide HUD goes back to the sheet's peek.
   await hud(page).getByRole("button", { name: "Hide HUD" }).tap();
@@ -100,9 +101,8 @@ test("on a phone the HUD expands to nearly the whole screen and shrinks back, ke
   const big = (await card.boundingBox())!;
   expect(big.height).toBeGreaterThan(docked.height * 1.5);
   expect(big.height).toBeGreaterThan(844 * 0.6);
-  // The card stays above the sheet's row and under the top bar.
-  const row = (await sheet(page).getByRole("tablist", { name: "Sheet" }).boundingBox())!;
-  expect(big.y + big.height).toBeLessThanOrEqual(row.y);
+  // The card stays at the bottom edge and under the top bar.
+  expect(big.y + big.height).toBeCloseTo(844 - 8, 0);
   expect(big.y).toBeGreaterThan(40);
   await page.screenshot({ path: process.env.HUD_EXPAND_SHOT ?? "test-results/hud-expanded.png" });
 
@@ -131,14 +131,14 @@ test("on a phone the HUD minimises to a slim bar with the node's name, and resto
   await expect(card).toContainText("Abraham");
   await expect(card.getByRole("tab")).toHaveCount(0);
   await expect(card.getByRole("button", { name: "Pin" })).toHaveCount(0);
-  const bar = (await card.boundingBox())!,
-    row = (await sheet(page).getByRole("tablist", { name: "Sheet" }).boundingBox())!;
+  const bar = (await card.boundingBox())!;
   expect(bar.height).toBeLessThanOrEqual(56);
   expect(bar.height).toBeLessThan(docked.height / 3);
-  // It shares the closed sheet's row, to the right of the tabs, not above it.
-  expect(bar.x).toBeGreaterThanOrEqual(row.x + row.width);
-  expect(bar.y).toBeGreaterThanOrEqual(row.y - 4);
-  expect(bar.y + bar.height).toBeLessThanOrEqual(row.y + row.height + 4);
+  // The Details and Reader tabs are gone; the bar spans the bottom and has its own Details switch.
+  await expect(sheet(page).getByRole("tablist", { name: "Sheet" })).toBeHidden();
+  expect(bar.width).toBeCloseTo(390 - 16, 0);
+  expect(bar.y + bar.height).toBeCloseTo(844 - 8, 0);
+  await expect(card.getByRole("button", { name: "Details" })).toBeVisible();
   // The selection and Focus stay where they were.
   await focusIs(page, ABRAHAM);
   await page.screenshot({ path: process.env.HUD_MIN_SHOT ?? "test-results/hud-minimised.png" });

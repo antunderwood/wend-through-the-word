@@ -69,7 +69,7 @@
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
   // scene's centre sits in the space above it, or left of it.
   let sheetCovered = $state(0);
-  $effect(() => graph?.setOffset(screen.phone ? sheetCovered + (hudDocked && !hudMin ? hudPx + 8 : 0) : 0, screen.side ? "right" : "bottom"));
+  $effect(() => graph?.setOffset(screen.phone ? sheetCovered + (hudDocked ? hudPx + 8 : 0) : 0, screen.side ? "right" : "bottom"));
   // Without WebGL there is no scene on a phone: the sheet takes the screen below where the scene
   // would start and the column of controls, with a gap above, below, and between them.
   let dockHeight = $state(0);
@@ -343,7 +343,14 @@
   let tours = $state(0); // each start draws a new tour box
   let hudShown = $state(false); // the tour's HUD step: the button was pressed
   // The HUD button: in a tour it only ends the tour's HUD step, as the HUD stays off then.
-  const pressHud = () => (touring ? (hudShown = true) : setInfoMode(hud ? "panel" : "hud"));
+  // On a phone in HUD mode with the sheet open, the button switches back to the HUD (it is not "on"
+  // then, as the sheet is what shows); Hide HUD on the card is what turns the mode off.
+  const hudNow = $derived(hud && !(screen.phone && !collapsed));
+  const pressHud = () => {
+    if (touring) hudShown = true;
+    else if (hud && screen.phone && !collapsed) collapsed = true;
+    else setInfoMode(hud ? "panel" : "hud");
+  };
   let saved: { model: State; reading?: Id; notes: Notes; tab: SheetTab; collapsed: boolean; full: boolean; peek: boolean } | undefined;
   const tourPage: TourPage = {
     get data() {
@@ -599,6 +606,7 @@
       bind:covered={sheetCovered}
       side={screen.side}
       peekable={!phoneHud}
+      away={hudDocked}
     />
     <span class="hud-probe" class:min={hudMin} aria-hidden="true" bind:offsetHeight={hudPx}></span>
     {#if hudDocked}{@render hudCard()}{/if}
@@ -700,7 +708,7 @@
          a 320 px screen. -->
     {#if screen.phone}
       {#if !noWebGL && (touring || !screen.side)}
-        <button class="pill hud-toggle" data-tour="hud" class:on={hud} aria-pressed={hud} title={hud ? "Show the Selected Node in the sheet" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
+        <button class="pill hud-toggle" data-tour="hud" class:on={hudNow} aria-pressed={hudNow} title={hud ? "Show the Selected Node in the sheet" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
       {/if}
       <button class="pill icon" aria-label="Filters" title="Filters" onclick={showFilters}>
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
@@ -718,7 +726,7 @@
       <button class="pill" onclick={copyLink}>Copy link</button>
       <!-- The Selected Node on a see-through HUD over the scene, in place of the side panel. -->
       {#if !noWebGL}
-        <button class="pill hud-toggle" data-tour="hud" class:on={hud} aria-pressed={hud} title={hud ? "Show the Selected Node in the side panel" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
+        <button class="pill hud-toggle" data-tour="hud" class:on={hudNow} aria-pressed={hudNow} title={hud ? "Show the Selected Node in the side panel" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
       {/if}
     {/if}
   {/if}
@@ -754,7 +762,7 @@
     /* The HUD docked above the closed sheet on an upright phone: under half the screen, so the scene
        keeps the rest, and no taller than its overview needs. */
     --hud-docked: min(44dvh, 360px);
-    --hud-mini: 48px; /* minimised: a slim bar */
+    --hud-mini: 40px; /* minimised: a slim bar */
   }
   /* Short or zoomed in: the HUD's fixed chrome is a bigger share, so it may take a little more. */
   @media (max-height: 640px) {
@@ -763,11 +771,11 @@
     }
   }
   /* What floats at the bottom of the screen (the hint, the notes) sits above the docked HUD. */
-  :global(html:has(.sheet.collapsed):has(.hud.docked)) {
-    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-docked) + var(--edge));
+  :global(html:has(.sheet.away):has(.hud.docked)) {
+    --sheet-covered: calc(var(--keyboard, 0px) + var(--hud-docked) + var(--edge) * 2);
   }
-  :global(html:has(.sheet.collapsed):has(.hud.minimised)) {
-    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px)); /* the bar shares the sheet's row */
+  :global(html:has(.sheet.away):has(.hud.minimised)) {
+    --sheet-covered: calc(var(--keyboard, 0px) + var(--hud-mini) + var(--edge) * 2); /* the sheet's tabs are away */
   }
   .hud-probe {
     position: absolute;
@@ -777,7 +785,7 @@
     pointer-events: none;
   }
   .hud-probe.min {
-    height: 0;
+    height: var(--hud-mini);
   }
   /* The desktop grid (decision 211). Columns: the reader drawer (as wide as it is, none when it is
      closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall
