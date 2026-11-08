@@ -589,9 +589,13 @@
     height: 32px;
   }
   /* Minimised: one slim bar, the type and the name, with a way back. The whole bar restores it. */
+  /* It shares the closed sheet's row, to the right of the Details and Reader tabs (--sheet-tabs is
+     their width, set by Sheet.svelte), so it costs the scene no height of its own. */
   .hud.docked.minimised {
-    height: var(--hud-mini);
-    padding: 4px 6px 4px 12px;
+    left: calc(var(--sheet-tabs, 180px) + var(--edge));
+    bottom: calc(var(--keyboard, 0px) + 4px);
+    height: calc(var(--sheet-handle) - 8px);
+    padding: 2px 6px 2px 12px;
     justify-content: center;
   }
   .minimised .strip {

@@ -69,7 +69,7 @@
   // The px the sheet covers on a phone, open or closed, at the bottom or (at the side) the right: the
   // scene's centre sits in the space above it, or left of it.
   let sheetCovered = $state(0);
-  $effect(() => graph?.setOffset(screen.phone ? sheetCovered + (hudDocked ? hudPx + 8 : 0) : 0, screen.side ? "right" : "bottom"));
+  $effect(() => graph?.setOffset(screen.phone ? sheetCovered + (hudDocked && !hudMin ? hudPx + 8 : 0) : 0, screen.side ? "right" : "bottom"));
   // Without WebGL there is no scene on a phone: the sheet takes the screen below where the scene
   // would start and the column of controls, with a gap above, below, and between them.
   let dockHeight = $state(0);
@@ -759,7 +759,7 @@
     --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-docked) + var(--edge));
   }
   :global(html:has(.sheet.collapsed):has(.hud.minimised)) {
-    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px) + var(--hud-mini) + var(--edge));
+    --sheet-covered: calc(var(--sheet-handle) + 1px + var(--keyboard, 0px)); /* the bar shares the sheet's row */
   }
   .hud-probe {
     position: absolute;
@@ -769,7 +769,7 @@
     pointer-events: none;
   }
   .hud-probe.min {
-    height: var(--hud-mini);
+    height: 0;
   }
   /* The desktop grid (decision 211). Columns: the reader drawer (as wide as it is, none when it is
      closed), the scene, and the detail panel. Rows: the top row, the main row, and the dock, as tall

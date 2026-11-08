@@ -42,6 +42,15 @@
     covered = collapsed ? closedPx() : side ? width : height;
   });
 
+  // The tabs' width, for what shares the closed row beside them (the minimised HUD).
+  let tabsW = $state(0);
+  $effect(() => {
+    const root = document.documentElement;
+    if (side || !tabsW) root.style.removeProperty("--sheet-tabs");
+    else root.style.setProperty("--sheet-tabs", `${tabsW}px`);
+    return () => root.style.removeProperty("--sheet-tabs");
+  });
+
   // The on-screen keyboard, or a browser's toolbar, lies over the bottom of the page and shrinks the
   // visual viewport, not the page. The sheet sits above it (--keyboard is its height), from the
   // first frame, and a field being typed in stays in view, its end (where the typing is) foremost
@@ -162,7 +171,7 @@
   <!-- The drag is for a finger or a mouse; the keyboard and a screen reader have the handle and the tabs. -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="row" bind:this={row} onpointerdown={down} onpointermove={move} onpointerup={up} onpointercancel={cancel} onclickcapture={swallow}>
-    <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab}>
+    <div class="tabs" role="tablist" aria-label="Sheet" tabindex="-1" onkeydown={stepTab} bind:offsetWidth={tabsW}>
       {#each tabs as t (t.id)}
         <!-- A tab tapped on a closed or peeking sheet opens it at half, to show the tab. -->
         <button
