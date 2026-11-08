@@ -296,6 +296,7 @@
     {#if docked && minimised}
       <span class="mini-name" title={label(selected)}>{label(selected)}</span>
       <span class="tools">
+        <button class="tool words" aria-label="Details" title="Switch to the Details sheet" onclick={ondetails}>Details</button>
         <button class="tool" aria-label="Restore HUD" aria-expanded="false" title="Show the HUD again" onclick={() => (minimised = false)}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 10l5-5 5 5" /></svg>
         </button>
@@ -574,7 +575,7 @@
     top: auto;
     left: var(--edge);
     right: var(--edge);
-    bottom: calc(var(--keyboard, 0px) + var(--sheet-handle) + 1px + var(--edge));
+    bottom: calc(var(--keyboard, 0px) + var(--edge)); /* the sheet and its tabs are away while it shows */
     height: var(--hud-docked);
     max-height: none;
     padding: 6px 12px 8px;
@@ -588,13 +589,16 @@
     width: 32px;
     height: 32px;
   }
+  .docked .tool.words {
+    width: auto;
+    padding: 0 10px;
+    font: 600 10px var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
   /* Minimised: one slim bar, the type and the name, with a way back. The whole bar restores it. */
-  /* It shares the closed sheet's row, to the right of the Details and Reader tabs (--sheet-tabs is
-     their width, set by Sheet.svelte), so it costs the scene no height of its own. */
   .hud.docked.minimised {
-    left: calc(var(--sheet-tabs, 180px) + var(--edge));
-    bottom: calc(var(--keyboard, 0px) + 4px);
-    height: calc(var(--sheet-handle) - 8px);
+    height: var(--hud-mini);
     padding: 2px 6px 2px 12px;
     justify-content: center;
   }
