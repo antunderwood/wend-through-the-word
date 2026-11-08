@@ -74,6 +74,9 @@
   const selected = $derived(model.selected);
   // A phone, upright or on its side: the Selected Node's section is too short to hold its actions.
   const compact = $derived(screen.phone);
+  // Your Path with the Focus last (decision 114's order); the Selected Node's place on it, or -1.
+  const pathLength = $derived(model.path.length + 1);
+  const stepAt = $derived([...model.path, model.focus].indexOf(selected));
   // Separate from model so a list is loaded again only when its owner or the Focus changes.
   const focus = $derived(model.focus);
 
@@ -498,7 +501,7 @@
     <span class="badge" title="{label(selected)} is the Focus">Focus</span>
   {:else}
     <button
-      class="primary"
+      class="primary slim"
       data-tour="make-focus"
       onclick={() => makeFocus(selected)}
       disabled={typeOf(selected) === "overflow"}
@@ -506,19 +509,23 @@
     >
   {/if}
   {#if model.pins.includes(selected)}
-    <button onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
+    <button class="slim" onclick={() => apply({ type: "unpin", id: selected })}>Unpin</button>
   {:else}
-    <button data-tour="pin" onclick={() => pin(selected)}>Pin</button>
+    <button class="slim" data-tour="pin" onclick={() => pin(selected)}>Pin</button>
   {/if}
-  <button data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
-  <!-- Prev and Next step the selection along Your Path; on a desktop window the pair is captioned. -->
-  <span class="path-step" role="group" aria-label="Step along Your Path">
-    {#if !compact}<span class="caption" aria-hidden="true">Your Path</span>{/if}
-    <button title="Previous step on Your Path" onclick={() => apply({ type: "step", dir: -1 })}><span aria-hidden="true">‹&nbsp;</span>Prev</button>
-    <button title="Next step on Your Path" data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next<span aria-hidden="true">&nbsp;›</span></button>
-  </span>
+  <button class="slim" data-tour="read" onclick={onread} disabled={typeOf(selected) === "overflow"}>Read</button>
+  <!-- Prev and Next step the selection along Your Path. On a desktop window the pair is captioned. On an
+       upright phone they leave this row for the type line, and show only for a node on Your Path; the
+       side sheet keeps them here, as its name scrolls away and they must stay in reach. -->
+  {#if !compact || screen.side}
+    <span class="path-step" role="group" aria-label="Step along Your Path">
+      {#if !compact}<span class="caption" aria-hidden="true">Your Path</span>{/if}
+      <button class="slim" title="Previous step on Your Path" onclick={() => apply({ type: "step", dir: -1 })}><span aria-hidden="true">‹&nbsp;</span>Prev</button>
+      <button class="slim" title="Next step on Your Path" data-tour="next" onclick={() => apply({ type: "step", dir: 1 })}>Next<span aria-hidden="true">&nbsp;›</span></button>
+    </span>
+  {/if}
   <button
-    class="quiet"
+    class="quiet slim"
     class:flag={compact}
     aria-label={compact ? "Suggest a correction" : undefined}
     title={compact ? "Suggest a correction" : undefined}
@@ -556,7 +563,17 @@
   {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
 {/snippet}
 {#snippet typeLine(source?: string)}
-  <p class="muted line" title={source ? `${selectedType}, from ${source}` : selectedType}>{selectedType}</p>
+  <p class="muted line type" title={source ? `${selectedType}, from ${source}` : selectedType}>
+    <span class="kind">{selectedType}</span>{#if compact && !screen.side && stepAt >= 0}{@render pathLine()}{/if}
+  </p>
+{/snippet}
+<!-- On a phone: where the Selected Node is on Your Path, with the two steps; only for a node on it. -->
+{#snippet pathLine()}
+  <span class="path-line" role="group" aria-label="Step along Your Path">
+    <button class="step slim" aria-label="Prev" title="Previous step on Your Path" disabled={stepAt === 0} onclick={() => apply({ type: "step", dir: -1 })}><span aria-hidden="true">‹</span></button>
+    <span class="where">{stepAt + 1} of {pathLength}</span>
+    <button class="step slim" aria-label="Next" title="Next step on Your Path" data-tour="next" disabled={stepAt === pathLength - 1} onclick={() => apply({ type: "step", dir: 1 })}><span aria-hidden="true">›</span></button>
+  </span>
 {/snippet}
 {#snippet request(url?: string | null)}
   {#if url}{" "}<a href={url} target="_blank" rel="noopener">Request #{url.slice(url.lastIndexOf("/") + 1)}</a>{/if}
@@ -693,7 +710,7 @@
   }
   .actions {
     display: flex;
-    gap: 4px;
+    gap: 12px;
     padding: 6px 0;
   }
   /* At the side the sheet is the screen's full height and never peeks, and that height is short:
@@ -711,24 +728,84 @@
     background: var(--surface-opaque);
     border-bottom: 1px solid var(--line);
   }
+  /* Slim to look at, still 44 px to touch: the ::after reaches 7 px past its border box edge, 6 past the button (the gap is 12). */
   .actions button {
+    position: relative;
     flex: auto;
     min-width: 44px;
+    min-height: 32px;
+    padding: 0 8px;
+    white-space: nowrap;
+    font-size: var(--fs-sm);
+  }
+  .actions button::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+  }
+  /* The side sheet is short and narrow, with six buttons in a row: they keep their old size there. */
+  :global(html[data-side]) .actions {
+    gap: 4px;
+  }
+  :global(html[data-side]) .actions button {
     min-height: 44px;
     padding: 0 6px;
+    font-size: inherit;
+  }
+  :global(html[data-side]) .actions button::after {
+    display: none;
   }
   .actions .flag {
     flex: none;
     font-size: var(--fs-lg);
   }
   /* On a phone Prev and Next sit in the one row as before, without the caption. */
+  /* On a phone Prev and Next sit in the one row, without the caption (the side sheet). */
   .actions .path-step {
     display: contents;
+  }
+  .type {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .kind {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The path line: 20 px tall like the type line it ends, with arrows that reach 44 px to touch. */
+  .path-line {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: 12px;
+    font-size: var(--fs-sm);
+  }
+  /* The arrows are bare glyphs, not boxes: the line stays as light as the type line it ends. */
+  .path-line .step {
+    position: relative;
+    width: 28px;
+    height: 20px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: var(--fs-lg);
+    line-height: 1;
+  }
+  .path-line .step::after {
+    content: "";
+    position: absolute;
+    inset: -12px -8px;
   }
   .actions .badge {
     flex: auto;
     min-width: 44px;
-    min-height: 44px;
+    min-height: 32px;
     justify-content: center;
   }
   /* On a desktop window the actions wrap: Make Focus, Pin and Read first, then the Your Path pair and

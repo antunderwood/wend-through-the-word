@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham } from "../scene";
 import { covered } from "../boxes";
 import { doubleTap, drag, openSheet } from "../touch";
@@ -34,10 +34,39 @@ test("a tap on a node shows its details in the bottom sheet, with every action",
   await page.touchscreen.tap(gerar.x, gerar.y);
   const details = sheet.getByRole("tabpanel", { name: "Details" });
   await expect(details.getByRole("heading", { level: 2 })).toHaveText("Gerar");
-  for (const name of ["Make Focus", "Pin", "Read", "Prev", "Next", "Suggest a correction"]) {
+  for (const name of ["Make Focus", "Pin", "Read", "Suggest a correction"]) {
     await expect(details.getByRole("button", { name, exact: true })).toBeVisible();
   }
+  // Prev and Next are on the type line, only for a node on Your Path: Gerar is not.
+  await expect(details.getByRole("button", { name: "Prev", exact: true })).toHaveCount(0);
 });
+
+test("the path line shows where a node on Your Path is, with Prev and Next, and no row of the actions holds them", async ({ page }) => {
+  await open(page);
+  await openSheet(page);
+  const details = page.getByRole("tabpanel", { name: "Details" });
+  // Abraham is the Focus and the only step: his place, and both steps off.
+  await expect(details.getByText("1 of 1")).toBeVisible();
+  await expect(details.getByRole("button", { name: "Prev", exact: true })).toBeDisabled();
+  await expect(details.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
+  // The actions are slim to look at and as tall as 44 px to touch.
+  const read = details.getByRole("button", { name: "Read", exact: true });
+  expect((await read.boundingBox())!.height).toBeLessThan(36);
+  expect((await reach(read)).height).toBeGreaterThanOrEqual(44);
+  // A node not on Your Path has no path line.
+  await details.getByRole("list", { name: /^Person/ }).getByRole("button", { name: /^Sarah/ }).tap();
+  await expect(details.getByRole("heading", { level: 2 })).toHaveText("Sarah");
+  await expect(details.getByText(/ of \d+$/)).toHaveCount(0);
+});
+
+// A slim button's touch size: the larger of its box and its ::after, which reaches past it.
+const reach = (button: Locator) =>
+  button.evaluate((e) => {
+    const r = e.getBoundingClientRect();
+    const a = getComputedStyle(e, "::after");
+    const after = a.content !== "none" && a.position === "absolute";
+    return { height: Math.max(r.height, after ? parseFloat(a.height) || 0 : 0), width: Math.max(r.width, after ? parseFloat(a.width) || 0 : 0) };
+  });
 
 // Waits for a frame that draws the Focus at a height where(y) accepts.
 const focusAt = (page: Page, where: (y: number) => boolean) =>
@@ -68,8 +97,14 @@ test("the handle closes and opens the sheet, and the Focus stays in the space ab
 const small = (page: Page) =>
   page.getByRole("region", { name: "Sheet" }).evaluate((sheet) =>
     [...sheet.querySelectorAll("button, li")]
-      .filter((e) => e.getClientRects().length && e.getBoundingClientRect().height < 44)
-      .map((e) => `${e.tagName} ${e.getAttribute("aria-label") ?? e.textContent!.trim().slice(0, 30)}: ${e.getBoundingClientRect().height}`),
+      .map((e) => {
+        // A slim button reaches 44 px with its ::after (the touch size is what counts).
+        const a = getComputedStyle(e, "::after");
+        const h = Math.max(e.getBoundingClientRect().height, a.content !== "none" && a.position === "absolute" ? parseFloat(a.height) || 0 : 0);
+        return { e, h };
+      })
+      .filter(({ e, h }) => e.getClientRects().length && h < 44)
+      .map(({ e, h }) => `${e.tagName} ${e.getAttribute("aria-label") ?? e.textContent!.trim().slice(0, 30)}: ${h}`),
   );
 
 test("every button and list row in the sheet is at least 44 px tall", async ({ page }) => {
@@ -175,8 +210,12 @@ async function actionsInReach(page: Page) {
     const button = name === "Make Focus" ? details.getByRole("button", { name, exact: true }).or(details.getByTitle(/ is the Focus$/)) : details.getByRole("button", { name, exact: true });
     await expect(button, name).toBeInViewport({ ratio: 1 });
     const b = (await button.boundingBox())!;
-    expect(b.height, name).toBeGreaterThanOrEqual(44);
-    expect(b.width, name).toBeGreaterThanOrEqual(44);
+    // The Focus badge is not a button: nothing to touch.
+    if (await button.evaluate((e) => e.tagName === "BUTTON")) {
+      const touch = await reach(button);
+      expect(touch.height, name).toBeGreaterThanOrEqual(44);
+      expect(touch.width, name).toBeGreaterThanOrEqual(44);
+    }
     expect(await button.evaluate((e, p) => e.contains(document.elementFromPoint(p.x, p.y)), { x: b.x + b.width / 2, y: b.y + b.height / 2 }), name).toBe(true);
   }
 }

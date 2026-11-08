@@ -211,8 +211,8 @@
     --sheet-handle: 44px;
     /* The row and its border, then the Details panel's held block of name, type line and actions,
        whose height is set here (DetailPanel.svelte uses it): 4 px above, the name and type line
-       (48), the actions (44 px buttons with 6 px above and below), its border, and 1 px spare. */
-    --held: 110px;
+       (48), the actions (32 px buttons with 6 px above and below), its border, and 1 px spare. */
+    --held: 98px;
     --sheet-peek: min(var(--sheet-half), calc(var(--sheet-handle) + 1px + var(--held)));
     --sheet-covered: calc(var(--sheet) + var(--keyboard, 0px));
   }
@@ -371,8 +371,9 @@
     flex: 1;
     min-height: 0;
   }
-  /* Large enough to tap: every button and list row in the sheet is at least 44 px tall. */
-  .sheet :global(button),
+  /* Large enough to tap: every button and list row in the sheet is at least 44 px tall, or, for a .slim
+     button, drawn smaller with its ::after reaching 44 px. */
+  .sheet :global(button:not(.slim)),
   .sheet :global(li) {
     min-height: 44px;
   }
