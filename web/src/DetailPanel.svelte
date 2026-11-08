@@ -563,8 +563,9 @@
   {#await details}{@render typeLine()}{:then d}{@render typeLine(d && credit([d]))}{:catch}{@render typeLine()}{/await}
 {/snippet}
 {#snippet typeLine(source?: string)}
-  <p class="muted line type" title={source ? `${selectedType}, from ${source}` : selectedType}>
-    <span class="kind">{selectedType}</span>{#if compact && !screen.side && stepAt >= 0}{@render pathLine()}{/if}
+  <!-- Only on a phone is the type line a row with the path line at its end; elsewhere it is plain text. -->
+  <p class="muted line" class:type={compact} title={source ? `${selectedType}, from ${source}` : selectedType}>
+    {#if compact}<span class="kind">{selectedType}</span>{#if !screen.side && stepAt >= 0}{@render pathLine()}{/if}{:else}{selectedType}{/if}
   </p>
 {/snippet}
 <!-- On a phone: where the Selected Node is on Your Path, with the two steps; only for a node on it. -->
