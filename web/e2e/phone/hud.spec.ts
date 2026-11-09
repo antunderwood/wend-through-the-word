@@ -17,7 +17,7 @@ async function open(page: Page) {
 test("on a phone the HUD docks above the closed sheet in place of its peek, and the choice is kept", async ({ page }) => {
   await open(page);
   await expect(hud(page)).toHaveCount(0);
-  // The HUD button is in the row at the top of the Details tab.
+  // The HUD button is at the top right of the Details tab, beside the name.
   await openSheet(page);
   await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
 
@@ -176,4 +176,29 @@ test("the phone HUD names the Selected Node's place on Your Path, and its arrows
     expect(touch.h, name).toBeGreaterThanOrEqual(40);
     expect(touch.w, name).toBeGreaterThanOrEqual(40);
   }
+});
+
+test("the HUD button is at the top right of the Selected Node's name, slim to look at and 44 px to touch, with no row of its own", async ({ page }) => {
+  await open(page);
+  const button = sheet(page).getByRole("button", { name: "HUD", exact: true });
+  const name = (await sheet(page).getByRole("heading", { level: 2 }).boundingBox())!,
+    b = (await button.boundingBox())!,
+    actions = (await sheet(page).getByRole("button", { name: "Pin", exact: true }).boundingBox())!;
+  // On the name's line, at the right end of the sheet, above the actions.
+  expect(b.y).toBeLessThan(name.y + name.height);
+  expect(b.y + b.height).toBeLessThan(actions.y);
+  expect(b.x + b.width).toBeGreaterThan(390 - 40);
+  expect(b.height).toBeLessThanOrEqual(28);
+  const touch = await button.evaluate((e) => {
+    const a = getComputedStyle(e, "::after");
+    return { h: parseFloat(a.height) || 0, w: parseFloat(a.width) || 0 };
+  });
+  expect(touch.h).toBeGreaterThanOrEqual(44);
+  expect(touch.w).toBeGreaterThanOrEqual(44);
+  // Shown in the sheet's peek, without opening it, and it works from there.
+  await button.tap();
+  await expect(hud(page)).toBeVisible();
+  // A long name is cut short of it.
+  await hud(page).getByRole("button", { name: "Details" }).tap();
+  await expect(button).toBeVisible();
 });

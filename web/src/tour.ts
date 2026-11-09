@@ -199,7 +199,7 @@ export const STEPS: Step[] = [
     title: "Try the HUD",
     text: (p) =>
       p.coarse
-        ? "The HUD button, in the row at the top of the Details tab, shows the Selected Node on a see-through card over the graph instead of in the sheet. Upright, the card takes the sheet's place at the bottom, with no Details and Reader tabs; its Details button switches back to the sheet, and the sheet's HUD button switches back again. Expand takes more of the screen and Minimise shrinks the card to a slim bar you tap to restore. A phone on its side keeps the sheet. Tap HUD to finish this tour step; the tour itself stays on the sheet, so try the HUD once it ends."
+        ? "The HUD button, at the top right of the Details tab beside the name, shows the Selected Node on a see-through card over the graph instead of in the sheet. Upright, the card takes the sheet's place at the bottom, with no Details and Reader tabs; its Details button switches back to the sheet, and the sheet's HUD button switches back again. Expand takes more of the screen and Minimise shrinks the card to a slim bar you tap to restore. A phone on its side keeps the sheet. Tap HUD to finish this tour step; the tour itself stays on the sheet, so try the HUD once it ends."
         : "The HUD button, with Filters, Key, and Copy link, shows the Selected Node on a see-through card over the graph instead of in the side panel. Drag the card to move it, and press Panel on the card (or HUD again) to bring the panel back. Click HUD to finish this tour step; the tour itself stays on the panel, so try the HUD once it ends.",
     target: () => tour("hud"),
     check: (p) => p.hudShown,
