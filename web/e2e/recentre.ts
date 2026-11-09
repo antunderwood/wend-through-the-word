@@ -21,11 +21,14 @@ export const offCentre = (page: Page) =>
 export const centred = (page: Page) => expect.poll(() => offCentre(page)).toBeLessThanOrEqual(3);
 
 // A point of the bare scene a drag or a pinch can start on: the canvas, with no name or panel over
-// it or 20 px round it, at least above px below the scene's top.
+// it or 20 px round it, and no node's disc near it, at least above px below the scene's top.
 export const bare = (page: Page, above = 20) =>
   page.evaluate((above) => {
     const s = document.querySelector('[data-tour="scene"]')!.getBoundingClientRect(),
-      free = (x: number, y: number) => [-20, 0, 20].every((d) => document.elementFromPoint(x + d, y + d)?.matches('[data-tour="scene"] canvas'));
+      // A press on a node is the node's, not the camera's: keep 36 px clear of every disc as well.
+      discs = window.wendGraph!.testNodes(),
+      free = (x: number, y: number) =>
+        [-20, 0, 20].every((d) => document.elementFromPoint(x + d, y + d)?.matches('[data-tour="scene"] canvas')) && discs.every((n) => Math.hypot(n.x - x, n.y - y) > 36);
     for (let y = s.top + above; y < s.bottom - 20; y += 10) for (let x = s.left + 20; x < s.right - 20; x += 10) if (free(x, y)) return { x, y };
     return null;
   }, above);
