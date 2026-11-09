@@ -7,6 +7,10 @@ const launchOptions = { args: ["--use-angle=swiftshader", "--enable-unsafe-swift
 // mode build is the only one with the window.wendGraph hook the tests read.
 export default defineConfig({
   testDir: "e2e",
+  // One retry on CI: the runners are slow and share their cores, and a test that passes on the retry
+  // is reported "flaky" (the github reporter annotates it) instead of failing the run.
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI ? [["dot"], ["github"]] : "list",
   use: {
     baseURL: "http://localhost:4173",
     trace: "retain-on-failure",
