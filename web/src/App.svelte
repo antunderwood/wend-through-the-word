@@ -7,6 +7,7 @@
   import Filters, { FILTERS_ID } from "./Filters.svelte";
   import { createGraph, VIEWS, type Graph } from "./graph";
   import Hud from "./Hud.svelte";
+  import type { SectionId } from "./sections.svelte";
   import { keepInfoMode, keptInfoMode, type InfoMode } from "./hud";
   import Legend, { LEGEND_ID } from "./Legend.svelte";
   import { fitPanelWidth, keepPanelWidth, keptPanelWidth, PANEL_MAX, PANEL_MIN, PANEL_W } from "./panel";
@@ -340,6 +341,7 @@
   const hudDocked = $derived(phoneHud && collapsed);
   // The docked HUD's height (a fixed CSS size, read in px) and the gap above the sheet, for the camera.
   let hudPx = $state(0);
+  let section = $state<SectionId>("overview"); // the Selected Node's section both views show (decision 238); kept until the page reloads
   let hudMin = $state(false); // the phone HUD shrunk to a slim bar; kept until the page reloads
   let tours = $state(0); // each start draws a new tour box
   let hudShown = $state(false); // the tour's HUD step: the button was pressed
@@ -578,6 +580,7 @@
       controls={screen.phone && !viewMenu ? phoneControls : undefined}
       switcher={screen.phone && viewMenu && (touring || !screen.side) ? hudSwitch : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
+      bind:section
     />
   {/snippet}
   <!-- On a phone the view picker, Filters, and Copy link are a row at the top of the Details tab. -->
@@ -678,6 +681,7 @@
       download={downloadNotes}
       docked={screen.phone}
       bind:minimised={hudMin}
+      bind:section
       ondetails={() => {
         chooseTab("details");
         openSheet();

@@ -1,7 +1,7 @@
 <script lang="ts">
   // The detail panel: the Selected Node, the Verses it shares with the Focus and pins, its own data,
   // and the Neighbour lists. Props only; App owns the Focus Model state.
-  import { untrack, type Snippet } from "svelte";
+  import { tick, untrack, type Snippet } from "svelte";
   import VerseText from "./VerseText.svelte";
   import VerseKey from "./VerseKey.svelte";
   import VerseGroups from "./VerseGroups.svelte";
@@ -11,6 +11,7 @@
   import type { CorrectionRequest } from "./correction";
   import type { Data } from "./data";
   import NoteBox from "./NoteBox.svelte";
+  import { Routed, sectionsOf, type SectionId } from "./sections.svelte";
   import PlaceMap from "./PlaceMap.svelte";
   import { fold, passing, pathPlace, relation, relationWords, typeOf, TYPES, TYPE_NAME, TYPE_PLURAL, type Action, type Evidence, type Id, type NodeType, type State } from "./model";
   import { screen } from "./screen.svelte";
@@ -34,6 +35,7 @@
     controls,
     switcher,
     filtersAndLinks,
+    section = $bindable("overview"),
   }: {
     data: Data;
     model: State;
@@ -52,6 +54,7 @@
     controls?: Snippet; // after the held name and actions: on a phone without a scene, Filters and Copy link
     switcher?: Snippet; // at the top right of the held name: on a phone, the button that switches to the HUD
     filtersAndLinks?: Snippet; // after the lists: on a phone, the filters and the page's own links
+    section?: SectionId; // the section last chosen, shared with the HUD (decision 238)
   } = $props();
 
   // The nodes whose Neighbours, and whose Verses shared with the Focus, the panel lists. A click in
@@ -76,6 +79,47 @@
   let queriedFocus = untrack(() => model.focus);
 
   const selected = $derived(model.selected);
+  // The sections this node has, as chips that scroll to each; the HUD shows the same as tabs.
+  const routed = new Routed(() => data, () => model.selected);
+  const chips = $derived(sectionsOf(data, model, routed.for(model.selected)));
+  const shownSection = $derived(chips.some((c) => c.id === section) ? section : "overview");
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Where each section starts: the top for the overview, else the first thing of that section.
+  let scrolledTo: SectionId = "overview"; // the section the panel was last scrolled to
+  function goTo(id: SectionId, smooth = true) {
+    if (!panelBox?.getClientRects().length) return; // hidden: the next time it shows
+    scrolledTo = id;
+    release();
+    const target = {
+      overview: undefined,
+      verses: panelBox.querySelector("#shared-0, #own-verses"),
+      map: mapBox,
+      note: panelBox.querySelector("[data-section=note]"),
+      links: panelBox.querySelector("[id^=list-]"),
+    }[id];
+    const behavior = smooth && !reduced() ? "smooth" : "auto";
+    if (target) target.scrollIntoView({ block: "start", behavior });
+    else panelBox.scrollTo({ top: 0, behavior });
+  }
+  // The HUD chose another section, or this view shows again: scroll to the section chosen.
+  $effect(() => {
+    const id = shownSection;
+    void collapsed;
+    untrack(() => id !== scrolledTo && tick().then(() => goTo(id, false)));
+  });
+  function choose(id: SectionId) {
+    section = id;
+    goTo(id);
+  }
+  function chipKey(e: KeyboardEvent) {
+    const step = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    if (!step) return;
+    const i = chips.findIndex((c) => c.id === shownSection);
+    const next = chips[(i + step + chips.length) % chips.length].id;
+    choose(next);
+    (e.currentTarget as HTMLElement).querySelector<HTMLElement>(`[data-chip="${next}"]`)?.focus();
+    e.preventDefault();
+  }
   // A phone, upright or on its side: the Selected Node's section is too short to hold its actions.
   const compact = $derived(screen.phone);
   // Your Path with the Focus last (decision 114's order); the Selected Node's place on it, or -1.
@@ -208,6 +252,11 @@
         if (spacer) spacer.style.height = "0px";
         panelBox?.scrollTo(0, 0);
       }
+      // A selection made outside the lists reads from the section chosen, once its lists are in.
+      if (keep === undefined && !fromColumn) {
+        scrolledTo = "overview";
+        if (shownSection !== "overview") setTimeout(() => goTo(shownSection, false), 400);
+      }
       keep = undefined;
       fromColumn = false;
     });
@@ -305,6 +354,7 @@
   <!-- On a phone the view picker, Filters and Copy link, below the held block: the sheet's peek
        height shows the node, not the controls. -->
   {@render controls?.()}
+  {#if compact}{@render chipRow()}{/if}
   <section class="selected" bind:this={selectedBox}>
     <!-- The name, the type line, the Relationship line when there is one, and on a desktop window the
          buttons; a long text is cut, and whole in its title. -->
@@ -322,6 +372,7 @@
           {@render fix("the Relationship", "relationship", [model.focus, selected], `${plainName(selected)}: ${linkWords!.text}`)}{/if}
       </p>
       {#if !compact}<div class="buttons">{@render actions()}</div>{/if}
+      {#if !compact}{@render chipRow()}{/if}
     </div>
     {#if !compact}<div class="spacer" bind:this={spacer}></div>{/if}
     {#if !compact}{@render verse()}{/if}
@@ -426,7 +477,7 @@
       {@render failed("the details", e)}
     {/await}
     {#if selected === model.focus || model.path.includes(selected)}
-      <NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => onnote(selected, t)} {download} {deleteAll} />
+      <div data-section="note"><NoteBox name={label(selected)} text={notes[selected] ?? ""} onnote={(t) => onnote(selected, t)} {download} {deleteAll} /></div>
     {/if}
   </section>
   <!-- The map's own block, below the Selected Node's section (on a phone, below its actions), so the
@@ -534,6 +585,16 @@
 <!-- What the reader can do with the Selected Node. On a phone, upright or on its side, they are one
      row below its section, held at the top of the panel while the lists scroll, and the correction
      link is a flag. -->
+<!-- The sections as chips: one tap scrolls to it, and the HUD opens at the same one (decision 238). -->
+{#snippet chipRow()}
+  {#if chips.length > 1}
+    <div class="chips" role="toolbar" aria-label="Sections" tabindex="-1" onkeydown={chipKey}>
+      {#each chips as c (c.id)}
+        <button class="chip slim" data-chip={c.id} aria-current={shownSection === c.id ? "true" : undefined} tabindex={shownSection === c.id ? 0 : -1} onclick={() => choose(c.id)}>{c.name}</button>
+      {/each}
+    </div>
+  {/if}
+{/snippet}
 {#snippet actions()}
   <!-- Make Focus is the one primary action. On the Focus itself it is a badge, not a greyed button. -->
   {#if selected === model.focus}
@@ -647,7 +708,7 @@
      one scrolled to the end (the note being typed) clear of the bottom by a few px, as scrollTop is
      whole px while the rows are not. */
   :global(html[data-phone]) .panel {
-    scroll-padding-top: calc(var(--held) + 8px);
+    scroll-padding-top: calc(var(--held) + 44px);
     scroll-padding-bottom: 4px;
     position: static;
     width: auto;
@@ -769,7 +830,7 @@
     display: contents;
   }
   :global(html[data-side]) .panel {
-    scroll-padding-top: 64px;
+    scroll-padding-top: 100px;
   }
   :global(html[data-side]) .actions {
     position: sticky;
@@ -1147,5 +1208,53 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+  }
+  /* The section chips: a row that scrolls sideways, held under the name and actions on a phone and
+     at the foot of the header on a desktop window. Slim to look at, 44 px to touch. */
+  .chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 6px 0 0;
+    background: var(--surface-opaque);
+  }
+  :global(html:not([data-phone])) .chips {
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow-x: clip; /* one row, never a scroller of its own */
+  }
+  :global(html:not([data-phone])) .chip {
+    padding: 0 8px;
+  }
+  :global(html[data-phone]) .chips {
+    flex-wrap: nowrap;
+    padding: 6px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: var(--held);
+    z-index: 1;
+    border-bottom: 1px solid var(--line);
+  }
+  :global(html[data-side]) .chips {
+    top: 45px; /* under the held actions */
+  }
+  .chip {
+    position: relative;
+    flex: none;
+    box-sizing: border-box;
+    height: 28px;
+    min-height: 0;
+    padding: 0 12px;
+    font-size: var(--fs-sm);
+  }
+  .chip::after {
+    content: "";
+    position: absolute;
+    inset: -9px 0;
+  }
+  .chip[aria-current="true"] {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 </style>

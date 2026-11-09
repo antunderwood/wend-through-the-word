@@ -35,6 +35,7 @@
   } from "./hud";
   import { fold, passing, pathPlace, relation, relationWords, typeOf, TYPES, TYPE_NAME, typePlural, type Action, type Id, type NodeType, type State } from "./model";
   import type { Notes } from "./session";
+  import { Routed, sectionsOf, type SectionId } from "./sections.svelte";
 
   let {
     data,
@@ -53,6 +54,7 @@
     docked = false,
     minimised = $bindable(false),
     ondetails,
+    section: tab = $bindable("overview"),
   }: {
     data: Data;
     model: State;
@@ -70,6 +72,7 @@
     docked?: boolean; // on a phone: fixed above the closed sheet, not moved or sized
     minimised?: boolean; // on a phone: a slim bar of the type and name; the Selected Node stays
     ondetails?: () => void; // on a phone: open the sheet at Details
+    section?: SectionId; // the section shown, shared with the Details view (decision 238)
   } = $props();
 
   const CUT = 18; // the cut corners, px
@@ -109,31 +112,15 @@
   );
   // The Focus has no Verses shared with itself: its tab lists its own, a page at a time (decision 223).
   const own = new OwnVerses(() => data, () => (selected === focus && isEntity(selected) ? selected : undefined));
-  const hasVerses = $derived(!!shared || (selected === focus && isEntity(selected)));
-  const noted = $derived(selected === focus || model.path.includes(selected));
   // Where the Selected Node is on Your Path (decision 234), for the line under its name.
   const pathAt = $derived(pathPlace(model));
 
-  // The tabs this node has; a tab the next node lacks falls back to the overview.
-  type Tab = "overview" | "links" | "verses" | "map" | "note";
-  // UBS routes (decision 220) draw on the map, so a node that has any gets a Map tab.
-  let routed = $state("");
-  $effect(() => {
-    const id = selected;
-    if (routed !== id) routed = "";
-    if (isEntity(id)) data.routes(id).then((r) => id === selected && r.length && (routed = id)).catch(() => {});
-  });
-  let tab = $state<Tab>("overview");
+  // The tabs are the sections the Details view has too; one the next node lacks falls back to the overview.
+  const routed = new Routed(() => data, () => selected);
   // On a phone the card can take nearly the whole screen, to read a long list; the tab, and a new
   // selection, leave it so. Nothing is kept: a reload docks it again.
   let expanded = $state(false);
-  const tabs = $derived<{ id: Tab; name: string }[]>([
-    { id: "overview", name: "Overview" },
-    ...(listing ? [{ id: "links" as Tab, name: "Links" }] : []),
-    ...(hasVerses ? [{ id: "verses" as Tab, name: "Verses" }] : []),
-    ...(routed === selected ? [{ id: "map" as Tab, name: "Map" }] : []),
-    ...(noted ? [{ id: "note" as Tab, name: "Note" }] : []),
-  ]);
+  const tabs = $derived(sectionsOf(data, model, routed.for(selected)));
   const shownTab = $derived(tabs.some((t) => t.id === tab) ? tab : "overview");
   function tabKey(e: KeyboardEvent) {
     const step = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
@@ -318,15 +305,14 @@
         <button class="tool" aria-label="Minimise HUD" title="Shrink to a slim bar" onclick={() => (minimised = true)}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 11h10" /></svg>
         </button>
-        <button class="tool" aria-label="Hide HUD" title="Back to the sheet" onclick={onpanel}>
-          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" /></svg>
-        </button>
+        <button class="tool words" aria-label="Details" title="Switch to the Details sheet" onclick={ondetails}>Details</button>
       {:else if place}
         <button class="tool" aria-label="Reset HUD position" title="Back to the top right, at the first size" onclick={reset}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8a5 5 0 1 0 1.5-3.5M3 2v3h3" /></svg>
         </button>
       {/if}
       {#if !docked}
+        <button class="tool words" aria-label="Details" title="Switch to the Details panel" onclick={onpanel}>Details</button>
         <button class="tool grip" aria-label="Move HUD" title="Drag to move; arrow keys move it too" onkeydown={(e) => nudge(e, false)}>
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 1v14M1 8h14M8 1 6 3M8 1l2 2M8 15l-2-2M8 15l2-2M1 8l2-2M1 8l2 2M15 8l-2-2M15 8l-2 2" /></svg>
         </button>
@@ -373,11 +359,6 @@
       <button onclick={() => pin(selected)}>Pin</button>
     {/if}
     <button onclick={onread} disabled={overflow}>Read</button>
-    {#if docked}
-      <button class="more" onclick={ondetails} title="Open the sheet at Details: map, pins, and corrections">Details</button>
-    {:else}
-      <button class="more" onclick={onpanel} title="Show the full detail panel: map, pins, and corrections">Panel</button>
-    {/if}
   </footer>
   {/if}
   <!-- The corner grip sizes the card. -->
@@ -893,6 +874,13 @@
     color: rgba(var(--hud-line), 0.55);
     cursor: pointer;
   }
+  .tool.words {
+    width: auto;
+    padding: 0 8px;
+    font: 600 10px var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
   .tool svg {
     fill: none;
     stroke: currentColor;
@@ -1265,9 +1253,6 @@
   .actions .primary {
     --edge: rgb(var(--hud-line));
     background: rgba(var(--hud-line), 0.28);
-  }
-  .actions .more {
-    margin-left: auto;
   }
   /* The corner grip, in the cut bottom right corner: three short diagonal lines. */
   .resize {
