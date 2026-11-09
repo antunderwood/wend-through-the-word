@@ -38,8 +38,8 @@ test("the HUD shows the Selected Node over the scene in place of the panel, and 
   await page.reload();
   await expect(hud(page)).toBeVisible();
 
-  // Panel goes back to the full panel.
-  await hud(page).getByRole("button", { name: "Panel" }).click();
+  // Details, the corner switch, goes back to the full panel.
+  await hud(page).getByRole("button", { name: "Details" }).click();
   await expect(hud(page)).toHaveCount(0);
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
   await expect.poll(async () => (await panel(page).boundingBox())!.x).toBeLessThan(page.viewportSize()!.width - 300);
@@ -159,4 +159,22 @@ test("the HUD names the Selected Node's place on Your Path, with steps, for a no
   await hud(page).getByRole("button", { name: "Prev", exact: true }).click();
   await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Abraham");
   await expect(hud(page).getByText("Your Path 1 of 2")).toBeVisible();
+});
+
+test("the panel and the HUD list the same sections, and share the one chosen (decision 238)", async ({ page }) => {
+  const chips = panel(page).getByRole("toolbar", { name: "Sections" });
+  await expect(chips.getByRole("button")).toHaveText(["Overview", "Links", "Verses", "Map", "Note"]);
+  await expect(chips.getByRole("button", { name: "Overview" })).toHaveAttribute("aria-current", "true");
+  // A chip scrolls the panel to its section and marks itself.
+  await chips.getByRole("button", { name: "Verses" }).click();
+  await expect(chips.getByRole("button", { name: "Verses" })).toHaveAttribute("aria-current", "true");
+  await expect(panel(page).getByRole("heading", { name: /^In \d+ verses$/ })).toBeInViewport();
+  // The HUD opens at that section, and the corner switch names the other view.
+  await toggle(page).click();
+  await expect(hud(page).getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
+  await hud(page).getByRole("tab", { name: "Links" }).click();
+  await hud(page).getByRole("button", { name: "Details" }).click();
+  await expect(hud(page)).toHaveCount(0);
+  await expect(chips.getByRole("button", { name: "Links" })).toHaveAttribute("aria-current", "true");
+  await expect(panel(page).locator("h3[id^=list-]").first()).toBeInViewport();
 });

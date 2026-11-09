@@ -55,11 +55,6 @@ test("on a phone the HUD docks above the closed sheet in place of its peek, and 
   await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
   await expect(hud(page)).toBeVisible();
   await expect(page.locator(".sheet.away")).toHaveCount(1);
-
-  // Hide HUD goes back to the sheet's peek.
-  await hud(page).getByRole("button", { name: "Hide HUD" }).tap();
-  await expect(hud(page)).toHaveCount(0);
-  await expect(page.locator(".sheet.peek")).toHaveCount(1);
 });
 
 test("on a narrow, zoomed phone the HUD buttons stay on one row and the content pane keeps room", async ({ page }) => {
@@ -71,7 +66,7 @@ test("on a narrow, zoomed phone the HUD buttons stay on one row and the content 
   await hud(page).getByRole("tab", { name: "Verses" }).tap();
   await page.screenshot({ path: process.env.HUD_ZOOM_SHOT ?? "test-results/hud-zoom.png" });
   const boxes = await hud(page).locator(".actions button").evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
-  expect(boxes.length).toBeGreaterThanOrEqual(3);
+  expect(boxes.length).toBeGreaterThanOrEqual(2);
   for (const b of boxes) expect(Math.abs(b.y - boxes[0].y)).toBeLessThan(1);
   for (const b of boxes) expect(b.height).toBeLessThanOrEqual(32);
   const body = (await hud(page).locator(".body").boundingBox())!,
@@ -201,4 +196,31 @@ test("the HUD button is at the top right of the Selected Node's name, slim to lo
   // A long name is cut short of it.
   await hud(page).getByRole("button", { name: "Details" }).tap();
   await expect(button).toBeVisible();
+});
+
+test("the sheet's section chips sit under the held block, are 44 px to touch, and the HUD opens at the one chosen (decision 238)", async ({ page }) => {
+  await open(page);
+  await openSheet(page);
+  const chips = sheet(page).getByRole("toolbar", { name: "Sections" });
+  await expect(chips.getByRole("button")).toHaveText(["Overview", "Links", "Verses", "Map", "Note"]);
+  const verses = chips.getByRole("button", { name: "Verses" });
+  const touch = await verses.evaluate((e) => {
+    const a = getComputedStyle(e, "::after");
+    return { h: parseFloat(a.height) || 0, box: e.getBoundingClientRect().height };
+  });
+  expect(touch.h).toBeGreaterThanOrEqual(44);
+  expect(touch.box).toBeLessThanOrEqual(30);
+  await verses.tap();
+  await expect(verses).toHaveAttribute("aria-current", "true");
+  // The chip row stays in view as the sheet scrolls, and the section lands below it.
+  const row = (await chips.boundingBox())!;
+  const heading = sheet(page).getByRole("heading", { name: /^In \d+ verses$/ });
+  await expect(heading).toBeInViewport();
+  expect((await heading.boundingBox())!.y).toBeGreaterThanOrEqual(row.y + row.height - 1);
+  await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
+  await expect(hud(page).getByRole("tab", { name: "Verses" })).toHaveAttribute("aria-selected", "true");
+  await page.screenshot({ path: process.env.CHIPS_SHOT_HUD ?? "test-results/chips-hud.png" });
+  await hud(page).getByRole("button", { name: "Details" }).tap();
+  await expect(chips.getByRole("button", { name: "Verses" })).toHaveAttribute("aria-current", "true");
+  await page.screenshot({ path: process.env.CHIPS_SHOT ?? "test-results/chips-sheet.png" });
 });

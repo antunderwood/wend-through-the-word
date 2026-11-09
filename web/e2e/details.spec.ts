@@ -105,7 +105,8 @@ test("a list item stays put between the two clicks of a double click", async ({ 
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:30");
   await expect(panel(page)).toContainText("But Sarai was barren; she had no children.");
   await settled();
-  expect(await y(cross)).toBe(crossY);
+  // Within a pixel: the section chips above change from three to two, and the header's height is not whole.
+  expect(Math.abs((await y(cross)) - crossY)).toBeLessThan(1);
 });
 
 test("the Dictionary Entry is named as Easton's, folded after its first paragraph, and opens with Read more", async ({ page }) => {

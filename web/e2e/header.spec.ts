@@ -161,6 +161,9 @@ test.describe("at 1440 x 900", () => {
       await expect(button(page, name)).toBeFocused();
       expect(await scrolled()).toBe(200);
     }
+    // Then the section chips, one stop in the header (the others are reached by arrow keys), then the column.
+    await page.keyboard.press("Tab");
+    await expect(panel(page).getByRole("toolbar", { name: "Sections" }).getByRole("button", { name: "Overview" })).toBeFocused();
     await page.keyboard.press("Tab");
     expect(await panel(page).evaluate((p) => p.contains(document.activeElement))).toBe(true);
     expect(await ringTop()).toBeGreaterThanOrEqual(await headerBottom(page));
