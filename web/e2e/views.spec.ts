@@ -86,6 +86,8 @@ test("a window narrowed to 640 px shows the stacked discs as the tilted plane, u
 
   // The phone views (docs/specs/mobile.md): the address keeps the stacked discs.
   await page.setViewportSize({ width: 640, height: 720 });
+  // A narrow window has the phone layout, where the picker is in the View popover (decision 236).
+  await page.getByRole("button", { name: "View", exact: true }).click();
   await expect(radios).toHaveText(["Tilted plane", "Free orbit"]);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
   await expect.poll(isaacAt).toEqual(tilted);

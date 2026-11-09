@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 // Touch gestures for the phone and tablet specs. A tap is Playwright's; a drag and a pinch go
 // through the browser's own touch input (Chrome DevTools Protocol), as a finger's would, so the
@@ -53,4 +53,12 @@ export async function openSheet(page: Page) {
   const tab = page.getByRole("tablist", { name: "Sheet" }).getByRole("tab", { selected: true });
   await tab.tap();
   await page.waitForFunction(() => !document.querySelector(".sheet.peek, .sheet.collapsed"));
+}
+
+// The phone's View popover, beside Recentre: the view, Filters, Key, and Copy link (decision 236).
+export const viewMenu = (page: Page): Locator => page.getByRole("dialog", { name: "View options" });
+export async function openView(page: Page): Promise<Locator> {
+  await page.getByRole("button", { name: "View", exact: true }).tap();
+  await viewMenu(page).waitFor();
+  return viewMenu(page);
 }

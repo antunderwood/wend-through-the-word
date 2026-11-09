@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, nodes, openOnAbraham, themesOnScreen } from "../scene";
-import { doubleTap, openSheet } from "../touch";
+import { doubleTap, openSheet, openView } from "../touch";
 import { selectedIs, tappable } from "../touch-input";
 
 // The student journey on a phone, by touch alone: search, select, make Focus, pin, Your Path, a
@@ -60,11 +60,13 @@ test("the student journey by touch, and its shared link opened on another phone"
   await focusIs(page, ISAAC);
   await expect(details(page).getByRole("textbox", { name: /^Note on Isaac/ })).toHaveValue("The son of the promise.");
 
-  // Themes off in the filters at the end of the Details tab.
-  const filters = details(page).getByRole("group", { name: "Filters" });
+  // Themes off in the filters, in the View popover beside Recentre.
+  const filters = (await openView(page)).getByRole("group", { name: "Filters" });
   await filters.scrollIntoViewIfNeeded();
   await filters.getByRole("checkbox", { name: "Themes" }).tap();
   await expect.poll(() => themesOnScreen(page)).toBe(0);
+
+  await page.keyboard.press("Escape");
 
   // One of Isaac's Verses, read in the Reader tab; a tap on another verse there selects it.
   const row = details(page).getByRole("list", { name: /^Verse/ }).getByRole("button").first();
@@ -81,10 +83,10 @@ test("the student journey by touch, and its shared link opened on another phone"
   await expect.poll(() => new URL(page.url()).searchParams.get("sel")).toBeTruthy();
   const verse = (await other.getAttribute("aria-label"))!;
 
-  // Copy link, at the top of the Details tab, then open the link on another phone, which has never
-  // seen this journey.
+  // Copy link, in the View popover, then open the link on another phone, which has never seen this
+  // journey.
   await sheet(page).getByRole("tab", { name: "Details" }).tap();
-  await details(page).getByRole("button", { name: "Copy link" }).tap();
+  await (await openView(page)).getByRole("button", { name: "Copy link" }).tap();
   await expect(page.getByRole("status")).toHaveText("Link copied.");
   const link = await page.evaluate(() => navigator.clipboard.readText());
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = test.info().project.use;
@@ -96,6 +98,7 @@ test("the student journey by touch, and its shared link opened on another phone"
   expect(await roleOf(phone, key)).not.toBe("focus");
   await expect.poll(() => roleOf(phone, ABRAHAM)).toBe("pinned");
   expect(await themesOnScreen(phone)).toBe(0);
-  await expect(details(phone).getByRole("group", { name: "Filters" }).getByRole("checkbox", { name: "Themes" })).not.toBeChecked();
+  await phone.getByRole("button", { name: "View", exact: true }).tap();
+  await expect(phone.getByRole("dialog", { name: "View options" }).getByRole("group", { name: "Filters" }).getByRole("checkbox", { name: "Themes" })).not.toBeChecked();
   await elsewhere.close();
 });

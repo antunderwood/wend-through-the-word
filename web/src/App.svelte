@@ -26,6 +26,7 @@
 
   const HINT_KEY = "wend.hintDismissed";
 
+  const VIEW_ID = "view-menu"; // the phone's View popover
   const VIEW_NAME: Record<View, string> = { A: "Tilted plane", B: "Stacked discs", C: "Free orbit" };
   const VIEW_KEYS = Object.keys(VIEWS) as View[];
   const VIEW_STORE = "wend.view";
@@ -494,9 +495,16 @@
     document.getElementById(FILTERS_ID)!.scrollIntoView({ block: "start" });
   }
 
+  // On a phone with a scene, the view, Filters, Key and Copy link are in the View popover; without WebGL
+  // there is no scene to set up, and they stay in the Details tab. The sheet's row is then only the
+  // HUD button, which a phone on its side does not offer.
+  const viewMenu = $derived(screen.phone && !noWebGL);
+  const hudRow = $derived(!viewMenu || (!noWebGL && (touring || !screen.side)));
+
   async function copyLink() {
     await navigator.clipboard.writeText(shareLink(model, view));
     model = { ...model, notice: "Link copied." };
+    document.getElementById(VIEW_ID)?.hidePopover?.();
   }
 </script>
 
@@ -528,6 +536,19 @@
     <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="6" /><path d="M12 2v5M12 17v5M2 12h5M17 12h5" /></svg>
   </button>
 {/if}
+<!-- On a phone, beside Recentre: the scene's own settings (the view, Filters, Key, Copy link) in a popover, so the
+     Details sheet is about the Selected Node alone. -->
+{#if viewMenu && onScreen && data}
+  <button class="view-button icon" data-tour="view" popovertarget={VIEW_ID} aria-label="View" title="View: the view, Filters, Key, Copy link">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
+  </button>
+  <div id={VIEW_ID} class="view-menu" popover="" role="dialog" aria-label="View options">
+    {@render viewPicker()}
+    <button class="pill" onclick={copyLink}>Copy link</button>
+    {@render filters(true)}
+    <Legend inline />
+  </div>
+{/if}
 {#if onScreen && data}
   <div class="top">
     <Search {data} onchoose={makeFocus} />
@@ -555,7 +576,7 @@
       deleteAll={() => setNotes({})}
       {noWebGL}
       collapsed={collapsed || hud}
-      controls={screen.phone ? phoneControls : undefined}
+      controls={screen.phone && hudRow ? phoneControls : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
     />
   {/snippet}
@@ -565,8 +586,10 @@
   {/snippet}
   <!-- On a phone the filter panel and the footer end the Details tab, after the lists. -->
   {#snippet filtersAndLinks()}
-    {@render filters(true)}
-    {#if !noWebGL}<Legend inline />{/if}
+    {#if !viewMenu}
+      {@render filters(true)}
+      {#if !noWebGL}<Legend inline />{/if}
+    {/if}
     <footer class="about">{@render about()}</footer>
   {/snippet}
   <!-- The reader closes only where it is a drawer. -->
@@ -695,14 +718,15 @@
   {/if}
 </div>
 </div>
+{#snippet viewPicker()}
+  <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
+    {#each offered as key (key)}
+      <button role="radio" aria-checked={viewShown === key} tabindex={viewShown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
+    {/each}
+  </div>
+{/snippet}
 {#snippet controls()}
-  {#if !noWebGL}
-    <div class="views" role="radiogroup" aria-label="View" tabindex="-1" onkeydown={stepView}>
-      {#each offered as key (key)}
-        <button role="radio" aria-checked={viewShown === key} tabindex={viewShown === key ? 0 : -1} onclick={() => choose(key)}>{VIEW_NAME[key]}</button>
-      {/each}
-    </div>
-  {/if}
+  {#if !noWebGL && !viewMenu}{@render viewPicker()}{/if}
   {#if onScreen && data}
     <!-- On a phone Filters and Copy link are icons with the same accessible names, so the row fits
          a 320 px screen. -->
@@ -710,12 +734,14 @@
       {#if !noWebGL && (touring || !screen.side)}
         <button class="pill hud-toggle" data-tour="hud" class:on={hudNow} aria-pressed={hudNow} title={hud ? "Show the Selected Node in the sheet" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
       {/if}
-      <button class="pill icon" aria-label="Filters" title="Filters" onclick={showFilters}>
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
-      </button>
-      <button class="pill icon" aria-label="Copy link" title="Copy link" onclick={copyLink}>
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></svg>
-      </button>
+      {#if !viewMenu}
+        <button class="pill icon" aria-label="Filters" title="Filters" onclick={showFilters}>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
+        </button>
+        <button class="pill icon" aria-label="Copy link" title="Copy link" onclick={copyLink}>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></svg>
+        </button>
+      {/if}
     {:else}
       <button class="pill" popovertarget={FILTERS_ID}>Filters</button>
       {@render filters(false)}
@@ -916,6 +942,46 @@
     position: fixed;
     top: calc(var(--bar) + var(--edge));
     left: var(--edge);
+  }
+  /* Beside Recentre on a phone, the same size; the popover it opens drops from just under both. */
+  .view-button {
+    position: fixed;
+    top: calc(var(--bar) + var(--edge));
+    left: calc(2 * var(--edge) + 32px);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    -webkit-tap-highlight-color: transparent;
+  }
+  :global(html[data-coarse]) .view-button {
+    left: calc(2 * var(--edge) + 44px);
+    width: 44px;
+    height: 44px;
+  }
+  .view-menu {
+    inset: calc(var(--bar) + 2 * var(--edge) + 44px) var(--edge) auto var(--edge);
+    width: auto;
+    height: auto;
+    max-height: calc(100dvh - var(--bar) - 4 * var(--edge) - 44px);
+    margin: 0;
+    padding: 4px 16px 12px;
+    overflow: auto;
+    box-sizing: border-box;
+    background: var(--bg); /* solid: the scene shows through anything lighter and the words get lost */
+    color: var(--text);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+  }
+  .view-menu .views {
+    margin: 8px 0 4px;
+  }
+  .view-menu .views button {
+    flex: 1;
+    min-height: 44px;
+  }
+  .view-menu > .pill {
+    min-height: 44px;
+    margin: 4px 0 8px;
   }
   .controls {
     display: flex;

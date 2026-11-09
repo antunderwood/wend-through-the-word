@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { openSheet } from "../touch";
+import { openSheet, openView } from "../touch";
 import { focusIs, openOnAbraham, themesOnScreen } from "../scene";
 
 const ABRAHAM = "person:abraham_58";
@@ -14,12 +14,14 @@ async function open(page: Page) {
   await openSheet(page);
 }
 
-test("the filters in the Details tab hide a node type and change the Vote Limit, with the explanation shown", async ({ page }) => {
-  await open(page);
-  const filters = details(page).getByRole("group", { name: "Filters" });
+test("the filters in the View popover hide a node type and change the Vote Limit, with the explanation shown", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("wend.hintDismissed", "1"));
+  await openOnAbraham(page);
+  await focusIs(page, ABRAHAM);
+  const filters = (await openView(page)).getByRole("group", { name: "Filters" });
   await filters.scrollIntoViewIfNeeded();
   await expect(filters).toBeInViewport();
-  // No popover on a phone.
+  // The filters are a section of the View popover, not a popover of their own.
   await expect(page.getByRole("dialog", { name: "Filters" })).toHaveCount(0);
 
   expect(await themesOnScreen(page)).toBeGreaterThan(0);
@@ -34,16 +36,17 @@ test("the filters in the Details tab hide a node type and change the Vote Limit,
   await expect.poll(() => new URL(page.url()).searchParams.get("votes")).toBe("5");
 });
 
-test("the Filters button at the top of the Details tab scrolls the tab to the filters", async ({ page }) => {
+test("the Details tab is about the Selected Node: the scene's settings are in the View popover, which closes on a tap outside", async ({ page }) => {
   await open(page);
-  const sheet = page.getByRole("region", { name: "Sheet" });
-  const themes = details(page).getByRole("group", { name: "Filters" }).getByRole("checkbox", { name: "Themes" });
-  await expect(themes).not.toBeInViewport();
-  await details(page).getByRole("button", { name: "Filters" }).tap();
-  await expect(themes).toBeInViewport();
-  // The sheet stays where it opens, at the bottom of the screen.
-  const box = (await sheet.boundingBox())!;
-  expect(box.y + box.height).toBeCloseTo(844, 0);
+  await expect(details(page).getByRole("group", { name: "Filters" })).toHaveCount(0);
+  await expect(details(page).getByRole("group", { name: "Key" })).toHaveCount(0);
+  await expect(details(page).getByRole("button", { name: "Copy link" })).toHaveCount(0);
+  await expect(details(page).getByRole("radiogroup", { name: "View" })).toHaveCount(0);
+  const menu = await openView(page);
+  await expect(menu.getByRole("group", { name: "Key" })).toBeVisible();
+  await expect(menu.getByRole("button", { name: "Copy link" })).toBeVisible();
+  await page.mouse.click(380, 20); // the top bar, clear of the popover
+  await expect(menu).toBeHidden();
 });
 
 test("a long list in the Details tab has a filter box that fits the screen and narrows the list", async ({ page }) => {
