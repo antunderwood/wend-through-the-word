@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { focusIs, openOnAbraham } from "../scene";
+import { openView } from "../touch";
 
 // A phone browser zooms in on a text field whose text is under 16 px, so on a phone every field is
 // 16 px (decision 182): the search box, the note box, the filters, and any field added later.
@@ -19,9 +20,11 @@ test("on a phone every text field and list of choices is 16 px", async ({ page }
   await openOnAbraham(page);
   await focusIs(page, ABRAHAM);
   const details = page.getByRole("tabpanel", { name: "Details" });
-  // The Focus's note box and the filters, with the book filter, are in the Details tab.
+  // The Focus's note box is in the Details tab; the filters, with the book filter, are in the View popover.
   await expect(details.getByRole("textbox", { name: /^Note on Abraham/ })).toBeAttached();
-  await expect(details.getByRole("group", { name: "Filters" }).getByRole("combobox")).toBeAttached();
+  await openView(page);
+  await expect(page.getByRole("dialog", { name: "View options" }).getByRole("group", { name: "Filters" }).getByRole("combobox")).toBeAttached();
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Search" }).tap();
   await expect(page.getByRole("searchbox", { name: "Search" })).toBeFocused();
   expect(await small(page)).toEqual([]);

@@ -1,10 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
-import { openSheet } from "../touch";
+import { openSheet, openView } from "../touch";
 import { box, covered, overlaps } from "../boxes";
 import { focusIs, openOnAbraham } from "../scene";
 
 // A phone upright (decision 183): one slim top bar, Your Path and the search icon; the view picker,
-// Filters, and Copy link a row at the top of the Details tab; a notice that shows briefly and fades;
+// Filters, Key, and Copy link in the View popover beside Recentre (decision 236); a notice that shows briefly and fades;
 // and the scene has everything between the bar and the sheet, open or closed to its handle.
 const ABRAHAM = "person:abraham_58";
 const sheet = (page: Page) => page.getByRole("region", { name: "Sheet" });
@@ -50,34 +50,49 @@ for (const size of [{ width: 325, height: 700 }]) {
       }
     });
 
-    test("the view picker, Filters, and Copy link are one row below the Selected Node's name and actions, each large enough to tap", async ({ page }) => {
+    test("the View button sits beside Recentre, clear of the top bar and the hint, and its popover holds the view picker, Filters, Key, and Copy link, each large enough to tap", async ({ page }) => {
       await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
-      await openSheet(page);
-      const controls = [
-        details(page).getByRole("radio", { name: "Tilted plane" }),
-        details(page).getByRole("radio", { name: "Free orbit" }),
-        details(page).getByRole("button", { name: "Filters" }),
-        details(page).getByRole("button", { name: "Copy link" }),
-      ];
-      const boxes = await Promise.all(controls.map((c, i) => box(`control ${i}`, c)));
-      const name = (await details(page).getByRole("heading", { level: 2 }).boundingBox())!;
-      const tab = (await details(page).boundingBox())!;
+      const recentre = await box("Recentre", page.getByRole("button", { name: "Recentre", exact: true })),
+        view = await box("View", page.getByRole("button", { name: "View", exact: true }));
+      const boxes = [await box("Your Path", bar(page)), await box("Search", page.getByRole("button", { name: "Search" })), recentre, view];
       expect(overlaps(boxes)).toEqual([]);
-      for (const b of boxes) {
-        expect(b.height, b.name).toBeGreaterThanOrEqual(44);
-        expect(b.y + b.height / 2, b.name).toBeCloseTo(boxes[0].y + boxes[0].height / 2, 0); // one row
-        expect(b.y, b.name).toBeGreaterThanOrEqual(name.y + name.height); // below the Selected Node's name and actions
-        expect(b.x, b.name).toBeGreaterThanOrEqual(tab.x);
-        expect(b.x + b.width, b.name).toBeLessThanOrEqual(tab.x + tab.width);
+      expect(view.y).toBeCloseTo(recentre.y, 0); // one row
+      expect(view.x).toBeGreaterThanOrEqual(recentre.x + recentre.width);
+      expect(view.height).toBeGreaterThanOrEqual(44);
+      expect(view.width).toBeGreaterThanOrEqual(44);
+      // The Details tab starts on the node: the actions, no row of scene settings.
+      await openSheet(page);
+      await expect(details(page).getByRole("radio")).toHaveCount(0);
+      await expect(details(page).getByRole("button", { name: "Copy link" })).toHaveCount(0);
+
+      const menu = await openView(page);
+      const controls = [
+        menu.getByRole("radio", { name: "Tilted plane" }),
+        menu.getByRole("radio", { name: "Free orbit" }),
+        menu.locator("label", { hasText: "Themes" }),
+        menu.getByRole("button", { name: "Copy link" }),
+      ];
+      const tapped = await Promise.all(controls.map((c, i) => box(`control ${i}`, c)));
+      const m = await box("menu", menu);
+      expect(m.x).toBeGreaterThanOrEqual(0);
+      expect(m.x + m.width).toBeLessThanOrEqual(size.width);
+      expect(m.y).toBeGreaterThanOrEqual(view.y + view.height); // drops from under the buttons
+      expect(m.y + m.height).toBeLessThanOrEqual(size.height);
+      for (const b of tapped) {
+        expect(b.x, b.name).toBeGreaterThanOrEqual(m.x);
+        expect(b.x + b.width, b.name).toBeLessThanOrEqual(m.x + m.width);
       }
+      for (const b of tapped) expect(b.height, b.name).toBeGreaterThanOrEqual(44);
+      // The Key is in the popover; it scrolls when the screen is short.
+      await menu.getByRole("group", { name: "Key" }).scrollIntoViewIfNeeded();
+      await expect(menu.getByRole("group", { name: "Key" })).toBeInViewport();
     });
 
     test("a notice shows above the sheet, clear of the hint, then fades", async ({ page }) => {
       await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
-      await openSheet(page);
-      await details(page).getByRole("button", { name: "Copy link" }).tap();
+      await (await openView(page)).getByRole("button", { name: "Copy link" }).tap();
       await expect(notice(page)).toHaveText("Link copied.");
       await expect(notice(page)).toHaveCSS("opacity", "1");
       const boxes = [

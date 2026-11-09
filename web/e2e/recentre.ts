@@ -21,13 +21,28 @@ export const offCentre = (page: Page) =>
 export const centred = (page: Page) => expect.poll(() => offCentre(page)).toBeLessThanOrEqual(3);
 
 // A point of the bare scene a drag or a pinch can start on: the canvas, with no name or panel over
-// it or 20 px round it, at least above px below the scene's top.
+// it or 20 px round it, at least above px below the scene's top. Of those, the one farthest from every
+// node's disc and every button (a press there is the node's or the button's, not the camera's); the
+// first of equals, scanning from the top left.
 export const bare = (page: Page, above = 20) =>
   page.evaluate((above) => {
     const s = document.querySelector('[data-tour="scene"]')!.getBoundingClientRect(),
-      free = (x: number, y: number) => [-20, 0, 20].every((d) => document.elementFromPoint(x + d, y + d)?.matches('[data-tour="scene"] canvas'));
-    for (let y = s.top + above; y < s.bottom - 20; y += 10) for (let x = s.left + 20; x < s.right - 20; x += 10) if (free(x, y)) return { x, y };
-    return null;
+      discs = window.wendGraph!.testNodes(),
+      buttons = [...document.querySelectorAll("button")].map((b) => b.getBoundingClientRect()).filter((r) => r.width > 0),
+      free = (x: number, y: number) => [-20, 0, 20].every((d) => document.elementFromPoint(x + d, y + d)?.matches('[data-tour="scene"] canvas')),
+      clear = (x: number, y: number) =>
+        Math.min(
+          ...discs.map((n) => Math.hypot(n.x - x, n.y - y)),
+          ...buttons.map((r) => Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom))),
+        );
+    let best: { x: number; y: number; room: number } | null = null;
+    for (let y = s.top + above; y < s.bottom - 20; y += 10)
+      for (let x = s.left + 20; x < s.right - 20; x += 10) {
+        if (!free(x, y)) continue;
+        const room = clear(x, y);
+        if (!best || room > best.room) best = { x, y, room };
+      }
+    return best && { x: best.x, y: best.y };
   }, above);
 // A pinch out from a bare point of the scene, its second finger moving up from 20 to 110 px above the first.
 export async function pinchOut(page: Page) {

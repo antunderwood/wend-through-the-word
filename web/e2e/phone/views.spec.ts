@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { openSheet } from "../touch";
+import { openView, viewMenu } from "../touch";
 import { nodes, openOnAbraham } from "../scene";
 
 // The scene is drawn and has settled: on a phone the sheet's peek height is measured after the first
@@ -9,17 +9,17 @@ async function sceneReady(page: Page) {
   let last = "";
   await expect.poll(async () => last === (last = JSON.stringify(await page.evaluate(() => window.wendGraph!.testNodes().map((n) => [n.id, Math.round(n.x), Math.round(n.y)]))))).toBe(true);
 }
-const picker = (page: Page) => page.getByRole("radiogroup", { name: "View" });
+const picker = (page: Page) => viewMenu(page).getByRole("radiogroup", { name: "View" });
 const positions = async (page: Page) => (await nodes(page)).map(({ id, x, y }) => ({ id, x: Math.round(x), y: Math.round(y) }));
 
 test("a phone offers the tilted plane and the free orbit only", async ({ page }) => {
   await openOnAbraham(page);
   await sceneReady(page);
-  await openSheet(page);
+  await openView(page);
   await expect(picker(page).getByRole("radio")).toHaveText(["Tilted plane", "Free orbit"]);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
-  // The picker is at the top of the Details tab (decision 183). The keys step over the stacked discs.
-  await expect(page.getByRole("tabpanel", { name: "Details" }).getByRole("radiogroup", { name: "View" })).toBeVisible();
+  // The picker is in the View popover, not the Details tab (decision 236). The keys step over the stacked discs.
+  await expect(page.getByRole("tabpanel", { name: "Details" }).getByRole("radiogroup", { name: "View" })).toHaveCount(0);
   await picker(page).getByRole("radio", { name: "Tilted plane" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(picker(page).getByRole("radio", { name: "Free orbit" })).toBeChecked();
@@ -35,6 +35,7 @@ test("a link with the stacked discs opens in the tilted plane, and the address k
 
   await page.goto("/?view=B");
   await sceneReady(page);
+  await openView(page);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
   expect(await positions(page)).toEqual(tilted);
   expect(new URL(page.url()).searchParams.get("view")).toBe("B");
@@ -48,6 +49,7 @@ test("the stacked discs kept in this browser show as the tilted plane, and stay 
 
   await page.goto("/");
   await sceneReady(page);
+  await openView(page);
   await expect(picker(page).getByRole("radio", { checked: true })).toHaveAccessibleName("Tilted plane");
   expect(await positions(page)).toEqual(tilted);
   expect(await page.evaluate(() => localStorage.getItem("wend.view"))).toBe("B");

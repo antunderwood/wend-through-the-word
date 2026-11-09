@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { openSheet } from "../touch";
+import { openSheet, openView } from "../touch";
 import { box, covered, overlaps } from "../boxes";
 import { focusIs, nodes, openOnAbraham } from "../scene";
 
@@ -93,10 +93,12 @@ for (const size of [{ width: 760, height: 330 }]) {
       }
     });
 
-    test("the tabs work: Read opens the Reader tab, and Details has the view picker with views A and C only", async ({ page }) => {
+    test("the tabs work: Read opens the Reader tab, and the View popover has the view picker with views A and C only", async ({ page }) => {
       await openOnAbraham(page);
       await focusIs(page, ABRAHAM);
-      await expect(details(page).getByRole("radiogroup", { name: "View" }).getByRole("radio")).toHaveText(["Tilted plane", "Free orbit"]);
+      const menu = await openView(page);
+      await expect(menu.getByRole("radiogroup", { name: "View" }).getByRole("radio")).toHaveText(["Tilted plane", "Free orbit"]);
+      await page.keyboard.press("Escape");
       await details(page).getByRole("button", { name: "Read", exact: true }).tap();
       await expect(sheet(page).getByRole("tab", { name: "Reader" })).toHaveAttribute("aria-selected", "true");
       await expect(reader(page).getByRole("heading", { name: "Genesis 11" })).toBeInViewport();
@@ -105,8 +107,9 @@ for (const size of [{ width: 760, height: 330 }]) {
       await sheet(page).getByRole("tab", { name: "Details" }).tap();
       await expect(heading(page)).toHaveText("Abraham");
       await actionsInReach(page);
-      await details(page).getByRole("radio", { name: "Free orbit" }).tap();
-      await expect(details(page).getByRole("radio", { name: "Free orbit" })).toBeChecked();
+      await (await openView(page)).getByRole("radio", { name: "Free orbit" }).tap();
+      await expect(menu.getByRole("radio", { name: "Free orbit" })).toBeChecked();
+      await page.keyboard.press("Escape");
       await focusInView(page, (await sheet(page).boundingBox())!.x);
     });
 
