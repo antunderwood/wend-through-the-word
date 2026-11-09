@@ -32,6 +32,7 @@
     noWebGL,
     collapsed,
     controls,
+    switcher,
     filtersAndLinks,
   }: {
     data: Data;
@@ -48,7 +49,8 @@
     deleteAll: () => void;
     noWebGL: boolean;
     collapsed: boolean;
-    controls?: Snippet; // after the held name and actions: on a phone, the view picker, Filters, and Copy link
+    controls?: Snippet; // after the held name and actions: on a phone without a scene, Filters and Copy link
+    switcher?: Snippet; // at the top right of the held name: on a phone, the button that switches to the HUD
     filtersAndLinks?: Snippet; // after the lists: on a phone, the filters and the page's own links
   } = $props();
 
@@ -293,7 +295,10 @@
        height follows, its blank space (if any) at its foot, above the lists. -->
   {#if compact}
     <div class="held">
-      <div class="name">{@render nameLines()}</div>
+      <div class="name">
+        {@render nameLines()}
+        {#if switcher}<span class="switch">{@render switcher()}</span>{/if}
+      </div>
       <div class="actions">{@render actions()}</div>
     </div>
   {/if}
@@ -733,8 +738,18 @@
      is drawn and the scene never moves when the panel appears: the name and the type line are one
      line each at fixed line heights, cut when long, and the actions are one row of 44 px buttons. */
   .name {
+    position: relative;
     height: 48px;
     overflow: hidden;
+  }
+  /* The switch to the HUD, at the top right of the name; a long name is cut short of it. */
+  .switch {
+    position: absolute;
+    top: 2px;
+    right: 0;
+  }
+  .name:has(.switch) :global(h2) {
+    padding-right: 64px;
   }
   .name :global(h2) {
     line-height: 28px;

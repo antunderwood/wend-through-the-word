@@ -499,7 +499,6 @@
   // there is no scene to set up, and they stay in the Details tab. The sheet's row is then only the
   // HUD button, which a phone on its side does not offer.
   const viewMenu = $derived(screen.phone && !noWebGL);
-  const hudRow = $derived(!viewMenu || (!noWebGL && (touring || !screen.side)));
 
   async function copyLink() {
     await navigator.clipboard.writeText(shareLink(model, view));
@@ -576,13 +575,19 @@
       deleteAll={() => setNotes({})}
       {noWebGL}
       collapsed={collapsed || hud}
-      controls={screen.phone && hudRow ? phoneControls : undefined}
+      controls={screen.phone && !viewMenu ? phoneControls : undefined}
+      switcher={screen.phone && viewMenu && (touring || !screen.side) ? hudSwitch : undefined}
       filtersAndLinks={screen.phone ? filtersAndLinks : undefined}
     />
   {/snippet}
   <!-- On a phone the view picker, Filters, and Copy link are a row at the top of the Details tab. -->
   {#snippet phoneControls()}
     <div class="controls row">{@render controls()}</div>
+  {/snippet}
+  <!-- On a phone the switch to the HUD is at the top right of the Selected Node's name, slim to look at and
+       44 px to touch. -->
+  {#snippet hudSwitch()}
+    <button class="pill hud-toggle slim" data-tour="hud" class:on={hudNow} aria-pressed={hudNow} title={hud ? "Show the Selected Node in the sheet" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
   {/snippet}
   <!-- On a phone the filter panel and the footer end the Details tab, after the lists. -->
   {#snippet filtersAndLinks()}
@@ -731,9 +736,6 @@
     <!-- On a phone Filters and Copy link are icons with the same accessible names, so the row fits
          a 320 px screen. -->
     {#if screen.phone}
-      {#if !noWebGL && (touring || !screen.side)}
-        <button class="pill hud-toggle" data-tour="hud" class:on={hudNow} aria-pressed={hudNow} title={hud ? "Show the Selected Node in the sheet" : "Show the Selected Node on a HUD over the graph"} onclick={pressHud}>HUD</button>
-      {/if}
       {#if !viewMenu}
         <button class="pill icon" aria-label="Filters" title="Filters" onclick={showFilters}>
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" /><circle cx="15" cy="17" r="2.5" /></svg>
@@ -1038,6 +1040,19 @@
     border-radius: var(--radius-pill);
     font-size: var(--fs-2xl);
     line-height: 1;
+  }
+  .hud-toggle.slim {
+    position: relative;
+    height: 24px;
+    min-height: 24px;
+    min-width: 0;
+    padding: 0 12px;
+    font-size: var(--fs-sm);
+  }
+  .hud-toggle.slim::after {
+    content: "";
+    position: absolute;
+    inset: -11px -6px;
   }
   /* Lit in the HUD's own line colour while the HUD shows. */
   .hud-toggle.on {
