@@ -1,5 +1,10 @@
 name: CI
-on: [push, pull_request]
+# A pull request runs on its own; a push runs only on main. A branch push used to start a second,
+# identical run beside the pull request's.
+on:
+  push:
+    branches: [main]
+  pull_request:
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -9,7 +14,7 @@ jobs:
       - run: uv run ruff check
       - run: uv run ruff format --check
       - run: uv run pytest
-  web:
+  static:
     runs-on: ubuntu-latest
     env:
       WEND_DATA: ${{ github.workspace }}/.fixture-export/data
@@ -31,14 +36,45 @@ jobs:
       - name: The production build has no test hooks
         run: npm run build && ! grep -rq wendGraph dist
         working-directory: web
+  # The Playwright suite is 310 tests on software WebGL, 15 minutes on one runner, so it runs in
+  # shards on runners of their own.
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
+    env:
+      WEND_DATA: ${{ github.workspace }}/.fixture-export/data
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - name: Build the fixture export
+        run: >
+          uv run python -c "import sys; sys.path.insert(0, 'tests'); from pathlib import Path;
+          from conftest import run_build; run_build(Path(sys.argv[1]))" "$GITHUB_WORKSPACE/.fixture-export"
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm, cache-dependency-path: web/package-lock.json }
+      - run: npm ci
+        working-directory: web
       - run: npx playwright install --with-deps --only-shell chromium
         working-directory: web
       # The e2e page is built with a dummy Esri token, so CI tests Esri's tiles layout and attribution
       # (decision 199). The specs that open the map answer every request to another host themselves
       # (thirdParty in web/e2e/map.ts), so none reaches Esri.
-      - run: npx playwright test
+      - run: npx playwright test --shard=${{ matrix.shard }}/6
         working-directory: web
         env: { VITE_ESRI_TOKEN: ci-dummy }
       - uses: actions/upload-artifact@v7
         if: failure()
-        with: { name: playwright-traces, path: web/test-results }
+        with: { name: "playwright-traces-${{ matrix.shard }}", path: web/test-results }
+  # The one check the Code release workflow reads (code-release.yml looks for "check" and "web"):
+  # it passes only when the static checks and every shard have.
+  web:
+    needs: [static, e2e]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "static: ${{ needs.static.result }}, e2e: ${{ needs.e2e.result }}"
+          [ "${{ needs.static.result }}" = success ] && [ "${{ needs.e2e.result }}" = success ]
