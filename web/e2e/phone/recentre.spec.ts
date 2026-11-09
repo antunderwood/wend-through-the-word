@@ -26,7 +26,20 @@ async function moveCamera(page: Page) {
   const from = await bare(page);
   expect(from).not.toBeNull();
   await drag(page, from!, { x: from!.x + 30, y: from!.y + 40 });
-  await expect.poll(() => offCentre(page)).toBeGreaterThan(20);
+  try {
+    await expect.poll(() => offCentre(page)).toBeGreaterThan(20);
+  } catch (e) {
+    // Say what the finger landed on, so a failure on a runner that cannot be reproduced is readable.
+    const seen = await page.evaluate(
+      ({ x, y }) => ({
+        under: document.elementsFromPoint(x, y).slice(0, 4).map((el) => `${el.tagName}.${el.className}`),
+        sheet: document.querySelector('[data-tour="sheet"]')?.getBoundingClientRect().toJSON(),
+        scale: window.visualViewport!.scale,
+      }),
+      from!,
+    );
+    throw new Error(`the drag from ${JSON.stringify(from)} did not move the camera: ${JSON.stringify(seen)}\n${(e as Error).message}`);
+  }
 }
 // A finger drags the sheet's row to y.
 async function dragSheet(page: Page, y: number) {
