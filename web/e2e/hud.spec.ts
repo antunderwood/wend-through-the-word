@@ -178,3 +178,26 @@ test("the panel and the HUD list the same sections, and share the one chosen (de
   await expect(chips.getByRole("button", { name: "Links" })).toHaveAttribute("aria-current", "true");
   await expect(panel(page).locator("h3[id^=list-]").first()).toBeInViewport();
 });
+
+test("with the HUD showing, Read opens a HUD-styled reader modal, not the drawer, and it closes", async ({ page }) => {
+  await toggle(page).click();
+  await expect(hud(page)).toBeVisible();
+  await hud(page).getByRole("button", { name: "Read", exact: true }).click();
+  const reader = page.getByRole("region", { name: "Reader" });
+  const modal = page.getByRole("group", { name: "Reader (HUD)" });
+  await expect(modal.getByRole("heading", { name: "Genesis 11" })).toBeVisible();
+  await expect(reader).toBeVisible();
+  // The scene keeps its full width: no drawer column, and the HUD stays in view beside it.
+  await expect(page.locator(".drawer")).toHaveCount(0);
+  await expect(hud(page)).toBeVisible();
+  // A Verse tapped in the chapter shows on the HUD.
+  await reader.getByRole("button", { name: "Gen 11:27", exact: true }).click();
+  await expect(hud(page).getByRole("heading", { level: 2 })).toHaveText("Gen 11:27");
+  // Esc closes it, and the HUD button back to the panel brings the drawer for the next Read.
+  await page.keyboard.press("Escape");
+  await expect(modal).toHaveCount(0);
+  await hud(page).getByRole("button", { name: "Details", exact: true }).click();
+  await panel(page).getByRole("button", { name: "Read", exact: true }).click();
+  await expect(page.locator(".drawer")).toHaveCount(1);
+  await expect(modal).toHaveCount(0);
+});

@@ -224,3 +224,20 @@ test("the sheet's section chips sit under the held block, are 44 px to touch, an
   await expect(chips.getByRole("button", { name: "Verses" })).toHaveAttribute("aria-current", "true");
   await page.screenshot({ path: process.env.CHIPS_SHOT ?? "test-results/chips-sheet.png" });
 });
+
+test("on a phone, Read on the docked HUD opens a HUD-styled reader modal and the sheet stays away", async ({ page }) => {
+  await open(page);
+  await openSheet(page);
+  await sheet(page).getByRole("button", { name: "HUD", exact: true }).tap();
+  await expect(hud(page)).toBeVisible();
+  await hud(page).getByRole("button", { name: "Read", exact: true }).tap();
+  const modal = page.getByRole("group", { name: "Reader (HUD)" });
+  await expect(modal.getByRole("heading", { name: "Genesis 11" })).toBeVisible();
+  await expect(page.locator(".sheet.away")).toHaveCount(1);
+  const box = (await modal.boundingBox())!;
+  expect(box.x).toBeCloseTo(8, 0);
+  expect(box.width).toBeCloseTo(390 - 16, 0);
+  await modal.getByRole("button", { name: "Close reader" }).tap();
+  await expect(modal).toHaveCount(0);
+  await expect(hud(page)).toBeVisible();
+});
