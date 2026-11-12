@@ -13,6 +13,7 @@
   import { fitPanelWidth, keepPanelWidth, keptPanelWidth, PANEL_MAX, PANEL_MIN, PANEL_W } from "./panel";
   import PathBar from "./PathBar.svelte";
   import Reader from "./Reader.svelte";
+  import ReaderModal from "./ReaderModal.svelte";
   import { notesMarkdown } from "./notes";
   import { afterClear, hiddenNote, initialState, overflowText, reduce, scene, typeOf, TYPE_NAME, type Action, type Id, type NodeType, type Scene, type SceneNode, type State, type View } from "./model";
   import { screen } from "./screen.svelte";
@@ -96,9 +97,10 @@
   let reading = $state<Id>();
   // The detail panel's width as the reader dragged it (decision 225), kept in this browser; null is
   // the default. The panel takes it fitted to the window, so the scene keeps some room.
+  const drawerNow = () => drawerOpen; // declared further down, with the HUD state it follows
   let panelPick = $state<number | null>(keptPanelWidth());
   let windowW = $state(innerWidth);
-  const panelW = $derived(panelPick === null ? null : fitPanelWidth(panelPick, windowW, !!reading));
+  const panelW = $derived(panelPick === null ? null : fitPanelWidth(panelPick, windowW, drawerNow()));
   // A drag on the panel's left edge sizes it; arrow keys there do the same by 16 px (with Shift, 64),
   // and a double click goes back to the default width.
   function sizePanel(e: PointerEvent) {
@@ -107,7 +109,7 @@
       from = e.clientX,
       el = e.currentTarget as HTMLElement;
     el.setPointerCapture(e.pointerId);
-    const move = (m: PointerEvent) => (panelPick = fitPanelWidth(start + from - m.clientX, windowW, !!reading));
+    const move = (m: PointerEvent) => (panelPick = fitPanelWidth(start + from - m.clientX, windowW, drawerNow()));
     const end = () => {
       el.removeEventListener("pointermove", move);
       keepPanelWidth(panelPick);
@@ -121,7 +123,7 @@
     const by = e.shiftKey ? 64 : 16;
     const d = { ArrowLeft: by, ArrowRight: -by }[e.key];
     if (!d) return;
-    panelPick = fitPanelWidth((panelW ?? PANEL_W) + d, windowW, !!reading);
+    panelPick = fitPanelWidth((panelW ?? PANEL_W) + d, windowW, drawerNow());
     keepPanelWidth(panelPick);
     e.preventDefault();
   }
@@ -254,7 +256,7 @@
       typeOf(selected) === "verse" ? selected : (await data!.load(selected)).links.filter((l) => l.type === "verse").map((l) => l.id).sort()[0];
     if (!first) return (model = { ...model, notice: `${label(selected)} has no linked Verses.` });
     reading = first;
-    if (screen.phone) {
+    if (screen.phone && !hudDocked) {
       chooseTab("reader");
       openSheet();
     }
@@ -339,6 +341,10 @@
     if (phoneHud && sheetPeek && !collapsed) untrack(() => (collapsed = true));
   });
   const hudDocked = $derived(phoneHud && collapsed);
+  // With the HUD showing, the chapter opens on a HUD-styled modal, not in the drawer or the sheet's
+  // Reader tab (decision 239). The sheet open over the phone HUD keeps its Reader tab.
+  const readerModal = $derived(!!reading && (screen.phone ? hudDocked : hud));
+  const drawerOpen = $derived(!!reading && !readerModal && !screen.phone);
   // The docked HUD's height (a fixed CSS size, read in px) and the gap above the sheet, for the camera.
   let hudPx = $state(0);
   let section = $state<SectionId>("overview"); // the Selected Node's section both views show (decision 238); kept until the page reloads
@@ -527,7 +533,7 @@
      the scene. Each part takes its place from the grid and the sizes in tokens.css, so the scene fills
      what the others leave. On a phone the shell draws no box and each part places itself over the
      scene and the bottom sheet. -->
-<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={!!reading} style:--panel-w={panelW === null ? undefined : `${panelW}px`}>
+<div class="shell" class:grid={!screen.phone} class:wide={collapsed || noWebGL || hud} class:reading={drawerOpen} style:--panel-w={panelW === null ? undefined : `${panelW}px`}>
 <!-- The scene takes keyboard focus so its keys work after a click on it (ARIA "application"). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div class="stage" data-tour="scene" role="application" aria-label="Graph: arrow keys select a Ring 1 node, Enter makes it the Focus, Backspace goes back" tabindex="0" bind:this={host}></div>
@@ -688,7 +694,9 @@
       }}
     />
   {/snippet}
-  {#if reading && !screen.phone}
+  {#if readerModal}
+    <ReaderModal phone={screen.phone} onclose={() => (reading = undefined)}>{@render read(() => (reading = undefined))}</ReaderModal>
+  {:else if drawerOpen}
     <div class="drawer">{@render read(() => (reading = undefined))}</div>
   {/if}
   <CorrectionDialog bind:this={correction} {data} pageUrl={() => shareLink(model, view)} onfail={(notice) => (model = { ...model, notice })} />
